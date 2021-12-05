@@ -38,10 +38,14 @@ analyzer:
     sdk_version_async_exported_from_core: ignore
     # Turned off until null-safe rollout is complete.
     unnecessary_null_comparison: ignore
+    invalid_annotation_target: ignore
   exclude:
     - "bin/cache/**"
       # Ignore protoc generated files
     - "dev/conductor/lib/proto/*"
+      # Ignore model generated files
+    - "**.g.dart"
+    - "**.freezed.dart"
 
 linter:
   rules:
@@ -122,7 +126,7 @@ linter:
     - leading_newlines_in_multiline_strings
     - library_names
     - library_prefixes
-    - library_private_types_in_public_api
+    # - library_private_types_in_public_api
     # - lines_longer_than_80_chars # not required by flutter style
     - list_remove_unrelated_type
     # - literal_only_boolean_expressions # too many false positives: https://github.com/dart-lang/sdk/issues/34181
