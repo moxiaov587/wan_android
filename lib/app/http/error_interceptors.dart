@@ -12,7 +12,7 @@ class ErrorInterceptors extends Interceptor {
 
     if (responseData.success) {
       response.data = responseData.data;
-      return handler.next(response);
+      handler.next(response);
     } else {
       throw AppException.fromResponseData(responseData);
     }

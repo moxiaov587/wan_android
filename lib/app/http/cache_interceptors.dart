@@ -14,23 +14,31 @@ import '../../database/model/models.dart' show ResponseCache;
 const int _kCacheMaxAge = 60000;
 const int _kCacheMaxCount = 10;
 
+const String _kMethodGetLowerCase = 'get';
+
+enum CacheOption {
+  needRefresh,
+  needCache,
+  isDiskCache,
+}
+
 class CacheInterceptors extends Interceptor {
   final LinkedHashMap<String, ResponseCache> _cache =
       LinkedHashMap<String, ResponseCache>();
 
   bool _needRefresh(RequestOptions options) =>
-      options.extra['isDiskCache'] as bool? ?? false;
+      options.extra[CacheOption.needRefresh.name] as bool? ?? false;
 
   bool _needCache(RequestOptions options) =>
-      (options.extra['cache'] as bool? ?? false) &&
-      options.method.toLowerCase() == 'get';
+      (options.extra[CacheOption.needCache.name] as bool? ?? false) &&
+      options.method.toLowerCase() == _kMethodGetLowerCase;
 
-  bool _needDiskCache(RequestOptions options) =>
-      options.extra['isDiskCache'] as bool? ?? false;
+  bool _isDiskCache(RequestOptions options) =>
+      options.extra[CacheOption.isDiskCache.name] as bool? ?? false;
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    final bool isDiskCache = _needDiskCache(options);
+    final bool isDiskCache = _isDiskCache(options);
 
     final String key = options.uri.toString();
 
@@ -41,7 +49,9 @@ class CacheInterceptors extends Interceptor {
         _cache.remove(key);
       }
 
-      return handler.next(options);
+      handler.next(options);
+
+      return;
     } else if (_needCache(options)) {
       final ResponseCache? response = _cache[key];
 
@@ -49,13 +59,15 @@ class CacheInterceptors extends Interceptor {
         if ((DateTime.now().millisecondsSinceEpoch - response.timeStamp) /
                 1000 <
             _kCacheMaxAge) {
-          return handler.resolve(
+          handler.resolve(
             Response<dynamic>(
               requestOptions: options,
               statusCode: 200,
               data: response.data,
             ),
           );
+
+          return;
         } else {
           _cache.remove(key);
         }
@@ -69,13 +81,15 @@ class CacheInterceptors extends Interceptor {
                     (responseCache?.timeStamp ?? 0)) /
                 1000 <
             _kCacheMaxAge) {
-          return handler.resolve(
+          handler.resolve(
             Response<dynamic>(
               requestOptions: options,
               statusCode: 200,
               data: responseCache?.data,
             ),
           );
+
+          return;
         } else {
           HiveBoxes.responseCacheBox.delete(key);
         }
@@ -83,8 +97,6 @@ class CacheInterceptors extends Interceptor {
     }
 
     handler.next(options);
-
-    super.onRequest(options, handler);
   }
 
   @override
@@ -100,7 +112,7 @@ class CacheInterceptors extends Interceptor {
         timeStamp: DateTime.now().millisecondsSinceEpoch,
         data: response.data,
       );
-      if (_needDiskCache(options)) {
+      if (_isDiskCache(options)) {
         HiveBoxes.responseCacheBox.put(
           key,
           responseCache,
@@ -115,7 +127,5 @@ class CacheInterceptors extends Interceptor {
     }
 
     handler.next(response);
-
-    super.onResponse(response, handler);
   }
 }

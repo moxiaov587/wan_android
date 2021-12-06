@@ -42,9 +42,7 @@ class HttpUtils {
       (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
           _clientCreate;
 
-      dio.interceptors
-        ..add(cookieManager)
-        ..add(CacheInterceptors());
+      dio.interceptors.add(cookieManager);
 
       (tokenDio.httpClientAdapter as DefaultHttpClientAdapter)
           .onHttpClientCreate = _clientCreate;
@@ -52,7 +50,9 @@ class HttpUtils {
 
     dio.options.baseUrl = 'http://localhost:3300/';
 
-    dio.interceptors.add(ErrorInterceptors());
+    dio.interceptors
+      ..add(ErrorInterceptors())
+      ..add(CacheInterceptors());
 
     if (kDebugMode && shouldLogRequest) {
       dio.interceptors.add(LoggingInterceptor());
@@ -79,12 +79,24 @@ class HttpUtils {
     Map<String, dynamic>? headers,
     CancelToken? cancelToken,
     Options? options,
+    bool needCache = false,
+    bool needRefresh = false,
+    bool isDiskCache = false,
   }) =>
       dio.get<T>(
         url,
         queryParameters: queryParameters,
         cancelToken: cancelToken,
-        options: options,
+        options: (options ?? Options()).copyWith(
+          extra: <String, dynamic>{
+            ...options?.extra ?? <String, dynamic>{},
+            ..._buildMethodGetCacheOptionsExtra(
+              needCache: needCache,
+              needRefresh: needRefresh,
+              isDiskCache: isDiskCache,
+            ),
+          },
+        ),
       );
 
   static Future<Response<T>> post<T>(
@@ -125,6 +137,18 @@ class HttpUtils {
       sendTimeout: 60000,
       receiveTimeout: 60000,
     );
+  }
+
+  static Map<String, dynamic> _buildMethodGetCacheOptionsExtra({
+    required bool needCache,
+    required bool needRefresh,
+    required bool isDiskCache,
+  }) {
+    return <String, dynamic>{
+      CacheOption.needCache.name: needCache,
+      CacheOption.needRefresh.name: needRefresh,
+      CacheOption.isDiskCache.name: isDiskCache,
+    };
   }
 
   static HttpClient? Function(HttpClient client) get _clientCreate {
