@@ -106,6 +106,12 @@ class AppColor {
   static Color splash = AppColor.gray.shade4;
   static Color splashDark = AppColor.gray.shade7;
 
+  static const Color appBar = Color(0xfffafafa);
+  static const Color appBarDark = background4Dark;
+
+  static const Color scaffoldBackground = Color(0xfff2f3f6);
+  static const Color scaffoldBackgroundDark = background5Dark;
+
   static const ArcoColor red = ArcoColor(_redPrimaryValue, <int, Color>{
     1: Color(0xffffece8),
     2: Color(0xfffdcdc5),

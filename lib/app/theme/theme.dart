@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart' show CupertinoThemeData;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 
+import '../shape/bottom_app_bar_convex_shape.dart';
+
 part 'color.dart';
 part 'text_theme.dart';
 
@@ -13,7 +15,7 @@ class AppTheme {
         centerTitle: true,
       );
 
-  static DividerThemeData get dividerThemeData => const DividerThemeData(
+  static DividerThemeData get dividerTheme => const DividerThemeData(
         space: 0,
         thickness: .3,
       );
@@ -35,6 +37,24 @@ class AppTheme {
         ),
       );
 
+  static FloatingActionButtonThemeData get floatingActionButtonTheme =>
+      const FloatingActionButtonThemeData(
+        elevation: 0.0,
+        hoverElevation: 0.0,
+        highlightElevation: 0.0,
+        sizeConstraints: BoxConstraints.tightFor(width: 56.0, height: 56.0),
+      );
+
+  static BottomAppBarTheme get bottomAppBarTheme => const BottomAppBarTheme(
+        elevation: 0.0,
+        shape: ConvexNotchedRectangle(),
+      );
+
+  static BottomNavigationBarThemeData get bottomNavigationBarTheme =>
+      const BottomNavigationBarThemeData(
+        elevation: 0.0,
+      );
+
   static ThemeData get light => ThemeData.light().copyWith(
         cupertinoOverrideTheme: const CupertinoThemeData(
           brightness: Brightness.light,
@@ -42,7 +62,7 @@ class AppTheme {
         ),
         appBarTheme: appBarTheme.copyWith(
           systemOverlayStyle: SystemUiOverlayStyle.light,
-          backgroundColor: AppColor.menuBackground,
+          backgroundColor: AppColor.appBar,
           foregroundColor: AppColor.text1,
         ),
         primaryColor: AppColor.arcoBlue,
@@ -50,7 +70,7 @@ class AppTheme {
         primaryColorDark: AppColor.arcoBlue.shade7,
         canvasColor: AppColor.background1,
         shadowColor: AppColor.black,
-        scaffoldBackgroundColor: AppColor.background1,
+        scaffoldBackgroundColor: AppColor.scaffoldBackground,
         bottomAppBarColor: AppColor.background1,
         cardColor: AppColor.background1,
         dividerColor: AppColor.border,
@@ -77,11 +97,15 @@ class AppTheme {
         ),
         tooltipTheme: TooltipThemeData(
           decoration: BoxDecoration(
-            color: AppColor.tooltipBackground,
+            color: AppColor.maskBackground,
           ),
+          textStyle: AppTextTheme.lightTheme.overline,
         ),
-        dividerTheme: dividerThemeData.copyWith(
+        dividerTheme: dividerTheme.copyWith(
           color: AppColor.border,
+        ),
+        listTileTheme: const ListTileThemeData(
+          tileColor: AppColor.background1,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: buttonStyle.copyWith(
@@ -89,6 +113,16 @@ class AppTheme {
               AppColor.arcoBlue,
             ),
           ),
+        ),
+        floatingActionButtonTheme: floatingActionButtonTheme.copyWith(
+          backgroundColor: AppColor.appBar,
+          foregroundColor: AppColor.text2,
+        ),
+        bottomAppBarTheme: bottomAppBarTheme.copyWith(
+          color: AppColor.appBar,
+        ),
+        bottomNavigationBarTheme: bottomNavigationBarTheme.copyWith(
+          backgroundColor: AppColor.appBar,
         ),
       );
 
@@ -99,7 +133,7 @@ class AppTheme {
         ),
         appBarTheme: appBarTheme.copyWith(
           systemOverlayStyle: SystemUiOverlayStyle.dark,
-          backgroundColor: AppColor.menuBackgroundDark,
+          backgroundColor: AppColor.appBarDark,
           foregroundColor: AppColor.text1Dark,
         ),
         primaryColor: AppColor.arcoBlueDark,
@@ -107,8 +141,7 @@ class AppTheme {
         primaryColorDark: AppColor.arcoBlueDark.shade7,
         canvasColor: AppColor.background1Dark,
         shadowColor: AppColor.white,
-        scaffoldBackgroundColor: AppColor.background1Dark,
-        bottomAppBarColor: AppColor.background1Dark,
+        scaffoldBackgroundColor: AppColor.scaffoldBackgroundDark,
         cardColor: AppColor.background1Dark,
         dividerColor: AppColor.borderDark,
         focusColor: AppColor.fill3Dark,
@@ -132,13 +165,17 @@ class AppTheme {
         primaryIconTheme: IconThemeData(
           color: AppColor.text3Dark,
         ),
-        tooltipTheme: const TooltipThemeData(
+        tooltipTheme: TooltipThemeData(
           decoration: BoxDecoration(
-            color: AppColor.tooltipBackgroundDark,
+            color: AppColor.maskBackgroundDark,
           ),
+          textStyle: AppTextTheme.darkTheme.overline,
         ),
-        dividerTheme: dividerThemeData.copyWith(
+        dividerTheme: dividerTheme.copyWith(
           color: AppColor.borderDark,
+        ),
+        listTileTheme: const ListTileThemeData(
+          tileColor: AppColor.background2Dark,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: buttonStyle.copyWith(
@@ -146,6 +183,16 @@ class AppTheme {
               AppColor.arcoBlueDark,
             ),
           ),
+        ),
+        floatingActionButtonTheme: floatingActionButtonTheme.copyWith(
+          backgroundColor: AppColor.appBarDark,
+          foregroundColor: AppColor.text2Dark,
+        ),
+        bottomAppBarTheme: bottomAppBarTheme.copyWith(
+          color: AppColor.appBarDark,
+        ),
+        bottomNavigationBarTheme: bottomNavigationBarTheme.copyWith(
+          backgroundColor: AppColor.appBarDark,
         ),
       );
 }

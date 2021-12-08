@@ -13,6 +13,7 @@ class AppTextTheme {
   static const double body2 = 13;
   static const double body3 = 12;
   static const double caption = 12;
+  static const double overline = 10;
 
   static const FontWeight light = FontWeight.w300;
   static const FontWeight regular = FontWeight.w400;
@@ -45,7 +46,7 @@ class AppTextTheme {
       fontWeight: light,
     ),
     overline: TextStyle(
-      fontSize: caption,
+      fontSize: overline,
       fontWeight: light,
     ),
   );
@@ -57,19 +58,19 @@ class AppTextTheme {
         subtitle1: _base.subtitle1?.copyWith(
           color: AppColor.text2,
         ),
-        subtitle2: _base.subtitle1?.copyWith(
+        subtitle2: _base.subtitle2?.copyWith(
           color: AppColor.text2,
         ),
-        bodyText1: _base.subtitle1?.copyWith(
+        bodyText1: _base.bodyText1?.copyWith(
           color: AppColor.text3,
         ),
-        bodyText2: _base.subtitle1?.copyWith(
+        bodyText2: _base.bodyText2?.copyWith(
           color: AppColor.text3,
         ),
-        caption: _base.subtitle1?.copyWith(
+        caption: _base.caption?.copyWith(
           color: AppColor.text3,
         ),
-        overline: _base.subtitle1?.copyWith(
+        overline: _base.overline?.copyWith(
           color: AppColor.text4,
         ),
       );
@@ -81,19 +82,19 @@ class AppTextTheme {
         subtitle1: _base.subtitle1?.copyWith(
           color: AppColor.text2Dark,
         ),
-        subtitle2: _base.subtitle1?.copyWith(
+        subtitle2: _base.subtitle2?.copyWith(
           color: AppColor.text2Dark,
         ),
-        bodyText1: _base.subtitle1?.copyWith(
+        bodyText1: _base.bodyText1?.copyWith(
           color: AppColor.text3Dark,
         ),
-        bodyText2: _base.subtitle1?.copyWith(
+        bodyText2: _base.bodyText2?.copyWith(
           color: AppColor.text3Dark,
         ),
-        caption: _base.subtitle1?.copyWith(
+        caption: _base.caption?.copyWith(
           color: AppColor.text3Dark,
         ),
-        overline: _base.subtitle1?.copyWith(
+        overline: _base.overline?.copyWith(
           color: AppColor.text4Dark,
         ),
       );

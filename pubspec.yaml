@@ -48,3 +48,7 @@ flutter:
     - assets/images/
 
   # assets end
+  fonts:
+      - family: IconFont
+        fonts:
+          - asset: assets/fonts/icon_font.ttf

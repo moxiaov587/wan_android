@@ -14,12 +14,15 @@ class RefreshListViewWidget<
     Key? key,
     required T model,
     required RefreshListViewBuilder<S> builder,
+    this.footer,
   })  : _model = model,
         _builder = builder,
         super(key: key);
 
   final T _model;
   final RefreshListViewBuilder<S> _builder;
+
+  final Widget? footer;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,6 +36,7 @@ class RefreshListViewWidget<
                 enablePullDown: true,
                 enablePullUp: true,
                 header: const ClassicHeader(),
+                footer: footer,
                 controller: provider.refreshController,
                 onRefresh: provider.refresh,
                 onLoading: provider.loadMore,
