@@ -7,7 +7,6 @@ import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
 import '../../model/article_model.dart';
 import '../../widget/custom_bottom_navigation_bar.dart';
-import '../../widget/refresh_list_footer.dart';
 import 'home_article_provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -53,12 +52,10 @@ class _HomeScreenState extends State<HomeScreen> {
             itemCount: list.length,
           );
         },
-        footer: RefreshListFooter(
-          marginBottom: (currentTheme
-                      .floatingActionButtonTheme.sizeConstraints?.minHeight ??
-                  0.0) /
-              2,
-        ),
+        footerBottomMargin: (currentTheme
+                    .floatingActionButtonTheme.sizeConstraints?.minHeight ??
+                0.0) /
+            2,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(

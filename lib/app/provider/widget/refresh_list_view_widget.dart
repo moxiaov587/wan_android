@@ -14,7 +14,7 @@ class RefreshListViewWidget<
     Key? key,
     required T model,
     required RefreshListViewBuilder<S> builder,
-    this.footer,
+    this.footerBottomMargin = 0.0,
   })  : _model = model,
         _builder = builder,
         super(key: key);
@@ -22,7 +22,7 @@ class RefreshListViewWidget<
   final T _model;
   final RefreshListViewBuilder<S> _builder;
 
-  final Widget? footer;
+  final double footerBottomMargin;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -35,8 +35,10 @@ class RefreshListViewWidget<
               (int pageNum, List<S> list) => SmartRefresher(
                 enablePullDown: true,
                 enablePullUp: true,
-                header: const ClassicHeader(),
-                footer: footer,
+                header: const DropDownListHeader(),
+                footer: LoadMoreListFooter(
+                  marginBottom: footerBottomMargin,
+                ),
                 controller: provider.refreshController,
                 onRefresh: provider.refresh,
                 onLoading: provider.loadMore,

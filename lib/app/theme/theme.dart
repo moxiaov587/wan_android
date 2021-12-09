@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart' show CupertinoThemeData;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 
@@ -99,7 +100,12 @@ class AppTheme {
           decoration: BoxDecoration(
             color: AppColor.maskBackground,
           ),
-          textStyle: AppTextTheme.lightTheme.overline,
+          textStyle: (kIsWeb
+                  ? AppTextTheme.lightTheme.overline
+                  : AppTextTheme.lightTheme.bodyText2)
+              ?.copyWith(
+            color: AppColor.white,
+          ),
         ),
         dividerTheme: dividerTheme.copyWith(
           color: AppColor.border,
@@ -169,7 +175,12 @@ class AppTheme {
           decoration: BoxDecoration(
             color: AppColor.maskBackgroundDark,
           ),
-          textStyle: AppTextTheme.darkTheme.overline,
+          textStyle: (kIsWeb
+                  ? AppTextTheme.darkTheme.overline
+                  : AppTextTheme.darkTheme.bodyText2)
+              ?.copyWith(
+            color: AppColor.whiteDark,
+          ),
         ),
         dividerTheme: dividerTheme.copyWith(
           color: AppColor.borderDark,
