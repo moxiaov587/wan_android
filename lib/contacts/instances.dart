@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-NavigatorState get navigatorState => Instances.navigatorKey.currentState!;
+import '../navigator/router_delegate.dart';
+
+NavigatorState get navigatorState => AppRouterDelegate.routerDelegate.navigator;
 
 BuildContext get currentContext => navigatorState.context;
 
@@ -10,7 +12,4 @@ bool get currentIsDark => currentTheme.brightness == Brightness.dark;
 
 class Instances {
   const Instances._();
-
-  static final GlobalKey<NavigatorState> navigatorKey =
-      GlobalKey<NavigatorState>();
 }

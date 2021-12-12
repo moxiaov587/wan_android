@@ -1,21 +1,65 @@
 class RouteName {
-  RouteName._();
+  const RouteName({
+    required String title,
+    String? location,
+  })  : _title = title,
+        _location = location ?? '/$title';
 
-  static const String home = '/';
+  final String _title;
 
-  static const String article = '/article';
+  String get title => _title;
 
-  static const String qa = '/qa';
+  final String _location;
 
-  static const String login = '/login';
+  String get location => _location.toLowerCase();
+}
 
-  static const String register = '/register';
+class RouterName {
+  RouterName._();
 
-  static const String setting = '/setting';
+  static RouteName home = const RouteName(
+    title: 'Home',
+    location: '/',
+  );
 
-  static const String rank = '/rank';
+  static RouteName square = const RouteName(title: 'Square');
 
-  static const String about = '/about';
+  static RouteName qa = const RouteName(
+    title: 'QA',
+  );
 
-  static const String unknown = '/unknown';
+  static RouteName project = const RouteName(title: 'Project');
+
+  static List<String> homeTabsPath = <String>[
+    home.location,
+    square.location,
+    qa.location,
+    project.location,
+  ];
+
+  static RouteName article = const RouteName(title: 'Article');
+
+  static RouteName login = const RouteName(
+    title: 'Login',
+  );
+
+  static RouteName register = const RouteName(
+    title: 'Register',
+  );
+
+  static RouteName setting = const RouteName(
+    title: 'Setting',
+  );
+
+  static RouteName rank = const RouteName(
+    title: 'Rank',
+  );
+
+  static RouteName about = const RouteName(
+    title: 'About',
+  );
+
+  static RouteName unknown = const RouteName(
+    title: 'Unknown',
+  );
 }

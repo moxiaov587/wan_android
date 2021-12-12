@@ -62,7 +62,7 @@ class AppTheme {
           primaryColor: AppColor.arcoBlue,
         ),
         appBarTheme: appBarTheme.copyWith(
-          systemOverlayStyle: SystemUiOverlayStyle.light,
+          systemOverlayStyle: SystemUiOverlayStyle.dark,
           backgroundColor: AppColor.appBar,
           foregroundColor: AppColor.text1,
         ),
@@ -138,7 +138,7 @@ class AppTheme {
           primaryColor: AppColor.arcoBlueDark,
         ),
         appBarTheme: appBarTheme.copyWith(
-          systemOverlayStyle: SystemUiOverlayStyle.dark,
+          systemOverlayStyle: SystemUiOverlayStyle.light,
           backgroundColor: AppColor.appBarDark,
           foregroundColor: AppColor.text1Dark,
         ),

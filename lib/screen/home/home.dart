@@ -1,3 +1,4 @@
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -6,27 +7,53 @@ import '../../../app/provider/widget/provider_widget.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
 import '../../model/article_model.dart';
+import '../../navigator/route_name.dart';
 import '../../widget/custom_bottom_navigation_bar.dart';
 import 'home_article_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
     Key? key,
-    required this.onTapped,
+    required this.initialPath,
   }) : super(key: key);
 
-  final ValueChanged<String> onTapped;
+  final String initialPath;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final List<Widget> _pages = const <Widget>[
+    _Home(),
+    _Square(),
+    _QA(),
+    _Project(),
+  ];
+
+  late final int _initialIndex;
+
   final ValueNotifier<int> _currentIndexNotifier = ValueNotifier<int>(0);
+
+  final PageController _pageController = PageController();
+
+  @override
+  void initState() {
+    Future<void>.delayed(const Duration(milliseconds: 200), () {
+      _initialIndex = RouterName.homeTabsPath.indexOf(widget.initialPath);
+      if (_initialIndex == -1) {
+        _pageController.jumpToPage(0);
+      } else {
+        _pageController.jumpToPage(_initialIndex);
+      }
+    });
+    super.initState();
+  }
 
   @override
   void dispose() {
     _currentIndexNotifier.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -36,26 +63,19 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Home'),
       ),
-      body: RefreshListViewWidget<
-          StateNotifierProvider<ArticleNotifier,
-              RefreshListViewState<ArticleModel>>,
-          ArticleModel>(
-        model: homeArticleProvider,
-        builder: (_, __, List<ArticleModel> list) {
-          return ListView.separated(
-            itemBuilder: (___, int index) {
-              return ListTile(
-                title: Text(list[index].title),
-              );
-            },
-            separatorBuilder: (____, _____) => const Divider(),
-            itemCount: list.length,
+      body: PageView.builder(
+        controller: _pageController,
+        itemCount: _pages.length,
+        itemBuilder: (_, int index) => _pages[index],
+        onPageChanged: (int value) {
+          _currentIndexNotifier.value = value;
+          Beamer.of(context).update(
+            configuration: RouteInformation(
+              location: RouterName.homeTabsPath[value],
+            ),
+            rebuild: false,
           );
         },
-        footerBottomMargin: (currentTheme
-                    .floatingActionButtonTheme.sizeConstraints?.minHeight ??
-                0.0) /
-            2,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
@@ -65,9 +85,13 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomAppBar(
         child: ValueListenableBuilder<int>(
           valueListenable: _currentIndexNotifier,
-          builder: (_, int index, __) => CustomBottomNavigationBar(
+          builder: (BuildContext context, int index, _) =>
+              CustomBottomNavigationBar(
             currentIndex: index,
-            onTap: (int value) => _currentIndexNotifier.value = value,
+            onTap: (int value) {
+              /// The [jumpToPage] will trigger [onPageChanged]
+              _pageController.jumpToPage(value);
+            },
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
                 label: 'Home',
@@ -101,6 +125,70 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _Home extends StatelessWidget {
+  const _Home({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: RefreshListViewWidget<
+          StateNotifierProvider<ArticleNotifier,
+              RefreshListViewState<ArticleModel>>,
+          ArticleModel>(
+        model: homeArticleProvider,
+        builder: (_, __, List<ArticleModel> list) {
+          return ListView.separated(
+            itemBuilder: (___, int index) {
+              return ListTile(
+                title: Text(list[index].title),
+              );
+            },
+            separatorBuilder: (____, _____) => const Divider(),
+            itemCount: list.length,
+          );
+        },
+        footerBottomMargin: (currentTheme
+                    .floatingActionButtonTheme.sizeConstraints?.minHeight ??
+                0.0) /
+            2,
+      ),
+    );
+  }
+}
+
+class _Square extends StatelessWidget {
+  const _Square({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text('Square'),
+    );
+  }
+}
+
+class _QA extends StatelessWidget {
+  const _QA({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text('Q&A'),
+    );
+  }
+}
+
+class _Project extends StatelessWidget {
+  const _Project({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text('Project'),
     );
   }
 }

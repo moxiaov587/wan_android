@@ -76,13 +76,13 @@ class CustomBottomNavigationBar extends StatefulWidget {
   final double iconSize;
 
   /// The color of the selected [BottomNavigationBarItem.icon] and
-  /// [BottomNavigationBarItem.title].
+  /// [BottomNavigationBarItem.label].
   ///
   /// If null then the [ThemeData.primaryColor] is used.
   final Color? selectedItemColor;
 
   /// The color of the unselected [BottomNavigationBarItem.icon] and
-  /// [BottomNavigationBarItem.title]s.
+  /// [BottomNavigationBarItem.label]s.
   ///
   /// If null then the [ThemeData.unselectedWidgetColor]'s color is used.
   final Color? unselectedItemColor;
@@ -690,10 +690,9 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
 
     final BottomNavigationBarThemeData bottomTheme =
         BottomNavigationBarTheme.of(context);
-    final BottomNavigationBarLandscapeLayout layout = (widget.landscapeLayout ??
-            bottomTheme.landscapeLayout ??
-            BottomNavigationBarLandscapeLayout.spread)
-        as BottomNavigationBarLandscapeLayout;
+    final BottomNavigationBarLandscapeLayout layout = widget.landscapeLayout ??
+        bottomTheme.landscapeLayout ??
+        BottomNavigationBarLandscapeLayout.spread;
     final double additionalBottomPadding =
         MediaQuery.of(context).padding.bottom;
 
