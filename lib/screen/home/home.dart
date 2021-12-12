@@ -6,10 +6,10 @@ import '../../../app/provider/view_state.dart';
 import '../../../app/provider/widget/provider_widget.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
-import '../../model/article_model.dart';
+import '../../model/models.dart';
 import '../../navigator/route_name.dart';
 import '../../widget/custom_bottom_navigation_bar.dart';
-import 'home_article_provider.dart';
+import 'provider/home_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -140,7 +140,7 @@ class _Home extends StatelessWidget {
               RefreshListViewState<ArticleModel>>,
           ArticleModel>(
         model: homeArticleProvider,
-        builder: (_, __, List<ArticleModel> list) {
+        builder: (_, __, List<ArticleModel> list, ___) {
           return ListView.separated(
             itemBuilder: (___, int index) {
               return ListTile(
@@ -165,8 +165,26 @@ class _Square extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Square'),
+    return RefreshListViewWidget<
+        StateNotifierProvider<SquareNotifier,
+            RefreshListViewState<ArticleModel>>,
+        ArticleModel>(
+      model: squareArticleProvider,
+      builder: (_, __, List<ArticleModel> list, ___) {
+        return ListView.separated(
+          itemBuilder: (___, int index) {
+            return ListTile(
+              title: Text(list[index].title),
+            );
+          },
+          separatorBuilder: (____, _____) => const Divider(),
+          itemCount: list.length,
+        );
+      },
+      footerBottomMargin:
+          (currentTheme.floatingActionButtonTheme.sizeConstraints?.minHeight ??
+                  0.0) /
+              2,
     );
   }
 }
@@ -176,8 +194,26 @@ class _QA extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Q&A'),
+    return RefreshListViewWidget<
+        StateNotifierProvider<QuestionNotifier,
+            RefreshListViewState<ArticleModel>>,
+        ArticleModel>(
+      model: questionArticleProvider,
+      builder: (_, __, List<ArticleModel> list, ___) {
+        return ListView.separated(
+          itemBuilder: (___, int index) {
+            return ListTile(
+              title: Text(list[index].title),
+            );
+          },
+          separatorBuilder: (____, _____) => const Divider(),
+          itemCount: list.length,
+        );
+      },
+      footerBottomMargin:
+          (currentTheme.floatingActionButtonTheme.sizeConstraints?.minHeight ??
+                  0.0) /
+              2,
     );
   }
 }
@@ -187,8 +223,55 @@ class _Project extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Project'),
+    return ListViewWidget<
+        StateNotifierProvider<ProjectTypeNotifier,
+            ListViewState<ProjectTypeModel>>,
+        ProjectTypeModel>(
+      model: projectTypesProvider,
+      builder: (_, __, List<ProjectTypeModel> list, Widget? child) {
+        return CustomScrollView(
+          slivers: <Widget>[
+            SliverToBoxAdapter(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  child!,
+                ],
+              ),
+            ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (_, int index) {
+                  return ListTile(
+                    title: Text(list[index].name),
+                  );
+                },
+                childCount: list.length,
+              ),
+            ),
+          ],
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+        child: Ink(
+          decoration: BoxDecoration(
+            color: currentTheme.cardColor,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12.0,
+                vertical: 8.0,
+              ),
+              child: Text('Project Type'),
+            ),
+            onTap: () {},
+          ),
+        ),
+      ),
     );
   }
 }
