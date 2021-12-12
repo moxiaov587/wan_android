@@ -2,11 +2,19 @@ part of 'provider.dart';
 
 abstract class BaseRefreshListViewNotifier<T>
     extends StateNotifier<RefreshListViewState<T>> {
-  BaseRefreshListViewNotifier(RefreshListViewState<T> state) : super(state) {
+  BaseRefreshListViewNotifier(
+    RefreshListViewState<T> state, {
+    int initialPageNum = 0,
+    int pageSize = 20,
+  })  : _initialPageNum = initialPageNum,
+        _pageSize = pageSize,
+        super(state) {
     initData();
   }
 
-  static const int initPageNum = 1;
+  final int _initialPageNum;
+
+  final int _pageSize;
 
   final RefreshController _refreshController = RefreshController();
 
@@ -25,20 +33,21 @@ abstract class BaseRefreshListViewNotifier<T>
         _refreshController.requestRefresh();
       }
 
-      final List<T>? data = await loadData(
-        pageNum: initPageNum,
+      final RefreshListViewStateData<T> data = await loadData(
+        pageNum: _initialPageNum,
+        pageSize: _pageSize,
       );
 
-      if (data == null || data.isEmpty) {
+      if (data.value.isEmpty) {
         state = RefreshListViewState<T>(
           value: <T>[],
         );
       } else {
-        onCompleted(data);
+        onCompleted(data.value);
 
         state = RefreshListViewState<T>(
-          pageNum: initPageNum,
-          value: data,
+          nextPageNum: data.nextPageNum,
+          value: data.value,
         );
       }
 
@@ -54,28 +63,32 @@ abstract class BaseRefreshListViewNotifier<T>
     }
   }
 
-  Future<List<T>?> loadData({int? pageNum});
+  Future<RefreshListViewStateData<T>> loadData({
+    required int pageNum,
+    required int pageSize,
+  });
 
   void onCompleted(List<T> data) {}
 
   Future<void> loadMore() async {
     state.when(
-      (int pageNum, List<T> value) async {
+      (int currentPageNum, bool isLastPage, List<T> value) async {
         try {
-          final List<T>? data = await loadData(
-            pageNum: pageNum + 1,
+          final RefreshListViewStateData<T> data = await loadData(
+            pageNum: currentPageNum,
+            pageSize: _pageSize,
           );
 
-          if (data == null || data.isEmpty) {
+          if (data.isLastPage) {
             _refreshController.loadNoData();
           } else {
-            onCompleted(data);
+            onCompleted(data.value);
 
             state = RefreshListViewState<T>(
-              pageNum: pageNum + 1,
+              nextPageNum: data.nextPageNum,
               value: <T>[
                 ...value,
-                ...data,
+                ...data.value,
               ],
             );
 

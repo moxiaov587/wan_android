@@ -4,6 +4,7 @@ typedef RefreshListViewBuilder<S> = Widget Function(
   BuildContext context,
   WidgetRef ref,
   List<S> list,
+  Widget? child,
 );
 
 class RefreshListViewWidget<
@@ -14,6 +15,7 @@ class RefreshListViewWidget<
     Key? key,
     required T model,
     required RefreshListViewBuilder<S> builder,
+    this.child,
     this.footerBottomMargin = 0.0,
   })  : _model = model,
         _builder = builder,
@@ -21,6 +23,7 @@ class RefreshListViewWidget<
 
   final T _model;
   final RefreshListViewBuilder<S> _builder;
+  final Widget? child;
 
   final double footerBottomMargin;
 
@@ -32,7 +35,7 @@ class RefreshListViewWidget<
             ref.read(_model.notifier);
 
         return ref.watch(_model).when(
-              (int pageNum, List<S> list) => SmartRefresher(
+              (_, __, List<S> list) => SmartRefresher(
                 enablePullDown: true,
                 enablePullUp: true,
                 header: const DropDownListHeader(),
@@ -46,13 +49,19 @@ class RefreshListViewWidget<
                     ? EmptyWidget(
                         onRetry: provider.refresh,
                       )
-                    : _builder(context, ref, list),
+                    : _builder(context, ref, list, child),
               ),
               loading: () => const LoadingWidget(),
               error: (int? statusCode, String? message, String? detail) =>
-                  const CustomErrorWidget(),
+                  CustomErrorWidget(
+                statusCode: statusCode,
+                message: message,
+                detail: detail,
+                onRetry: provider.refresh,
+              ),
             );
       },
+      child: child,
     );
   }
 }
@@ -65,12 +74,14 @@ class AutoDisposeRefreshListViewWidget<
     Key? key,
     required T model,
     required RefreshListViewBuilder<S> builder,
+    this.child,
   })  : _model = model,
         _builder = builder,
         super(key: key);
 
   final T _model;
   final RefreshListViewBuilder<S> _builder;
+  final Widget? child;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -80,10 +91,10 @@ class AutoDisposeRefreshListViewWidget<
             ref.read(_model.notifier);
 
         return ref.watch(_model).when(
-              (int pageNum, List<S> list) => SmartRefresher(
+              (_, __, List<S> list) => SmartRefresher(
                 enablePullDown: true,
                 enablePullUp: true,
-                header: const ClassicHeader(),
+                header: const DropDownListHeader(),
                 controller: provider.refreshController,
                 onRefresh: provider.refresh,
                 onLoading: provider.loadMore,
@@ -91,13 +102,19 @@ class AutoDisposeRefreshListViewWidget<
                     ? EmptyWidget(
                         onRetry: provider.refresh,
                       )
-                    : _builder(context, ref, list),
+                    : _builder(context, ref, list, child),
               ),
               loading: () => const LoadingWidget(),
               error: (int? statusCode, String? message, String? detail) =>
-                  const CustomErrorWidget(),
+                  CustomErrorWidget(
+                statusCode: statusCode,
+                message: message,
+                detail: detail,
+                onRetry: provider.refresh,
+              ),
             );
       },
+      child: child,
     );
   }
 }

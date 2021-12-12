@@ -1,17 +1,43 @@
 part of 'provider.dart';
 
 abstract class BaseListViewNotifier<T> extends StateNotifier<ListViewState<T>> {
-  BaseListViewNotifier(ListViewState<T> state) : super(state);
+  BaseListViewNotifier(
+    ListViewState<T> state, {
+    bool enablePullDown = true,
+  })  : _enablePullDown = enablePullDown,
+        super(state) {
+    initData();
+  }
+
+  final bool _enablePullDown;
+
+  bool get enablePullDown => _enablePullDown;
+
+  late final RefreshController _refreshController;
+
+  RefreshController get refreshController => _refreshController;
 
   Future<void> initData() async {
+    if (state != ListViewState<T>.loading()) {
+      state = ListViewState<T>.loading();
+    }
+
+    if (_enablePullDown) {
+      _refreshController = RefreshController();
+    }
+
     await refresh(init: true);
   }
 
   Future<void> refresh({bool init = false}) async {
     try {
-      final List<T>? data = await loadData();
+      if (_enablePullDown && !init && !_refreshController.isRefresh) {
+        _refreshController.requestRefresh();
+      }
 
-      if (data == null || data.isEmpty) {
+      final List<T> data = await loadData();
+
+      if (data.isEmpty) {
         state = ListViewState<T>(
           value: <T>[],
         );
@@ -21,13 +47,21 @@ abstract class BaseListViewNotifier<T> extends StateNotifier<ListViewState<T>> {
         state = ListViewState<T>(
           value: data,
         );
+
+        if (_enablePullDown && !init) {
+          _refreshController.refreshCompleted();
+        }
       }
     } catch (e, s) {
       onError(e, s);
+
+      if (_enablePullDown && !init) {
+        _refreshController.refreshFailed();
+      }
     }
   }
 
-  Future<List<T>?> loadData();
+  Future<List<T>> loadData();
 
   void onCompleted(List<T> data) {}
 
@@ -52,5 +86,14 @@ abstract class BaseListViewNotifier<T> extends StateNotifier<ListViewState<T>> {
       message: message,
       detail: detail,
     );
+  }
+
+  @override
+  void dispose() {
+    if (_enablePullDown) {
+      _refreshController.dispose();
+    }
+
+    super.dispose();
   }
 }
