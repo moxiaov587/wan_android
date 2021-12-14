@@ -7,6 +7,19 @@ import 'http.dart';
 class WanAndroidAPI {
   const WanAndroidAPI._();
 
+  static Future<List<BannerModel>> fetchHomeBanners({
+    CancelToken? cancelToken,
+  }) async {
+    final Response<List<dynamic>> response = await HttpUtils.get(
+      API.banner,
+      cancelToken: cancelToken,
+    );
+
+    return response.data!
+        .map((dynamic e) => BannerModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
   static Future<RefreshArticleListModel> fetchHomeArticles(
     int pageNum,
     int pageSize, {
@@ -67,5 +80,24 @@ class WanAndroidAPI {
         .map(
             (dynamic e) => ProjectTypeModel.fromJson(e as Map<String, dynamic>))
         .toList();
+  }
+
+  static Future<RefreshArticleListModel> fetchProjectArticles(
+    int pageNum,
+    int pageSize, {
+    required int categoryId,
+    CancelToken? cancelToken,
+  }) async {
+    final Response<Map<String, dynamic>> response =
+        await HttpUtils.get<Map<String, dynamic>>(
+      API.project(
+        pageNum: pageNum,
+        categoryId: categoryId,
+      ),
+      queryParameters: <String, dynamic>{'page_size': pageSize},
+      cancelToken: cancelToken,
+    );
+
+    return RefreshArticleListModel.fromJson(response.data!);
   }
 }

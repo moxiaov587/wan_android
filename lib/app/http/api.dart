@@ -15,6 +15,9 @@ class API {
 
   static String projectType = '/project/tree/json';
 
-  static String project({required int pageNum}) =>
-      '/project/list/$pageNum/json?cid=294';
+  static String project({
+    required int pageNum,
+    required int categoryId,
+  }) =>
+      '/project/list/$pageNum/json?cid=$categoryId';
 }
