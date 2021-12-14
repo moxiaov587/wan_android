@@ -6,13 +6,18 @@ import '../contacts/instances.dart';
 import 'gap.dart';
 
 class LoadingWidget extends StatelessWidget {
-  const LoadingWidget({Key? key}) : super(key: key);
+  const LoadingWidget({
+    Key? key,
+    this.radius = 25.0,
+  }) : super(key: key);
+
+  final double radius;
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: CupertinoActivityIndicator(
-        radius: 25,
+        radius: radius,
       ),
     );
   }
