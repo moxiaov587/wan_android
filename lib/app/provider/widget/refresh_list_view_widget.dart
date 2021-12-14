@@ -14,13 +14,13 @@ class RefreshListViewWidget<
     S> extends ConsumerStatefulWidget {
   const RefreshListViewWidget({
     Key? key,
-    required this.model,
+    required this.provider,
     this.onInitState,
     required this.builder,
     this.slivers,
   }) : super(key: key);
 
-  final T model;
+  final T provider;
   final ReaderCallback? onInitState;
   final RefreshListViewBuilder<S> builder;
 
@@ -55,7 +55,7 @@ class _RefreshListViewWidgetState<
     /// if [RefreshListViewState] is [RefreshListViewStateLoading] or
     /// [RefreshListViewStateError], disabled enablePullDown and enablePullUp
     final bool enable = ref.watch(
-      widget.model.select((RefreshListViewState<S> value) =>
+      widget.provider.select((RefreshListViewState<S> value) =>
           value.whenOrNull((_, __, ___) => true) ?? false),
     );
 
@@ -67,7 +67,7 @@ class _RefreshListViewWidgetState<
       controller: _refreshController,
       onRefresh: () async {
         final RefreshControllerStatus status =
-            await ref.read(widget.model.notifier).refresh();
+            await ref.read(widget.provider.notifier).refresh();
         switch (status) {
           case RefreshControllerStatus.completed:
             _refreshController.refreshCompleted();
@@ -82,7 +82,7 @@ class _RefreshListViewWidgetState<
       },
       onLoading: () async {
         final RefreshControllerStatus? status =
-            await ref.read(widget.model.notifier).loadMore();
+            await ref.read(widget.provider.notifier).loadMore();
         switch (status) {
           case RefreshControllerStatus.completed:
             _refreshController.loadComplete();
@@ -104,7 +104,7 @@ class _RefreshListViewWidgetState<
             ...widget.slivers!,
           Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              return ref.watch(widget.model).when(
+              return ref.watch(widget.provider).when(
                     (int nextPageNum, bool isLastPage, List<S> list) =>
                         list.isEmpty
                             ? const EmptyWidget()
@@ -121,8 +121,9 @@ class _RefreshListViewWidgetState<
                         onRetry: () async {
                           _refreshController.requestRefresh();
 
-                          final RefreshControllerStatus status =
-                              await ref.read(widget.model.notifier).refresh();
+                          final RefreshControllerStatus status = await ref
+                              .read(widget.provider.notifier)
+                              .refresh();
                           switch (status) {
                             case RefreshControllerStatus.completed:
                               _refreshController.refreshCompleted();

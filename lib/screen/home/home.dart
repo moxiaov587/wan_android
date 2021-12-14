@@ -156,7 +156,7 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
         onInitState: (Reader reader) {
           reader.call(homeArticleProvider.notifier).initData();
         },
-        model: homeArticleProvider,
+        provider: homeArticleProvider,
         builder: (_, __, List<ArticleModel> list) {
           return SliverList(
             delegate: SliverChildBuilderDelegate(

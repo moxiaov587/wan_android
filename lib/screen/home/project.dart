@@ -20,7 +20,7 @@ class _ProjectState extends State<_Project> with AutomaticKeepAliveClientMixin {
           StateNotifierProvider<ProjectTypeNotifier,
               ListViewState<ProjectTypeModel>>,
           ProjectTypeModel>(
-        model: projectTypesProvider,
+        provider: projectTypesProvider,
         onInitState: (Reader reader) {
           reader.call(projectTypesProvider.notifier).initData();
         },

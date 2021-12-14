@@ -11,14 +11,14 @@ class ListViewWidget<
     S> extends ConsumerStatefulWidget {
   const ListViewWidget({
     Key? key,
-    required this.model,
+    required this.provider,
     this.onInitState,
     required this.builder,
     this.enablePullDown = false,
     this.slivers,
   }) : super(key: key);
 
-  final T model;
+  final T provider;
   final ReaderCallback? onInitState;
   final ListViewBuilder<S> builder;
   final bool enablePullDown;
@@ -69,7 +69,7 @@ class _ListViewWidgetState<
               /// [ListViewStateError], disabled enablePullDown and
               /// enablePullUp
               final bool enable = ref.watch(
-                widget.model.select((ListViewState<S> value) =>
+                widget.provider.select((ListViewState<S> value) =>
                     value.whenOrNull((_) => true) ?? false),
               );
               return SmartRefresher(
@@ -78,7 +78,7 @@ class _ListViewWidgetState<
                 controller: _refreshController,
                 onRefresh: () async {
                   final RefreshControllerStatus? status =
-                      await ref.read(widget.model.notifier).refresh();
+                      await ref.read(widget.provider.notifier).refresh();
                   switch (status) {
                     case RefreshControllerStatus.completed:
                       _refreshController.refreshCompleted();
@@ -98,7 +98,7 @@ class _ListViewWidgetState<
                     Consumer(
                       builder:
                           (BuildContext context, WidgetRef ref, Widget? child) {
-                        return ref.watch(widget.model).when(
+                        return ref.watch(widget.provider).when(
                               (List<S> list) => list.isEmpty
                                   ? const EmptyWidget()
                                   : widget.builder(context, ref, list),
@@ -117,7 +117,7 @@ class _ListViewWidgetState<
 
                                     final RefreshControllerStatus? status =
                                         await ref
-                                            .read(widget.model.notifier)
+                                            .read(widget.provider.notifier)
                                             .refresh();
                                     switch (status) {
                                       case RefreshControllerStatus.completed:
@@ -150,7 +150,7 @@ class _ListViewWidgetState<
                 const SliverToBoxAdapter(),
               Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  return ref.watch(widget.model).when(
+                  return ref.watch(widget.provider).when(
                         (List<S> list) => list.isEmpty
                             ? const EmptyWidget()
                             : widget.builder(context, ref, list),
@@ -165,7 +165,7 @@ class _ListViewWidgetState<
                             message: message,
                             detail: detail,
                             onRetry: () {
-                              ref.read(widget.model.notifier).initData();
+                              ref.read(widget.provider.notifier).initData();
                             },
                           ),
                         ),
