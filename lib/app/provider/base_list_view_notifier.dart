@@ -39,13 +39,13 @@ abstract class BaseListViewNotifier<T> extends StateNotifier<ListViewState<T>> {
 
       if (data.isEmpty) {
         state = ListViewState<T>(
-          value: <T>[],
+          list: <T>[],
         );
       } else {
         onCompleted(data);
 
         state = ListViewState<T>(
-          value: data,
+          list: data,
         );
 
         if (_enablePullDown && !init) {

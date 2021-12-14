@@ -18,7 +18,7 @@ class ViewState<T> with _$ViewState<T> {
 @freezed
 class ListViewState<T> with _$ListViewState<T> {
   const factory ListViewState({
-    required List<T> value,
+    required List<T> list,
   }) = ListViewStateData<T>;
   const factory ListViewState.loading() = ListViewStateLoading<T>;
   const factory ListViewState.error({
@@ -33,7 +33,7 @@ class RefreshListViewState<T> with _$RefreshListViewState<T> {
   const factory RefreshListViewState({
     @Default(0) int nextPageNum,
     @Default(false) bool isLastPage,
-    required List<T> value,
+    required List<T> list,
   }) = RefreshListViewStateData<T>;
   const factory RefreshListViewState.loading() = RefreshListViewStateLoading<T>;
   const factory RefreshListViewState.error({

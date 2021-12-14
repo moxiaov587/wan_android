@@ -40,14 +40,14 @@ abstract class BaseRefreshListViewNotifier<T>
 
       if (data.value.isEmpty) {
         state = RefreshListViewState<T>(
-          value: <T>[],
+          list: <T>[],
         );
       } else {
         onCompleted(data.value);
 
         state = RefreshListViewState<T>(
           nextPageNum: data.nextPageNum,
-          value: data.value,
+          list: data.value,
         );
       }
 
@@ -86,7 +86,7 @@ abstract class BaseRefreshListViewNotifier<T>
 
             state = RefreshListViewState<T>(
               nextPageNum: data.nextPageNum,
-              value: <T>[
+              list: <T>[
                 ...value,
                 ...data.value,
               ],
