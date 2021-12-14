@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -7,8 +8,8 @@ import '../../../app/provider/view_state.dart';
 import '../../../model/models.dart';
 
 part 'project_provider.dart';
-part 'square_provider.dart';
 part 'question_provider.dart';
+part 'square_provider.dart';
 
 final StateNotifierProvider<ArticleNotifier, RefreshListViewState<ArticleModel>>
     homeArticleProvider =

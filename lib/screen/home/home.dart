@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/provider/view_state.dart';
 import '../../../app/provider/widget/provider_widget.dart';
+import '../../../widget/view_state_widget.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
 import '../../model/models.dart';
