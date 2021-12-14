@@ -10,6 +10,7 @@ class ProjectTypeModel with _$ProjectTypeModel {
     @Default(0) int order,
     @Default(0) int parentChapterId,
     @Default(0) int visible,
+    @JsonKey(ignore: true) @Default(false) bool isSelected,
   }) = _ProjectTypeModel;
 
   factory ProjectTypeModel.fromJson(Map<String, dynamic> json) =>
