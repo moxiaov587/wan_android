@@ -34,10 +34,14 @@ class _ListViewWidgetState<
     S> extends ConsumerState<ListViewWidget<T, S>> {
   late final RefreshController _refreshController;
 
+  late final ScrollController _scrollController;
+
   @override
   void initState() {
     if (widget.enablePullDown) {
       _refreshController = RefreshController();
+    } else {
+      _scrollController = ScrollController();
     }
 
     widget.onInitState?.call(ref.read);
@@ -49,6 +53,8 @@ class _ListViewWidgetState<
   void dispose() {
     if (widget.enablePullDown) {
       _refreshController.dispose();
+    } else {
+      _scrollController.dispose();
     }
 
     super.dispose();
@@ -136,9 +142,12 @@ class _ListViewWidgetState<
             },
           )
         : CustomScrollView(
+            controller: _scrollController,
             slivers: <Widget>[
               if (widget.slivers != null && widget.slivers!.isNotEmpty)
-                ...widget.slivers!,
+                ...widget.slivers!
+              else
+                const SliverToBoxAdapter(),
               Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
                   return ref.watch(widget.model).when(
