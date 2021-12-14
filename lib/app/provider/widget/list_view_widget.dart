@@ -4,116 +4,166 @@ typedef ListViewBuilder<S> = Widget Function(
   BuildContext context,
   WidgetRef ref,
   List<S> list,
-  Widget? child,
 );
 
 class ListViewWidget<
     T extends StateNotifierProvider<BaseListViewNotifier<S>, ListViewState<S>>,
-    S> extends ConsumerWidget {
+    S> extends ConsumerStatefulWidget {
   const ListViewWidget({
     Key? key,
-    required T model,
-    required ListViewBuilder<S> builder,
-    this.child,
-  })  : _model = model,
-        _builder = builder,
-        super(key: key);
+    required this.model,
+    this.onInitState,
+    required this.builder,
+    this.enablePullDown = false,
+    this.slivers,
+  }) : super(key: key);
 
-  final T _model;
-  final ListViewBuilder<S> _builder;
-  final Widget? child;
+  final T model;
+  final ReaderCallback? onInitState;
+  final ListViewBuilder<S> builder;
+  final bool enablePullDown;
+
+  final List<Widget>? slivers;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Consumer(
-      builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        final BaseListViewNotifier<S> provider = ref.read(_model.notifier);
-
-        return ref.watch(_model).when(
-              (List<S> list) => list.isEmpty
-                  ? EmptyWidget(
-                      onRetry: provider.initData,
-                    )
-                  : provider.enablePullDown
-                      ? SmartRefresher(
-                          enablePullDown: true,
-                          header: const DropDownListHeader(),
-                          controller: provider.refreshController,
-                          onRefresh: provider.refresh,
-                          child: list.isEmpty
-                              ? EmptyWidget(
-                                  onRetry: provider.refresh,
-                                )
-                              : _builder(context, ref, list, child),
-                        )
-                      : _builder(context, ref, list, child),
-              loading: () => const LoadingWidget(),
-              error: (int? statusCode, String? message, String? detail) =>
-                  CustomErrorWidget(
-                statusCode: statusCode,
-                message: message,
-                detail: detail,
-                onRetry: provider.refresh,
-              ),
-            );
-      },
-      child: child,
-    );
-  }
+  _ListViewWidgetState<T, S> createState() => _ListViewWidgetState<T, S>();
 }
 
-class AutoDisposeListViewWidget<
-    T extends AutoDisposeStateNotifierProvider<BaseListViewNotifier<S>,
-        ListViewState<S>>,
-    S> extends ConsumerWidget {
-  const AutoDisposeListViewWidget({
-    Key? key,
-    required T model,
-    required ListViewBuilder<S> builder,
-    this.child,
-  })  : _model = model,
-        _builder = builder,
-        super(key: key);
-
-  final T _model;
-  final ListViewBuilder<S> _builder;
-  final Widget? child;
+class _ListViewWidgetState<
+    T extends StateNotifierProvider<BaseListViewNotifier<S>, ListViewState<S>>,
+    S> extends ConsumerState<ListViewWidget<T, S>> {
+  late final RefreshController _refreshController;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final BaseListViewNotifier<S> provider = ref.read(_model.notifier);
+  void initState() {
+    if (widget.enablePullDown) {
+      _refreshController = RefreshController();
+    }
 
-    return Consumer(
-      builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        return ref.watch(_model).when(
-              (List<S> list) => list.isEmpty
-                  ? EmptyWidget(
-                      onRetry: provider.initData,
+    widget.onInitState?.call(ref.read);
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    if (widget.enablePullDown) {
+      _refreshController.dispose();
+    }
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.enablePullDown
+        ? Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              /// if [ListViewState] is [ListViewStateLoading] or
+              /// [ListViewStateError], disabled enablePullDown and
+              /// enablePullUp
+              final bool enable = ref.watch(
+                widget.model.select((ListViewState<S> value) =>
+                    value.whenOrNull((_) => true) ?? false),
+              );
+              return SmartRefresher(
+                enablePullDown: enable,
+                header: const DropDownListHeader(),
+                controller: _refreshController,
+                onRefresh: () async {
+                  final RefreshControllerStatus? status =
+                      await ref.read(widget.model.notifier).refresh();
+                  switch (status) {
+                    case RefreshControllerStatus.completed:
+                      _refreshController.refreshCompleted();
+                      break;
+                    case RefreshControllerStatus.failed:
+                      _refreshController.refreshFailed();
+                      break;
+                    default:
+
+                    /// [status] is null
+                  }
+                },
+                child: CustomScrollView(
+                  slivers: <Widget>[
+                    if (widget.slivers != null && widget.slivers!.isNotEmpty)
+                      ...widget.slivers!,
+                    Consumer(
+                      builder:
+                          (BuildContext context, WidgetRef ref, Widget? child) {
+                        return ref.watch(widget.model).when(
+                              (List<S> list) => list.isEmpty
+                                  ? const EmptyWidget()
+                                  : widget.builder(context, ref, list),
+                              loading: () => const SliverFillRemaining(
+                                child: LoadingWidget(),
+                              ),
+                              error: (int? statusCode, String? message,
+                                      String? detail) =>
+                                  SliverFillRemaining(
+                                child: CustomErrorWidget(
+                                  statusCode: statusCode,
+                                  message: message,
+                                  detail: detail,
+                                  onRetry: () async {
+                                    _refreshController.requestRefresh();
+
+                                    final RefreshControllerStatus? status =
+                                        await ref
+                                            .read(widget.model.notifier)
+                                            .refresh();
+                                    switch (status) {
+                                      case RefreshControllerStatus.completed:
+                                        _refreshController.refreshCompleted();
+                                        break;
+                                      case RefreshControllerStatus.failed:
+                                        _refreshController.refreshFailed();
+                                        break;
+                                      default:
+
+                                      /// [status] is null
+                                    }
+                                  },
+                                ),
+                              ),
+                            );
+                      },
                     )
-                  : provider.enablePullDown
-                      ? SmartRefresher(
-                          enablePullDown: true,
-                          header: const DropDownListHeader(),
-                          controller: provider.refreshController,
-                          onRefresh: provider.refresh,
-                          child: list.isEmpty
-                              ? EmptyWidget(
-                                  onRetry: provider.refresh,
-                                )
-                              : _builder(context, ref, list, child),
-                        )
-                      : _builder(context, ref, list, child),
-              loading: () => const LoadingWidget(),
-              error: (int? statusCode, String? message, String? detail) =>
-                  CustomErrorWidget(
-                statusCode: statusCode,
-                message: message,
-                detail: detail,
-                onRetry: provider.refresh,
-              ),
-            );
-      },
-      child: child,
-    );
+                  ],
+                ),
+              );
+            },
+          )
+        : CustomScrollView(
+            slivers: <Widget>[
+              if (widget.slivers != null && widget.slivers!.isNotEmpty)
+                ...widget.slivers!,
+              Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                  return ref.watch(widget.model).when(
+                        (List<S> list) => list.isEmpty
+                            ? const EmptyWidget()
+                            : widget.builder(context, ref, list),
+                        loading: () => const SliverFillRemaining(
+                          child: LoadingWidget(),
+                        ),
+                        error: (int? statusCode, String? message,
+                                String? detail) =>
+                            SliverFillRemaining(
+                          child: CustomErrorWidget(
+                            statusCode: statusCode,
+                            message: message,
+                            detail: detail,
+                            onRetry: () {
+                              ref.read(widget.model.notifier).initData();
+                            },
+                          ),
+                        ),
+                      );
+                },
+              )
+            ],
+          );
   }
 }

@@ -1,41 +1,35 @@
 part of 'provider.dart';
 
+enum RefreshControllerStatus {
+  completed,
+  failed,
+  noData,
+}
+
 abstract class BaseRefreshListViewNotifier<T>
     extends StateNotifier<RefreshListViewState<T>> {
   BaseRefreshListViewNotifier(
     RefreshListViewState<T> state, {
-    int initialPageNum = 0,
-    int pageSize = 20,
-  })  : _initialPageNum = initialPageNum,
-        _pageSize = pageSize,
-        super(state) {
-    initData();
-  }
+    this.initialPageNum = 0,
+    this.pageSize = 20,
+  }) : super(state);
 
-  final int _initialPageNum;
+  final int initialPageNum;
 
-  final int _pageSize;
-
-  final RefreshController _refreshController = RefreshController();
-
-  RefreshController get refreshController => _refreshController;
+  final int pageSize;
 
   Future<void> initData() async {
     if (state != RefreshListViewState<T>.loading()) {
       state = RefreshListViewState<T>.loading();
     }
-    await refresh(init: true);
+    await refresh();
   }
 
-  Future<void> refresh({bool init = false}) async {
+  Future<RefreshControllerStatus> refresh() async {
     try {
-      if (!init && !_refreshController.isRefresh) {
-        _refreshController.requestRefresh();
-      }
-
       final RefreshListViewStateData<T> data = await loadData(
-        pageNum: _initialPageNum,
-        pageSize: _pageSize,
+        pageNum: initialPageNum,
+        pageSize: pageSize,
       );
 
       if (data.value.isEmpty) {
@@ -51,15 +45,11 @@ abstract class BaseRefreshListViewNotifier<T>
         );
       }
 
-      if (!init) {
-        _refreshController.refreshCompleted();
-      }
+      return RefreshControllerStatus.completed;
     } catch (e, s) {
       onError(e, s);
 
-      if (!init) {
-        _refreshController.refreshFailed();
-      }
+      return RefreshControllerStatus.failed;
     }
   }
 
@@ -70,40 +60,34 @@ abstract class BaseRefreshListViewNotifier<T>
 
   void onCompleted(List<T> data) {}
 
-  Future<void> loadMore() async {
-    state.when(
+  Future<RefreshControllerStatus?> loadMore() async {
+    return await state.whenOrNull<Future<RefreshControllerStatus?>>(
       (int currentPageNum, bool isLastPage, List<T> value) async {
         try {
           final RefreshListViewStateData<T> data = await loadData(
             pageNum: currentPageNum,
-            pageSize: _pageSize,
+            pageSize: pageSize,
+          );
+
+          onCompleted(data.value);
+
+          state = RefreshListViewState<T>(
+            nextPageNum: data.nextPageNum,
+            list: <T>[
+              ...value,
+              ...data.value,
+            ],
           );
 
           if (data.isLastPage) {
-            _refreshController.loadNoData();
+            return RefreshControllerStatus.noData;
           } else {
-            onCompleted(data.value);
-
-            state = RefreshListViewState<T>(
-              nextPageNum: data.nextPageNum,
-              list: <T>[
-                ...value,
-                ...data.value,
-              ],
-            );
-
-            _refreshController.loadComplete();
+            return RefreshControllerStatus.completed;
           }
         } catch (e) {
-          _refreshController.loadFailed();
+          return RefreshControllerStatus.failed;
         }
       },
-      loading: () {},
-      error: (
-        _,
-        __,
-        ___,
-      ) {},
     );
   }
 
@@ -128,11 +112,5 @@ abstract class BaseRefreshListViewNotifier<T>
       message: message,
       detail: detail,
     );
-  }
-
-  @override
-  void dispose() {
-    _refreshController.dispose();
-    super.dispose();
   }
 }

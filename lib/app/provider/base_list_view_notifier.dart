@@ -1,40 +1,18 @@
 part of 'provider.dart';
 
 abstract class BaseListViewNotifier<T> extends StateNotifier<ListViewState<T>> {
-  BaseListViewNotifier(
-    ListViewState<T> state, {
-    bool enablePullDown = true,
-  })  : _enablePullDown = enablePullDown,
-        super(state) {
-    initData();
-  }
-
-  final bool _enablePullDown;
-
-  bool get enablePullDown => _enablePullDown;
-
-  late final RefreshController _refreshController;
-
-  RefreshController get refreshController => _refreshController;
+  BaseListViewNotifier(ListViewState<T> state) : super(state);
 
   Future<void> initData() async {
     if (state != ListViewState<T>.loading()) {
       state = ListViewState<T>.loading();
     }
 
-    if (_enablePullDown) {
-      _refreshController = RefreshController();
-    }
-
-    await refresh(init: true);
+    await refresh();
   }
 
-  Future<void> refresh({bool init = false}) async {
+  Future<RefreshControllerStatus?> refresh() async {
     try {
-      if (_enablePullDown && !init && !_refreshController.isRefresh) {
-        _refreshController.requestRefresh();
-      }
-
       final List<T> data = await loadData();
 
       if (data.isEmpty) {
@@ -48,16 +26,12 @@ abstract class BaseListViewNotifier<T> extends StateNotifier<ListViewState<T>> {
           list: data,
         );
 
-        if (_enablePullDown && !init) {
-          _refreshController.refreshCompleted();
-        }
+        return RefreshControllerStatus.completed;
       }
     } catch (e, s) {
       onError(e, s);
 
-      if (_enablePullDown && !init) {
-        _refreshController.refreshFailed();
-      }
+      return RefreshControllerStatus.failed;
     }
   }
 
@@ -86,14 +60,5 @@ abstract class BaseListViewNotifier<T> extends StateNotifier<ListViewState<T>> {
       message: message,
       detail: detail,
     );
-  }
-
-  @override
-  void dispose() {
-    if (_enablePullDown) {
-      _refreshController.dispose();
-    }
-
-    super.dispose();
   }
 }

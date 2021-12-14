@@ -1,120 +1,147 @@
 part of 'provider_widget.dart';
 
+typedef ReaderCallback = void Function(Reader reader);
+
 typedef RefreshListViewBuilder<S> = Widget Function(
   BuildContext context,
   WidgetRef ref,
   List<S> list,
-  Widget? child,
 );
 
 class RefreshListViewWidget<
     T extends StateNotifierProvider<BaseRefreshListViewNotifier<S>,
         RefreshListViewState<S>>,
-    S> extends ConsumerWidget {
+    S> extends ConsumerStatefulWidget {
   const RefreshListViewWidget({
     Key? key,
-    required T model,
-    required RefreshListViewBuilder<S> builder,
-    this.child,
-    this.footerBottomMargin = 0.0,
-  })  : _model = model,
-        _builder = builder,
-        super(key: key);
+    required this.model,
+    this.onInitState,
+    required this.builder,
+    this.slivers,
+  }) : super(key: key);
 
-  final T _model;
-  final RefreshListViewBuilder<S> _builder;
-  final Widget? child;
+  final T model;
+  final ReaderCallback? onInitState;
+  final RefreshListViewBuilder<S> builder;
 
-  final double footerBottomMargin;
+  final List<Widget>? slivers;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Consumer(
-      builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        final BaseRefreshListViewNotifier<S> provider =
-            ref.read(_model.notifier);
-
-        return ref.watch(_model).when(
-              (_, __, List<S> list) => SmartRefresher(
-                enablePullDown: true,
-                enablePullUp: true,
-                header: const DropDownListHeader(),
-                footer: LoadMoreListFooter(
-                  marginBottom: footerBottomMargin,
-                ),
-                controller: provider.refreshController,
-                onRefresh: provider.refresh,
-                onLoading: provider.loadMore,
-                child: list.isEmpty
-                    ? EmptyWidget(
-                        onRetry: provider.refresh,
-                      )
-                    : _builder(context, ref, list, child),
-              ),
-              loading: () => const LoadingWidget(),
-              error: (int? statusCode, String? message, String? detail) =>
-                  CustomErrorWidget(
-                statusCode: statusCode,
-                message: message,
-                detail: detail,
-                onRetry: provider.refresh,
-              ),
-            );
-      },
-      child: child,
-    );
-  }
+  _RefreshListViewWidgetState<T, S> createState() =>
+      _RefreshListViewWidgetState<T, S>();
 }
 
-class AutoDisposeRefreshListViewWidget<
-    T extends AutoDisposeStateNotifierProvider<BaseRefreshListViewNotifier<S>,
+class _RefreshListViewWidgetState<
+    T extends StateNotifierProvider<BaseRefreshListViewNotifier<S>,
         RefreshListViewState<S>>,
-    S> extends ConsumerWidget {
-  const AutoDisposeRefreshListViewWidget({
-    Key? key,
-    required T model,
-    required RefreshListViewBuilder<S> builder,
-    this.child,
-  })  : _model = model,
-        _builder = builder,
-        super(key: key);
-
-  final T _model;
-  final RefreshListViewBuilder<S> _builder;
-  final Widget? child;
+    S> extends ConsumerState<RefreshListViewWidget<T, S>> {
+  final RefreshController _refreshController = RefreshController();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Consumer(
-      builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        final BaseRefreshListViewNotifier<S> provider =
-            ref.read(_model.notifier);
+  void initState() {
+    widget.onInitState?.call(ref.read);
 
-        return ref.watch(_model).when(
-              (_, __, List<S> list) => SmartRefresher(
-                enablePullDown: true,
-                enablePullUp: true,
-                header: const DropDownListHeader(),
-                controller: provider.refreshController,
-                onRefresh: provider.refresh,
-                onLoading: provider.loadMore,
-                child: list.isEmpty
-                    ? EmptyWidget(
-                        onRetry: provider.refresh,
-                      )
-                    : _builder(context, ref, list, child),
-              ),
-              loading: () => const LoadingWidget(),
-              error: (int? statusCode, String? message, String? detail) =>
-                  CustomErrorWidget(
-                statusCode: statusCode,
-                message: message,
-                detail: detail,
-                onRetry: provider.refresh,
-              ),
-            );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    /// if [RefreshListViewState] is [RefreshListViewStateLoading] or
+    /// [RefreshListViewStateError], disabled enablePullDown and enablePullUp
+    final bool enable = ref.watch(
+      widget.model.select((RefreshListViewState<S> value) =>
+          value.whenOrNull((_, __, ___) => true) ?? false),
+    );
+
+    return SmartRefresher(
+      enablePullDown: enable,
+      enablePullUp: enable,
+      header: const DropDownListHeader(),
+      footer: const LoadMoreListFooter(),
+      controller: _refreshController,
+      onRefresh: () async {
+        final RefreshControllerStatus status =
+            await ref.read(widget.model.notifier).refresh();
+        switch (status) {
+          case RefreshControllerStatus.completed:
+            _refreshController.refreshCompleted();
+            break;
+          case RefreshControllerStatus.failed:
+            _refreshController.refreshFailed();
+            break;
+          default:
+
+          /// [status] is null
+        }
       },
-      child: child,
+      onLoading: () async {
+        final RefreshControllerStatus? status =
+            await ref.read(widget.model.notifier).loadMore();
+        switch (status) {
+          case RefreshControllerStatus.completed:
+            _refreshController.loadComplete();
+            break;
+          case RefreshControllerStatus.noData:
+            _refreshController.loadNoData();
+            break;
+          case RefreshControllerStatus.failed:
+            _refreshController.loadFailed();
+            break;
+          default:
+
+          /// [status] is null
+        }
+      },
+      child: CustomScrollView(
+        slivers: <Widget>[
+          if (widget.slivers != null && widget.slivers!.isNotEmpty)
+            ...widget.slivers!,
+          Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              return ref.watch(widget.model).when(
+                    (int nextPageNum, bool isLastPage, List<S> list) =>
+                        list.isEmpty
+                            ? const EmptyWidget()
+                            : widget.builder(context, ref, list),
+                    loading: () => const SliverFillRemaining(
+                      child: LoadingWidget(),
+                    ),
+                    error: (int? statusCode, String? message, String? detail) =>
+                        SliverFillRemaining(
+                      child: CustomErrorWidget(
+                        statusCode: statusCode,
+                        message: message,
+                        detail: detail,
+                        onRetry: () async {
+                          _refreshController.requestRefresh();
+
+                          final RefreshControllerStatus status =
+                              await ref.read(widget.model.notifier).refresh();
+                          switch (status) {
+                            case RefreshControllerStatus.completed:
+                              _refreshController.refreshCompleted();
+                              break;
+                            case RefreshControllerStatus.failed:
+                              _refreshController.refreshFailed();
+                              break;
+                            default:
+
+                            /// [status] is null
+                          }
+                        },
+                      ),
+                    ),
+                  );
+            },
+          )
+        ],
+      ),
     );
   }
 }

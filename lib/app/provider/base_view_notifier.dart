@@ -4,10 +4,10 @@ abstract class BaseViewNotifier<T> extends StateNotifier<ViewState<T>> {
   BaseViewNotifier(ViewState<T> state) : super(state);
 
   Future<void> initData() async {
-    await refresh(init: true);
+    await refresh();
   }
 
-  Future<void> refresh({bool init = false}) async {
+  Future<void> refresh() async {
     try {
       final T? data = await loadData();
 
