@@ -30,7 +30,7 @@ class QuestionNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
     return RefreshListViewStateData<ArticleModel>(
       nextPageNum: data.curPage,
       isLastPage: data.over,
-      value: data.datas,
+      list: data.datas,
     );
   }
 }

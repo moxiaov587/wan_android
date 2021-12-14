@@ -32,16 +32,16 @@ abstract class BaseRefreshListViewNotifier<T>
         pageSize: pageSize,
       );
 
-      if (data.value.isEmpty) {
+      if (data.list.isEmpty) {
         state = RefreshListViewState<T>(
           list: <T>[],
         );
       } else {
-        onCompleted(data.value);
+        onCompleted(data.list);
 
         state = RefreshListViewState<T>(
           nextPageNum: data.nextPageNum,
-          list: data.value,
+          list: data.list,
         );
       }
 
@@ -62,20 +62,20 @@ abstract class BaseRefreshListViewNotifier<T>
 
   Future<RefreshControllerStatus?> loadMore() async {
     return await state.whenOrNull<Future<RefreshControllerStatus?>>(
-      (int currentPageNum, bool isLastPage, List<T> value) async {
+      (int currentPageNum, bool isLastPage, List<T> list) async {
         try {
           final RefreshListViewStateData<T> data = await loadData(
             pageNum: currentPageNum,
             pageSize: pageSize,
           );
 
-          onCompleted(data.value);
+          onCompleted(data.list);
 
           state = RefreshListViewState<T>(
             nextPageNum: data.nextPageNum,
             list: <T>[
-              ...value,
-              ...data.value,
+              ...list,
+              ...data.list,
             ],
           );
 
