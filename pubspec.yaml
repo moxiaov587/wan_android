@@ -24,6 +24,7 @@ dependencies:
   pull_to_refresh: ^2.0.0
   flutter_svg: ^1.0.0
   beamer: ^1.0.0
+  extended_sliver: ^2.0.1
 
 
 dev_dependencies:
