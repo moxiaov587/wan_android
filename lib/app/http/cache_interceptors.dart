@@ -1,5 +1,5 @@
 import 'dart:collection' show LinkedHashMap;
-
+import 'package:collection/collection.dart';
 import 'package:dio/dio.dart'
     show
         Interceptor,
@@ -36,24 +36,32 @@ class CacheInterceptors extends Interceptor {
   bool _isDiskCache(RequestOptions options) =>
       options.extra[CacheOption.isDiskCache.name] as bool? ?? false;
 
+  dynamic _diskCacheKey(String uri) => HiveBoxes.responseCacheBox.values
+      .firstWhereOrNull((ResponseCache element) => element.uri == uri)
+      ?.key;
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     final bool isDiskCache = _isDiskCache(options);
 
-    final String key = options.uri.toString();
+    final String uriString = options.uri.toString();
 
     if (_needRefresh(options)) {
       if (isDiskCache) {
-        HiveBoxes.responseCacheBox.delete(key);
+        final dynamic key = _diskCacheKey(uriString);
+
+        if (key != null) {
+          HiveBoxes.responseCacheBox.delete(key);
+        }
       } else {
-        _cache.remove(key);
+        _cache.remove(uriString);
       }
 
       handler.next(options);
 
       return;
     } else if (_needCache(options)) {
-      final ResponseCache? response = _cache[key];
+      final ResponseCache? response = _cache[uriString];
 
       if (response != null) {
         if ((DateTime.now().millisecondsSinceEpoch - response.timeStamp) /
@@ -69,11 +77,13 @@ class CacheInterceptors extends Interceptor {
 
           return;
         } else {
-          _cache.remove(key);
+          _cache.remove(uriString);
         }
       }
 
       if (isDiskCache) {
+        final dynamic key = _diskCacheKey(uriString);
+
         final ResponseCache? responseCache =
             HiveBoxes.responseCacheBox.get(key);
 
@@ -91,7 +101,9 @@ class CacheInterceptors extends Interceptor {
 
           return;
         } else {
-          HiveBoxes.responseCacheBox.delete(key);
+          if (key != null) {
+            HiveBoxes.responseCacheBox.delete(key);
+          }
         }
       }
     }
@@ -105,24 +117,21 @@ class CacheInterceptors extends Interceptor {
     final RequestOptions options = response.requestOptions;
 
     if (_needCache(options)) {
-      final String key = options.uri.toString();
+      final String uriString = options.uri.toString();
 
       final ResponseCache responseCache = ResponseCache(
-        uri: key,
+        uri: uriString,
         timeStamp: DateTime.now().millisecondsSinceEpoch,
         data: response.data,
       );
       if (_isDiskCache(options)) {
-        HiveBoxes.responseCacheBox.put(
-          key,
-          responseCache,
-        );
+        HiveBoxes.responseCacheBox.add(responseCache);
       } else {
         if (_cache.length == _kCacheMaxCount) {
           _cache.remove(_cache.keys.first);
         }
 
-        _cache[key] = responseCache;
+        _cache[uriString] = responseCache;
       }
     }
 
