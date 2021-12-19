@@ -7,10 +7,13 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'app/http/http.dart';
 import 'app/theme/theme.dart' show AppTheme;
+import 'database/hive_boxes.dart';
 import 'navigator/router_delegate.dart';
 
 Future<void> main() async {
   await Hive.initFlutter();
+
+  await HiveBoxes.openBoxes();
 
   await HttpUtils.initConfig();
 
