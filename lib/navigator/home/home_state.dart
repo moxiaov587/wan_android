@@ -4,10 +4,16 @@ class HomeState extends ChangeNotifier
     with RouteInformationSerializable<HomeState> {
   HomeState({
     this.initialPath = '/',
+    this.showProjectTypeBottomSheet = false,
+    this.showSearch = false,
     this.unknownPath = false,
   });
 
   final String initialPath;
+
+  final bool showProjectTypeBottomSheet;
+
+  final bool showSearch;
 
   final bool unknownPath;
 
@@ -17,9 +23,28 @@ class HomeState extends ChangeNotifier
 
     LogUtils.d('from routeInformation : $uri');
 
-    return RouterName.homeTabsPath.contains(uri.toString())
-        ? HomeState(initialPath: uri.toString())
-        : HomeState(unknownPath: true);
+    final String uriString = uri.toString();
+
+    if (RouterName.homeTabsPath.contains(uriString)) {
+      return HomeState(initialPath: uriString);
+    } else if (RouterName.homePath.contains(uriString)) {
+      if (uriString == RouterName.search.location) {
+        return HomeState(
+          initialPath: uriString,
+          showSearch: true,
+        );
+      } else {
+        return HomeState(
+          initialPath: uriString,
+          showProjectTypeBottomSheet: true,
+        );
+      }
+    } else {
+      return HomeState(
+        initialPath: RouterName.unknown.location,
+        unknownPath: true,
+      );
+    }
   }
 
   @override

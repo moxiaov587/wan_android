@@ -30,11 +30,23 @@ class RouterName {
 
   static RouteName project = const RouteName(title: 'Project');
 
+  static RouteName projectType = RouteName(
+    title: 'ProjectType',
+    location: '${project.location}/type',
+  );
+
+  static RouteName search = const RouteName(title: 'Search');
+
   static List<String> homeTabsPath = <String>[
     home.location,
     square.location,
     qa.location,
     project.location,
+  ];
+
+  static List<String> homePath = <String>[
+    projectType.location,
+    search.location,
   ];
 
   static RouteName article = const RouteName(title: 'Article');
