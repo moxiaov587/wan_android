@@ -1,20 +1,31 @@
 import 'package:beamer/beamer.dart';
+import 'package:collection/collection.dart';
+import 'package:extended_sliver/extended_sliver.dart';
+import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/provider/view_state.dart';
 import '../../../app/provider/widget/provider_widget.dart';
+import '../../../database/hive_boxes.dart';
 import '../../../widget/view_state_widget.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
+import '../../database/model/models.dart' show SearchHistory;
 import '../../model/models.dart';
 import '../../navigator/route_name.dart';
+import '../../widget/capsule_ink.dart';
 import '../../widget/custom_bottom_navigation_bar.dart';
+import '../../widget/custom_search_delegate.dart';
+import '../../widget/gap.dart';
 import 'provider/home_provider.dart';
 
 part 'project.dart';
 part 'question.dart';
+part 'search.dart';
 part 'square.dart';
+
+const String kSearchOriginParams = 'origin';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -36,23 +47,23 @@ class _HomeScreenState extends State<HomeScreen> {
     _Project(),
   ];
 
-  late final int _initialIndex;
+  late final ValueNotifier<int> _currentIndexNotifier =
+      ValueNotifier<int>(initialPathToIndex(widget.initialPath));
 
-  final ValueNotifier<int> _currentIndexNotifier = ValueNotifier<int>(0);
+  late final PageController _pageController = PageController(
+    initialPage: _currentIndexNotifier.value,
+  );
 
-  final PageController _pageController = PageController();
+  int initialPathToIndex(String path) {
+    final int index = RouterName.homeTabsPath.indexOf(path);
 
-  @override
-  void initState() {
-    Future<void>.delayed(const Duration(milliseconds: 200), () {
-      _initialIndex = RouterName.homeTabsPath.indexOf(widget.initialPath);
-      if (_initialIndex == -1) {
-        _pageController.jumpToPage(0);
-      } else {
-        _pageController.jumpToPage(_initialIndex);
-      }
-    });
-    super.initState();
+    if (index != -1) {
+      return index;
+    } else if (RouterName.projectType.location == path) {
+      return 3;
+    }
+
+    return 0;
   }
 
   @override
@@ -84,7 +95,15 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Beamer.of(context).beamToNamed(
+            RouterName.search.location,
+            data: <String, String>{
+              kSearchOriginParams:
+                  RouterName.homeTabsPath[_currentIndexNotifier.value],
+            },
+          );
+        },
         child: const Icon(IconFontIcons.searchEyeLine),
       ),
       bottomNavigationBar: BottomAppBar(
