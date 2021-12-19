@@ -100,4 +100,38 @@ class WanAndroidAPI {
 
     return RefreshArticleListModel.fromJson(response.data!);
   }
+
+  static Future<RefreshArticleListModel> fetchSearchArticles(
+    int pageNum,
+    int pageSize, {
+    required String keyword,
+    CancelToken? cancelToken,
+  }) async {
+    final Response<Map<String, dynamic>> response =
+        await HttpUtils.post<Map<String, dynamic>>(
+      API.search(pageNum: pageNum),
+      queryParameters: <String, dynamic>{
+        'page_size': pageSize,
+        'k': keyword,
+      },
+      cancelToken: cancelToken,
+    );
+
+    return RefreshArticleListModel.fromJson(response.data!);
+  }
+
+  static Future<List<SearchKeywordModel>> fetchSearchPopularKeywords({
+    CancelToken? cancelToken,
+  }) async {
+    final Response<List<dynamic>> response = await HttpUtils.get(
+      API.searchPopularKeywords,
+      cancelToken: cancelToken,
+      needCache: true,
+    );
+
+    return response.data!
+        .map((dynamic e) =>
+            SearchKeywordModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
 }

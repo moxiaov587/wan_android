@@ -20,4 +20,9 @@ class API {
     required int categoryId,
   }) =>
       '/project/list/$pageNum/json?cid=$categoryId';
+
+  static String search({required int pageNum}) =>
+      '/article/query/$pageNum/json';
+
+  static const String searchPopularKeywords = '/hotkey/json';
 }
