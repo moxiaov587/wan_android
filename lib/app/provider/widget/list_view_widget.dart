@@ -38,6 +38,8 @@ class _ListViewWidgetState<
 
   @override
   void initState() {
+    super.initState();
+
     if (widget.enablePullDown) {
       _refreshController = RefreshController();
     } else {
@@ -45,8 +47,6 @@ class _ListViewWidgetState<
     }
 
     widget.onInitState?.call(ref.read);
-
-    super.initState();
   }
 
   @override
@@ -65,15 +65,19 @@ class _ListViewWidgetState<
     return widget.enablePullDown
         ? Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              /// if [ListViewState] is [ListViewStateLoading] or
-              /// [ListViewStateError], disabled enablePullDown and
-              /// enablePullUp
-              final bool enable = ref.watch(
+              /// if [ListViewState] is [ListViewStateLoading],
+              /// disabled enablePullDown
+              final bool enablePullDown = ref.watch(
                 widget.provider.select((ListViewState<S> value) =>
-                    value.whenOrNull((_) => true) ?? false),
+                    value.whenOrNull(
+                      (_) => true,
+                      error: (_, __, ___) => true,
+                    ) ??
+                    false),
               );
+
               return SmartRefresher(
-                enablePullDown: enable,
+                enablePullDown: enablePullDown,
                 header: const DropDownListHeader(),
                 controller: _refreshController,
                 onRefresh: () async {
