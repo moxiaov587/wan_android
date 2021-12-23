@@ -53,3 +53,6 @@ assets_generator_arguments
 # models_generator
 **.g.dart
 **.freezed.dart
+
+#i10n_generator
+lib/app/l10n/generated/
