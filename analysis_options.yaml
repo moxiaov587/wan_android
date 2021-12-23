@@ -46,6 +46,8 @@ analyzer:
       # Ignore model generated files
     - "**.g.dart"
     - "**.freezed.dart"
+      # Ignore i10n generated files
+    - "lib/app/l10n/generated/*"
 
 linter:
   rules:
