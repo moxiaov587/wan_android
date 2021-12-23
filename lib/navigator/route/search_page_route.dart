@@ -217,6 +217,15 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
       ),
     );
 
+    final Color materialStateColor =
+        MaterialStateColor.resolveWith((Set<MaterialState> states) {
+      if (states.contains(MaterialState.focused)) {
+        return theme.primaryColor;
+      }
+
+      return theme.iconTheme.color!;
+    });
+
     return Semantics(
       explicitChildNodes: true,
       scopesRoute: true,
@@ -253,16 +262,17 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
                       width: 34.0,
                       height: 30.0,
                     ),
-                    prefixIcon: Padding(
-                      padding: const EdgeInsets.only(
+                    prefixIconColor: materialStateColor,
+                    prefixIcon: const Padding(
+                      padding: EdgeInsets.only(
                         left: 4,
                       ),
                       child: Icon(
                         Icons.search,
                         size: 22,
-                        color: theme.textTheme.bodyText2?.color,
                       ),
                     ),
+                    suffixIconColor: materialStateColor,
                     suffixIcon: ValueListenableBuilder<bool>(
                       valueListenable: _showCleanQuery,
                       builder: (_, bool value, Widget? child) {
@@ -270,10 +280,9 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
                             ? IconButton(
                                 hoverColor: Colors.transparent,
                                 splashColor: Colors.transparent,
-                                icon: Icon(
+                                icon: const Icon(
                                   Icons.cancel,
                                   size: 18,
-                                  color: theme.textTheme.bodyText2?.color,
                                 ),
                                 onPressed: () {
                                   widget.delegate.query = '';
