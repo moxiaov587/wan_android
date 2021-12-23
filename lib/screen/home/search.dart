@@ -16,7 +16,7 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
           ),
         ),
         child: Text(
-          'Cancel',
+          S.of(context).cancel,
           style: currentTheme.textTheme.headline6?.copyWith(
             color: currentTheme.primaryColor,
             fontSize: 16.0,
@@ -91,15 +91,18 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return _Suggestions(
-      onInitData: (Reader reader) {
-        reader.call(searchHistoryProvider.notifier).initData();
-        reader.call(searchPopularKeywordProvider.notifier).initData();
-      },
-      onTap: (String keyword) {
-        query = keyword;
-        showResults(context);
-      },
+    return NotificationListener<ScrollNotification>(
+      onNotification: onSuggestionsScrollNotification,
+      child: _Suggestions(
+        onInitData: (Reader reader) {
+          reader.call(searchHistoryProvider.notifier).initData();
+          reader.call(searchPopularKeywordProvider.notifier).initData();
+        },
+        onTap: (String keyword) {
+          query = keyword;
+          showResults(context);
+        },
+      ),
     );
   }
 }
@@ -146,7 +149,7 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
           padding: headerPadding,
           sliver: SliverToBoxAdapter(
             child: Text(
-              'Search history',
+              S.of(context).searchHistory,
               style: currentTheme.textTheme.subtitle1,
             ),
           ),
@@ -180,7 +183,7 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
                     }) ??
                     child!;
               },
-              child: Text('no data'),
+              child: Text(S.of(context).empty),
             ),
           ),
         ),
@@ -188,7 +191,7 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
           padding: headerPadding,
           sliver: SliverToBoxAdapter(
             child: Text(
-              'Search popular keyword',
+              S.of(context).popularKeyword,
               style: currentTheme.textTheme.subtitle1,
             ),
           ),

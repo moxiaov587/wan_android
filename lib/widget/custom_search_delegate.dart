@@ -151,6 +151,15 @@ abstract class CustomSearchDelegate<T> {
     _currentBody = _SearchBody.suggestions;
   }
 
+  bool onSuggestionsScrollNotification(ScrollNotification notification) {
+    if ((_focusNode?.hasFocus ?? false) &&
+        notification.metrics.axisDirection == AxisDirection.down) {
+      _focusNode?.unfocus();
+    }
+
+    return false;
+  }
+
   /// Closes the search page and returns to the underlying route.
   ///
   /// The value provided for `result` is used as the return value of the call
