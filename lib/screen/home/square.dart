@@ -15,26 +15,35 @@ class _SquareState extends State<_Square> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     super.build(context);
 
-    return RefreshListViewWidget<
-        StateNotifierProvider<SquareNotifier,
-            RefreshListViewState<ArticleModel>>,
-        ArticleModel>(
-      provider: squareArticleProvider,
-      onInitState: (Reader reader) {
-        reader.call(squareArticleProvider.notifier).initData();
-      },
-      builder: (_, __, List<ArticleModel> list) {
-        return SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (_, int index) {
-              return ListTile(
-                title: Text(list[index].title),
+    return Column(
+      children: <Widget>[
+        AppBar(
+          title: Text(S.of(context).square),
+        ),
+        Expanded(
+          child: RefreshListViewWidget<
+              StateNotifierProvider<SquareNotifier,
+                  RefreshListViewState<ArticleModel>>,
+              ArticleModel>(
+            provider: squareArticleProvider,
+            onInitState: (Reader reader) {
+              reader.call(squareArticleProvider.notifier).initData();
+            },
+            builder: (_, __, List<ArticleModel> list) {
+              return SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (_, int index) {
+                    return ListTile(
+                      title: Text(list[index].title),
+                    );
+                  },
+                  childCount: list.length,
+                ),
               );
             },
-            childCount: list.length,
           ),
-        );
-      },
+        ),
+      ],
     );
   }
 }

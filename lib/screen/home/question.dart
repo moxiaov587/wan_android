@@ -15,26 +15,35 @@ class _QAState extends State<_QA> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     super.build(context);
 
-    return RefreshListViewWidget<
-        StateNotifierProvider<QuestionNotifier,
-            RefreshListViewState<ArticleModel>>,
-        ArticleModel>(
-      provider: questionArticleProvider,
-      onInitState: (Reader reader) {
-        reader.call(questionArticleProvider.notifier).initData();
-      },
-      builder: (_, __, List<ArticleModel> list) {
-        return SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (_, int index) {
-              return ListTile(
-                title: Text(list[index].title),
+    return Column(
+      children: <Widget>[
+        AppBar(
+          title: Text(S.of(context).question),
+        ),
+        Expanded(
+          child: RefreshListViewWidget<
+              StateNotifierProvider<QuestionNotifier,
+                  RefreshListViewState<ArticleModel>>,
+              ArticleModel>(
+            provider: questionArticleProvider,
+            onInitState: (Reader reader) {
+              reader.call(questionArticleProvider.notifier).initData();
+            },
+            builder: (_, __, List<ArticleModel> list) {
+              return SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (_, int index) {
+                    return ListTile(
+                      title: Text(list[index].title),
+                    );
+                  },
+                  childCount: list.length,
+                ),
               );
             },
-            childCount: list.length,
           ),
-        );
-      },
+        ),
+      ],
     );
   }
 }

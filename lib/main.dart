@@ -2,10 +2,12 @@ import 'package:beamer/beamer.dart'
     show Beamer, BeamerParser, BeamerBackButtonDispatcher;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'app/http/http.dart';
+import 'app/l10n/generated/l10n.dart';
 import 'app/theme/theme.dart' show AppTheme;
 import 'database/hive_boxes.dart';
 import 'navigator/router_delegate.dart';
@@ -43,6 +45,13 @@ class MyApp extends StatelessWidget {
       // themeMode: ,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
+      localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+        S.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: S.delegate.supportedLocales,
     );
   }
 }

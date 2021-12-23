@@ -15,30 +15,40 @@ class _ProjectState extends State<_Project> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     super.build(context);
 
-    return RefreshListViewWidget<
-        StateNotifierProvider<ProjectNotifier,
-            RefreshListViewState<ArticleModel>>,
-        ArticleModel>(
-      onInitState: (Reader reader) {
-        reader.call(projectTypesProvider.notifier).initData();
-      },
-      provider: projectArticleProvider,
-      builder: (_, __, List<ArticleModel> list) {
-        return SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (_, int index) {
-              return ListTile(
-                title: Text(list[index].title),
+    return Column(
+      children: <Widget>[
+        AppBar(
+          title: Text(S.of(context).project),
+        ),
+        Expanded(
+          child: RefreshListViewWidget<
+              StateNotifierProvider<ProjectNotifier,
+                  RefreshListViewState<ArticleModel>>,
+              ArticleModel>(
+            onInitState: (Reader reader) {
+              reader.call(projectTypesProvider.notifier).initData();
+            },
+            provider: projectArticleProvider,
+            builder: (_, __, List<ArticleModel> list) {
+              return SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (_, int index) {
+                    return ListTile(
+                      title: Text(list[index].title),
+                    );
+                  },
+                  childCount: list.length,
+                ),
               );
             },
-            childCount: list.length,
-          ),
-        );
-      },
-      slivers: <Widget>[
-        SliverPinnedPersistentHeader(
-          delegate: _ProjectTypeSwitchSliverPinnedPersistentHeaderDelegate(
-            extentProtoType: const _ProjectTypeSwitchExtentProtoType(),
+            slivers: <Widget>[
+              SliverPinnedPersistentHeader(
+                delegate:
+                    _ProjectTypeSwitchSliverPinnedPersistentHeaderDelegate(
+                  extentProtoType: const _ProjectTypeSwitchExtentProtoType(),
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -128,7 +138,7 @@ class _ProjectTypeSwitch extends ConsumerWidget {
                   direction: GapDirection.horizontal,
                   size: GapSize.small,
                 ),
-                Text('refresh'),
+                Text(S.of(context).retry),
               ],
             ),
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart';
 
+import '../app/l10n/generated/l10n.dart';
 import '../contacts/assets.dart';
 import '../contacts/instances.dart';
 import 'gap.dart';
@@ -46,21 +47,21 @@ class EmptyWidget extends StatelessWidget {
             width: 180,
           ),
           Text(
-            message ?? 'empty',
+            message ?? S.of(context).empty,
             style: currentTheme.textTheme.subtitle1,
           ),
           Gap(
             size: GapSize.small,
           ),
           Text(
-            detail ?? 'empty',
+            detail ?? S.of(context).emptyMsg,
             style: currentTheme.textTheme.bodyText2,
           ),
           if (onRetry != null) Gap(),
           if (onRetry != null)
             ElevatedButton(
               onPressed: onRetry,
-              child: Text('retry'),
+              child: Text(S.of(context).retry),
             ),
         ],
       ),
@@ -108,21 +109,21 @@ class CustomErrorWidget extends StatelessWidget {
             width: 120,
           ),
           Text(
-            message ?? 'unknown',
+            message ?? S.of(context).unknown,
             style: currentTheme.textTheme.subtitle1,
           ),
           Gap(
             size: GapSize.small,
           ),
           Text(
-            detail ?? 'unknown',
+            detail ?? S.of(context).unknownMsg,
             style: currentTheme.textTheme.bodyText2,
           ),
           if (onRetry != null) Gap(),
           if (onRetry != null)
             ElevatedButton(
               onPressed: onRetry,
-              child: Text('retry'),
+              child: Text(S.of(context).retry),
             ),
         ],
       ),

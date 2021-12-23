@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../app/l10n/generated/l10n.dart';
+
 class UnknownScreen extends StatelessWidget {
   const UnknownScreen({Key? key}) : super(key: key);
 
@@ -7,10 +9,10 @@ class UnknownScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('unknown'),
+        title: Text(S.of(context).unknown),
       ),
-      body: const Center(
-        child: Text('unknown'),
+      body: Center(
+        child: Text(S.of(context).unknownMsg),
       ),
     );
   }
