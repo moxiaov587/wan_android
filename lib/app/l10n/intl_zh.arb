@@ -1,0 +1,16 @@
+{
+    "appName": "玩安卓",
+    "home": "首页",
+    "square": "广场",
+    "question": "问答",
+    "project": "项目",
+    "search": "搜索",
+    "searchHistory": "搜索历史",
+    "popularKeyword": "搜索热词",
+    "cancel": "取消",
+    "empty": "无数据",
+    "emptyMsg": "这儿啥也没有",
+    "unknown": "未知错误",
+    "unknownMsg": "发生了错误，但别担心\n不是因为你",
+    "retry": "重试"
+}

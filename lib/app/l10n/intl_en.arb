@@ -1,0 +1,16 @@
+{
+    "appName": "Wan Android",
+    "home": "Home",
+    "square": "Square",
+    "question": "Q&A",
+    "project": "Project",
+    "search": "Search",
+    "searchHistory": "Search History",
+    "popularKeyword": "Popular Keyword",
+    "cancel": "Cancel",
+    "empty": "Empty",
+    "emptyMsg": "There's nothing here.",
+    "unknown": "Unknown Error",
+    "unknownMsg": "An error has occurred, but don't worry,\nit's not because of you.",
+    "retry": "Retry"
+}
