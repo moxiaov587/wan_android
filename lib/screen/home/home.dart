@@ -1,14 +1,17 @@
 import 'package:beamer/beamer.dart';
 import 'package:collection/collection.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:extended_sliver/extended_sliver.dart';
 import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:palette_generator/palette_generator.dart';
 
 import '../../../app/provider/view_state.dart';
 import '../../../app/provider/widget/provider_widget.dart';
 import '../../../database/hive_boxes.dart';
 import '../../../widget/view_state_widget.dart';
+import '../../app/l10n/generated/l10n.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
 import '../../database/model/models.dart' show SearchHistory;
@@ -26,6 +29,8 @@ part 'search.dart';
 part 'square.dart';
 
 const String kSearchOriginParams = 'origin';
+
+const double _kExpandedHeight = 200.0;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -76,13 +81,16 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-      ),
       body: PageView.builder(
         controller: _pageController,
         itemCount: _pages.length,
-        itemBuilder: (_, int index) => _pages[index],
+        itemBuilder: (_, int index) => Material(
+          color: currentTheme.scaffoldBackgroundColor,
+          child: SafeArea(
+            top: false,
+            child: _pages[index],
+          ),
+        ),
         onPageChanged: (int value) {
           _currentIndexNotifier.value = value;
           Beamer.of(context).update(
@@ -95,6 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
+        tooltip: S.of(context).search,
         onPressed: () {
           Beamer.of(context).beamToNamed(
             RouterName.search.location,
@@ -116,32 +125,32 @@ class _HomeScreenState extends State<HomeScreen> {
               /// The [jumpToPage] will trigger [onPageChanged]
               _pageController.jumpToPage(value);
             },
-            items: const <BottomNavigationBarItem>[
+            items: <BottomNavigationBarItem>[
               BottomNavigationBarItem(
-                label: 'Home',
-                icon: Icon(IconFontIcons.homeLine),
-                activeIcon: Icon(
+                label: S.of(context).home,
+                icon: const Icon(IconFontIcons.homeLine),
+                activeIcon: const Icon(
                   IconFontIcons.homeFill,
                 ),
               ),
               BottomNavigationBarItem(
-                label: 'Square',
-                icon: Icon(IconFontIcons.seedlingLine),
-                activeIcon: Icon(
+                label: S.of(context).square,
+                icon: const Icon(IconFontIcons.seedlingLine),
+                activeIcon: const Icon(
                   IconFontIcons.seedlingFill,
                 ),
               ),
               BottomNavigationBarItem(
-                label: 'Q&A',
-                icon: Icon(IconFontIcons.questionnaireLine),
-                activeIcon: Icon(
+                label: S.of(context).question,
+                icon: const Icon(IconFontIcons.questionnaireLine),
+                activeIcon: const Icon(
                   IconFontIcons.questionnaireFill,
                 ),
               ),
               BottomNavigationBarItem(
-                label: 'Project',
-                icon: Icon(IconFontIcons.androidLine),
-                activeIcon: Icon(
+                label: S.of(context).project,
+                icon: const Icon(IconFontIcons.androidLine),
+                activeIcon: const Icon(
                   IconFontIcons.androidFill,
                 ),
               ),
@@ -161,6 +170,8 @@ class _Home extends StatefulWidget {
 }
 
 class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
+  final ValueNotifier<bool> _showAppBar = ValueNotifier<bool>(false);
+
   @override
   bool get wantKeepAlive => true;
 
@@ -168,12 +179,25 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     super.build(context);
 
-    return SafeArea(
+    return NotificationListener<ScrollNotification>(
+      onNotification: (ScrollNotification notification) {
+        if (notification.metrics.axisDirection == AxisDirection.down &&
+            notification.metrics.pixels > _kExpandedHeight &&
+            !_showAppBar.value) {
+          _showAppBar.value = true;
+        } else if (notification.metrics.axisDirection == AxisDirection.down &&
+            notification.metrics.pixels < _kExpandedHeight &&
+            _showAppBar.value) {
+          _showAppBar.value = false;
+        }
+        return false;
+      },
       child: RefreshListViewWidget<
           StateNotifierProvider<ArticleNotifier,
               RefreshListViewState<ArticleModel>>,
           ArticleModel>(
         onInitState: (Reader reader) {
+          reader.call(homeBannerProvider.notifier).initData();
           reader.call(homeArticleProvider.notifier).initData();
         },
         provider: homeArticleProvider,
@@ -189,7 +213,132 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
             ),
           );
         },
+        slivers: <Widget>[
+          SliverAppBar(
+            pinned: true,
+            expandedHeight: _kExpandedHeight,
+            flexibleSpace: FlexibleSpaceBar(
+              title: ValueListenableBuilder<bool>(
+                valueListenable: _showAppBar,
+                builder: (_, bool show, Widget? child) {
+                  return show
+                      ? Text(
+                          S.of(context).appName,
+                          style: currentTheme.textTheme.headline6,
+                        )
+                      : child!;
+                },
+                child: const SizedBox.shrink(),
+              ),
+              background: Consumer(
+                builder: (_, WidgetRef ref, __) {
+                  return ref.watch(homeBannerProvider).when(
+                        (List<BannerModel> list) =>
+                            ExtendedImageGesturePageView.builder(
+                          itemBuilder: (BuildContext context, int index) {
+                            return _BannerCarouselItem(
+                              image: ExtendedImage.network(
+                                list[index].imagePath,
+                                fit: BoxFit.fill,
+                                height: 200.0,
+                              ),
+                              title: list[index].title,
+                            );
+                          },
+                          itemCount: list.length,
+                        ),
+                        loading: () => const SizedBox(
+                          height: _kExpandedHeight,
+                          child: LoadingWidget(),
+                        ),
+                        error: (_, __, ___) => SizedBox(
+                          height: _kExpandedHeight,
+                          child: CustomErrorWidget(
+                            onRetry: () {
+                              ref.read(homeBannerProvider.notifier).initData();
+                            },
+                          ),
+                        ),
+                      );
+                },
+              ),
+            ),
+          ),
+        ],
       ),
+    );
+  }
+}
+
+class _BannerCarouselItem extends StatefulWidget {
+  const _BannerCarouselItem({
+    Key? key,
+    required this.image,
+    required this.title,
+  }) : super(key: key);
+
+  final ExtendedImage image;
+
+  final String title;
+
+  @override
+  __BannerCarouselItemState createState() => __BannerCarouselItemState();
+}
+
+class __BannerCarouselItemState extends State<_BannerCarouselItem> {
+  final ValueNotifier<List<Color?>> colorsNotifier =
+      ValueNotifier<List<Color?>>(<Color?>[null, null]);
+
+  @override
+  void initState() {
+    super.initState();
+
+    PaletteGenerator.fromImageProvider(
+      widget.image.image,
+      maximumColorCount: 20,
+    ).then((PaletteGenerator paletteGenerator) {
+      colorsNotifier.value = <Color?>[
+        paletteGenerator.vibrantColor?.color,
+        paletteGenerator.vibrantColor?.titleTextColor,
+      ];
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      fit: StackFit.expand,
+      children: <Widget>[
+        widget.image,
+        Positioned(
+          left: 0.0,
+          bottom: 0.0,
+          child: ValueListenableBuilder<List<Color?>>(
+            valueListenable: colorsNotifier,
+            builder: (_, List<Color?> colors, Widget? child) {
+              return Container(
+                padding: const EdgeInsets.only(
+                  right: 16.0,
+                ),
+                alignment: Alignment.centerRight,
+                width: MediaQuery.of(context).size.width,
+                height: 50.0,
+                color: colors.first?.withOpacity(.2) ??
+                    currentTheme.backgroundColor.withOpacity(.2),
+                child: DefaultTextStyle(
+                  style: currentTheme.textTheme.bodyText1!.copyWith(
+                    fontSize: 18.0,
+                    color: colors.last,
+                  ),
+                  child: child!,
+                ),
+              );
+            },
+            child: Text(widget.title),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -14,6 +14,23 @@ part 'question_provider.dart';
 part 'search_provider.dart';
 part 'square_provider.dart';
 
+final StateNotifierProvider<BannerNotifier, ListViewState<BannerModel>>
+    homeBannerProvider =
+    StateNotifierProvider<BannerNotifier, ListViewState<BannerModel>>((_) {
+  return BannerNotifier(
+    const ListViewState<BannerModel>.loading(),
+  );
+});
+
+class BannerNotifier extends BaseListViewNotifier<BannerModel> {
+  BannerNotifier(ListViewState<BannerModel> state) : super(state);
+
+  @override
+  Future<List<BannerModel>> loadData() {
+    return WanAndroidAPI.fetchHomeBanners();
+  }
+}
+
 final StateNotifierProvider<ArticleNotifier, RefreshListViewState<ArticleModel>>
     homeArticleProvider =
     StateNotifierProvider<ArticleNotifier, RefreshListViewState<ArticleModel>>(
