@@ -11,9 +11,12 @@ class HiveBoxes {
 
   static late Box<SearchHistory> searchHistoryBox;
 
+  static late Box<AuthorizedCache> authorizedCacheBox;
+
   static Future<void> openBoxes() async {
     Hive.registerAdapter(ResponseCacheAdapter());
     Hive.registerAdapter(SearchHistoryAdapter());
+    Hive.registerAdapter(AuthorizedCacheAdapter());
 
     await Future.wait(
       <Future<void>>[
@@ -22,6 +25,10 @@ class HiveBoxes {
         }(),
         () async {
           searchHistoryBox = await Hive.openBox('${boxPrefix}_search_history');
+        }(),
+        () async {
+          authorizedCacheBox =
+              await Hive.openBox('${boxPrefix}_authorized_cache');
         }(),
       ],
     );
@@ -34,4 +41,6 @@ class HiveAdapterTypeIds {
   static const int responseCache = 0;
 
   static const int searchHistory = 1;
+
+  static const int authorizedCache = 2;
 }
