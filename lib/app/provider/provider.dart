@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart' show DioError, DioErrorType, Response;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/http/error_interceptors.dart' show AppException;
 import 'view_state.dart';
 
 part 'base_list_view_notifier.dart';
@@ -36,6 +37,9 @@ class BaseViewStateError {
       } else if (e.type == DioErrorType.cancel) {
         // to be continue...
       }
+    } else if (e is AppException) {
+      statusCode = e.errorCode;
+      message = e.message;
     }
     // else if (e is CustomError) {
     //   errorType = AppErrorType.custom;
