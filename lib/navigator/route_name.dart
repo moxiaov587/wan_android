@@ -17,9 +17,15 @@ class RouteName {
 class RouterName {
   RouterName._();
 
+  static const String initialPath = '/';
+
+  static RouteName splash = const RouteName(
+    title: 'Splash',
+  );
+
   static RouteName home = const RouteName(
     title: 'Home',
-    location: '/',
+    location: initialPath,
   );
 
   static RouteName square = const RouteName(title: 'Square');
@@ -59,17 +65,45 @@ class RouterName {
     title: 'Register',
   );
 
-  static RouteName setting = const RouteName(
-    title: 'Setting',
+  static RouteName settings = const RouteName(
+    title: 'Settings',
   );
 
   static RouteName rank = const RouteName(
     title: 'Rank',
   );
 
+  static RouteName myPoints = const RouteName(
+    title: 'MyPoints',
+  );
+
+  static RouteName myCollections = const RouteName(
+    title: 'MyCollections',
+  );
+
+  static RouteName myShare = const RouteName(
+    title: 'MyShare',
+  );
+
   static RouteName about = const RouteName(
     title: 'About',
   );
+
+  static List<String> homeDrawerPath = <String>[
+    rank.location,
+    myPoints.location,
+    myCollections.location,
+    myShare.location,
+    about.location,
+    settings.location,
+  ];
+
+  static List<RouteName> homeDrawerTiles = <RouteName>[
+    myPoints,
+    myCollections,
+    myShare,
+    about,
+  ];
 
   static RouteName unknown = const RouteName(
     title: 'Unknown',

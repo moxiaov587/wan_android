@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'app/http/http.dart';
@@ -24,22 +25,54 @@ Future<void> main() async {
     Beamer.setPathUrlStrategy();
   }
 
-  runApp(const ProviderScope(
-    child: MyApp(),
+  final ProviderContainer providerContainer = ProviderContainer();
+
+  AppRouterDelegate().initDelegate(reader: providerContainer.read);
+
+  runApp(UncontrolledProviderScope(
+    container: providerContainer,
+    child: const MyApp(),
   ));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance?.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance?.removeObserver(this);
+
+    super.dispose();
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
       routeInformationParser: BeamerParser(),
-      routerDelegate: AppRouterDelegate.routerDelegate,
+      routerDelegate: AppRouterDelegate().delegate,
       backButtonDispatcher: BeamerBackButtonDispatcher(
-        delegate: AppRouterDelegate.routerDelegate,
+        delegate: AppRouterDelegate().delegate,
       ),
+      builder: FlutterSmartDialog.init(),
 
       /// TODO:
       // themeMode: ,
