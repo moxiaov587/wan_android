@@ -25,11 +25,12 @@ dependencies:
   flutter_riverpod: ^1.0.0
   pull_to_refresh: ^2.0.0
   flutter_svg: ^1.0.0
-  beamer: ^1.0.0
+  beamer: ^1.1.0
   extended_sliver: ^2.0.1
   intl: ^0.17.0
   extended_image: ^6.0.1
   palette_generator: ^0.3.2
+  flutter_smart_dialog: ^3.1.0
 
 dev_dependencies:
   flutter_test:
