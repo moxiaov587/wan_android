@@ -134,4 +134,46 @@ class WanAndroidAPI {
             SearchKeywordModel.fromJson(e as Map<String, dynamic>))
         .toList();
   }
+
+  static Future<UserModel> login({
+    required String username,
+    required String password,
+    CancelToken? cancelToken,
+  }) async {
+    final Response<Map<String, dynamic>> response =
+        await HttpUtils.post<Map<String, dynamic>>(
+      API.login,
+      queryParameters: <String, dynamic>{
+        'username': username,
+        'password': password,
+      },
+      cancelToken: cancelToken,
+    );
+
+    return UserModel.fromJson(response.data!);
+  }
+
+  static Future<UserModel> register({
+    required String username,
+    required String password,
+    required String rePassword,
+    CancelToken? cancelToken,
+  }) async {
+    final Response<Map<String, dynamic>> response =
+        await HttpUtils.post<Map<String, dynamic>>(
+      API.register,
+      queryParameters: <String, dynamic>{
+        'username': username,
+        'password': password,
+        'repassword': rePassword,
+      },
+      cancelToken: cancelToken,
+    );
+
+    return UserModel.fromJson(response.data!);
+  }
+
+  static Future<void> logout() async {
+    await HttpUtils.get<dynamic>(API.logout);
+  }
 }

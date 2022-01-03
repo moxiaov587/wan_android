@@ -25,4 +25,10 @@ class API {
       '/article/query/$pageNum/json';
 
   static const String searchPopularKeywords = '/hotkey/json';
+
+  static const String login = '/user/login';
+
+  static const String register = '/user/register';
+
+  static const String logout = '/user/logout/json';
 }
