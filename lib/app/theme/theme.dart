@@ -18,11 +18,12 @@ class AppTheme {
 
   static DividerThemeData get dividerTheme => const DividerThemeData(
         space: 0,
-        thickness: .3,
+        thickness: .7,
       );
 
   static ButtonStyle get buttonStyle => ButtonStyle(
         elevation: MaterialStateProperty.all(0),
+        minimumSize: MaterialStateProperty.all(const Size(64.0, 44.0)),
         padding: MaterialStateProperty.all(
           const EdgeInsets.symmetric(
             horizontal: 12.0,
