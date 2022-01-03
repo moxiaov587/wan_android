@@ -17,4 +17,11 @@ class IconFontIcons {
       IconData(0xe86e, fontFamily: fontFamily);
   static const IconData searchEyeFill =
       IconData(0xe86d, fontFamily: fontFamily);
+  static const IconData accountCircleLine =
+      IconData(0xe87f, fontFamily: fontFamily);
+  static const IconData accountCircleFill =
+      IconData(0xe87e, fontFamily: fontFamily);
+  static const IconData lockLine = IconData(0xe85f, fontFamily: fontFamily);
+  static const IconData lockFill = IconData(0xe85e, fontFamily: fontFamily);
+  static const IconData restartLine = IconData(0xe74a, fontFamily: fontFamily);
 }
