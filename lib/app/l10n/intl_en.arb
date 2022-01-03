@@ -12,5 +12,23 @@
     "emptyMsg": "There's nothing here.",
     "unknown": "Unknown Error",
     "unknownMsg": "An error has occurred, but don't worry,\nit's not because of you.",
-    "retry": "Retry"
+    "retry": "Retry",
+    "noLogin": "No login",
+    "myPoints": "My Points",
+    "myCollections": "My Collections",
+    "myShare": "My Share",
+    "about": "About",
+    "settings": "Settings",
+
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "username": "Username",
+    "password": "Password",
+    "rePassword": "RePassword",
+    "loginInfoInvalidTips": "Login information is invalid, error code {errorCode}",
+    "loginSuccess": "Login Successful",
+    "loginFailed": "Login Failed",
+    "registerSuccess": "Register Successful",
+    "registerFailed": "Register Failed"
 }

@@ -12,5 +12,23 @@
     "emptyMsg": "这儿啥也没有",
     "unknown": "未知错误",
     "unknownMsg": "发生了错误，但别担心\n不是因为你",
-    "retry": "重试"
+    "retry": "重试",
+    "noLogin": "未登录",
+    "myPoints": "我的积分",
+    "myCollections": "我的收藏",
+    "myShare": "我的分享",
+    "about": "关于",
+    "settings": "设置",
+
+    "login": "登录",
+    "logout": "退出登录",
+    "register": "注册",
+    "username": "用户名",
+    "password": "密码",
+    "rePassword": "确认密码",
+    "loginInfoInvalidTips": "登录信息已过期, 错误码 {errorCode}",
+    "loginSuccess": "登录成功",
+    "loginFailed": "登录失败",
+    "registerSuccess": "注册成功",
+    "registerFailed": "注册失败"
 }
