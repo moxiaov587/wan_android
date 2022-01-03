@@ -18,6 +18,8 @@ class _ProjectState extends State<_Project> with AutomaticKeepAliveClientMixin {
     return Column(
       children: <Widget>[
         AppBar(
+          leading: const SizedBox.shrink(),
+          leadingWidth: 0.0,
           title: Text(S.of(context).project),
         ),
         Expanded(
@@ -117,7 +119,9 @@ class _ProjectTypeSwitch extends ConsumerWidget {
     return ref.watch(currentProjectTypeProvider).when(
           (ProjectTypeModel? value) => CapsuleInk(
             onTap: () {
-              Beamer.of(context).beamToNamed(RouterName.projectType.location);
+              AppRouterDelegate().currentBeamState.updateWith(
+                    showProjectTypeBottomSheet: true,
+                  );
             },
             child: Text(value!.name),
           ),
@@ -158,7 +162,6 @@ class ProjectTypeBottomSheet extends StatelessWidget {
             StateNotifierProvider<ProjectTypeNotifier,
                 ListViewState<ProjectTypeModel>>,
             ProjectTypeModel>(
-          enablePullDown: true,
           provider: projectTypesProvider,
           builder: (_, __, List<ProjectTypeModel> list) {
             return SliverList(
@@ -177,7 +180,7 @@ class ProjectTypeBottomSheet extends StatelessWidget {
                               .read(projectTypesProvider.notifier)
                               .selected(index);
 
-                          Beamer.of(context).popRoute();
+                          Navigator.of(context).maybePop();
                         },
                       );
                     },

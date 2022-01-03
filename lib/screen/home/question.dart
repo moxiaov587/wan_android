@@ -18,6 +18,8 @@ class _QAState extends State<_QA> with AutomaticKeepAliveClientMixin {
     return Column(
       children: <Widget>[
         AppBar(
+          leading: const SizedBox.shrink(),
+          leadingWidth: 0.0,
           title: Text(S.of(context).question),
         ),
         Expanded(
