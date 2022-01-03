@@ -17,10 +17,12 @@ import '../../contacts/instances.dart';
 import '../../database/model/models.dart' show SearchHistory;
 import '../../model/models.dart';
 import '../../navigator/route_name.dart';
+import '../../navigator/router_delegate.dart';
 import '../../widget/capsule_ink.dart';
 import '../../widget/custom_bottom_navigation_bar.dart';
 import '../../widget/custom_search_delegate.dart';
 import '../../widget/gap.dart';
+import '../drawer/drawer.dart';
 import 'provider/home_provider.dart';
 
 part 'project.dart';
@@ -72,6 +74,18 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    Future<void>.delayed(Duration.zero, () {
+      if (RouterName.homeDrawerPath.contains(
+          context.currentBeamLocation.state.routeInformation.location)) {
+        Instances.scaffoldStateKey.currentState?.openDrawer();
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _currentIndexNotifier.dispose();
     _pageController.dispose();
@@ -81,6 +95,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: Instances.scaffoldStateKey,
+      drawer: const HomeDrawer(),
       body: PageView.builder(
         controller: _pageController,
         itemCount: _pages.length,
@@ -93,25 +109,18 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         onPageChanged: (int value) {
           _currentIndexNotifier.value = value;
-          Beamer.of(context).update(
-            configuration: RouteInformation(
-              location: RouterName.homeTabsPath[value],
-            ),
-            rebuild: false,
-          );
+          AppRouterDelegate().currentBeamState.updateWith(
+                initialPath: RouterName.homeTabsPath[value],
+              );
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         tooltip: S.of(context).search,
         onPressed: () {
-          Beamer.of(context).beamToNamed(
-            RouterName.search.location,
-            data: <String, String>{
-              kSearchOriginParams:
-                  RouterName.homeTabsPath[_currentIndexNotifier.value],
-            },
-          );
+          AppRouterDelegate().currentBeamState.updateWith(
+                showSearch: true,
+              );
         },
         child: const Icon(IconFontIcons.searchEyeLine),
       ),
@@ -215,6 +224,8 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
         },
         slivers: <Widget>[
           SliverAppBar(
+            leading: const SizedBox.shrink(),
+            leadingWidth: 0.0,
             pinned: true,
             expandedHeight: _kExpandedHeight,
             flexibleSpace: FlexibleSpaceBar(
