@@ -10,14 +10,14 @@ import 'locations.dart';
 import 'route_name.dart';
 
 class AppRouterDelegate {
-  factory AppRouterDelegate() {
-    return _appRouterDelegate;
-  }
+  factory AppRouterDelegate() => instance;
 
   AppRouterDelegate._internal();
 
-  static final AppRouterDelegate _appRouterDelegate =
-      AppRouterDelegate._internal();
+  static AppRouterDelegate? _instance;
+
+  static AppRouterDelegate get instance =>
+      _instance ??= AppRouterDelegate._internal();
 
   late final BeamerDelegate _delegate;
 
