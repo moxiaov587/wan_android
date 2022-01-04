@@ -90,12 +90,15 @@ class _HomeDrawerState extends State<HomeDrawer> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
                 Consumer(
-                  builder: (_, WidgetRef ref, Widget? title) => ListTile(
-                    title: title,
-                    onTap: () {
-                      ref.read(authorizedProvider.notifier).logout();
-                    },
-                  ),
+                  builder: (_, WidgetRef ref, Widget? title) =>
+                      ref.watch(authorizedProvider) == null
+                          ? const SizedBox.shrink()
+                          : ListTile(
+                              title: title,
+                              onTap: () {
+                                ref.read(authorizedProvider.notifier).logout();
+                              },
+                            ),
                   child: Text(S.of(context).logout),
                 ),
                 SizedBox(
