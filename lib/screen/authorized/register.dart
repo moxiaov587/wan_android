@@ -26,10 +26,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void toLogin() {
-    if (!AppRouterDelegate().currentBeamState.isLogin) {
-      AppRouterDelegate().currentBeamState.updateWith(
-            isLogin: true,
-          );
+    if (!AppRouterDelegate.instance.currentBeamState.isLogin) {
+      AppRouterDelegate.instance.currentBeamState.updateWith(
+        isLogin: true,
+      );
     }
 
     Navigator.of(context).maybePop();

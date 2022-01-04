@@ -109,18 +109,18 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         onPageChanged: (int value) {
           _currentIndexNotifier.value = value;
-          AppRouterDelegate().currentBeamState.updateWith(
-                initialPath: RouterName.homeTabsPath[value],
-              );
+          AppRouterDelegate.instance.currentBeamState.updateWith(
+            initialPath: RouterName.homeTabsPath[value],
+          );
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         tooltip: S.of(context).search,
         onPressed: () {
-          AppRouterDelegate().currentBeamState.updateWith(
-                showSearch: true,
-              );
+          AppRouterDelegate.instance.currentBeamState.updateWith(
+            showSearch: true,
+          );
         },
         child: const Icon(IconFontIcons.searchEyeLine),
       ),
@@ -206,7 +206,7 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
               RefreshListViewState<ArticleModel>>,
           ArticleModel>(
         onInitState: (Reader reader) {
-          reader.call(homeBannerProvider.notifier).initData();
+          // reader.call(homeBannerProvider.notifier).initData();
           reader.call(homeArticleProvider.notifier).initData();
         },
         provider: homeArticleProvider,

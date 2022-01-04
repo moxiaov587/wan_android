@@ -115,8 +115,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                                 );
 
                         if (result) {
-                          AppRouterDelegate()
-                              .currentBeamState
+                          AppRouterDelegate.instance.currentBeamState
                               .updateWith(isLogin: false);
                         }
                       }
@@ -138,9 +137,10 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                     children: <Widget>[
                       TextButton(
                         onPressed: () {
-                          AppRouterDelegate().currentBeamState.updateWith(
-                                isRegister: true,
-                              );
+                          AppRouterDelegate.instance.currentBeamState
+                              .updateWith(
+                            isRegister: true,
+                          );
                         },
                         child: Text(S.of(context).register),
                       ),

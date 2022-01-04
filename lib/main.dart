@@ -27,7 +27,7 @@ Future<void> main() async {
 
   final ProviderContainer providerContainer = ProviderContainer();
 
-  AppRouterDelegate().initDelegate(reader: providerContainer.read);
+  AppRouterDelegate.instance.initDelegate(reader: providerContainer.read);
 
   runApp(UncontrolledProviderScope(
     container: providerContainer,
@@ -68,9 +68,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       routeInformationParser: BeamerParser(),
-      routerDelegate: AppRouterDelegate().delegate,
+      routerDelegate: AppRouterDelegate.instance.delegate,
       backButtonDispatcher: BeamerBackButtonDispatcher(
-        delegate: AppRouterDelegate().delegate,
+        delegate: AppRouterDelegate.instance.delegate,
       ),
       builder: FlutterSmartDialog.init(),
 

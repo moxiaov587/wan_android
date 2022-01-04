@@ -66,8 +66,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   widget = ListTile(
                     title: Text(RouterName.homeDrawerTiles[itemIndex].title),
                     onTap: () {
-                      AppRouterDelegate()
-                          .currentBeamState
+                      AppRouterDelegate.instance.currentBeamState
                           .updateWith(isMyCollections: true);
                     },
                   );

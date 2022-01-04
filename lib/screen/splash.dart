@@ -26,9 +26,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
     ref.read(splashProvider.notifier).initFinished();
 
-    AppRouterDelegate().currentBeamState.updateWith(
-          showSplash: false,
-        );
+    AppRouterDelegate.instance.currentBeamState.updateWith(
+      showSplash: false,
+    );
   }
 
   @override

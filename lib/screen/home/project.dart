@@ -119,9 +119,9 @@ class _ProjectTypeSwitch extends ConsumerWidget {
     return ref.watch(currentProjectTypeProvider).when(
           (ProjectTypeModel? value) => CapsuleInk(
             onTap: () {
-              AppRouterDelegate().currentBeamState.updateWith(
-                    showProjectTypeBottomSheet: true,
-                  );
+              AppRouterDelegate.instance.currentBeamState.updateWith(
+                showProjectTypeBottomSheet: true,
+              );
             },
             child: Text(value!.name),
           ),

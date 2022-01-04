@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../navigator/router_delegate.dart';
 
-NavigatorState get navigatorState => AppRouterDelegate().delegate.navigator;
+NavigatorState get navigatorState =>
+    AppRouterDelegate.instance.delegate.navigator;
 
 BuildContext get currentContext => navigatorState.context;
 
