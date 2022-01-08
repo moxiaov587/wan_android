@@ -3,6 +3,7 @@ import 'package:flutter/material.dart'
     hide RefreshIndicator, RefreshIndicatorState;
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../contacts/icon_font_icons.dart';
 import '../../../contacts/instances.dart';
 
 class DropDownListHeader extends RefreshIndicator {
@@ -21,10 +22,10 @@ class DropDownListHeader extends RefreshIndicator {
     this.failedText,
     this.idleText,
     this.refreshingIcon,
-    this.failedIcon = const Icon(Icons.error),
-    this.completeIcon = const Icon(Icons.done),
-    this.idleIcon = const Icon(Icons.arrow_downward),
-    this.releaseIcon = const Icon(Icons.refresh),
+    this.failedIcon = const Icon(IconFontIcons.errorWarningLine),
+    this.completeIcon = const Icon(IconFontIcons.checkLine),
+    this.idleIcon = const Icon(IconFontIcons.arrowDownLine),
+    this.releaseIcon = const Icon(IconFontIcons.refreshLine),
   }) : super(
           key: key,
           refreshStyle: refreshStyle,
@@ -88,7 +89,7 @@ class _DropDownListHeaderState
 
     return Text(
       text,
-      style: widget.textStyle ?? currentTheme.textTheme.subtitle1,
+      style: widget.textStyle ?? currentTheme.textTheme.bodyLarge,
     );
   }
 
@@ -156,11 +157,11 @@ class LoadMoreListFooter extends LoadIndicator {
     this.idleText,
     this.failedText,
     this.canLoadingText,
-    this.failedIcon = const Icon(Icons.error),
+    this.failedIcon = const Icon(IconFontIcons.errorWarningLine),
     this.completeDuration = const Duration(milliseconds: 300),
     this.loadingIcon,
-    this.canLoadingIcon = const Icon(Icons.autorenew),
-    this.idleIcon = const Icon(Icons.arrow_upward),
+    this.canLoadingIcon = const Icon(IconFontIcons.restartLine),
+    this.idleIcon = const Icon(IconFontIcons.arrowUpLine),
   }) : super(
           key: key,
           loadStyle: loadStyle,
@@ -210,7 +211,7 @@ class _LoadMoreListFooterState extends LoadIndicatorState<LoadMoreListFooter> {
 
     return Text(
       text,
-      style: widget.textStyle ?? currentTheme.textTheme.subtitle1,
+      style: widget.textStyle ?? currentTheme.textTheme.bodyLarge,
     );
   }
 
