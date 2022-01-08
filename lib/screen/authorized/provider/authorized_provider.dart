@@ -45,6 +45,15 @@ class AuthorizedNotifier extends StateNotifier<UserModel?> {
     try {
       await WanAndroidAPI.logout();
 
+      await HiveBoxes.authorizedCacheBox.clear();
+
+      await HiveBoxes.authorizedCacheBox.add(
+        AuthorizedCache(
+          id: state!.id,
+          username: state!.username,
+        ),
+      );
+
       state = null;
 
       return true;
