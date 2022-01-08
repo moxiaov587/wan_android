@@ -8,8 +8,51 @@ import '../shape/bottom_app_bar_convex_shape.dart';
 part 'color.dart';
 part 'text_theme.dart';
 
+const double _kRadiusValue = 14.0;
+const double _kAdornmentRadiusValue = 4.0;
+const double _kRoundedRadiusValue = 999.0;
+
+const double kStyleUint = 4.0;
+const double kStyleUint2 = kStyleUint * 2;
+const double kStyleUint3 = kStyleUint * 3;
+const double kStyleUint4 = kStyleUint * 4;
+
 class AppTheme {
   AppTheme._();
+
+  static Radius get radius => const Radius.circular(_kRadiusValue);
+
+  static BorderRadius get borderRadius => BorderRadius.circular(_kRadiusValue);
+
+  static Radius get roundedRadius =>
+      const Radius.circular(_kRoundedRadiusValue);
+
+  static BorderRadius get roundedBorderRadius =>
+      BorderRadius.circular(_kRoundedRadiusValue);
+
+  static Radius get adornmentRadius =>
+      const Radius.circular(_kAdornmentRadiusValue);
+
+  static BorderRadius get adornmentBorderRadius =>
+      BorderRadius.circular(_kAdornmentRadiusValue);
+
+  static EdgeInsetsGeometry get bodyPaddingOnlyHorizontal =>
+      const EdgeInsets.symmetric(
+        horizontal: kStyleUint4,
+      );
+
+  static EdgeInsetsGeometry get bodyPaddingOnlyVertical =>
+      const EdgeInsets.symmetric(
+        vertical: kStyleUint3,
+      );
+
+  static EdgeInsetsGeometry get bodyPadding =>
+      bodyPaddingOnlyHorizontal.add(bodyPaddingOnlyVertical);
+
+  static EdgeInsetsGeometry get contentPadding => const EdgeInsets.symmetric(
+        horizontal: kStyleUint3,
+        vertical: kStyleUint2,
+      );
 
   static AppBarTheme get appBarTheme => const AppBarTheme(
         elevation: 0,
@@ -24,19 +67,17 @@ class AppTheme {
   static ButtonStyle get buttonStyle => ButtonStyle(
         elevation: MaterialStateProperty.all(0),
         minimumSize: MaterialStateProperty.all(const Size(64.0, 44.0)),
-        padding: MaterialStateProperty.all(
-          const EdgeInsets.symmetric(
-            horizontal: 12.0,
-            vertical: 8.0,
-          ),
-        ),
+        padding: MaterialStateProperty.all(contentPadding),
         shape: MaterialStateProperty.all(
-          const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(
-              Radius.circular(4.0),
-            ),
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(adornmentRadius),
           ),
         ),
+      );
+
+  static TextStyle get buttonTextStyle => const TextStyle(
+        fontSize: AppTextTheme.title3,
+        fontWeight: AppTextTheme.medium,
       );
 
   static FloatingActionButtonThemeData get floatingActionButtonTheme =>
@@ -58,6 +99,7 @@ class AppTheme {
       );
 
   static ThemeData get light => ThemeData.light().copyWith(
+        useMaterial3: true,
         cupertinoOverrideTheme: const CupertinoThemeData(
           brightness: Brightness.light,
           primaryColor: AppColor.arcoBlue,
@@ -99,12 +141,12 @@ class AppTheme {
         ),
         tooltipTheme: TooltipThemeData(
           decoration: BoxDecoration(
-            color: AppColor.maskBackground,
+            color: AppColor.tooltipBackground,
           ),
           textStyle: (kIsWeb
                   ? AppTextTheme.lightTheme.overline
-                  : AppTextTheme.lightTheme.bodyText2)
-              ?.copyWith(
+                  : AppTextTheme.lightTheme.bodyText2)!
+              .copyWith(
             color: AppColor.white,
           ),
         ),
@@ -119,6 +161,16 @@ class AppTheme {
             backgroundColor: MaterialStateProperty.all(
               AppColor.arcoBlue,
             ),
+            textStyle: MaterialStateProperty.all(
+              buttonTextStyle.copyWith(
+                color: AppColor.white,
+              ),
+            ),
+          ),
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: buttonStyle.copyWith(
+            textStyle: MaterialStateProperty.all(buttonTextStyle),
           ),
         ),
         floatingActionButtonTheme: floatingActionButtonTheme.copyWith(
@@ -131,9 +183,33 @@ class AppTheme {
         bottomNavigationBarTheme: bottomNavigationBarTheme.copyWith(
           backgroundColor: AppColor.appBar,
         ),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppColor.arcoBlue,
+          primary: AppColor.arcoBlue,
+          onPrimary: AppColor.backgroundWhite,
+          primaryContainer: AppColor.arcoBlue.shade2,
+          onPrimaryContainer: AppColor.arcoBlue.shade9,
+          secondary: AppColor.green,
+          onSecondary: AppColor.backgroundWhite,
+          secondaryContainer: AppColor.green.shade2,
+          onSecondaryContainer: AppColor.green.shade9,
+          tertiary: AppColor.orange,
+          onTertiary: AppColor.backgroundWhite,
+          tertiaryContainer: AppColor.orange.shade2,
+          onTertiaryContainer: AppColor.orange.shade9,
+          error: AppColor.red,
+          onError: AppColor.backgroundWhite,
+          errorContainer: AppColor.red.shade2,
+          onErrorContainer: AppColor.red.shade9,
+          outline: AppColor.text4,
+          background: AppColor.backgroundWhite,
+          onBackground: AppColor.scaffoldBackground,
+          shadow: AppColor.black,
+        ),
       );
 
   static ThemeData get dark => ThemeData.dark().copyWith(
+        useMaterial3: true,
         cupertinoOverrideTheme: const CupertinoThemeData(
           brightness: Brightness.dark,
           primaryColor: AppColor.arcoBlueDark,
@@ -173,13 +249,13 @@ class AppTheme {
           color: AppColor.text3Dark,
         ),
         tooltipTheme: TooltipThemeData(
-          decoration: BoxDecoration(
-            color: AppColor.maskBackgroundDark,
+          decoration: const BoxDecoration(
+            color: AppColor.tooltipBackgroundDark,
           ),
           textStyle: (kIsWeb
                   ? AppTextTheme.darkTheme.overline
-                  : AppTextTheme.darkTheme.bodyText2)
-              ?.copyWith(
+                  : AppTextTheme.darkTheme.bodyText2)!
+              .copyWith(
             color: AppColor.whiteDark,
           ),
         ),
@@ -194,6 +270,16 @@ class AppTheme {
             backgroundColor: MaterialStateProperty.all(
               AppColor.arcoBlueDark,
             ),
+            textStyle: MaterialStateProperty.all(
+              buttonTextStyle.copyWith(
+                color: AppColor.whiteDark,
+              ),
+            ),
+          ),
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: buttonStyle.copyWith(
+            textStyle: MaterialStateProperty.all(buttonTextStyle),
           ),
         ),
         floatingActionButtonTheme: floatingActionButtonTheme.copyWith(
@@ -205,6 +291,30 @@ class AppTheme {
         ),
         bottomNavigationBarTheme: bottomNavigationBarTheme.copyWith(
           backgroundColor: AppColor.appBarDark,
+        ),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppColor.arcoBlueDark,
+          brightness: Brightness.dark,
+          primary: AppColor.arcoBlueDark,
+          onPrimary: AppColor.backgroundWhiteDark,
+          primaryContainer: AppColor.arcoBlueDark.shade2,
+          onPrimaryContainer: AppColor.arcoBlueDark.shade9,
+          secondary: AppColor.greenDark,
+          onSecondary: AppColor.backgroundWhiteDark,
+          secondaryContainer: AppColor.greenDark.shade2,
+          onSecondaryContainer: AppColor.greenDark.shade9,
+          tertiary: AppColor.orangeDark,
+          onTertiary: AppColor.backgroundWhiteDark,
+          tertiaryContainer: AppColor.orangeDark.shade2,
+          onTertiaryContainer: AppColor.orangeDark.shade9,
+          error: AppColor.redDark,
+          onError: AppColor.backgroundWhiteDark,
+          errorContainer: AppColor.redDark.shade2,
+          onErrorContainer: AppColor.redDark.shade9,
+          outline: AppColor.text4Dark,
+          background: AppColor.backgroundWhiteDark,
+          onBackground: AppColor.scaffoldBackgroundDark,
+          shadow: AppColor.blackDark,
         ),
       );
 }
