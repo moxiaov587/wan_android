@@ -206,15 +206,8 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
       offset = Offset.zero;
     }
 
-    final OutlineInputBorder outlineInputBorder = OutlineInputBorder(
-      borderSide: Divider.createBorderSide(
-        context,
-        width: 1.0,
-        color: theme.primaryColor,
-      ),
-      borderRadius: const BorderRadius.all(
-        Radius.circular(6.0),
-      ),
+    final BorderRadius inputBorderRadius = BorderRadius.all(
+      AppTheme.adornmentRadius,
     );
 
     final Color materialStateColor =
@@ -248,7 +241,7 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
                 child: TextField(
                   controller: widget.delegate._queryTextController,
                   focusNode: focusNode,
-                  style: theme.textTheme.subtitle1,
+                  style: theme.textTheme.titleSmall,
                   textInputAction: widget.delegate.textInputAction,
                   keyboardType: widget.delegate.keyboardType,
                   onSubmitted: (String _) {
@@ -256,7 +249,7 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
                   },
                   decoration: InputDecoration(
                     hintText: searchFieldLabel,
-                    hintStyle: theme.textTheme.subtitle2,
+                    hintStyle: theme.textTheme.bodyLarge,
                     contentPadding: EdgeInsets.zero,
                     prefixIconConstraints: const BoxConstraints.tightFor(
                       width: 34.0,
@@ -281,7 +274,7 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
                                 hoverColor: Colors.transparent,
                                 splashColor: Colors.transparent,
                                 icon: const Icon(
-                                  Icons.cancel,
+                                  IconFontIcons.closeCircleLine,
                                   size: 18,
                                 ),
                                 onPressed: () {
@@ -294,9 +287,21 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
                     ),
                     filled: true,
                     fillColor: theme.dialogBackgroundColor,
-                    border: outlineInputBorder,
-                    focusedBorder: outlineInputBorder,
-                    enabledBorder: outlineInputBorder,
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: inputBorderRadius,
+                      borderSide: Divider.createBorderSide(
+                        context,
+                        color: theme.primaryColor,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: inputBorderRadius,
+                      borderSide: Divider.createBorderSide(
+                        context,
+                        color: Colors.transparent,
+                        width: 0.0,
+                      ),
+                    ),
                   ),
                 ),
               ),

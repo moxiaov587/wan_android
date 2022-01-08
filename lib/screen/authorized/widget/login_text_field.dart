@@ -69,7 +69,7 @@ class _LoginTextFieldState extends State<LoginTextField> {
     );
 
     final InputDecoration inputDecoration = InputDecoration(
-      hintStyle: currentTheme.textTheme.subtitle2,
+      hintStyle: currentTheme.textTheme.bodyLarge,
       contentPadding: EdgeInsets.zero,
       prefixIconConstraints: const BoxConstraints.tightFor(
         width: 34.0,
@@ -139,6 +139,7 @@ class _LoginTextFieldState extends State<LoginTextField> {
       },
       obscureText: isPasswordType,
       textInputAction: TextInputAction.done,
+      style: currentTheme.textTheme.titleSmall,
       decoration: inputDecoration.copyWith(
         hintText: hintText,
         prefixIcon: Padding(
@@ -158,7 +159,7 @@ class _LoginTextFieldState extends State<LoginTextField> {
                     hoverColor: Colors.transparent,
                     splashColor: Colors.transparent,
                     icon: const Icon(
-                      Icons.cancel,
+                      IconFontIcons.closeCircleLine,
                       size: 18.0,
                     ),
                     onPressed: () {

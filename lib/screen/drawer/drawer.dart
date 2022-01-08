@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/l10n/generated/l10n.dart';
+import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
 import '../../model/models.dart';
 import '../../navigator/route_name.dart';
@@ -40,7 +41,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   const CircleAvatar(
                     radius: avatarRadius,
                     child: Icon(
-                      Icons.people_outline,
+                      IconFontIcons.userFill,
                       size: avatarRadius,
                     ),
                   ),
@@ -94,6 +95,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                       ref.watch(authorizedProvider) == null
                           ? const SizedBox.shrink()
                           : ListTile(
+                              leading: const Icon(IconFontIcons.shutDownLine),
                               title: title,
                               onTap: () {
                                 ref.read(authorizedProvider.notifier).logout();

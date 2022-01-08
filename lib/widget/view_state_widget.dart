@@ -2,9 +2,12 @@ import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart';
 
 import '../app/l10n/generated/l10n.dart';
+import '../app/theme/theme.dart';
 import '../contacts/assets.dart';
 import '../contacts/instances.dart';
 import 'gap.dart';
+
+const Size _kRetryButtonSize = Size(64.0, 36.0);
 
 class LoadingWidget extends StatelessWidget {
   const LoadingWidget({
@@ -48,18 +51,26 @@ class EmptyWidget extends StatelessWidget {
           ),
           Text(
             message ?? S.of(context).empty,
-            style: currentTheme.textTheme.subtitle1,
+            style: currentTheme.textTheme.titleSmall,
           ),
           Gap(
             size: GapSize.small,
           ),
           Text(
             detail ?? S.of(context).emptyMsg,
-            style: currentTheme.textTheme.bodyText2,
+            style: currentTheme.textTheme.bodyMedium,
           ),
           if (onRetry != null) Gap(),
           if (onRetry != null)
             ElevatedButton(
+              style: ButtonStyle(
+                minimumSize: MaterialStateProperty.all(_kRetryButtonSize),
+                textStyle: MaterialStateProperty.all(
+                  const TextStyle(
+                    fontSize: AppTextTheme.body1,
+                  ),
+                ),
+              ),
               onPressed: onRetry,
               child: Text(S.of(context).retry),
             ),
@@ -110,18 +121,27 @@ class CustomErrorWidget extends StatelessWidget {
           ),
           Text(
             message ?? S.of(context).unknown,
-            style: currentTheme.textTheme.subtitle1,
+            style: currentTheme.textTheme.titleSmall,
           ),
           Gap(
             size: GapSize.small,
           ),
           Text(
             detail ?? S.of(context).unknownMsg,
-            style: currentTheme.textTheme.bodyText2,
+            textAlign: TextAlign.center,
+            style: currentTheme.textTheme.bodyMedium,
           ),
           if (onRetry != null) Gap(),
           if (onRetry != null)
             ElevatedButton(
+              style: ButtonStyle(
+                minimumSize: MaterialStateProperty.all(_kRetryButtonSize),
+                textStyle: MaterialStateProperty.all(
+                  const TextStyle(
+                    fontSize: AppTextTheme.body1,
+                  ),
+                ),
+              ),
               onPressed: onRetry,
               child: Text(S.of(context).retry),
             ),
