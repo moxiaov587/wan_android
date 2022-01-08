@@ -5,15 +5,19 @@ class AppTextTheme {
 
   static const double display1 = 56;
   static const double display2 = 48;
-  static const double display3 = 36;
+  static const double display3 = 40;
+  static const double headline1 = 36;
+  static const double headline2 = 32;
+  static const double headline3 = 28;
   static const double title1 = 24;
   static const double title2 = 20;
   static const double title3 = 16;
   static const double body1 = 14;
   static const double body2 = 13;
   static const double body3 = 12;
-  static const double caption = 12;
-  static const double overline = 10;
+  static const double label1 = 12;
+  static const double label2 = 11;
+  static const double label3 = 10;
 
   static const FontWeight light = FontWeight.w300;
   static const FontWeight regular = FontWeight.w400;
@@ -21,80 +25,142 @@ class AppTextTheme {
   static const FontWeight semiBold = FontWeight.w600;
 
   static const TextTheme _base = TextTheme(
-    headline6: TextStyle(
-      fontSize: title1,
-      fontWeight: medium,
+    displayLarge: TextStyle(
+      fontSize: display1,
+      fontWeight: regular,
     ),
-    subtitle1: TextStyle(
+    displayMedium: TextStyle(
+      fontSize: display2,
+      fontWeight: regular,
+    ),
+    displaySmall: TextStyle(
+      fontSize: display3,
+      fontWeight: regular,
+    ),
+    headlineLarge: TextStyle(
+      fontSize: headline1,
+      fontWeight: regular,
+    ),
+    headlineMedium: TextStyle(
+      fontSize: headline2,
+      fontWeight: regular,
+    ),
+    headlineSmall: TextStyle(
+      fontSize: headline3,
+      fontWeight: regular,
+    ),
+    titleLarge: TextStyle(
+      fontSize: title1,
+      fontWeight: regular,
+    ),
+    titleMedium: TextStyle(
+      fontSize: title2,
+      fontWeight: regular,
+    ),
+    titleSmall: TextStyle(
       fontSize: title3,
       fontWeight: regular,
     ),
-    subtitle2: TextStyle(
+    bodyLarge: TextStyle(
       fontSize: body1,
       fontWeight: regular,
     ),
-    bodyText1: TextStyle(
+    bodyMedium: TextStyle(
       fontSize: body2,
       fontWeight: regular,
     ),
-    bodyText2: TextStyle(
+    bodySmall: TextStyle(
       fontSize: body3,
       fontWeight: regular,
     ),
-    caption: TextStyle(
-      fontSize: caption,
-      fontWeight: light,
+    labelLarge: TextStyle(
+      fontSize: label1,
+      fontWeight: regular,
     ),
-    overline: TextStyle(
-      fontSize: overline,
-      fontWeight: light,
+    labelMedium: TextStyle(
+      fontSize: label2,
+      fontWeight: regular,
+    ),
+    labelSmall: TextStyle(
+      fontSize: label3,
+      fontWeight: regular,
     ),
   );
 
   static TextTheme get lightTheme => TextTheme(
-        headline6: _base.headline6?.copyWith(
+        displayLarge: _base.displayLarge!.copyWith(
           color: AppColor.text1,
         ),
-        subtitle1: _base.subtitle1?.copyWith(
+        displayMedium: _base.displayMedium!.copyWith(
+          color: AppColor.text1,
+        ),
+        displaySmall: _base.displaySmall!.copyWith(
+          color: AppColor.text1,
+        ),
+        titleLarge: _base.titleLarge!.copyWith(
           color: AppColor.text2,
         ),
-        subtitle2: _base.subtitle2?.copyWith(
+        titleMedium: _base.titleMedium!.copyWith(
           color: AppColor.text2,
         ),
-        bodyText1: _base.bodyText1?.copyWith(
+        titleSmall: _base.titleSmall!.copyWith(
+          color: AppColor.text2,
+        ),
+        bodyLarge: _base.bodyLarge!.copyWith(
           color: AppColor.text3,
         ),
-        bodyText2: _base.bodyText2?.copyWith(
+        bodyMedium: _base.bodyMedium!.copyWith(
           color: AppColor.text3,
         ),
-        caption: _base.caption?.copyWith(
+        bodySmall: _base.bodySmall!.copyWith(
           color: AppColor.text3,
         ),
-        overline: _base.overline?.copyWith(
+        labelLarge: _base.labelLarge!.copyWith(
+          color: AppColor.text4,
+        ),
+        labelMedium: _base.labelMedium!.copyWith(
+          color: AppColor.text4,
+        ),
+        labelSmall: _base.labelSmall!.copyWith(
           color: AppColor.text4,
         ),
       );
 
   static TextTheme get darkTheme => TextTheme(
-        headline6: _base.headline6?.copyWith(
+        displayLarge: _base.displayLarge!.copyWith(
           color: AppColor.text1Dark,
         ),
-        subtitle1: _base.subtitle1?.copyWith(
+        displayMedium: _base.displayMedium!.copyWith(
+          color: AppColor.text1Dark,
+        ),
+        displaySmall: _base.displaySmall!.copyWith(
+          color: AppColor.text1Dark,
+        ),
+        titleLarge: _base.titleLarge!.copyWith(
           color: AppColor.text2Dark,
         ),
-        subtitle2: _base.subtitle2?.copyWith(
+        titleMedium: _base.titleMedium!.copyWith(
           color: AppColor.text2Dark,
         ),
-        bodyText1: _base.bodyText1?.copyWith(
+        titleSmall: _base.titleSmall!.copyWith(
+          color: AppColor.text2Dark,
+        ),
+        bodyLarge: _base.bodyLarge!.copyWith(
           color: AppColor.text3Dark,
         ),
-        bodyText2: _base.bodyText2?.copyWith(
+        bodyMedium: _base.bodyMedium!.copyWith(
           color: AppColor.text3Dark,
         ),
-        caption: _base.caption?.copyWith(
+        bodySmall: _base.bodySmall!.copyWith(
           color: AppColor.text3Dark,
         ),
-        overline: _base.overline?.copyWith(
+        labelLarge: _base.labelLarge!.copyWith(
+          color: AppColor.text4Dark,
+        ),
+        labelMedium: _base.labelMedium!.copyWith(
+          color: AppColor.text4Dark,
+        ),
+        labelSmall: _base.labelSmall!.copyWith(
           color: AppColor.text4Dark,
         ),
       );
