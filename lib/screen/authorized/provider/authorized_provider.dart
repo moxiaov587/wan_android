@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 
 import '../../../app/http/wan_android_api.dart';
 import '../../../app/l10n/generated/l10n.dart';
@@ -7,6 +6,7 @@ import '../../../app/provider/provider.dart';
 import '../../../database/hive_boxes.dart';
 import '../../../database/model/models.dart';
 import '../../../model/models.dart';
+import '../../../utils/dialog.dart' show DialogUtils;
 
 final StateNotifierProvider<AuthorizedNotifier, UserModel?> authorizedProvider =
     StateNotifierProvider<AuthorizedNotifier, UserModel?>((_) {
@@ -35,13 +35,13 @@ class AuthorizedNotifier extends StateNotifier<UserModel?> {
 
       final BaseViewStateError error = BaseViewStateError.create(e, s);
 
-      SmartDialog.showToast(
+      DialogUtils.tips(
           S.current.loginInfoInvalidTips(error.statusCode?.toString() ?? '-1'));
     }
   }
 
   Future<bool> logout() async {
-    SmartDialog.showLoading();
+    DialogUtils.loading();
     try {
       await WanAndroidAPI.logout();
 
@@ -51,11 +51,11 @@ class AuthorizedNotifier extends StateNotifier<UserModel?> {
     } catch (e, s) {
       final BaseViewStateError error = BaseViewStateError.create(e, s);
 
-      SmartDialog.showToast(error.message ?? error.detail ?? '');
+      DialogUtils.danger(error.message ?? error.detail ?? '');
 
       return false;
     } finally {
-      SmartDialog.dismiss();
+      DialogUtils.dismiss();
     }
   }
 
@@ -63,7 +63,7 @@ class AuthorizedNotifier extends StateNotifier<UserModel?> {
     required String username,
     required String password,
   }) async {
-    SmartDialog.showLoading();
+    DialogUtils.loading();
     try {
       final UserModel model = await WanAndroidAPI.login(
         username: username,
@@ -82,18 +82,18 @@ class AuthorizedNotifier extends StateNotifier<UserModel?> {
 
       state = model;
 
-      SmartDialog.showToast(S.current.loginSuccess);
+      DialogUtils.success(S.current.loginSuccess);
 
       return true;
     } catch (e, s) {
       final BaseViewStateError error = BaseViewStateError.create(e, s);
 
-      SmartDialog.showToast(
+      DialogUtils.danger(
           error.message ?? error.detail ?? S.current.loginFailed);
 
       return false;
     } finally {
-      SmartDialog.dismiss();
+      DialogUtils.dismiss();
     }
   }
 
@@ -102,7 +102,7 @@ class AuthorizedNotifier extends StateNotifier<UserModel?> {
     required String password,
     required String rePassword,
   }) async {
-    SmartDialog.showLoading();
+    DialogUtils.loading();
     try {
       final UserModel model = await WanAndroidAPI.register(
         username: username,
@@ -119,18 +119,18 @@ class AuthorizedNotifier extends StateNotifier<UserModel?> {
         ),
       );
 
-      SmartDialog.showToast(S.current.registerSuccess);
+      DialogUtils.success(S.current.registerSuccess);
 
       return true;
     } catch (e, s) {
       final BaseViewStateError error = BaseViewStateError.create(e, s);
 
-      SmartDialog.showToast(
+      DialogUtils.danger(
           error.message ?? error.detail ?? S.current.registerFailed);
 
       return false;
     } finally {
-      SmartDialog.dismiss();
+      DialogUtils.dismiss();
     }
   }
 }
