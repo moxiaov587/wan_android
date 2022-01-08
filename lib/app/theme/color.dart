@@ -103,8 +103,8 @@ class AppColor {
   static Color secondaryDisabledDark =
       AppColor.grayDark.shade9.withOpacity(.09);
 
-  static Color splash = AppColor.gray.shade4;
-  static Color splashDark = AppColor.gray.shade7;
+  static Color splash = AppColor.gray.shade4.withAlpha(50);
+  static Color splashDark = AppColor.gray.shade7.withAlpha(50);
 
   static const Color appBar = Color(0xfff2f3f6);
   static const Color appBarDark = background4Dark;
