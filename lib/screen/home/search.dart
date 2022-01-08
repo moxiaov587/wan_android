@@ -60,13 +60,17 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
       },
       builder: (_, __, List<ArticleModel> list) {
         return SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (_, int index) {
-              return ListTile(
-                title: Text(list[index].title),
+          delegate: CustomSliverChildBuilderDelegate.separated(
+            itemBuilder: (_, int index) {
+              return ArticleTile(
+                article: list[index],
               );
             },
-            childCount: list.length,
+            separatorBuilder: (_, int index) => const Divider(
+              indent: kStyleUint4,
+              endIndent: kStyleUint4,
+            ),
+            itemCount: list.length,
           ),
         );
       },
