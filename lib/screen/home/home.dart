@@ -12,15 +12,19 @@ import '../../../app/provider/widget/provider_widget.dart';
 import '../../../database/hive_boxes.dart';
 import '../../../widget/view_state_widget.dart';
 import '../../app/l10n/generated/l10n.dart';
+import '../../app/theme/theme.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
 import '../../database/model/models.dart' show SearchHistory;
 import '../../model/models.dart';
 import '../../navigator/route_name.dart';
 import '../../navigator/router_delegate.dart';
+import '../../utils/dialog.dart';
+import '../../widget/article.dart';
 import '../../widget/capsule_ink.dart';
 import '../../widget/custom_bottom_navigation_bar.dart';
 import '../../widget/custom_search_delegate.dart';
+import '../../widget/custom_sliver_child_builder_delegate.dart';
 import '../../widget/gap.dart';
 import '../drawer/drawer.dart';
 import 'provider/home_provider.dart';
@@ -206,19 +210,23 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
               RefreshListViewState<ArticleModel>>,
           ArticleModel>(
         onInitState: (Reader reader) {
-          // reader.call(homeBannerProvider.notifier).initData();
+          reader.call(homeBannerProvider.notifier).initData();
           reader.call(homeArticleProvider.notifier).initData();
         },
         provider: homeArticleProvider,
         builder: (_, __, List<ArticleModel> list) {
           return SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (_, int index) {
-                return ListTile(
-                  title: Text(list[index].title),
+            delegate: CustomSliverChildBuilderDelegate.separated(
+              itemBuilder: (_, int index) {
+                return ArticleTile(
+                  article: list[index],
                 );
               },
-              childCount: list.length,
+              separatorBuilder: (_, int index) => const Divider(
+                indent: kStyleUint4,
+                endIndent: kStyleUint4,
+              ),
+              itemCount: list.length,
             ),
           );
         },
@@ -235,7 +243,7 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
                   return show
                       ? Text(
                           S.of(context).appName,
-                          style: currentTheme.textTheme.headline6,
+                          style: currentTheme.textTheme.titleLarge,
                         )
                       : child!;
                 },
@@ -338,8 +346,7 @@ class __BannerCarouselItemState extends State<_BannerCarouselItem> {
                 color: colors.first?.withOpacity(.2) ??
                     currentTheme.backgroundColor.withOpacity(.2),
                 child: DefaultTextStyle(
-                  style: currentTheme.textTheme.bodyText1!.copyWith(
-                    fontSize: 18.0,
+                  style: currentTheme.textTheme.titleMedium!.copyWith(
                     color: colors.last,
                   ),
                   child: child!,

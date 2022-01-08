@@ -33,13 +33,17 @@ class _ProjectState extends State<_Project> with AutomaticKeepAliveClientMixin {
             provider: projectArticleProvider,
             builder: (_, __, List<ArticleModel> list) {
               return SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (_, int index) {
-                    return ListTile(
-                      title: Text(list[index].title),
+                delegate: CustomSliverChildBuilderDelegate.separated(
+                  itemBuilder: (_, int index) {
+                    return ArticleTile(
+                      article: list[index],
                     );
                   },
-                  childCount: list.length,
+                  separatorBuilder: (_, int index) => const Divider(
+                    indent: kStyleUint4,
+                    endIndent: kStyleUint4,
+                  ),
+                  itemCount: list.length,
                 ),
               );
             },
@@ -69,12 +73,11 @@ class _ProjectTypeSwitchExtentProtoType extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            padding: AppTheme.bodyPadding,
             child: Ink(
               decoration: BoxDecoration(
                 color: currentTheme.cardColor,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: AppTheme.roundedBorderRadius,
               ),
               child: const _ProjectTypeSwitch(),
             ),
@@ -137,7 +140,10 @@ class _ProjectTypeSwitch extends ConsumerWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                const Icon(Icons.refresh),
+                const Icon(
+                  IconFontIcons.refreshLine,
+                  size: 14.0,
+                ),
                 Gap(
                   direction: GapDirection.horizontal,
                   size: GapSize.small,
