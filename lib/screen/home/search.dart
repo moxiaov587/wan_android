@@ -1,7 +1,5 @@
 part of 'home.dart';
 
-const double _kSuggestionsVerticalHeight = 12.0;
-
 class HomeSearchDelegate extends CustomSearchDelegate<void> {
   @override
   List<Widget>? buildActions(BuildContext context) {
@@ -9,7 +7,8 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
       TextButton(
         style: ButtonStyle(
           padding: ButtonStyleButton.allOrNull<EdgeInsets>(
-            const EdgeInsets.fromLTRB(0.0, 8.0, 12.0, 8.0),
+            const EdgeInsets.fromLTRB(
+                0.0, kStyleUint2, kStyleUint3, kStyleUint2),
           ),
           overlayColor: ButtonStyleButton.allOrNull<Color>(
             Colors.transparent,
@@ -17,7 +16,7 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
         ),
         child: Text(
           S.of(context).cancel,
-          style: currentTheme.textTheme.headline6?.copyWith(
+          style: currentTheme.textTheme.titleLarge!.copyWith(
             color: currentTheme.primaryColor,
             fontSize: 16.0,
           ),
@@ -32,6 +31,15 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
   @override
   Widget? buildLeading(BuildContext context) {
     return null;
+  }
+
+  @override
+  void showResults(BuildContext context) {
+    if (query.isNotEmpty) {
+      super.showResults(context);
+    } else {
+      DialogUtils.waring(S.of(context).keywordEmptyTips);
+    }
   }
 
   @override
@@ -134,40 +142,48 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
 
   @override
   Widget build(BuildContext context) {
-    const EdgeInsetsGeometry headerPadding = EdgeInsets.symmetric(
-      horizontal: 16.0,
-      vertical: _kSuggestionsVerticalHeight,
+    const Widget searchHistoryEmpty = SliverToBoxAdapter(
+      child: SizedBox.shrink(),
     );
 
-    const EdgeInsetsGeometry bodyPadding = EdgeInsets.symmetric(
-      horizontal: 16.0,
-    );
+    final double wrapSpace = AppTheme.bodyPaddingOnlyVertical.vertical / 2;
 
     return CustomScrollView(
       slivers: <Widget>[
-        SliverPadding(
-          padding: headerPadding,
-          sliver: SliverToBoxAdapter(
-            child: Text(
-              S.of(context).searchHistory,
-              style: currentTheme.textTheme.subtitle1,
-            ),
-          ),
-        ),
-        SliverPadding(
-          padding: bodyPadding,
-          sliver: SliverToBoxAdapter(
-            child: Consumer(
-              builder: (_, WidgetRef ref, Widget? child) {
-                return ref
-                        .watch(searchHistoryProvider)
-                        .whenOrNull((List<SearchHistory> list) {
-                      if (list.isEmpty) {
-                        return child!;
-                      } else {
-                        return Wrap(
-                          spacing: _kSuggestionsVerticalHeight,
-                          runSpacing: _kSuggestionsVerticalHeight,
+        ref.watch(searchHistoryProvider).whenOrNull((List<SearchHistory> list) {
+              if (list.isEmpty) {
+                return searchHistoryEmpty;
+              } else {
+                return SliverPadding(
+                  padding: AppTheme.bodyPaddingOnlyHorizontal,
+                  sliver: SliverToBoxAdapter(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              S.of(context).searchHistory,
+                              style: currentTheme.textTheme.titleSmall,
+                            ),
+                            IconButton(
+                              padding: EdgeInsets.zero,
+                              alignment: Alignment.centerRight,
+                              splashColor: Colors.transparent,
+                              onPressed: () async {
+                                await HiveBoxes.searchHistoryBox.clear();
+                                ref
+                                    .read(searchHistoryProvider.notifier)
+                                    .initData();
+                              },
+                              icon: const Icon(IconFontIcons.deleteLine),
+                            ),
+                          ],
+                        ),
+                        Wrap(
+                          spacing: wrapSpace,
+                          runSpacing: wrapSpace,
                           children: list.reversed
                               .map(
                                 (SearchHistory e) => CapsuleInk(
@@ -178,32 +194,31 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
                                 ),
                               )
                               .toList(),
-                        );
-                      }
-                    }) ??
-                    child!;
-              },
-              child: Text(S.of(context).empty),
-            ),
-          ),
-        ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+            }) ??
+            searchHistoryEmpty,
         SliverPadding(
-          padding: headerPadding,
+          padding: AppTheme.bodyPadding,
           sliver: SliverToBoxAdapter(
             child: Text(
               S.of(context).popularKeyword,
-              style: currentTheme.textTheme.subtitle1,
+              style: currentTheme.textTheme.titleSmall,
             ),
           ),
         ),
         SliverPadding(
-          padding: bodyPadding,
+          padding: AppTheme.bodyPaddingOnlyHorizontal,
           sliver: Consumer(
             builder: (_, WidgetRef ref, Widget? loadingWidget) {
               return SliverToBoxAdapter(
                 child: Wrap(
-                  spacing: _kSuggestionsVerticalHeight,
-                  runSpacing: _kSuggestionsVerticalHeight,
+                  spacing: wrapSpace,
+                  runSpacing: wrapSpace,
                   children: ref.watch(searchPopularKeywordProvider).when(
                         (List<SearchKeywordModel> list) => list
                             .map(
@@ -221,7 +236,7 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
                         error: (_, __, ___) => <Widget>[
                           CapsuleInk(
                             child: const Icon(
-                              Icons.refresh,
+                              IconFontIcons.refreshLine,
                               size: 16.0,
                             ),
                             onTap: ref
