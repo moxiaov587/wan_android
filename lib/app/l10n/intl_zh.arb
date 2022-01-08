@@ -7,6 +7,7 @@
     "search": "搜索",
     "searchHistory": "搜索历史",
     "popularKeyword": "搜索热词",
+    "keywordEmptyTips": "没有关键字的搜索就像一盘沙，不用请求，前端就给拦了",
     "cancel": "取消",
     "empty": "无数据",
     "emptyMsg": "这儿啥也没有",
@@ -19,6 +20,9 @@
     "myShare": "我的分享",
     "about": "关于",
     "settings": "设置",
+    "loading": "请稍候",
+    "ok": "好",
+    "delete": "删除",
 
     "login": "登录",
     "logout": "退出登录",
@@ -30,5 +34,8 @@
     "loginSuccess": "登录成功",
     "loginFailed": "登录失败",
     "registerSuccess": "注册成功",
-    "registerFailed": "注册失败"
+    "registerFailed": "注册失败",
+
+    "share": "分享",
+    "original": "原创"
 }
