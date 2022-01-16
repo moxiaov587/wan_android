@@ -10,7 +10,7 @@ abstract class BaseRefreshListViewNotifier<T>
     extends StateNotifier<RefreshListViewState<T>> {
   BaseRefreshListViewNotifier(
     RefreshListViewState<T> state, {
-    this.initialPageNum = 0,
+    this.initialPageNum = 1,
     this.pageSize = 20,
   }) : super(state);
 
@@ -40,7 +40,8 @@ abstract class BaseRefreshListViewNotifier<T>
         onCompleted(data.list);
 
         state = RefreshListViewState<T>(
-          nextPageNum: data.nextPageNum,
+          pageNum: data.pageNum,
+          isLastPage: data.isLastPage,
           list: data.list,
         );
       }
@@ -62,17 +63,23 @@ abstract class BaseRefreshListViewNotifier<T>
 
   Future<RefreshControllerStatus?> loadMore() async {
     return await state.whenOrNull<Future<RefreshControllerStatus?>>(
-      (int currentPageNum, bool isLastPage, List<T> list) async {
+      (int pageNum, bool isLastPage, List<T> list) async {
         try {
+          /// Prevent no data state not being set on initialization
+          if (isLastPage) {
+            return RefreshControllerStatus.noData;
+          }
+
           final RefreshListViewStateData<T> data = await loadData(
-            pageNum: currentPageNum,
+            pageNum: pageNum + 1,
             pageSize: pageSize,
           );
 
           onCompleted(data.list);
 
           state = RefreshListViewState<T>(
-            nextPageNum: data.nextPageNum,
+            pageNum: data.pageNum,
+            isLastPage: data.isLastPage,
             list: <T>[
               ...list,
               ...data.list,
