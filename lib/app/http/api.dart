@@ -31,4 +31,12 @@ class API {
   static const String register = '/user/register';
 
   static const String logout = '/user/logout/json';
+
+  static const String userInfo = '/user/lg/userinfo/json';
+
+  static String pointsRank({required int pageNum}) =>
+      '/coin/rank/$pageNum/json';
+
+  static String userPointsRecord({required int pageNum}) =>
+      '/lg/coin/list/$pageNum/json';
 }
