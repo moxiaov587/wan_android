@@ -5,13 +5,13 @@ class AppTextTheme {
 
   static const double display1 = 56;
   static const double display2 = 48;
-  static const double display3 = 40;
-  static const double headline1 = 36;
-  static const double headline2 = 32;
-  static const double headline3 = 28;
-  static const double title1 = 24;
-  static const double title2 = 20;
-  static const double title3 = 16;
+  static const double display3 = 36;
+  static const double headline1 = 32;
+  static const double headline2 = 28;
+  static const double headline3 = 24;
+  static const double title1 = 20;
+  static const double title2 = 16;
+  static const double title3 = 14;
   static const double body1 = 14;
   static const double body2 = 13;
   static const double body3 = 12;
