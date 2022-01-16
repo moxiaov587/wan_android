@@ -27,10 +27,10 @@ class _ProjectState extends State<_Project> with AutomaticKeepAliveClientMixin {
               StateNotifierProvider<ProjectNotifier,
                   RefreshListViewState<ArticleModel>>,
               ArticleModel>(
+            provider: projectArticleProvider,
             onInitState: (Reader reader) {
               reader.call(projectTypesProvider.notifier).initData();
             },
-            provider: projectArticleProvider,
             builder: (_, __, List<ArticleModel> list) {
               return SliverList(
                 delegate: CustomSliverChildBuilderDelegate.separated(
@@ -39,10 +39,6 @@ class _ProjectState extends State<_Project> with AutomaticKeepAliveClientMixin {
                       article: list[index],
                     );
                   },
-                  separatorBuilder: (_, int index) => const Divider(
-                    indent: kStyleUint4,
-                    endIndent: kStyleUint4,
-                  ),
                   itemCount: list.length,
                 ),
               );

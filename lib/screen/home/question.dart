@@ -39,10 +39,6 @@ class _QAState extends State<_QA> with AutomaticKeepAliveClientMixin {
                       article: list[index],
                     );
                   },
-                  separatorBuilder: (_, int index) => const Divider(
-                    indent: kStyleUint4,
-                    endIndent: kStyleUint4,
-                  ),
                   itemCount: list.length,
                 ),
               );
