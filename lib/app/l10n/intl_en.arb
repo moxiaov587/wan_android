@@ -16,13 +16,19 @@
     "retry": "Retry",
     "noLogin": "No login",
     "myPoints": "My Points",
+    "totalPoints": "Total Points",
+    "pointsRank": "Points Rank",
     "myCollections": "My Collections",
     "myShare": "My Share",
     "about": "About",
     "settings": "Settings",
+    "clearCache": "Clear Cache",
+    "clearCacheWarning": "Are you sure you want to clear the cache?",
     "loading": "Loading",
     "ok": "OK",
     "delete": "Delete",
+    "tips": "Tips",
+    "warning": "Warning",
 
     "login": "Login",
     "logout": "Logout",
@@ -30,6 +36,7 @@
     "username": "Username",
     "password": "Password",
     "rePassword": "RePassword",
+    "rememberPassword": "Remember Password",
     "loginInfoInvalidTips": "Login information is invalid, error code {errorCode}",
     "loginSuccess": "Login Successful",
     "loginFailed": "Login Failed",
@@ -37,5 +44,10 @@
     "registerFailed": "Register Failed",
 
     "share": "Share",
-    "original": "Original"
+    "original": "Original",
+
+    "languages": "Language",
+    "chinese": "Chinese",
+    "english": "English",
+    "auto": "Auto"
 }

@@ -16,13 +16,19 @@
     "retry": "重试",
     "noLogin": "未登录",
     "myPoints": "我的积分",
+    "totalPoints": "总积分",
+    "pointsRank": "积分排行榜",
     "myCollections": "我的收藏",
     "myShare": "我的分享",
     "about": "关于",
     "settings": "设置",
+    "clearCache": "清除缓存",
+    "clearCacheWarning": "确定要清空缓存吗？",
     "loading": "请稍候",
     "ok": "好",
     "delete": "删除",
+    "tips": "提示",
+    "warning": "警告",
 
     "login": "登录",
     "logout": "退出登录",
@@ -30,6 +36,7 @@
     "username": "用户名",
     "password": "密码",
     "rePassword": "确认密码",
+    "rememberPassword": "记住密码",
     "loginInfoInvalidTips": "登录信息已过期, 错误码 {errorCode}",
     "loginSuccess": "登录成功",
     "loginFailed": "登录失败",
@@ -37,5 +44,10 @@
     "registerFailed": "注册失败",
 
     "share": "分享",
-    "original": "原创"
+    "original": "原创",
+
+    "languages": "多语言",
+    "chinese": "中文",
+    "english": "英文",
+    "auto": "跟随系统"
 }
