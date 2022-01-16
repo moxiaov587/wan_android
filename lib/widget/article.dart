@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../app/l10n/generated/l10n.dart';
 import '../app/theme/theme.dart';
 import '../contacts/instances.dart';
+import '../contacts/unicode.dart';
 import '../extensions/extensions.dart';
 import '../model/models.dart';
 import '../widget/gap.dart';
@@ -13,12 +14,14 @@ class ArticleTile extends StatelessWidget {
   const ArticleTile({
     Key? key,
     required this.article,
+    this.query,
   }) : super(key: key);
 
   final ArticleModel article;
+  final String? query;
 
   TextSpan get _textSpace => const TextSpan(
-        text: ' • ',
+        text: '${Unicode.halfWidthSpace}•${Unicode.halfWidthSpace}',
         style: TextStyle(
           wordSpacing: _kArticleSmallSpace,
         ),
@@ -33,6 +36,8 @@ class ArticleTile extends StatelessWidget {
     final EdgeInsetsGeometry contentPadding = AppTheme.bodyPadding;
 
     final double titleVerticalGap = contentPadding.vertical / 2;
+
+    final TextStyle titleStyle = currentTheme.textTheme.titleSmall!;
     return Material(
       child: Ink(
         child: InkWell(
@@ -65,10 +70,17 @@ class ArticleTile extends StatelessWidget {
                 Gap(
                   value: titleVerticalGap,
                 ),
-                Text(
-                  article.title,
-                  style: currentTheme.textTheme.titleSmall,
-                ),
+                if (query != null)
+                  ArticleTileSearchTitle(
+                    query: query!,
+                    title: article.title,
+                    textStyle: titleStyle,
+                  )
+                else
+                  Text(
+                    article.title,
+                    style: titleStyle,
+                  ),
                 Gap(
                   value: titleVerticalGap,
                 ),
@@ -94,6 +106,59 @@ class ArticleTile extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class ArticleTileSearchTitle extends StatelessWidget {
+  const ArticleTileSearchTitle({
+    Key? key,
+    required this.query,
+    required this.title,
+    required this.textStyle,
+  }) : super(key: key);
+
+  final String query;
+  final String title;
+  final TextStyle textStyle;
+
+  List<String> get keywords => query.split(Unicode.halfWidthSpace).toList();
+
+  List<String> get words => title
+      .replaceAllMapped(RegExp(r'<[a-zA-Z]+.*?>([\s\S]*?)</[a-zA-Z]*?>'),
+          (Match match) {
+        final String? value = match.group(1);
+
+        if (value != null) {
+          return ',$value,';
+        }
+
+        return '';
+      })
+      .split(',')
+      .where((String word) => word.isNotEmpty)
+      .toList();
+
+  @override
+  Widget build(BuildContext context) {
+    final Color keywordsBackgroundColor =
+        (currentIsDark ? AppColor.yellowDark : AppColor.yellow).withOpacity(.2);
+
+    return RichText(
+      text: TextSpan(
+        style: textStyle,
+        children: words.map((String word) {
+          final bool isKeywords = keywords.contains(word);
+
+          return TextSpan(
+            text: word,
+            style: TextStyle(
+              backgroundColor: isKeywords ? keywordsBackgroundColor : null,
+              color: isKeywords ? currentTheme.errorColor : null,
+            ),
+          );
+        }).toList(),
       ),
     );
   }
