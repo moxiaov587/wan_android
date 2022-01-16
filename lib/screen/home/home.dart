@@ -104,11 +104,13 @@ class _HomeScreenState extends State<HomeScreen> {
       body: PageView.builder(
         controller: _pageController,
         itemCount: _pages.length,
-        itemBuilder: (_, int index) => Material(
-          color: currentTheme.scaffoldBackgroundColor,
-          child: SafeArea(
-            top: false,
-            child: _pages[index],
+        itemBuilder: (_, int index) => Builder(
+          builder: (_) => Material(
+            color: currentTheme.scaffoldBackgroundColor,
+            child: SafeArea(
+              top: false,
+              child: _pages[index],
+            ),
           ),
         ),
         onPageChanged: (int value) {
@@ -209,11 +211,11 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
           StateNotifierProvider<ArticleNotifier,
               RefreshListViewState<ArticleModel>>,
           ArticleModel>(
+        provider: homeArticleProvider,
         onInitState: (Reader reader) {
           reader.call(homeBannerProvider.notifier).initData();
           reader.call(homeArticleProvider.notifier).initData();
         },
-        provider: homeArticleProvider,
         builder: (_, __, List<ArticleModel> list) {
           return SliverList(
             delegate: CustomSliverChildBuilderDelegate.separated(
@@ -222,10 +224,6 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
                   article: list[index],
                 );
               },
-              separatorBuilder: (_, int index) => const Divider(
-                indent: kStyleUint4,
-                endIndent: kStyleUint4,
-              ),
               itemCount: list.length,
             ),
           );
