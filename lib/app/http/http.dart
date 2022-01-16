@@ -48,7 +48,7 @@ class HttpUtils {
           .onHttpClientCreate = _clientCreate;
     }
 
-    dio.options.baseUrl = 'http://localhost:3300/';
+    dio.options.baseUrl = 'https://www.wanandroid.com';
 
     dio.interceptors
       ..add(ErrorInterceptors())
