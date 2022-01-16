@@ -103,7 +103,10 @@ class ProjectNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
     RefreshListViewState<ArticleModel> state, {
     required this.categoryId,
     this.cancelToken,
-  }) : super(state);
+  }) : super(
+          state,
+          initialPageNum: 0,
+        );
 
   final int? categoryId;
   final CancelToken? cancelToken;
@@ -111,14 +114,8 @@ class ProjectNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
   @override
   Future<RefreshListViewStateData<ArticleModel>> loadData(
       {required int pageNum, required int pageSize}) async {
-    final RefreshArticleListModel data =
-        await WanAndroidAPI.fetchProjectArticles(pageNum, pageSize,
-            categoryId: categoryId!);
-
-    return RefreshListViewStateData<ArticleModel>(
-      nextPageNum: data.curPage,
-      isLastPage: data.over,
-      list: data.datas,
-    );
+    return (await WanAndroidAPI.fetchProjectArticles(pageNum, pageSize,
+            categoryId: categoryId!))
+        .toRefreshListViewStateData();
   }
 }

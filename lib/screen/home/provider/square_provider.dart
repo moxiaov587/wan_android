@@ -13,24 +13,21 @@ class SquareNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
   SquareNotifier(
     RefreshListViewState<ArticleModel> state, {
     this.cancelToken,
-  }) : super(state);
+  }) : super(
+          state,
+          initialPageNum: 0,
+        );
 
   final CancelToken? cancelToken;
 
   @override
   Future<RefreshListViewStateData<ArticleModel>> loadData(
       {required int pageNum, required int pageSize}) async {
-    final RefreshArticleListModel data =
-        await WanAndroidAPI.fetchSquareArticles(
+    return (await WanAndroidAPI.fetchSquareArticles(
       pageNum,
       pageSize,
       cancelToken: cancelToken,
-    );
-
-    return RefreshListViewStateData<ArticleModel>(
-      nextPageNum: data.curPage,
-      isLastPage: data.over,
-      list: data.datas,
-    );
+    ))
+        .toRefreshListViewStateData();
   }
 }

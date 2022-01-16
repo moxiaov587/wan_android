@@ -25,7 +25,10 @@ class SearchNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
     RefreshListViewState<ArticleModel> state, {
     required this.keyword,
     this.cancelToken,
-  }) : super(state);
+  }) : super(
+          state,
+          initialPageNum: 0,
+        );
 
   final String keyword;
 
@@ -34,19 +37,13 @@ class SearchNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
   @override
   Future<RefreshListViewStateData<ArticleModel>> loadData(
       {required int pageNum, required int pageSize}) async {
-    final RefreshArticleListModel data =
-        await WanAndroidAPI.fetchSearchArticles(
+    return (await WanAndroidAPI.fetchSearchArticles(
       pageNum,
       pageSize,
       keyword: keyword,
       cancelToken: cancelToken,
-    );
-
-    return RefreshListViewStateData<ArticleModel>(
-      nextPageNum: data.curPage,
-      isLastPage: data.over,
-      list: data.datas,
-    );
+    ))
+        .toRefreshListViewStateData();
   }
 }
 
