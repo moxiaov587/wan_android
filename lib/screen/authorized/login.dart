@@ -28,18 +28,24 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
   final TextEditingController _passwordTextEditingController =
       TextEditingController();
 
+  late final ValueNotifier<bool> _rememberPasswordNotifier =
+      ValueNotifier<bool>(rememberPassword);
+
+  bool get rememberPassword =>
+      HiveBoxes.uniqueUserSettings?.rememberPassword ?? false;
+
   @override
   void initState() {
     super.initState();
 
-    initUsernameDefaultValue();
+    initTextEditingDefaultValue();
   }
 
   @override
   void didPopNext() {
     super.didPopNext();
 
-    initUsernameDefaultValue();
+    initTextEditingDefaultValue();
   }
 
   @override
@@ -53,17 +59,22 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
   void dispose() {
     _usernameTextEditingController.dispose();
     _passwordTextEditingController.dispose();
+    _rememberPasswordNotifier.dispose();
     Instances.routeObserver.unsubscribe(this);
 
     super.dispose();
   }
 
-  void initUsernameDefaultValue() {
+  void initTextEditingDefaultValue() {
     try {
       final AuthorizedCache authorizedCache =
           HiveBoxes.authorizedCacheBox.values.first;
 
       _usernameTextEditingController.text = authorizedCache.username;
+
+      if (rememberPassword) {
+        _passwordTextEditingController.text = authorizedCache.password!;
+      }
     } catch (_) {}
   }
 
@@ -100,19 +111,52 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                 ),
               ),
 
+              /// remember password
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24.0,
+                  vertical: 20.0,
+                ),
+                sliver: SliverToBoxAdapter(
+                  child: Row(
+                    children: <Widget>[
+                      ValueListenableBuilder<bool>(
+                        valueListenable: _rememberPasswordNotifier,
+                        builder: (_, bool value, __) {
+                          return Checkbox(
+                            value: value,
+                            onChanged: (bool? value) {
+                              _rememberPasswordNotifier.value = value ?? false;
+                            },
+                          );
+                        },
+                      ),
+                      Text(
+                        S.of(context).rememberPassword,
+                        style: currentTheme.textTheme.bodyLarge,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
               /// submit
               SliverPadding(
-                padding: _kBodyPadding,
+                padding: _kBodyPadding.copyWith(
+                  top: 0.0,
+                ),
                 sliver: SliverToBoxAdapter(
                     child: Consumer(
                   builder: (_, WidgetRef ref, Widget? text) => ElevatedButton(
                     onPressed: () async {
                       if (_formKey.currentState?.validate() ?? false) {
-                        final bool result =
-                            await ref.read(authorizedProvider.notifier).login(
-                                  username: _usernameTextEditingController.text,
-                                  password: _passwordTextEditingController.text,
-                                );
+                        final bool result = await ref
+                            .read(authorizedProvider.notifier)
+                            .login(
+                              username: _usernameTextEditingController.text,
+                              password: _passwordTextEditingController.text,
+                              rememberPassword: _rememberPasswordNotifier.value,
+                            );
 
                         if (result) {
                           AppRouterDelegate.instance.currentBeamState
