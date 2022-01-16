@@ -89,11 +89,11 @@ class DialogUtils {
   }
 
   static void confirm({
-    required String title,
+    String? title,
     required Widget content,
     String? confirmText,
     String? cancelText,
-    Function()? confirmCallback,
+    required Function() confirmCallback,
     Function()? cancelCallback,
     bool isDanger = false,
   }) {
@@ -106,7 +106,7 @@ class DialogUtils {
         cancelText: cancelText,
         confirmHandle: () {
           SmartDialog.dismiss();
-          confirmCallback?.call();
+          confirmCallback.call();
         },
         cancelHandle: () {
           SmartDialog.dismiss();

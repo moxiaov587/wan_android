@@ -82,7 +82,7 @@ class BaseConfirm extends StatelessWidget {
     required this.isDanger,
   }) : super(key: key);
 
-  final String title;
+  final String? title;
   final Widget content;
   final String? confirmText;
   final String? cancelText;
@@ -112,7 +112,8 @@ class BaseConfirm extends StatelessWidget {
               padding: AppTheme.contentPadding,
               child: Align(
                 child: Text(
-                  title,
+                  title ??
+                      (isDanger ? S.of(context).warning : S.of(context).tips),
                   style: currentTheme.textTheme.titleMedium,
                 ),
               ),
