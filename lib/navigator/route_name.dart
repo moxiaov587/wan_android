@@ -69,6 +69,10 @@ class RouterName {
     title: 'Settings',
   );
 
+  static RouteName languages = const RouteName(
+    title: 'Languages',
+  );
+
   static RouteName rank = const RouteName(
     title: 'Rank',
   );
@@ -90,12 +94,9 @@ class RouterName {
   );
 
   static List<String> homeDrawerPath = <String>[
-    rank.location,
     myPoints.location,
     myCollections.location,
     myShare.location,
-    about.location,
-    settings.location,
   ];
 
   static List<RouteName> homeDrawerTiles = <RouteName>[
