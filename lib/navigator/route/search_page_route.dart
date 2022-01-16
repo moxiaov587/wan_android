@@ -261,8 +261,8 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
                         left: 4,
                       ),
                       child: Icon(
-                        Icons.search,
-                        size: 22,
+                        IconFontIcons.searchLine,
+                        size: 20.0,
                       ),
                     ),
                     suffixIconColor: materialStateColor,
