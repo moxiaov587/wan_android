@@ -12,6 +12,8 @@ import 'app/l10n/generated/l10n.dart';
 import 'app/theme/theme.dart' show AppTheme;
 import 'database/hive_boxes.dart';
 import 'navigator/router_delegate.dart';
+import 'screen/provider/locale_provider.dart';
+import 'screen/provider/theme_provider.dart';
 
 Future<void> main() async {
   await Hive.initFlutter();
@@ -66,25 +68,29 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routeInformationParser: BeamerParser(),
-      routerDelegate: AppRouterDelegate.instance.delegate,
-      backButtonDispatcher: BeamerBackButtonDispatcher(
-        delegate: AppRouterDelegate.instance.delegate,
-      ),
-      builder: FlutterSmartDialog.init(),
+    return Consumer(builder: (_, WidgetRef ref, __) {
+      final ThemeMode themeMode = ref.watch(themeProvider);
+      final Locale? locale = ref.watch(localeProvider);
 
-      /// TODO:
-      // themeMode: ,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
-        S.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: S.delegate.supportedLocales,
-    );
+      return MaterialApp.router(
+        routeInformationParser: BeamerParser(),
+        routerDelegate: AppRouterDelegate.instance.delegate,
+        backButtonDispatcher: BeamerBackButtonDispatcher(
+          delegate: AppRouterDelegate.instance.delegate,
+        ),
+        builder: FlutterSmartDialog.init(),
+        themeMode: themeMode,
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        locale: locale,
+        localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+          S.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: S.delegate.supportedLocales,
+      );
+    });
   }
 }
