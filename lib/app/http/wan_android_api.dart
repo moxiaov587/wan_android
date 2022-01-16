@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 
+import '../../app/provider/view_state.dart' show ModelToRefreshListData;
 import '../../model/models.dart';
 import 'api.dart';
 import 'http.dart';
@@ -20,7 +21,7 @@ class WanAndroidAPI {
         .toList();
   }
 
-  static Future<RefreshArticleListModel> fetchHomeArticles(
+  static Future<ModelToRefreshListData<ArticleModel>> fetchHomeArticles(
     int pageNum,
     int pageSize, {
     CancelToken? cancelToken,
@@ -33,10 +34,14 @@ class WanAndroidAPI {
       queryParameters: <String, dynamic>{'page_size': pageSize},
       cancelToken: cancelToken,
     );
-    return RefreshArticleListModel.fromJson(response.data!);
+
+    return ModelToRefreshListData<ArticleModel>.fromJson(
+      json: response.data!,
+      formJson: ArticleModel.fromJson,
+    );
   }
 
-  static Future<RefreshArticleListModel> fetchSquareArticles(
+  static Future<ModelToRefreshListData<ArticleModel>> fetchSquareArticles(
     int pageNum,
     int pageSize, {
     CancelToken? cancelToken,
@@ -49,10 +54,13 @@ class WanAndroidAPI {
       queryParameters: <String, dynamic>{'page_size': pageSize},
       cancelToken: cancelToken,
     );
-    return RefreshArticleListModel.fromJson(response.data!);
+    return ModelToRefreshListData<ArticleModel>.fromJson(
+      json: response.data!,
+      formJson: ArticleModel.fromJson,
+    );
   }
 
-  static Future<RefreshArticleListModel> fetchQuestionArticles(
+  static Future<ModelToRefreshListData<ArticleModel>> fetchQuestionArticles(
     int pageNum,
     int pageSize, {
     CancelToken? cancelToken,
@@ -65,7 +73,11 @@ class WanAndroidAPI {
       queryParameters: <String, dynamic>{'page_size': pageSize},
       cancelToken: cancelToken,
     );
-    return RefreshArticleListModel.fromJson(response.data!);
+
+    return ModelToRefreshListData<ArticleModel>.fromJson(
+      json: response.data!,
+      formJson: ArticleModel.fromJson,
+    );
   }
 
   static Future<List<ProjectTypeModel>> fetchProjectTypes({
@@ -82,7 +94,7 @@ class WanAndroidAPI {
         .toList();
   }
 
-  static Future<RefreshArticleListModel> fetchProjectArticles(
+  static Future<ModelToRefreshListData<ArticleModel>> fetchProjectArticles(
     int pageNum,
     int pageSize, {
     required int categoryId,
@@ -98,10 +110,13 @@ class WanAndroidAPI {
       cancelToken: cancelToken,
     );
 
-    return RefreshArticleListModel.fromJson(response.data!);
+    return ModelToRefreshListData<ArticleModel>.fromJson(
+      json: response.data!,
+      formJson: ArticleModel.fromJson,
+    );
   }
 
-  static Future<RefreshArticleListModel> fetchSearchArticles(
+  static Future<ModelToRefreshListData<ArticleModel>> fetchSearchArticles(
     int pageNum,
     int pageSize, {
     required String keyword,
@@ -117,7 +132,10 @@ class WanAndroidAPI {
       cancelToken: cancelToken,
     );
 
-    return RefreshArticleListModel.fromJson(response.data!);
+    return ModelToRefreshListData<ArticleModel>.fromJson(
+      json: response.data!,
+      formJson: ArticleModel.fromJson,
+    );
   }
 
   static Future<List<SearchKeywordModel>> fetchSearchPopularKeywords({
@@ -175,5 +193,54 @@ class WanAndroidAPI {
 
   static Future<void> logout() async {
     await HttpUtils.get<dynamic>(API.logout);
+  }
+
+  static Future<UserInfoModel> fetchUserInfo({
+    CancelToken? cancelToken,
+  }) async {
+    final Response<Map<String, dynamic>> response =
+        await HttpUtils.post<Map<String, dynamic>>(
+      API.userInfo,
+      cancelToken: cancelToken,
+    );
+
+    return UserInfoModel.fromJson(response.data!);
+  }
+
+  static Future<ModelToRefreshListData<UserPointsModel>> fetchPointsRank(
+    int pageNum, {
+    CancelToken? cancelToken,
+  }) async {
+    final Response<Map<String, dynamic>> response =
+        await HttpUtils.get<Map<String, dynamic>>(
+      API.pointsRank(
+        pageNum: pageNum,
+      ),
+      cancelToken: cancelToken,
+    );
+    return ModelToRefreshListData<UserPointsModel>.fromJson(
+      json: response.data!,
+      formJson: UserPointsModel.fromJson,
+    );
+  }
+
+  static Future<ModelToRefreshListData<PointsModel>> fetchUserPointsRecord(
+    int pageNum,
+    int pageSize, {
+    CancelToken? cancelToken,
+  }) async {
+    final Response<Map<String, dynamic>> response =
+        await HttpUtils.get<Map<String, dynamic>>(
+      API.userPointsRecord(
+        pageNum: pageNum,
+      ),
+      queryParameters: <String, dynamic>{'page_size': pageSize},
+      cancelToken: cancelToken,
+    );
+
+    return ModelToRefreshListData<PointsModel>.fromJson(
+      json: response.data!,
+      formJson: PointsModel.fromJson,
+    );
   }
 }
