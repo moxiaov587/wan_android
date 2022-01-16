@@ -1,21 +1,46 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/l10n/generated/l10n.dart';
+import '../../app/provider/view_state.dart';
+import '../../app/provider/widget/provider_widget.dart';
+import '../../app/theme/theme.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
+import '../../contacts/unicode.dart';
+import '../../database/hive_boxes.dart';
+import '../../extensions/extensions.dart';
 import '../../model/models.dart';
-import '../../navigator/route_name.dart';
 import '../../navigator/router_delegate.dart';
 import '../../screen/authorized/provider/authorized_provider.dart';
+import '../../screen/provider/locale_provider.dart';
+import '../../screen/provider/theme_provider.dart';
+import '../../utils/dialog.dart';
+import '../../utils/screen.dart';
+import '../../widget/animated_counter.dart';
+import '../../widget/custom_sliver_child_builder_delegate.dart';
 import '../../widget/gap.dart';
+import 'provider/drawer_provider.dart';
 
 part 'about.dart';
+part 'languages.dart';
 part 'my_collections.dart';
 part 'my_points.dart';
 part 'my_share.dart';
+part 'rank.dart';
+part 'settings.dart';
+
+class ListTileConfig {
+  ListTileConfig({
+    required this.iconData,
+    required this.title,
+    required this.onTap,
+  });
+
+  final IconData iconData;
+  final String title;
+  final VoidCallback onTap;
+}
 
 class HomeDrawer extends StatefulWidget {
   const HomeDrawer({Key? key}) : super(key: key);
@@ -25,6 +50,45 @@ class HomeDrawer extends StatefulWidget {
 }
 
 class _HomeDrawerState extends State<HomeDrawer> {
+  final List<ListTileConfig> configs = <ListTileConfig>[
+    ListTileConfig(
+      iconData: IconFontIcons.coinLine,
+      title: S.current.myPoints,
+      onTap: () {
+        AppRouterDelegate.instance.currentBeamState.updateWith(
+          isMyPoints: true,
+        );
+      },
+    ),
+    ListTileConfig(
+      iconData: IconFontIcons.starLine,
+      title: S.current.myCollections,
+      onTap: () {
+        AppRouterDelegate.instance.currentBeamState.updateWith(
+          isMyCollections: true,
+        );
+      },
+    ),
+    ListTileConfig(
+      iconData: IconFontIcons.shareCircleLine,
+      title: S.current.myShare,
+      onTap: () {
+        AppRouterDelegate.instance.currentBeamState.updateWith(
+          isMyShare: true,
+        );
+      },
+    ),
+    ListTileConfig(
+      iconData: IconFontIcons.informationLine,
+      title: S.current.about,
+      onTap: () {
+        AppRouterDelegate.instance.currentBeamState.updateWith(
+          isAbout: true,
+        );
+      },
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
     const double avatarRadius = 30.0;
@@ -35,9 +99,21 @@ class _HomeDrawerState extends State<HomeDrawer> {
           SliverToBoxAdapter(
             child: DrawerHeader(
               margin: EdgeInsets.zero,
+              padding: EdgeInsets.zero,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: IconButton(
+                      onPressed: () {
+                        AppRouterDelegate.instance.currentBeamState.updateWith(
+                          isRank: true,
+                        );
+                      },
+                      icon: const Icon(IconFontIcons.honourLine),
+                    ),
+                  ),
                   const CircleAvatar(
                     radius: avatarRadius,
                     child: Icon(
@@ -48,10 +124,39 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   Gap(),
                   Consumer(
                     builder: (_, WidgetRef ref, __) {
-                      final String? nickname = ref.watch(authorizedProvider
-                          .select((UserModel? value) => value?.nickname));
+                      final String? nickname = ref.watch(
+                          authorizedProvider.select(
+                              (UserInfoModel? value) => value?.user.username));
 
-                      return Text(nickname ?? S.of(context).noLogin);
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            nickname ?? S.of(context).noLogin,
+                            style: currentTheme.textTheme.titleMedium,
+                          ),
+                          if (nickname != null)
+                            Gap(
+                              direction: GapDirection.horizontal,
+                              size: GapSize.small,
+                            ),
+                          if (nickname != null)
+                            Consumer(
+                              builder: (_, WidgetRef ref, __) {
+                                final int? level = ref.watch(
+                                  authorizedProvider.select(
+                                    (UserInfoModel? value) =>
+                                        value?.userPoints.level,
+                                  ),
+                                );
+
+                                return _LevelTag(
+                                  level: level,
+                                );
+                              },
+                            ),
+                        ],
+                      );
                     },
                   ),
                 ],
@@ -59,30 +164,17 @@ class _HomeDrawerState extends State<HomeDrawer> {
             ),
           ),
           SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (BuildContext context, int index) {
-                final int itemIndex = index ~/ 2;
-                final Widget widget;
-                if (index.isEven) {
-                  widget = ListTile(
-                    title: Text(RouterName.homeDrawerTiles[itemIndex].title),
-                    onTap: () {
-                      AppRouterDelegate.instance.currentBeamState
-                          .updateWith(isMyCollections: true);
-                    },
-                  );
-                } else {
-                  widget = const Divider(
-                    indent: 20,
-                    endIndent: 20,
-                  );
-                }
-                return widget;
+            delegate: CustomSliverChildBuilderDelegate.separated(
+              itemCount: configs.length,
+              itemBuilder: (_, int index) {
+                final ListTileConfig config = configs[index];
+                return ListTile(
+                  minLeadingWidth: 24.0,
+                  leading: Icon(config.iconData),
+                  title: Text(config.title),
+                  onTap: config.onTap,
+                );
               },
-              childCount: math.max(
-                0,
-                RouterName.homeDrawerTiles.length * 2 - 1,
-              ),
             ),
           ),
           SliverFillRemaining(
@@ -90,26 +182,87 @@ class _HomeDrawerState extends State<HomeDrawer> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
-                Consumer(
-                  builder: (_, WidgetRef ref, Widget? title) =>
-                      ref.watch(authorizedProvider) == null
-                          ? const SizedBox.shrink()
-                          : ListTile(
-                              leading: const Icon(IconFontIcons.shutDownLine),
-                              title: title,
-                              onTap: () {
-                                ref.read(authorizedProvider.notifier).logout();
-                              },
-                            ),
-                  child: Text(S.of(context).logout),
+                Row(
+                  children: <Widget>[
+                    Consumer(
+                      builder: (_, WidgetRef ref, __) {
+                        final ThemeMode themeMode = ref.watch(themeProvider);
+
+                        final bool isDark = themeMode == ThemeMode.dark ||
+                            themeMode == ThemeMode.system && currentIsDark;
+
+                        return IconButton(
+                          onPressed: () {
+                            final int index = isDark ? 1 : 2;
+                            ref
+                                .read(themeProvider.notifier)
+                                .switchThemes(index);
+                          },
+                          icon: Icon(isDark
+                              ? IconFontIcons.sunFill
+                              : IconFontIcons.moonLine),
+                        );
+                      },
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        AppRouterDelegate.instance.currentBeamState.updateWith(
+                          isSettings: true,
+                        );
+                      },
+                      icon: const Icon(IconFontIcons.settingsLine),
+                    )
+                  ],
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).padding.bottom,
+                  height: ScreenUtils.bottomSafeHeight,
                 )
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _LevelTag extends StatelessWidget {
+  const _LevelTag({
+    Key? key,
+    int? level,
+  })  : _level = level ?? 1,
+        super(key: key);
+
+  final int _level;
+
+  @override
+  Widget build(BuildContext context) {
+    late Color color;
+
+    if (_level >= 750) {
+      color = currentTheme.errorColor;
+    } else if (_level < 750 && _level >= 500) {
+      color = currentTheme.colorScheme.tertiary;
+    } else if (_level < 500 && _level >= 250) {
+      color = currentTheme.primaryColor;
+    } else {
+      color = currentTheme.colorScheme.secondary;
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: AppTheme.adornmentBorderRadius,
+      ),
+      padding: const EdgeInsets.symmetric(
+        horizontal: kStyleUint,
+        vertical: kStyleUint / 2,
+      ),
+      child: Text(
+        'Lv${Unicode.halfWidthSpace}$_level',
+        style: currentTheme.textTheme.labelMedium!.copyWith(
+          color: currentTheme.tooltipTheme.textStyle!.color,
+        ),
       ),
     );
   }
