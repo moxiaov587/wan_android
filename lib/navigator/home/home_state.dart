@@ -9,6 +9,9 @@ class HomeState extends ChangeNotifier
     bool isLogin = false,
     bool isRegister = false,
     bool isAbout = false,
+    bool isRank = false,
+    bool isSettings = false,
+    bool isLanguages = false,
     bool isMyCollections = false,
     bool isMyPoints = false,
     bool isMyShare = false,
@@ -20,6 +23,9 @@ class HomeState extends ChangeNotifier
         _isLogin = isLogin,
         _isRegister = isRegister,
         _isAbout = isAbout,
+        _isRank = isRank,
+        _isSettings = isSettings,
+        _isLanguages = isLanguages,
         _isMyCollections = isMyCollections,
         _isMyPoints = isMyPoints,
         _isMyShare = isMyShare,
@@ -35,6 +41,9 @@ class HomeState extends ChangeNotifier
       isLogin: json['isLogin'] as bool? ?? false,
       isRegister: json['isRegister'] as bool? ?? false,
       isAbout: json['isAbout'] as bool? ?? false,
+      isRank: json['isRank'] as bool? ?? false,
+      isSettings: json['isSettings'] as bool? ?? false,
+      isLanguages: json['isLanguages'] as bool? ?? false,
       isMyCollections: json['isMyCollections'] as bool? ?? false,
       isMyPoints: json['isMyPoints'] as bool? ?? false,
       isMyShare: json['isMyShare'] as bool? ?? false,
@@ -50,6 +59,9 @@ class HomeState extends ChangeNotifier
         'isLogin': _isLogin,
         'isRegister': _isRegister,
         'isAbout': _isAbout,
+        'isRank': _isRank,
+        'isSettings': _isSettings,
+        'isLanguages': _isLanguages,
         'isMyCollections': _isMyCollections,
         'isMyPoints': _isMyPoints,
         'isMyShare': _isMyShare,
@@ -75,6 +87,15 @@ class HomeState extends ChangeNotifier
   bool _isAbout;
   bool get isAbout => _isAbout;
 
+  bool _isRank;
+  bool get isRank => _isRank;
+
+  bool _isSettings;
+  bool get isSettings => _isSettings;
+
+  bool _isLanguages;
+  bool get isLanguages => _isLanguages;
+
   bool _isMyCollections;
   bool get isMyCollections => _isMyCollections;
 
@@ -97,6 +118,9 @@ class HomeState extends ChangeNotifier
     bool? isLogin,
     bool? isRegister,
     bool? isAbout,
+    bool? isRank,
+    bool? isSettings,
+    bool? isLanguages,
     bool? isMyCollections,
     bool? isMyPoints,
     bool? isMyShare,
@@ -126,6 +150,18 @@ class HomeState extends ChangeNotifier
 
     if (isAbout != null) {
       _isAbout = isAbout;
+    }
+
+    if (isRank != null) {
+      _isRank = isRank;
+    }
+
+    if (isSettings != null) {
+      _isSettings = isSettings;
+    }
+
+    if (isLanguages != null) {
+      _isLanguages = isLanguages;
     }
 
     if (isMyCollections != null) {
@@ -160,6 +196,9 @@ class HomeState extends ChangeNotifier
     bool? isLogin,
     bool? isRegister,
     bool? isAbout,
+    bool? isRank,
+    bool? isSettings,
+    bool? isLanguages,
     bool? isMyCollections,
     bool? isMyPoints,
     bool? isMyShare,
@@ -174,6 +213,9 @@ class HomeState extends ChangeNotifier
       isLogin: isLogin ?? _isLogin,
       isRegister: isRegister ?? _isRegister,
       isAbout: isAbout ?? _isAbout,
+      isRank: isRank ?? _isRank,
+      isSettings: isSettings ?? _isSettings,
+      isLanguages: isLanguages ?? _isLanguages,
       isMyCollections: isMyCollections ?? _isMyCollections,
       isMyPoints: isMyPoints ?? _isMyPoints,
       isMyShare: isMyShare ?? _isMyShare,
@@ -228,6 +270,24 @@ class HomeState extends ChangeNotifier
     if (uriString == RouterName.about.location) {
       return homeState.copyWith(
         isAbout: true,
+      );
+    }
+
+    if (uriString == RouterName.rank.location) {
+      return homeState.copyWith(
+        isRank: true,
+      );
+    }
+
+    if (uriString == RouterName.settings.location) {
+      return homeState.copyWith(
+        isSettings: true,
+      );
+    }
+
+    if (uriString == RouterName.languages.location) {
+      return homeState.copyWith(
+        isLanguages: true,
       );
     }
 
@@ -295,6 +355,27 @@ class HomeState extends ChangeNotifier
     if (isAbout) {
       return RouteInformation(
         location: RouterName.about.location,
+        state: toJson(),
+      );
+    }
+
+    if (isRank) {
+      return RouteInformation(
+        location: RouterName.rank.location,
+        state: toJson(),
+      );
+    }
+
+    if (isSettings) {
+      return RouteInformation(
+        location: RouterName.settings.location,
+        state: toJson(),
+      );
+    }
+
+    if (isLanguages) {
+      return RouteInformation(
+        location: RouterName.languages.location,
         state: toJson(),
       );
     }

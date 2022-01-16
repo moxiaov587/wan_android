@@ -24,6 +24,9 @@ class HomeLocation extends BeamLocation<HomeState> {
       isLogin: homeState.isLogin,
       isRegister: homeState.isRegister,
       isAbout: homeState.isAbout,
+      isRank: homeState.isRank,
+      isSettings: homeState.isSettings,
+      isLanguages: homeState.isLanguages,
       isMyCollections: homeState.isMyCollections,
       isMyPoints: homeState.isMyPoints,
       isMyShare: homeState.isMyShare,
@@ -150,6 +153,60 @@ class HomeLocation extends BeamLocation<HomeState> {
                 ) {
                   (state as HomeState).updateWith(
                     isAbout: false,
+                  );
+
+                  return true;
+                },
+              ),
+            if (state.isRank)
+              BeamPage(
+                key: ValueKey<String>(RouterName.rank.location),
+                title: RouterName.rank.title,
+                child: const RankScreen(),
+                onPopPage: (
+                  _,
+                  __,
+                  RouteInformationSerializable<dynamic> state,
+                  ___,
+                ) {
+                  (state as HomeState).updateWith(
+                    isRank: false,
+                  );
+
+                  return true;
+                },
+              ),
+            if (state.isSettings)
+              BeamPage(
+                key: ValueKey<String>(RouterName.settings.location),
+                title: RouterName.settings.title,
+                child: const SettingsScreen(),
+                onPopPage: (
+                  _,
+                  __,
+                  RouteInformationSerializable<dynamic> state,
+                  ___,
+                ) {
+                  (state as HomeState).updateWith(
+                    isSettings: false,
+                  );
+
+                  return true;
+                },
+              ),
+            if (state.isLanguages)
+              BeamPage(
+                key: ValueKey<String>(RouterName.languages.location),
+                title: RouterName.languages.title,
+                child: const LanguagesScreen(),
+                onPopPage: (
+                  _,
+                  __,
+                  RouteInformationSerializable<dynamic> state,
+                  ___,
+                ) {
+                  (state as HomeState).updateWith(
+                    isLanguages: false,
                   );
 
                   return true;
