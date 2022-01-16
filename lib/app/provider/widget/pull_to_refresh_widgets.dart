@@ -150,7 +150,6 @@ class LoadMoreListFooter extends LoadIndicator {
     LoadStyle loadStyle = LoadStyle.ShowAlways,
     double height = 60.0,
     this.textStyle,
-    this.marginBottom = 0.0,
     this.loadingText,
     this.noDataText,
     this.noMoreIcon,
@@ -165,15 +164,13 @@ class LoadMoreListFooter extends LoadIndicator {
   }) : super(
           key: key,
           loadStyle: loadStyle,
-          height: height + marginBottom,
+          height: height,
           onClick: onClick,
         );
 
   final String? idleText, loadingText, noDataText, failedText, canLoadingText;
 
   final Widget? idleIcon, loadingIcon, noMoreIcon, failedIcon, canLoadingIcon;
-
-  final double marginBottom;
 
   final TextStyle? textStyle;
 
@@ -246,24 +243,17 @@ class _LoadMoreListFooterState extends LoadIndicatorState<LoadMoreListFooter> {
     final Widget iconWidget = _buildIcon(mode) ?? const SizedBox.shrink();
 
     return SizedBox(
-        height: widget.height + widget.marginBottom,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                iconWidget,
-                const SizedBox(
-                  width: 15.0,
-                ),
-                textWidget,
-              ],
-            ),
-            SizedBox(
-              height: widget.marginBottom,
-            ),
-          ],
-        ));
+      height: widget.height,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          iconWidget,
+          const SizedBox(
+            width: 15.0,
+          ),
+          textWidget,
+        ],
+      ),
+    );
   }
 }
