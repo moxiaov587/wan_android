@@ -55,7 +55,7 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
             RefreshListViewState<ArticleModel>>,
         ArticleModel>(
       provider: provider,
-      onInitState: (Reader reader) async {
+      onInitState: (Reader reader) {
         reader.call(provider.notifier).initData();
       },
       builder: (_, __, List<ArticleModel> list) {
@@ -64,12 +64,9 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
             itemBuilder: (_, int index) {
               return ArticleTile(
                 article: list[index],
+                query: query,
               );
             },
-            separatorBuilder: (_, int index) => const Divider(
-              indent: kStyleUint4,
-              endIndent: kStyleUint4,
-            ),
             itemCount: list.length,
           ),
         );
