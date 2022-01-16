@@ -1,23 +1,6 @@
 part of 'models.dart';
 
 @freezed
-class RefreshArticleListModel with _$RefreshArticleListModel {
-  factory RefreshArticleListModel({
-    /// [curPage] actually the page number of the next page
-    @Default(0) int curPage,
-    @Default(<ArticleModel>[]) List<ArticleModel> datas,
-    @Default(20) int offset,
-    @Default(false) bool over,
-    @Default(0) int pageCount,
-    @Default(20) int size,
-    @Default(0) int total,
-  }) = _RefreshArticleListModel;
-
-  factory RefreshArticleListModel.fromJson(Map<String, dynamic> json) =>
-      _$RefreshArticleListModelFromJson(json);
-}
-
-@freezed
 class ArticleModel with _$ArticleModel {
   factory ArticleModel({
     String? apkLink,
