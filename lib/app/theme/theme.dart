@@ -54,6 +54,8 @@ class AppTheme {
         vertical: kStyleUint2,
       );
 
+  static double get defaultIconSize => 20.0;
+
   static AppBarTheme get appBarTheme => const AppBarTheme(
         elevation: 0,
         centerTitle: true,
@@ -62,6 +64,12 @@ class AppTheme {
   static DividerThemeData get dividerTheme => const DividerThemeData(
         space: 0,
         thickness: .7,
+        indent: kStyleUint4,
+        endIndent: kStyleUint4,
+      );
+
+  static ListTileThemeData get listTileTheme => const ListTileThemeData(
+        minLeadingWidth: 24.0,
       );
 
   static ButtonStyle get buttonStyle => ButtonStyle(
@@ -135,9 +143,11 @@ class AppTheme {
         textTheme: AppTextTheme.lightTheme,
         iconTheme: IconThemeData(
           color: AppColor.text1,
+          size: defaultIconSize,
         ),
         primaryIconTheme: IconThemeData(
           color: AppColor.text3,
+          size: defaultIconSize,
         ),
         tooltipTheme: TooltipThemeData(
           decoration: BoxDecoration(
@@ -153,8 +163,33 @@ class AppTheme {
         dividerTheme: dividerTheme.copyWith(
           color: AppColor.border,
         ),
-        listTileTheme: const ListTileThemeData(
+        listTileTheme: listTileTheme.copyWith(
           tileColor: AppColor.background1,
+          selectedTileColor: AppColor.background1,
+        ),
+        checkboxTheme: CheckboxThemeData(
+          shape: RoundedRectangleBorder(
+            borderRadius: adornmentBorderRadius,
+          ),
+          side: BorderSide(
+            color: AppColor.text2,
+            width: .7,
+          ),
+          fillColor:
+              MaterialStateProperty.resolveWith((Set<MaterialState> states) {
+            if (states.contains(MaterialState.disabled)) {
+              return AppColor.text2.withAlpha(100);
+            }
+
+            if (states.contains(MaterialState.hovered) ||
+                states.contains(MaterialState.focused) ||
+                states.contains(MaterialState.selected)) {
+              return AppColor.arcoBlue;
+            }
+
+            return AppColor.text2;
+          }),
+          checkColor: MaterialStateProperty.all(AppColor.white),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: buttonStyle.copyWith(
@@ -244,9 +279,11 @@ class AppTheme {
         textTheme: AppTextTheme.darkTheme,
         iconTheme: IconThemeData(
           color: AppColor.text1Dark,
+          size: defaultIconSize,
         ),
         primaryIconTheme: IconThemeData(
           color: AppColor.text3Dark,
+          size: defaultIconSize,
         ),
         tooltipTheme: TooltipThemeData(
           decoration: const BoxDecoration(
@@ -262,8 +299,33 @@ class AppTheme {
         dividerTheme: dividerTheme.copyWith(
           color: AppColor.borderDark,
         ),
-        listTileTheme: const ListTileThemeData(
+        listTileTheme: listTileTheme.copyWith(
           tileColor: AppColor.background2Dark,
+          selectedTileColor: AppColor.background2Dark,
+        ),
+        checkboxTheme: CheckboxThemeData(
+          shape: RoundedRectangleBorder(
+            borderRadius: adornmentBorderRadius,
+          ),
+          side: BorderSide(
+            color: AppColor.text2Dark,
+            width: .7,
+          ),
+          fillColor:
+              MaterialStateProperty.resolveWith((Set<MaterialState> states) {
+            if (states.contains(MaterialState.disabled)) {
+              return AppColor.text2Dark.withAlpha(100);
+            }
+
+            if (states.contains(MaterialState.hovered) ||
+                states.contains(MaterialState.focused) ||
+                states.contains(MaterialState.selected)) {
+              return AppColor.arcoBlueDark;
+            }
+
+            return AppColor.text2Dark;
+          }),
+          checkColor: MaterialStateProperty.all(AppColor.whiteDark),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: buttonStyle.copyWith(
