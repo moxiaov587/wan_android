@@ -63,85 +63,78 @@ class _ListViewWidgetState<
   @override
   Widget build(BuildContext context) {
     return widget.enablePullDown
-        ? Consumer(
-            builder: (BuildContext context, WidgetRef ref, Widget? child) {
-              /// if [ListViewState] is [ListViewStateLoading],
-              /// disabled enablePullDown
-              final bool enablePullDown = ref.watch(
-                widget.provider.select((ListViewState<S> value) =>
-                    value.whenOrNull(
-                      (_) => true,
-                      error: (_, __, ___) => true,
-                    ) ??
-                    false),
-              );
+        ? SmartRefresher.builder(
+            enablePullDown: true,
+            controller: _refreshController,
+            onRefresh: () async {
+              final RefreshControllerStatus? status =
+                  await ref.read(widget.provider.notifier).refresh();
+              switch (status) {
+                case RefreshControllerStatus.completed:
+                  _refreshController.refreshCompleted();
+                  break;
+                case RefreshControllerStatus.failed:
+                  _refreshController.refreshFailed();
+                  break;
+                default:
 
-              return SmartRefresher(
-                enablePullDown: enablePullDown,
-                header: const DropDownListHeader(),
-                controller: _refreshController,
-                onRefresh: () async {
-                  final RefreshControllerStatus? status =
-                      await ref.read(widget.provider.notifier).refresh();
-                  switch (status) {
-                    case RefreshControllerStatus.completed:
-                      _refreshController.refreshCompleted();
-                      break;
-                    case RefreshControllerStatus.failed:
-                      _refreshController.refreshFailed();
-                      break;
-                    default:
+                /// [status] is null
+              }
+            },
+            builder: (_, RefreshPhysics physics) {
+              return CustomScrollView(
+                physics: physics,
+                slivers: <Widget>[
+                  /// if [RefreshListViewState] is [RefreshListViewStateLoading],
+                  /// disabled enablePullDown
+                  ref.watch(
+                    widget.provider.select(
+                      (ListViewState<S> value) =>
+                          value.whenOrNull(
+                            (_) => const DropDownListHeader(),
+                            error: (_, __, ___) => const DropDownListHeader(),
+                          ) ??
+                          const SliverToBoxAdapter(),
+                    ),
+                  ),
+                  if (widget.slivers != null && widget.slivers!.isNotEmpty)
+                    ...widget.slivers!,
+                  ref.watch(widget.provider).when(
+                        (List<S> list) => list.isEmpty
+                            ? const EmptyWidget()
+                            : widget.builder(context, ref, list),
+                        loading: () => const SliverFillRemaining(
+                          child: LoadingWidget(),
+                        ),
+                        error: (int? statusCode, String? message,
+                                String? detail) =>
+                            SliverFillRemaining(
+                          child: CustomErrorWidget(
+                            statusCode: statusCode,
+                            message: message,
+                            detail: detail,
+                            onRetry: () async {
+                              _refreshController.requestRefresh();
 
-                    /// [status] is null
-                  }
-                },
-                child: CustomScrollView(
-                  slivers: <Widget>[
-                    if (widget.slivers != null && widget.slivers!.isNotEmpty)
-                      ...widget.slivers!,
-                    Consumer(
-                      builder:
-                          (BuildContext context, WidgetRef ref, Widget? child) {
-                        return ref.watch(widget.provider).when(
-                              (List<S> list) => list.isEmpty
-                                  ? const EmptyWidget()
-                                  : widget.builder(context, ref, list),
-                              loading: () => const SliverFillRemaining(
-                                child: LoadingWidget(),
-                              ),
-                              error: (int? statusCode, String? message,
-                                      String? detail) =>
-                                  SliverFillRemaining(
-                                child: CustomErrorWidget(
-                                  statusCode: statusCode,
-                                  message: message,
-                                  detail: detail,
-                                  onRetry: () async {
-                                    _refreshController.requestRefresh();
+                              final RefreshControllerStatus? status = await ref
+                                  .read(widget.provider.notifier)
+                                  .refresh();
+                              switch (status) {
+                                case RefreshControllerStatus.completed:
+                                  _refreshController.refreshCompleted();
+                                  break;
+                                case RefreshControllerStatus.failed:
+                                  _refreshController.refreshFailed();
+                                  break;
+                                default:
 
-                                    final RefreshControllerStatus? status =
-                                        await ref
-                                            .read(widget.provider.notifier)
-                                            .refresh();
-                                    switch (status) {
-                                      case RefreshControllerStatus.completed:
-                                        _refreshController.refreshCompleted();
-                                        break;
-                                      case RefreshControllerStatus.failed:
-                                        _refreshController.refreshFailed();
-                                        break;
-                                      default:
-
-                                      /// [status] is null
-                                    }
-                                  },
-                                ),
-                              ),
-                            );
-                      },
-                    )
-                  ],
-                ),
+                                /// [status] is null
+                              }
+                            },
+                          ),
+                        ),
+                      )
+                ],
               );
             },
           )
