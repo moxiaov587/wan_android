@@ -113,24 +113,7 @@ class _ListViewWidgetState<
                             statusCode: statusCode,
                             message: message,
                             detail: detail,
-                            onRetry: () async {
-                              _refreshController.requestRefresh();
-
-                              final RefreshControllerStatus? status = await ref
-                                  .read(widget.provider.notifier)
-                                  .refresh();
-                              switch (status) {
-                                case RefreshControllerStatus.completed:
-                                  _refreshController.refreshCompleted();
-                                  break;
-                                case RefreshControllerStatus.failed:
-                                  _refreshController.refreshFailed();
-                                  break;
-                                default:
-
-                                /// [status] is null
-                              }
-                            },
+                            onRetry: _refreshController.requestRefresh,
                           ),
                         ),
                       )
