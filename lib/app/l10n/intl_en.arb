@@ -63,5 +63,8 @@
     "loadFailed": "Load Failed",
     "unknownAuthor": "unknown author",
     "articleNotFound": "Article not found",
-    "articleNotFoundMsg": "Can't find the article"
+    "articleNotFoundMsg": "Can't find the article",
+
+    "networkException": "Network Exception",
+    "networkExceptionMsg": "Please check your current internet connection"
 }

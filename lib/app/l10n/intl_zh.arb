@@ -63,5 +63,8 @@
     "loadFailed": "加载失败了",
     "unknownAuthor": "作者明不详",
     "articleNotFound": "文章不存在",
-    "articleNotFoundMsg": "啊咧咧，文章找不到啦"
+    "articleNotFoundMsg": "啊咧咧，文章找不到啦",
+
+    "networkException": "网络异常",
+    "networkExceptionMsg": "请检查您当前的网络连接"
 }

@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/l10n/generated/l10n.dart';
 import '../app/theme/theme.dart';
 import '../contacts/assets.dart';
 import '../contacts/instances.dart';
+import '../screen/provider/connectivity_provider.dart';
 import 'gap.dart';
 
 const Size _kRetryButtonSize = Size(64.0, 36.0);
@@ -80,7 +82,7 @@ class EmptyWidget extends StatelessWidget {
   }
 }
 
-class CustomErrorWidget extends StatelessWidget {
+class CustomErrorWidget extends ConsumerWidget {
   const CustomErrorWidget({
     Key? key,
     this.statusCode,
@@ -110,7 +112,10 @@ class CustomErrorWidget extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bool isDisconnected =
+        ref.read(connectivityProvider.notifier).isDisconnected;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(
@@ -121,18 +126,22 @@ class CustomErrorWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Image.asset(
-              errorImage,
+              isDisconnected ? Assets.ASSETS_IMAGES_TIMEOUT_PNG : errorImage,
               width: 120,
             ),
             Text(
-              message ?? S.of(context).unknown,
+              isDisconnected
+                  ? S.of(context).networkException
+                  : message ?? S.of(context).unknown,
               style: currentTheme.textTheme.titleSmall,
             ),
             Gap(
               size: GapSize.small,
             ),
             Text(
-              detail ?? S.of(context).unknownMsg,
+              isDisconnected
+                  ? S.of(context).networkExceptionMsg
+                  : detail ?? S.of(context).unknownMsg,
               textAlign: TextAlign.center,
               style: currentTheme.textTheme.bodyMedium,
             ),
