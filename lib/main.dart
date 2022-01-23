@@ -1,5 +1,9 @@
+import 'dart:async' show StreamSubscription;
+
 import 'package:beamer/beamer.dart'
     show Beamer, BeamerParser, BeamerBackButtonDispatcher;
+import 'package:connectivity_plus/connectivity_plus.dart'
+    show ConnectivityResult;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -12,6 +16,7 @@ import 'app/l10n/generated/l10n.dart';
 import 'app/theme/theme.dart' show AppTheme;
 import 'database/hive_boxes.dart';
 import 'navigator/router_delegate.dart';
+import 'screen/provider/connectivity_provider.dart';
 import 'screen/provider/locale_provider.dart';
 import 'screen/provider/theme_provider.dart';
 
@@ -37,23 +42,31 @@ Future<void> main() async {
   ));
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance?.addObserver(this);
+    ref.read(connectivityProvider.notifier).initData();
+    _connectivitySubscription = ref
+        .read(connectivityProvider.notifier)
+        .onConnectivityChanged
+        .listen(ref.read(connectivityProvider.notifier).updateData);
   }
 
   @override
   void dispose() {
+    _connectivitySubscription.cancel();
     WidgetsBinding.instance?.removeObserver(this);
 
     super.dispose();
