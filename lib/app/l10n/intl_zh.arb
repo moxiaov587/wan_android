@@ -49,5 +49,19 @@
     "languages": "多语言",
     "chinese": "中文",
     "english": "英文",
-    "auto": "跟随系统"
+    "auto": "跟随系统",
+
+    "back": "返回",
+    "forward": "前进",
+    "collected": "已收藏",
+    "collect": "收藏",
+    "refresh": "刷新",
+    "desktop": "桌面",
+    "recommend": "推荐",
+
+    "unknownArticleTitle": "文章明不详",
+    "loadFailed": "加载失败了",
+    "unknownAuthor": "作者明不详",
+    "articleNotFound": "文章不存在",
+    "articleNotFoundMsg": "啊咧咧，文章找不到啦"
 }

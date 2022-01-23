@@ -49,5 +49,19 @@
     "languages": "Language",
     "chinese": "Chinese",
     "english": "English",
-    "auto": "Auto"
+    "auto": "Auto",
+
+    "back": "Back",
+    "forward": "Forward",
+    "collected": "Collected",
+    "collect": "Collect",
+    "refresh": "Refresh",
+    "desktop": "Desktop",
+    "recommend": "Recommend",
+    
+    "unknownArticleTitle": "Unknown Article Title",
+    "loadFailed": "Load Failed",
+    "unknownAuthor": "unknown author",
+    "articleNotFound": "Article not found",
+    "articleNotFoundMsg": "Can't find the article"
 }
