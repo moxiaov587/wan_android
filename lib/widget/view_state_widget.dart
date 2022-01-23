@@ -112,40 +112,46 @@ class CustomErrorWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Image.asset(
-            errorImage,
-            width: 120,
-          ),
-          Text(
-            message ?? S.of(context).unknown,
-            style: currentTheme.textTheme.titleSmall,
-          ),
-          Gap(
-            size: GapSize.small,
-          ),
-          Text(
-            detail ?? S.of(context).unknownMsg,
-            textAlign: TextAlign.center,
-            style: currentTheme.textTheme.bodyMedium,
-          ),
-          if (onRetry != null) Gap(),
-          if (onRetry != null)
-            ElevatedButton(
-              style: ButtonStyle(
-                minimumSize: MaterialStateProperty.all(_kRetryButtonSize),
-                textStyle: MaterialStateProperty.all(
-                  const TextStyle(
-                    fontSize: AppTextTheme.body1,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: kStyleUint4,
+          vertical: kStyleUint4 * 2,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Image.asset(
+              errorImage,
+              width: 120,
+            ),
+            Text(
+              message ?? S.of(context).unknown,
+              style: currentTheme.textTheme.titleSmall,
+            ),
+            Gap(
+              size: GapSize.small,
+            ),
+            Text(
+              detail ?? S.of(context).unknownMsg,
+              textAlign: TextAlign.center,
+              style: currentTheme.textTheme.bodyMedium,
+            ),
+            if (onRetry != null) Gap(),
+            if (onRetry != null)
+              ElevatedButton(
+                style: ButtonStyle(
+                  minimumSize: MaterialStateProperty.all(_kRetryButtonSize),
+                  textStyle: MaterialStateProperty.all(
+                    const TextStyle(
+                      fontSize: AppTextTheme.body1,
+                    ),
                   ),
                 ),
+                onPressed: onRetry,
+                child: Text(S.of(context).retry),
               ),
-              onPressed: onRetry,
-              child: Text(S.of(context).retry),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }

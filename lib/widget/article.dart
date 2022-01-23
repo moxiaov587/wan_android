@@ -6,9 +6,8 @@ import '../contacts/instances.dart';
 import '../contacts/unicode.dart';
 import '../extensions/extensions.dart';
 import '../model/models.dart';
+import '../navigator/router_delegate.dart';
 import '../widget/gap.dart';
-
-const double _kArticleSmallSpace = 2.0;
 
 class ArticleTile extends StatelessWidget {
   const ArticleTile({
@@ -23,7 +22,7 @@ class ArticleTile extends StatelessWidget {
   TextSpan get _textSpace => const TextSpan(
         text: '${Unicode.halfWidthSpace}•${Unicode.halfWidthSpace}',
         style: TextStyle(
-          wordSpacing: _kArticleSmallSpace,
+          wordSpacing: kStyleUint / 2,
         ),
       );
 
@@ -41,9 +40,13 @@ class ArticleTile extends StatelessWidget {
     return Material(
       child: Ink(
         child: InkWell(
-          onTap: () {},
+          onTap: () {
+            AppRouterDelegate.instance.currentBeamState.updateWith(
+              articleId: article.id,
+            );
+          },
           child: Padding(
-            padding: AppTheme.bodyPadding,
+            padding: contentPadding,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -85,7 +88,7 @@ class ArticleTile extends StatelessWidget {
                   value: titleVerticalGap,
                 ),
                 Wrap(
-                  spacing: _kArticleSmallSpace * 4,
+                  spacing: kStyleUint2,
                   children: <Widget>[
                     _TagTile(
                       text: isShare
@@ -179,8 +182,8 @@ class _TagTile extends StatelessWidget {
       borderRadius: AppTheme.adornmentBorderRadius,
       child: Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: _kArticleSmallSpace * 2,
-          vertical: _kArticleSmallSpace,
+          horizontal: kStyleUint,
+          vertical: kStyleUint / 2,
         ),
         child: Text(
           text ?? 'null',
