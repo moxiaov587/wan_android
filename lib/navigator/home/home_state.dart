@@ -186,8 +186,8 @@ class HomeState extends ChangeNotifier
       _isMyShare = isMyShare;
     }
 
-    if (articleId != null || articleId != _articleId) {
-      _articleId = articleId;
+    if (articleId != null) {
+      _articleId = articleId == -1 ? null : articleId;
     }
 
     if (showSplash != null) {

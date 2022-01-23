@@ -282,7 +282,7 @@ class HomeLocation extends BeamLocation<HomeState> {
                   ___,
                 ) {
                   (state as HomeState).updateWith(
-                    articleId: null,
+                    articleId: -1,
                   );
 
                   return true;
