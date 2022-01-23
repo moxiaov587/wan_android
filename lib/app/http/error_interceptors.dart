@@ -68,14 +68,16 @@ class AppException implements Exception {
   AppException({
     this.errorCode,
     this.message,
+    this.detail,
   });
 
   AppException.fromResponseData(ResponseData data)
       : errorCode = data.code,
-        message = data.message;
+        detail = data.message;
 
   int? errorCode;
   String? message;
+  String? detail;
 
   bool get isUnAuthorized => errorCode == -1001;
 }
