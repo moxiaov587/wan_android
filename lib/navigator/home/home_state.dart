@@ -15,6 +15,7 @@ class HomeState extends ChangeNotifier
     bool isMyCollections = false,
     bool isMyPoints = false,
     bool isMyShare = false,
+    int? articleId,
     bool showSplash = false,
     bool isUnknown = false,
   })  : _initialPath = initialPath,
@@ -29,6 +30,7 @@ class HomeState extends ChangeNotifier
         _isMyCollections = isMyCollections,
         _isMyPoints = isMyPoints,
         _isMyShare = isMyShare,
+        _articleId = articleId,
         _showSplash = showSplash,
         _isUnknown = isUnknown;
 
@@ -47,6 +49,7 @@ class HomeState extends ChangeNotifier
       isMyCollections: json['isMyCollections'] as bool? ?? false,
       isMyPoints: json['isMyPoints'] as bool? ?? false,
       isMyShare: json['isMyShare'] as bool? ?? false,
+      articleId: json['articleId'] as int?,
       showSplash: json['showSplash'] as bool? ?? false,
       isUnknown: json['isUnknown'] as bool? ?? false,
     );
@@ -65,6 +68,7 @@ class HomeState extends ChangeNotifier
         'isMyCollections': _isMyCollections,
         'isMyPoints': _isMyPoints,
         'isMyShare': _isMyShare,
+        'articleId': _articleId,
         'showSplash': _showSplash,
         'isUnknown': _isUnknown,
       };
@@ -105,6 +109,11 @@ class HomeState extends ChangeNotifier
   bool _isMyShare;
   bool get isMyShare => _isMyShare;
 
+  int? _articleId;
+  int? get articleId => _articleId;
+
+  bool get isArticle => _articleId != null;
+
   bool _showSplash;
   bool get showSplash => _showSplash;
 
@@ -124,6 +133,7 @@ class HomeState extends ChangeNotifier
     bool? isMyCollections,
     bool? isMyPoints,
     bool? isMyShare,
+    int? articleId,
     bool? showSplash,
     bool? isUnknown,
     bool rebuild = true,
@@ -176,6 +186,10 @@ class HomeState extends ChangeNotifier
       _isMyShare = isMyShare;
     }
 
+    if (articleId != null || articleId != _articleId) {
+      _articleId = articleId;
+    }
+
     if (showSplash != null) {
       _showSplash = showSplash;
     }
@@ -202,6 +216,7 @@ class HomeState extends ChangeNotifier
     bool? isMyCollections,
     bool? isMyPoints,
     bool? isMyShare,
+    int? articleId,
     bool? showSplash,
     bool? isUnknown,
   }) {
@@ -219,6 +234,7 @@ class HomeState extends ChangeNotifier
       isMyCollections: isMyCollections ?? _isMyCollections,
       isMyPoints: isMyPoints ?? _isMyPoints,
       isMyShare: isMyShare ?? _isMyShare,
+      articleId: articleId ?? _articleId,
       showSplash: showSplash ?? _showSplash,
       isUnknown: isUnknown ?? _isUnknown,
     );
@@ -252,6 +268,13 @@ class HomeState extends ChangeNotifier
       return homeState.copyWith(
         initialPath: RouterName.project.location,
         showProjectTypeBottomSheet: true,
+      );
+    }
+
+    if (uri.pathSegments.first == RouterName.article.title.toLowerCase() &&
+        uri.pathSegments.contains('id')) {
+      return homeState.copyWith(
+        articleId: uri.pathSegments.last as int,
       );
     }
 
@@ -348,6 +371,13 @@ class HomeState extends ChangeNotifier
     if (isLogin) {
       return RouteInformation(
         location: RouterName.login.location,
+        state: toJson(),
+      );
+    }
+
+    if (isArticle) {
+      return RouteInformation(
+        location: '/${RouterName.article.title.toLowerCase()}/$_articleId',
         state: toJson(),
       );
     }

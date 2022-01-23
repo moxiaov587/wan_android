@@ -55,7 +55,10 @@ class RouterName {
     search.location,
   ];
 
-  static RouteName article = const RouteName(title: 'Article');
+  static RouteName article = const RouteName(
+    title: 'Article',
+    location: '/article/:id',
+  );
 
   static RouteName login = const RouteName(
     title: 'Login',

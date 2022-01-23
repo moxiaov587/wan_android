@@ -30,6 +30,7 @@ class HomeLocation extends BeamLocation<HomeState> {
       isMyCollections: homeState.isMyCollections,
       isMyPoints: homeState.isMyPoints,
       isMyShare: homeState.isMyShare,
+      articleId: homeState.articleId,
       showSplash: homeState.showSplash,
       isUnknown: homeState.isUnknown,
     );
@@ -261,6 +262,27 @@ class HomeLocation extends BeamLocation<HomeState> {
                 ) {
                   (state as HomeState).updateWith(
                     isMyShare: false,
+                  );
+
+                  return true;
+                },
+              ),
+            if (state.isArticle)
+              BeamPage(
+                key: ValueKey<String>(
+                    '/${RouterName.article.title.toLowerCase()}/${state.articleId}'),
+                title: RouterName.article.title,
+                child: ArticleScreen(
+                  id: state.articleId!,
+                ),
+                onPopPage: (
+                  _,
+                  __,
+                  RouteInformationSerializable<dynamic> state,
+                  ___,
+                ) {
+                  (state as HomeState).updateWith(
+                    articleId: null,
                   );
 
                   return true;
