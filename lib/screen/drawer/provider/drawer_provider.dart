@@ -6,5 +6,6 @@ import '../../../app/provider/provider.dart';
 import '../../../app/provider/view_state.dart';
 import '../../../model/models.dart';
 
+part 'my_collections_provider.dart';
 part 'my_points_provider.dart';
 part 'points_rank_provider.dart';
