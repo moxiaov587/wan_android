@@ -30,7 +30,7 @@ class SearchPageRoute<T> extends PageRoute<T> {
   Duration get transitionDuration => const Duration(milliseconds: 300);
 
   @override
-  bool get maintainState => false;
+  bool get maintainState => true;
 
   @override
   Widget buildTransitions(
