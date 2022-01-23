@@ -40,11 +40,10 @@ class BaseViewStateError {
     } else if (e is AppException) {
       statusCode = e.errorCode;
       message = e.message;
+      detail = e.detail;
+    } else {
+      detail = e.toString();
     }
-    // else if (e is CustomError) {
-    //   errorType = AppErrorType.custom;
-    //   message = e.error;
-    // }
 
     return BaseViewStateError(
       statusCode: statusCode,
