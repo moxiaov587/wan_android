@@ -32,6 +32,7 @@ dependencies:
   palette_generator: ^0.3.2
   flutter_smart_dialog: ^3.1.0
   animated_flip_counter: ^0.2.1
+  flutter_inappwebview: ^5.3.2
 
 dev_dependencies:
   flutter_test:
