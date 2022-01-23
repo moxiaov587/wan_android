@@ -3,20 +3,19 @@ part of 'home_provider.dart';
 final StateNotifierProvider<QuestionNotifier,
         RefreshListViewState<ArticleModel>> questionArticleProvider =
     StateNotifierProvider<QuestionNotifier, RefreshListViewState<ArticleModel>>(
-        (_) {
-  return QuestionNotifier(
-    const RefreshListViewState<ArticleModel>.loading(),
-  );
-});
+  (_) {
+    return QuestionNotifier(
+      const RefreshListViewState<ArticleModel>.loading(),
+    );
+  },
+  name: kQuestionArticleProvider,
+);
 
-class QuestionNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
+class QuestionNotifier extends BaseArticleNotifier {
   QuestionNotifier(
     RefreshListViewState<ArticleModel> state, {
     this.cancelToken,
-  }) : super(
-          state,
-          initialPageNum: 0,
-        );
+  }) : super(state);
 
   final CancelToken? cancelToken;
 

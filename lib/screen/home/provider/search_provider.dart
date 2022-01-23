@@ -3,32 +3,32 @@ part of 'home_provider.dart';
 final AutoDisposeStateNotifierProviderFamily<SearchNotifier,
         RefreshListViewState<ArticleModel>, String> searchArticlesProvider =
     StateNotifierProvider.family.autoDispose<SearchNotifier,
-        RefreshListViewState<ArticleModel>, String>((
-  AutoDisposeStateNotifierProviderRef<SearchNotifier,
-          RefreshListViewState<ArticleModel>>
-      ref,
-  String keyword,
-) {
-  final CancelToken _cancelToken = CancelToken();
+        RefreshListViewState<ArticleModel>, String>(
+  (
+    AutoDisposeStateNotifierProviderRef<SearchNotifier,
+            RefreshListViewState<ArticleModel>>
+        ref,
+    String keyword,
+  ) {
+    final CancelToken _cancelToken = CancelToken();
 
-  ref.onDispose(() => _cancelToken.cancel());
+    ref.onDispose(() => _cancelToken.cancel());
 
-  return SearchNotifier(
-    const RefreshListViewState<ArticleModel>.loading(),
-    keyword: keyword,
-    cancelToken: _cancelToken,
-  );
-});
+    return SearchNotifier(
+      const RefreshListViewState<ArticleModel>.loading(),
+      keyword: keyword,
+      cancelToken: _cancelToken,
+    );
+  },
+  name: kSearchArticleProvider,
+);
 
-class SearchNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
+class SearchNotifier extends BaseArticleNotifier {
   SearchNotifier(
     RefreshListViewState<ArticleModel> state, {
     required this.keyword,
     this.cancelToken,
-  }) : super(
-          state,
-          initialPageNum: 0,
-        );
+  }) : super(state);
 
   final String keyword;
 

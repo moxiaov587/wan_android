@@ -78,35 +78,33 @@ final StateProvider<ViewState<ProjectTypeModel>> currentProjectTypeProvider =
 final StateNotifierProvider<ProjectNotifier, RefreshListViewState<ArticleModel>>
     projectArticleProvider =
     StateNotifierProvider<ProjectNotifier, RefreshListViewState<ArticleModel>>(
-        (StateNotifierProviderRef<ProjectNotifier,
-                RefreshListViewState<ArticleModel>>
-            ref) {
-  final int? categoryId = ref
-      .watch(currentProjectTypeProvider)
-      .whenOrNull<int?>((ProjectTypeModel? value) => value!.id);
+  (StateNotifierProviderRef<ProjectNotifier, RefreshListViewState<ArticleModel>>
+      ref) {
+    final int? categoryId = ref
+        .watch(currentProjectTypeProvider)
+        .whenOrNull<int?>((ProjectTypeModel? value) => value!.id);
 
-  if (categoryId != null) {
-    return ProjectNotifier(
-      const RefreshListViewState<ArticleModel>.loading(),
-      categoryId: categoryId,
-    )..initData();
-  } else {
-    return ProjectNotifier(
-      const RefreshListViewState<ArticleModel>.loading(),
-      categoryId: categoryId,
-    );
-  }
-});
+    if (categoryId != null) {
+      return ProjectNotifier(
+        const RefreshListViewState<ArticleModel>.loading(),
+        categoryId: categoryId,
+      )..initData();
+    } else {
+      return ProjectNotifier(
+        const RefreshListViewState<ArticleModel>.loading(),
+        categoryId: categoryId,
+      );
+    }
+  },
+  name: kProjectArticleProvider,
+);
 
-class ProjectNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
+class ProjectNotifier extends BaseArticleNotifier {
   ProjectNotifier(
     RefreshListViewState<ArticleModel> state, {
     required this.categoryId,
     this.cancelToken,
-  }) : super(
-          state,
-          initialPageNum: 0,
-        );
+  }) : super(state);
 
   final int? categoryId;
   final CancelToken? cancelToken;

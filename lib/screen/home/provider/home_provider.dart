@@ -14,6 +14,40 @@ part 'question_provider.dart';
 part 'search_provider.dart';
 part 'square_provider.dart';
 
+const String kHomeArticleProvider = 'kHomeArticleProvider';
+const String kSquareArticleProvider = 'kSquareArticleProvider';
+const String kSearchArticleProvider = 'kSearchArticleProvider';
+const String kQuestionArticleProvider = 'kQuestionArticleProvider';
+const String kProjectArticleProvider = 'kProjectArticleProvider';
+
+abstract class BaseArticleNotifier
+    extends BaseRefreshListViewNotifier<ArticleModel> {
+  BaseArticleNotifier(RefreshListViewState<ArticleModel> state)
+      : super(
+          state,
+          initialPageNum: 0,
+        );
+
+  void switchCollected(
+    int id, {
+    required bool isCollected,
+  }) {
+    state.whenOrNull((int pageNum, bool isLastPage, List<ArticleModel> list) {
+      state = RefreshListViewStateData<ArticleModel>(
+        pageNum: pageNum,
+        isLastPage: isLastPage,
+        list: list
+            .map((ArticleModel article) => article.id == id
+                ? article.copyWith(
+                    collect: isCollected,
+                  )
+                : article)
+            .toList(),
+      );
+    });
+  }
+}
+
 final StateNotifierProvider<BannerNotifier, ListViewState<BannerModel>>
     homeBannerProvider =
     StateNotifierProvider<BannerNotifier, ListViewState<BannerModel>>((_) {
@@ -34,20 +68,19 @@ class BannerNotifier extends BaseListViewNotifier<BannerModel> {
 final StateNotifierProvider<ArticleNotifier, RefreshListViewState<ArticleModel>>
     homeArticleProvider =
     StateNotifierProvider<ArticleNotifier, RefreshListViewState<ArticleModel>>(
-        (_) {
-  return ArticleNotifier(
-    const RefreshListViewState<ArticleModel>.loading(),
-  );
-});
+  (_) {
+    return ArticleNotifier(
+      const RefreshListViewState<ArticleModel>.loading(),
+    );
+  },
+  name: kHomeArticleProvider,
+);
 
-class ArticleNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
+class ArticleNotifier extends BaseArticleNotifier {
   ArticleNotifier(
     RefreshListViewState<ArticleModel> state, {
     this.cancelToken,
-  }) : super(
-          state,
-          initialPageNum: 0,
-        );
+  }) : super(state);
 
   final CancelToken? cancelToken;
 
