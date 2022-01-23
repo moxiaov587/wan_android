@@ -100,7 +100,7 @@ abstract class BaseRefreshListViewNotifier<T>
 
   @override
   ErrorListener get onError => (Object e, StackTrace? s) {
-        final BaseViewStateError error = BaseViewStateError.create(e, s);
+        final BaseViewStateError error = getError(e, s);
 
         setError(
           statusCode: error.statusCode,
@@ -108,6 +108,9 @@ abstract class BaseRefreshListViewNotifier<T>
           detail: error.detail,
         );
       };
+
+  BaseViewStateError Function(Object e, StackTrace? s) get getError =>
+      (Object e, StackTrace? s) => BaseViewStateError.create(e, s);
 
   void setError({
     int? statusCode,

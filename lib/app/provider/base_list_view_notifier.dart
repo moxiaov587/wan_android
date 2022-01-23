@@ -19,6 +19,8 @@ abstract class BaseListViewNotifier<T> extends StateNotifier<ListViewState<T>> {
         state = ListViewState<T>(
           list: <T>[],
         );
+
+        return null;
       } else {
         onCompleted(data);
 
@@ -41,7 +43,7 @@ abstract class BaseListViewNotifier<T> extends StateNotifier<ListViewState<T>> {
 
   @override
   ErrorListener get onError => (Object e, StackTrace? s) {
-        final BaseViewStateError error = BaseViewStateError.create(e, s);
+        final BaseViewStateError error = getError(e, s);
 
         setError(
           statusCode: error.statusCode,
@@ -49,6 +51,9 @@ abstract class BaseListViewNotifier<T> extends StateNotifier<ListViewState<T>> {
           detail: error.detail,
         );
       };
+
+  BaseViewStateError Function(Object e, StackTrace? s) get getError =>
+      (Object e, StackTrace? s) => BaseViewStateError.create(e, s);
 
   void setError({
     int? statusCode,
