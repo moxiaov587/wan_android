@@ -39,4 +39,16 @@ class API {
 
   static String userPointsRecord({required int pageNum}) =>
       '/lg/coin/list/$pageNum/json';
+
+  static String collect({required int pageNum}) =>
+      '/lg/collect/list/$pageNum/json';
+
+  static String collectByArticleId({required int articleId}) =>
+      '/lg/collect/$articleId/json';
+
+  static String cancelCollectionByArticleId({required int articleId}) =>
+      '/lg/uncollect_originId/$articleId/json';
+
+  static String cancelCollectionByCollectId({required int collectId}) =>
+      '/lg/uncollect/$collectId/json';
 }

@@ -243,4 +243,49 @@ class WanAndroidAPI {
       formJson: PointsModel.fromJson,
     );
   }
+
+  static Future<ModelToRefreshListData<CollectModel>> fetchCollectArticles(
+    int pageNum,
+    int pageSize, {
+    CancelToken? cancelToken,
+  }) async {
+    final Response<Map<String, dynamic>> response =
+        await HttpUtils.get<Map<String, dynamic>>(
+      API.collect(
+        pageNum: pageNum,
+      ),
+      queryParameters: <String, dynamic>{'page_size': pageSize},
+      cancelToken: cancelToken,
+    );
+
+    return ModelToRefreshListData<CollectModel>.fromJson(
+      json: response.data!,
+      formJson: CollectModel.fromJson,
+    );
+  }
+
+  static Future<void> collectArticle({
+    required int articleId,
+  }) async {
+    await HttpUtils.post<dynamic>(API.collectByArticleId(articleId: articleId));
+  }
+
+  static Future<void> cancelCollectionArticle({
+    required int articleId,
+  }) async {
+    await HttpUtils.post<dynamic>(
+        API.cancelCollectionByArticleId(articleId: articleId));
+  }
+
+  static Future<void> cancelCollectionArticleByCollectId({
+    required int collectId,
+    int? articleId,
+  }) async {
+    await HttpUtils.post<dynamic>(
+      API.cancelCollectionByCollectId(collectId: collectId),
+      queryParameters: <String, dynamic>{
+        'originId': articleId ?? -1,
+      },
+    );
+  }
 }
