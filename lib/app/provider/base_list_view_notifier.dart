@@ -19,17 +19,15 @@ abstract class BaseListViewNotifier<T> extends StateNotifier<ListViewState<T>> {
         state = ListViewState<T>(
           list: <T>[],
         );
-
-        return null;
       } else {
         onCompleted(data);
 
         state = ListViewState<T>(
           list: data,
         );
-
-        return RefreshControllerStatus.completed;
       }
+
+      return RefreshControllerStatus.completed;
     } catch (e, s) {
       onError(e, s);
 
