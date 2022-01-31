@@ -34,16 +34,16 @@ class AppColor {
   static const Color black = Color(0xff000000);
   static const Color blackDark = Color(0xff000000);
 
-  static Color maskBackground = AppColor.gray.shade10.withOpacity(.6);
-  static Color maskBackgroundDark = AppColor.grayDark.shade1.withOpacity(.6);
+  static Color maskBackground = gray.shade10.withOpacity(.6);
+  static Color maskBackgroundDark = grayDark.shade1.withOpacity(.6);
 
   static const Color menuBackground = white;
   static const Color menuBackgroundDark = background2Dark;
 
-  static Color tooltipBackground = AppColor.gray.shade10;
+  static Color tooltipBackground = gray.shade10;
   static const Color tooltipBackgroundDark = background5Dark;
 
-  static Color border = AppColor.gray.shade3;
+  static Color border = gray.shade3;
   static const Color borderDark = Color(0xff333335);
 
   static const Color background1 = white;
@@ -53,58 +53,65 @@ class AppColor {
   static const Color background5 = white;
   static const Color backgroundWhite = white;
 
-  static Color background1Dark = AppColor.grayDark.shade1;
+  static Color background1Dark = grayDark.shade1;
   static const Color background2Dark = Color(0xff232324);
   static const Color background3Dark = Color(0xff2a2a2b);
   static const Color background4Dark = Color(0xff313132);
   static const Color background5Dark = Color(0xff373739);
   static const Color backgroundWhiteDark = Color(0xfff6f6f6);
 
-  static Color text1 = AppColor.gray.shade10;
-  static Color text2 = AppColor.gray.shade8;
-  static Color text3 = AppColor.gray.shade6;
-  static Color text4 = AppColor.gray.shade4;
+  static Color text1 = gray.shade10;
+  static Color text2 = gray.shade8;
+  static Color text3 = gray.shade6;
+  static Color text4 = gray.shade4;
 
   static Color text1Dark = white.withOpacity(.9);
   static Color text2Dark = white.withOpacity(.7);
   static Color text3Dark = white.withOpacity(.5);
   static Color text4Dark = white.withOpacity(.3);
 
-  static Color fill1 = AppColor.gray.shade1;
-  static Color fill2 = AppColor.gray.shade2;
-  static Color fill3 = AppColor.gray.shade3;
-  static Color fill4 = AppColor.gray.shade4;
+  static Color fill1 = gray.shade1;
+  static Color fill2 = gray.shade2;
+  static Color fill3 = gray.shade3;
+  static Color fill4 = gray.shade4;
 
   static Color fill1Dark = white.withOpacity(.04);
   static Color fill2Dark = white.withOpacity(.08);
   static Color fill3Dark = white.withOpacity(.12);
   static Color fill4Dark = white.withOpacity(.16);
 
-  static Color primaryLight1 = AppColor.arcoBlue.shade1;
-  static Color primaryLight2 = AppColor.arcoBlue.shade2;
-  static Color primaryLight3 = AppColor.arcoBlue.shade3;
-  static Color primaryLight4 = AppColor.arcoBlue.shade4;
+  static Color primaryLight1 = arcoBlue.shade1;
+  static Color primaryLight2 = arcoBlue.shade2;
+  static Color primaryLight3 = arcoBlue.shade3;
+  static Color primaryLight4 = arcoBlue.shade4;
 
-  static Color primaryLight1Dark = AppColor.arcoBlueDark.shade6.withOpacity(.2);
-  static Color primaryLight2Dark =
-      AppColor.arcoBlueDark.shade6.withOpacity(.35);
-  static Color primaryLight3Dark = AppColor.arcoBlueDark.shade6.withOpacity(.5);
-  static Color primaryLight4Dark =
-      AppColor.arcoBlueDark.shade6.withOpacity(.65);
+  static Color primaryLight1Dark = arcoBlueDark.shade6.withOpacity(.2);
+  static Color primaryLight2Dark = arcoBlueDark.shade6.withOpacity(.35);
+  static Color primaryLight3Dark = arcoBlueDark.shade6.withOpacity(.5);
+  static Color primaryLight4Dark = arcoBlueDark.shade6.withOpacity(.65);
 
-  static Color secondary = AppColor.gray.shade2;
-  static Color secondaryHover = AppColor.gray.shade3;
-  static Color secondaryActive = AppColor.gray.shade4;
-  static Color secondaryDisabled = AppColor.gray.shade1;
+  static Color secondary = gray.shade2;
+  static Color secondaryHover = gray.shade3;
+  static Color secondaryActive = gray.shade4;
+  static Color secondaryDisabled = gray.shade1;
 
-  static Color secondaryDark = AppColor.grayDark.shade9.withOpacity(.08);
-  static Color secondaryHoverDark = AppColor.grayDark.shade8.withOpacity(.16);
-  static Color secondaryActiveDark = AppColor.grayDark.shade7.withOpacity(.24);
-  static Color secondaryDisabledDark =
-      AppColor.grayDark.shade9.withOpacity(.09);
+  static Color secondaryDark = grayDark.shade9.withOpacity(.08);
+  static Color secondaryHoverDark = grayDark.shade8.withOpacity(.16);
+  static Color secondaryActiveDark = grayDark.shade7.withOpacity(.24);
+  static Color secondaryDisabledDark = grayDark.shade9.withOpacity(.09);
 
-  static Color splash = AppColor.gray.shade4.withAlpha(50);
-  static Color splashDark = AppColor.gray.shade7.withAlpha(50);
+  static const ArcoColor primary = arcoBlue;
+  static const ArcoColor success = green;
+  static const ArcoColor waring = orange;
+  static const ArcoColor error = red;
+
+  static const ArcoColor primaryDark = arcoBlueDark;
+  static const ArcoColor successDark = greenDark;
+  static const ArcoColor waringDark = orangeDark;
+  static const ArcoColor errorDark = redDark;
+
+  static Color splash = gray.shade4.withAlpha(50);
+  static Color splashDark = gray.shade7.withAlpha(50);
 
   static const Color appBar = Color(0xfff2f3f6);
   static const Color appBarDark = background4Dark;
