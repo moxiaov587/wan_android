@@ -30,7 +30,7 @@ abstract class BaseArticleNotifier
 
   void switchCollected(
     int id, {
-    required bool isCollected,
+    required bool collected,
   }) {
     state.whenOrNull((int pageNum, bool isLastPage, List<ArticleModel> list) {
       state = RefreshListViewStateData<ArticleModel>(
@@ -39,7 +39,7 @@ abstract class BaseArticleNotifier
         list: list
             .map((ArticleModel article) => article.id == id
                 ? article.copyWith(
-                    collect: isCollected,
+                    collect: collected,
                   )
                 : article)
             .toList(),
