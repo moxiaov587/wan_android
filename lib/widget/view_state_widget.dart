@@ -141,7 +141,7 @@ class CustomErrorWidget extends ConsumerWidget {
             Text(
               isDisconnected
                   ? S.of(context).networkExceptionMsg
-                  : detail ?? S.of(context).unknownMsg,
+                  : detail ?? S.of(context).unknownErrorMsg,
               textAlign: TextAlign.center,
               style: currentTheme.textTheme.bodyMedium,
             ),
