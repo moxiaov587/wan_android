@@ -34,6 +34,7 @@ dependencies:
   animated_flip_counter: ^0.2.1
   flutter_inappwebview: ^5.3.2
   connectivity_plus: ^2.2.0
+  flutter_slidable: ^1.2.0
 
 dev_dependencies:
   flutter_test:
