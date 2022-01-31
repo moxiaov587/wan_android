@@ -9,10 +9,10 @@ class UnknownScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(S.of(context).unknown),
+        title: Text(S.of(context).unknownError),
       ),
       body: Center(
-        child: Text(S.of(context).unknownMsg),
+        child: Text(S.of(context).unknownErrorMsg),
       ),
     );
   }
