@@ -11,8 +11,8 @@
     "cancel": "取消",
     "empty": "无数据",
     "emptyMsg": "这儿啥也没有",
-    "unknown": "未知错误",
-    "unknownMsg": "发生了错误，但别担心\n不是因为你",
+    "unknownError": "未知错误",
+    "unknownErrorMsg": "发生了错误，但别担心\n不是因为你",
     "retry": "重试",
     "noLogin": "未登录",
     "myPoints": "我的积分",
@@ -35,8 +35,12 @@
     "register": "注册",
     "username": "用户名",
     "password": "密码",
-    "rePassword": "确认密码",
+    "repassword": "确认密码",
     "rememberPassword": "记住密码",
+    "usernameEmptyTips": "请输入用户名",
+    "passwordEmptyTips": "请输入密码",
+    "repasswordEmptyTips": "请输入确认密码",
+    "passwordAndRepasswordNotTheSameTips": "密码和确认密码不一致",
     "loginInfoInvalidTips": "登录信息已过期, 错误码 {errorCode}",
     "loginSuccess": "登录成功",
     "loginFailed": "登录失败",
@@ -59,12 +63,35 @@
     "desktop": "桌面",
     "recommend": "推荐",
 
-    "unknownArticleTitle": "文章明不详",
+    "unknown": "未知",
     "loadFailed": "加载失败了",
-    "unknownAuthor": "作者明不详",
     "articleNotFound": "文章不存在",
     "articleNotFoundMsg": "啊咧咧，文章找不到啦",
 
     "networkException": "网络异常",
-    "networkExceptionMsg": "请检查您当前的网络连接"
+    "networkExceptionMsg": "请检查您当前的网络连接",
+
+    "myCollectionsTabs": "{name, select, article{文章} website{网站}}",
+
+    "article": "文章",
+    "website": "网站",
+
+    "edit": "编辑",
+    "keepSwipingLeftToDelete": "继续左滑以删除",
+    "releaseToDeleteSwipeRightToCancel": "松开以删除\n右滑取消",
+
+    "addCollected": "新增收集的{name}",
+    "add": "新增",
+    "editCollected": "编辑收集的{name}",
+    "save": "保存",
+    "title": "标题",
+    "titleEmptyTips": "请输入标题",
+    "author": "作者",
+    "authorEmptyTips": "请输入作者",
+    "link": "链接",
+    "linkEmptyTips": "请输入链接",
+    "linkFormatTips": "请检查链接的格式",
+
+    "success": "成功",
+    "failed": "失败"
 }

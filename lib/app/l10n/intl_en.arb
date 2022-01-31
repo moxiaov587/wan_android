@@ -11,8 +11,8 @@
     "cancel": "Cancel",
     "empty": "Empty",
     "emptyMsg": "There's nothing here.",
-    "unknown": "Unknown Error",
-    "unknownMsg": "An error has occurred, but don't worry,\nit's not because of you.",
+    "unknownError": "Unknown Error",
+    "unknownErrorMsg": "An error has occurred, but don't worry,\nit's not because of you.",
     "retry": "Retry",
     "noLogin": "No login",
     "myPoints": "My Points",
@@ -35,8 +35,12 @@
     "register": "Register",
     "username": "Username",
     "password": "Password",
-    "rePassword": "RePassword",
+    "repassword": "RePassword",
     "rememberPassword": "Remember Password",
+    "usernameEmptyTips": "Please enter username",
+    "passwordEmptyTips": "Please enter password",
+    "repasswordEmptyTips": "Please enter repassword",
+    "passwordAndRepasswordNotTheSameTips": "Password is not the same as repassword",
     "loginInfoInvalidTips": "Login information is invalid, error code {errorCode}",
     "loginSuccess": "Login Successful",
     "loginFailed": "Login Failed",
@@ -59,12 +63,35 @@
     "desktop": "Desktop",
     "recommend": "Recommend",
     
-    "unknownArticleTitle": "Unknown Article Title",
+    "unknown": "Unknown",
     "loadFailed": "Load Failed",
-    "unknownAuthor": "unknown author",
     "articleNotFound": "Article not found",
     "articleNotFoundMsg": "Can't find the article",
 
     "networkException": "Network Exception",
-    "networkExceptionMsg": "Please check your current internet connection"
+    "networkExceptionMsg": "Please check your current internet connection",
+
+    "myCollectionsTabs": "{name, select, article{Article} website{Website}}",
+
+    "article": "Article",
+    "website": "Website",
+
+    "edit": "Edit",
+    "keepSwipingLeftToDelete": "Keep swiping\nto delete",
+    "releaseToDeleteSwipeRightToCancel": "Release to delete\nSwipe right to cancel",
+
+    "addCollected": "Add Collected {name}",
+    "add": "Add",
+    "editCollected": "Edit Collected {name}",
+    "save": "Save",
+    "title": "Title",
+    "titleEmptyTips": "Please enter title",
+    "author": "Author",
+    "authorEmptyTips": "Please enter author",
+    "link": "Link",
+    "linkEmptyTips": "Please enter link",
+    "linkFormatTips": "Please check the link format",
+
+    "success": "Success",
+    "failed": "Failed"
 }
