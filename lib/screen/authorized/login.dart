@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/l10n/generated/l10n.dart';
+import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
 import '../../database/hive_boxes.dart';
 import '../../database/model/models.dart';
 import '../../navigator/router_delegate.dart';
 import '../../screen/authorized/provider/authorized_provider.dart';
-import 'widget/login_text_field.dart';
+import '../../widget/custom_text_form_field.dart';
+import '../../widget/gap.dart';
 
 part 'register.dart';
 
@@ -25,8 +27,11 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
 
   final TextEditingController _usernameTextEditingController =
       TextEditingController();
+  final FocusNode _usernameFocusNode = FocusNode();
+
   final TextEditingController _passwordTextEditingController =
       TextEditingController();
+  final FocusNode _passwordFocusNode = FocusNode();
 
   late final ValueNotifier<bool> _rememberPasswordNotifier =
       ValueNotifier<bool>(rememberPassword);
@@ -58,7 +63,11 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
   @override
   void dispose() {
     _usernameTextEditingController.dispose();
+    _usernameFocusNode.unfocus();
+    _usernameFocusNode.dispose();
     _passwordTextEditingController.dispose();
+    _passwordFocusNode.unfocus();
+    _passwordFocusNode.dispose();
     _rememberPasswordNotifier.dispose();
     Instances.routeObserver.unsubscribe(this);
 
@@ -78,6 +87,22 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
     } catch (_) {}
   }
 
+  Future<void> onSubmitted({
+    required Reader reader,
+  }) async {
+    if (_formKey.currentState!.validate()) {
+      final bool result = await reader.call(authorizedProvider.notifier).login(
+            username: _usernameTextEditingController.text,
+            password: _passwordTextEditingController.text,
+            rememberPassword: _rememberPasswordNotifier.value,
+          );
+
+      if (result) {
+        AppRouterDelegate.instance.currentBeamState.updateWith(isLogin: false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,115 +110,118 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
         title: Text(S.of(context).login),
       ),
       body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: CustomScrollView(
-            slivers: <Widget>[
-              /// username
-              SliverPadding(
-                padding: _kBodyPadding,
-                sliver: SliverToBoxAdapter(
-                  child: LoginTextField(
-                    type: LoginTextFieldType.username,
-                    controller: _usernameTextEditingController,
-                  ),
-                ),
-              ),
-
-              /// password
-              SliverPadding(
-                padding: _kBodyPadding,
-                sliver: SliverToBoxAdapter(
-                  child: LoginTextField(
-                    type: LoginTextFieldType.password,
-                    controller: _passwordTextEditingController,
-                  ),
-                ),
-              ),
-
-              /// remember password
-              SliverPadding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24.0,
-                  vertical: 20.0,
-                ),
-                sliver: SliverToBoxAdapter(
-                  child: Row(
-                    children: <Widget>[
-                      ValueListenableBuilder<bool>(
-                        valueListenable: _rememberPasswordNotifier,
-                        builder: (_, bool value, __) {
-                          return Checkbox(
-                            value: value,
-                            onChanged: (bool? value) {
-                              _rememberPasswordNotifier.value = value ?? false;
-                            },
-                          );
+        child: CustomScrollView(
+          slivers: <Widget>[
+            SliverPadding(
+              padding: _kBodyPadding,
+              sliver: Form(
+                key: _formKey,
+                child: SliverList(
+                  delegate: SliverChildListDelegate(
+                    <Widget>[
+                      CustomTextFormField(
+                        controller: _usernameTextEditingController,
+                        focusNode: _usernameFocusNode,
+                        textInputAction: TextInputAction.next,
+                        validator: (String? value) {
+                          if (value == null || value.isEmpty) {
+                            return S.of(context).usernameEmptyTips;
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          prefixIcon:
+                              const Icon(IconFontIcons.accountCircleLine),
+                          hintText: S.of(context).username,
+                        ),
+                        onEditingComplete: () {
+                          _passwordFocusNode.requestFocus();
                         },
                       ),
-                      Text(
-                        S.of(context).rememberPassword,
-                        style: currentTheme.textTheme.bodyLarge,
+                      Gap(
+                        value: _kBodyPadding.top,
                       ),
-                    ],
-                  ),
-                ),
-              ),
-
-              /// submit
-              SliverPadding(
-                padding: _kBodyPadding.copyWith(
-                  top: 0.0,
-                ),
-                sliver: SliverToBoxAdapter(
-                    child: Consumer(
-                  builder: (_, WidgetRef ref, Widget? text) => ElevatedButton(
-                    onPressed: () async {
-                      if (_formKey.currentState?.validate() ?? false) {
-                        final bool result = await ref
-                            .read(authorizedProvider.notifier)
-                            .login(
-                              username: _usernameTextEditingController.text,
-                              password: _passwordTextEditingController.text,
-                              rememberPassword: _rememberPasswordNotifier.value,
+                      Consumer(
+                        builder: (_, WidgetRef ref, __) => CustomTextFormField(
+                          controller: _passwordTextEditingController,
+                          focusNode: _passwordFocusNode,
+                          obscureText: true,
+                          textInputAction: TextInputAction.done,
+                          validator: (String? value) {
+                            if (value == null || value.isEmpty) {
+                              return S.of(context).passwordEmptyTips;
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(IconFontIcons.lockLine),
+                            hintText: S.of(context).password,
+                          ),
+                          onEditingComplete: () {
+                            onSubmitted(reader: ref.read);
+                          },
+                        ),
+                      ),
+                      Gap(
+                        value: _kBodyPadding.top / 4,
+                      ),
+                      Transform.translate(
+                        offset: const Offset(-10.0, 0.0),
+                        child: Row(
+                          children: <Widget>[
+                            ValueListenableBuilder<bool>(
+                              valueListenable: _rememberPasswordNotifier,
+                              builder: (_, bool value, __) {
+                                return Checkbox(
+                                  value: value,
+                                  onChanged: (bool? value) {
+                                    _rememberPasswordNotifier.value =
+                                        value ?? false;
+                                  },
+                                );
+                              },
+                            ),
+                            Text(
+                              S.of(context).rememberPassword,
+                              style: currentTheme.textTheme.bodyLarge,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Gap(
+                        value: _kBodyPadding.top / 4,
+                      ),
+                      Consumer(
+                        builder: (_, WidgetRef ref, Widget? text) =>
+                            ElevatedButton(
+                          onPressed: () async {
+                            onSubmitted(reader: ref.read);
+                          },
+                          child: text,
+                        ),
+                        child: Text(S.of(context).login),
+                      ),
+                      Gap(
+                        value: _kBodyPadding.top / 4,
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () {
+                            AppRouterDelegate.instance.currentBeamState
+                                .updateWith(
+                              isRegister: true,
                             );
-
-                        if (result) {
-                          AppRouterDelegate.instance.currentBeamState
-                              .updateWith(isLogin: false);
-                        }
-                      }
-                    },
-                    child: text,
-                  ),
-                  child: Text(S.of(context).login),
-                )),
-              ),
-
-              /// register
-              SliverPadding(
-                padding: _kBodyPadding.copyWith(
-                  top: 10.0,
-                ),
-                sliver: SliverToBoxAdapter(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          AppRouterDelegate.instance.currentBeamState
-                              .updateWith(
-                            isRegister: true,
-                          );
-                        },
-                        child: Text(S.of(context).register),
-                      ),
+                          },
+                          child: Text(S.of(context).register),
+                        ),
+                      )
                     ],
                   ),
                 ),
-              )
-            ],
-          ),
+              ),
+            ),
+          ],
         ),
       ),
     );
