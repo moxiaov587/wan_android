@@ -22,9 +22,10 @@ import '../../widget/custom_sliver_child_builder_delegate.dart';
 import '../../widget/gap.dart';
 import 'provider/drawer_provider.dart';
 
+export 'my_collections/my_collections.dart';
+
 part 'about.dart';
 part 'languages.dart';
-part 'my_collections.dart';
 part 'my_points.dart';
 part 'my_share.dart';
 part 'rank.dart';
