@@ -119,6 +119,12 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?> {
               rememberPassword: false,
             ),
           );
+        } else {
+          await HiveBoxes.userSettingsBox.add(
+            UserSettings(
+              isLogin: true,
+            ),
+          );
         }
       }
 
@@ -140,14 +146,14 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?> {
   Future<bool> register({
     required String username,
     required String password,
-    required String rePassword,
+    required String repassword,
   }) async {
     DialogUtils.loading();
     try {
       final UserModel model = await WanAndroidAPI.register(
         username: username,
         password: password,
-        rePassword: rePassword,
+        repassword: repassword,
       );
 
       await HiveBoxes.authorizedCacheBox.put(
