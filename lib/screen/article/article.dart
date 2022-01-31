@@ -57,8 +57,9 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
   void initState() {
     super.initState();
 
-    ref.read(provider.notifier).initData();
     WidgetsBinding.instance!.addObserver(this);
+
+    ref.read(provider.notifier).initData();
   }
 
   @override
@@ -121,7 +122,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
               return '';
             });
 
-            return Text(title ?? S.of(context).unknownArticleTitle);
+            return Text(title ?? S.of(context).unknown);
           },
         ),
       ),
