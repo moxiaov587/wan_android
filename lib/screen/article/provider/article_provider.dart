@@ -7,10 +7,18 @@ import '../../../app/l10n/generated/l10n.dart';
 import '../../../app/provider/provider.dart';
 import '../../../app/provider/view_state.dart';
 import '../../../model/models.dart'
-    show ArticleModel, CollectModel, WebViewModel;
+    show
+        ArticleModel,
+        CollectedArticleModel,
+        CollectedWebsiteModel,
+        WebViewModel;
 import '../../../utils/dialog.dart';
 import '../../drawer/provider/drawer_provider.dart'
-    show MyCollectionsNotifier, kMyCollectionsProvider;
+    show
+        MyCollectedArticleNotifier,
+        MyCollectedWebsiteNotifier,
+        kMyCollectedArticleProvider,
+        kMyCollectedWebsiteProvider;
 import '../../home/provider/home_provider.dart';
 
 enum ArticleFrom {
@@ -34,7 +42,8 @@ const List<String> autoDisposeArticles = <String>[
 ];
 
 const List<String> collects = <String>[
-  kMyCollectionsProvider,
+  kMyCollectedArticleProvider,
+  kMyCollectedWebsiteProvider,
 ];
 
 const List<String> allArticles = <String>[
@@ -80,7 +89,8 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
   Future<WebViewModel?> loadData() async {
     late WebViewModel webViewModel;
 
-    CollectModel? collect;
+    CollectedArticleModel? collectedArticle;
+    CollectedWebsiteModel? collectedWebsite;
 
     ArticleModel? article;
 
@@ -98,13 +108,24 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
       return previousValue;
     });
 
-    if (providers.keys.contains(kMyCollectionsProvider)) {
-      from = kMyCollectionsProvider;
-      provider = providers[kMyCollectionsProvider]!;
+    if (providers.keys.contains(kMyCollectedArticleProvider)) {
+      if (providers.keys.contains(kMyCollectedWebsiteProvider)) {
+        from = kMyCollectedWebsiteProvider;
+        provider = providers[kMyCollectedWebsiteProvider]!;
 
-      collect = (reader.call(provider) as RefreshListViewState<CollectModel>)
-          .whenOrNull((_, __, List<CollectModel> list) => list)
-          ?.firstWhereOrNull((CollectModel e) => e.id == id);
+        collectedWebsite =
+            (reader.call(provider) as ListViewState<CollectedWebsiteModel>)
+                .whenOrNull((List<CollectedWebsiteModel> list) => list)
+                ?.firstWhereOrNull((CollectedWebsiteModel e) => e.id == id);
+      } else {
+        from = kMyCollectedArticleProvider;
+        provider = providers[kMyCollectedArticleProvider]!;
+
+        collectedArticle = (reader.call(provider)
+                as RefreshListViewState<CollectedArticleModel>)
+            .whenOrNull((_, __, List<CollectedArticleModel> list) => list)
+            ?.firstWhereOrNull((CollectedArticleModel e) => e.id == id);
+      }
     } else {
       for (final String key in providers.keys) {
         if (<String>[...articles, ...autoDisposeArticles].contains(key)) {
@@ -122,16 +143,18 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
       }
     }
 
-    if (collect != null) {
+    if (collectedArticle != null) {
       webViewModel = WebViewModel(
-        id: collect.id,
-        link: collect.link,
-        originId: collect.originId,
-        title: collect.title,
-        collect: collect.collect,
+        id: collectedArticle.id,
+        link: collectedArticle.link.startsWith('http')
+            ? collectedArticle.link
+            : 'https://${collectedArticle.link}',
+        originId: collectedArticle.originId,
+        title: collectedArticle.title,
+        collect: collectedArticle.collect,
       );
 
-      if (collect.originId != null) {
+      if (collectedArticle.originId != null) {
         for (final String key in providers.keys) {
           if (<String>[...articles, ...autoDisposeArticles].contains(key)) {
             articleOrigin.add(key);
@@ -139,6 +162,19 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
           }
         }
       }
+    } else if (collectedWebsite != null) {
+      webViewModel = WebViewModel(
+        id: collectedWebsite.id,
+        link: collectedWebsite.link.startsWith('http')
+            ? collectedWebsite.link
+            : 'https://${collectedWebsite.link}',
+
+        /// Use -2 as the logo of collected sites
+        /// because -1 has a role in collected articles :)
+        originId: -2,
+        title: collectedWebsite.name,
+        collect: collectedWebsite.collect,
+      );
     } else if (article != null) {
       webViewModel = WebViewModel(
         id: article.id,
@@ -157,67 +193,106 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
     return webViewModel;
   }
 
-  void collect(bool isCollected) {
+  void collect(bool collected) {
     state.whenOrNull((WebViewModel? value) async {
       if (value != null) {
         state = ViewStateData<WebViewModel>(
           value: value.copyWith(
-            collect: isCollected,
+            collect: collected,
           ),
         );
         try {
           if (value.originId != null) {
-            /// in MyCollectionsScreen
-            if (isCollected) {
-              await WanAndroidAPI.collectArticle(articleId: id);
-            } else {
-              await WanAndroidAPI.cancelCollectionArticleByCollectId(
-                collectId: id,
-                articleId: value.originId,
-              );
-            }
-            reader
-                .call((provider as AutoDisposeStateNotifierProvider<
-                        MyCollectionsNotifier,
-                        RefreshListViewState<CollectModel>>)
-                    .notifier)
-                .toggleCollected(
-                  id,
-                  isCollected: isCollected,
-                );
+            /// from MyCollectionsScreen
+            if (value.originId == -2) {
+              /// from MyCollectionsScreen - website
+              final AutoDisposeStateNotifierProvider<MyCollectedWebsiteNotifier,
+                      ListViewState<CollectedWebsiteModel>> realProvider =
+                  provider as AutoDisposeStateNotifierProvider<
+                      MyCollectedWebsiteNotifier,
+                      ListViewState<CollectedWebsiteModel>>;
+              if (collected) {
+                final CollectedWebsiteModel? newCollectedWebsite =
+                    await reader.call(realProvider.notifier).add(
+                          title: value.title ?? '',
+                          link: value.link,
+                          needLoading: false,
+                        );
 
-            if (articleOrigin.isNotEmpty) {
-              for (int index = 0; index < articleOrigin.length; index++) {
-                if (autoDisposeArticles.contains(articleOrigin[index])) {
-                  reader
-                      .call((articleOriginProvider[index]
-                              as AutoDisposeStateNotifierProvider<
-                                  BaseArticleNotifier,
-                                  RefreshListViewState<ArticleModel>>)
-                          .notifier)
-                      .switchCollected(
-                        value.originId!,
-                        isCollected: isCollected,
-                      );
-                } else {
-                  reader
-                      .call((articleOriginProvider[index]
-                              as StateNotifierProvider<BaseArticleNotifier,
-                                  RefreshListViewState<ArticleModel>>)
-                          .notifier)
-                      .switchCollected(
-                        value.originId!,
-                        isCollected: isCollected,
-                      );
+                if (newCollectedWebsite != null) {
+                  state = ViewStateData<WebViewModel>(
+                    value: value.copyWith(
+                      id: newCollectedWebsite.id,
+                      collect: true,
+                    ),
+                  );
+                }
+              } else {
+                await reader
+                    .call(realProvider.notifier)
+                    .requestCancelCollect(collectId: value.id);
+              }
+
+              reader.call(realProvider.notifier).switchCollected(
+                    id,
+                    collected: collected,
+                  );
+            } else {
+              /// from MyCollectionsScreen - article
+              final AutoDisposeStateNotifierProvider<MyCollectedArticleNotifier,
+                      RefreshListViewState<CollectedArticleModel>>
+                  realProvider = provider as AutoDisposeStateNotifierProvider<
+                      MyCollectedArticleNotifier,
+                      RefreshListViewState<CollectedArticleModel>>;
+              if (collected) {
+                await WanAndroidAPI.addCollectedArticleByArticleId(
+                    articleId: id);
+              } else {
+                reader.call(realProvider.notifier).requestCancelCollect(
+                      collectId: id,
+                      articleId: value.originId,
+                    );
+              }
+              reader.call(realProvider.notifier).switchCollected(
+                    id,
+                    collected: collected,
+                  );
+
+              if (articleOrigin.isNotEmpty) {
+                for (int index = 0; index < articleOrigin.length; index++) {
+                  if (autoDisposeArticles.contains(articleOrigin[index])) {
+                    reader
+                        .call((articleOriginProvider[index]
+                                as AutoDisposeStateNotifierProvider<
+                                    BaseArticleNotifier,
+                                    RefreshListViewState<ArticleModel>>)
+                            .notifier)
+                        .switchCollected(
+                          value.originId!,
+                          collected: collected,
+                        );
+                  } else {
+                    reader
+                        .call((articleOriginProvider[index]
+                                as StateNotifierProvider<BaseArticleNotifier,
+                                    RefreshListViewState<ArticleModel>>)
+                            .notifier)
+                        .switchCollected(
+                          value.originId!,
+                          collected: collected,
+                        );
+                  }
                 }
               }
             }
           } else {
-            /// in other article screen
-            if (isCollected) {
-              await WanAndroidAPI.collectArticle(articleId: id);
+            /// from other article screen
+            /// eg. HomeArticleScreen, SearchScreen
+            if (collected) {
+              await WanAndroidAPI.addCollectedArticleByArticleId(articleId: id);
             } else {
-              await WanAndroidAPI.cancelCollectionArticle(articleId: id);
+              await WanAndroidAPI.deleteCollectedArticleByArticleId(
+                  articleId: id);
             }
 
             if (autoDisposeArticles.contains(from)) {
@@ -228,7 +303,7 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
                       .notifier)
                   .switchCollected(
                     id,
-                    isCollected: isCollected,
+                    collected: collected,
                   );
             } else {
               reader
@@ -237,7 +312,7 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
                       .notifier)
                   .switchCollected(
                     id,
-                    isCollected: isCollected,
+                    collected: collected,
                   );
             }
           }
