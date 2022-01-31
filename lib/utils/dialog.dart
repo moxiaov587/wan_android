@@ -24,8 +24,10 @@ class DialogUtils {
     );
   }
 
-  static void dismiss() {
-    SmartDialog.dismiss();
+  static void dismiss({SmartStatus status = SmartStatus.loading}) {
+    SmartDialog.dismiss(
+      status: status,
+    );
   }
 
   static void tips(
