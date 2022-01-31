@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '../app/theme/theme.dart' show AppTheme;
 import '../contacts/icon_font_icons.dart';
 
 part '../navigator/route/search_page_route.dart';
