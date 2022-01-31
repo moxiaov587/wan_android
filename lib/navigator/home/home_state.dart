@@ -13,6 +13,9 @@ class HomeState extends ChangeNotifier
     bool isSettings = false,
     bool isLanguages = false,
     bool isMyCollections = false,
+    int? collectionTypeIndex,
+    bool showHandleCollectedBottomSheet = false,
+    int? collectId,
     bool isMyPoints = false,
     bool isMyShare = false,
     int? articleId,
@@ -28,6 +31,9 @@ class HomeState extends ChangeNotifier
         _isSettings = isSettings,
         _isLanguages = isLanguages,
         _isMyCollections = isMyCollections,
+        _collectionTypeIndex = collectionTypeIndex,
+        _showHandleCollectedBottomSheet = showHandleCollectedBottomSheet,
+        _collectId = collectId,
         _isMyPoints = isMyPoints,
         _isMyShare = isMyShare,
         _articleId = articleId,
@@ -47,6 +53,10 @@ class HomeState extends ChangeNotifier
       isSettings: json['isSettings'] as bool? ?? false,
       isLanguages: json['isLanguages'] as bool? ?? false,
       isMyCollections: json['isMyCollections'] as bool? ?? false,
+      collectionTypeIndex: json['collectionTypeIndex'] as int?,
+      showHandleCollectedBottomSheet:
+          json['showHandleCollectedBottomSheet'] as bool? ?? false,
+      collectId: json['collectId'] as int?,
       isMyPoints: json['isMyPoints'] as bool? ?? false,
       isMyShare: json['isMyShare'] as bool? ?? false,
       articleId: json['articleId'] as int?,
@@ -66,6 +76,9 @@ class HomeState extends ChangeNotifier
         'isSettings': _isSettings,
         'isLanguages': _isLanguages,
         'isMyCollections': _isMyCollections,
+        'collectionTypeIndex': _collectionTypeIndex,
+        'showHandleCollectedBottomSheet': _showHandleCollectedBottomSheet,
+        'collectId': _collectId,
         'isMyPoints': _isMyPoints,
         'isMyShare': _isMyShare,
         'articleId': _articleId,
@@ -103,6 +116,15 @@ class HomeState extends ChangeNotifier
   bool _isMyCollections;
   bool get isMyCollections => _isMyCollections;
 
+  int? _collectionTypeIndex;
+  int? get collectionTypeIndex => _collectionTypeIndex;
+
+  bool _showHandleCollectedBottomSheet;
+  bool get showHandleCollectedBottomSheet => _showHandleCollectedBottomSheet;
+
+  int? _collectId;
+  int? get collectId => _collectId;
+
   bool _isMyPoints;
   bool get isMyPoints => _isMyPoints;
 
@@ -131,6 +153,9 @@ class HomeState extends ChangeNotifier
     bool? isSettings,
     bool? isLanguages,
     bool? isMyCollections,
+    int? collectionTypeIndex,
+    bool? showHandleCollectedBottomSheet,
+    int? collectId,
     bool? isMyPoints,
     bool? isMyShare,
     int? articleId,
@@ -178,6 +203,19 @@ class HomeState extends ChangeNotifier
       _isMyCollections = isMyCollections;
     }
 
+    if (collectionTypeIndex != null) {
+      _collectionTypeIndex =
+          collectionTypeIndex == -1 ? null : collectionTypeIndex;
+    }
+
+    if (showHandleCollectedBottomSheet != null) {
+      _showHandleCollectedBottomSheet = showHandleCollectedBottomSheet;
+    }
+
+    if (collectId != null) {
+      _collectId = collectId == -1 ? null : collectId;
+    }
+
     if (isMyPoints != null) {
       _isMyPoints = isMyPoints;
     }
@@ -214,6 +252,9 @@ class HomeState extends ChangeNotifier
     bool? isSettings,
     bool? isLanguages,
     bool? isMyCollections,
+    int? collectionTypeIndex,
+    bool? showHandleCollectedBottomSheet,
+    int? collectId,
     bool? isMyPoints,
     bool? isMyShare,
     int? articleId,
@@ -232,6 +273,10 @@ class HomeState extends ChangeNotifier
       isSettings: isSettings ?? _isSettings,
       isLanguages: isLanguages ?? _isLanguages,
       isMyCollections: isMyCollections ?? _isMyCollections,
+      collectionTypeIndex: collectionTypeIndex ?? _collectionTypeIndex,
+      showHandleCollectedBottomSheet:
+          showHandleCollectedBottomSheet ?? _showHandleCollectedBottomSheet,
+      collectId: collectId ?? _collectId,
       isMyPoints: isMyPoints ?? _isMyPoints,
       isMyShare: isMyShare ?? _isMyShare,
       articleId: articleId ?? _articleId,
@@ -317,8 +362,60 @@ class HomeState extends ChangeNotifier
     if (uriString == RouterName.myCollections.location) {
       return homeState.copyWith(
         isMyCollections: true,
+        collectionTypeIndex: CollectionType.values.first.index,
       );
     }
+
+    if (uriString == RouterName.myArticleCollections.location) {
+      return homeState.copyWith(
+        isMyCollections: true,
+        collectionTypeIndex: CollectionType.article.index,
+      );
+    }
+
+    if (uriString == RouterName.myWebsiteCollections.location) {
+      return homeState.copyWith(
+        isMyCollections: true,
+        collectionTypeIndex: CollectionType.website.index,
+      );
+    }
+
+    if (uriString == RouterName.addArticlesToCollect.location) {
+      return homeState.copyWith(
+        isMyCollections: true,
+        collectionTypeIndex: CollectionType.article.index,
+        showHandleCollectedBottomSheet: true,
+      );
+    }
+
+    if (uriString == RouterName.addWebsitesToCollect.location) {
+      return homeState.copyWith(
+        isMyCollections: true,
+        collectionTypeIndex: CollectionType.website.index,
+        showHandleCollectedBottomSheet: true,
+      );
+    }
+
+    if (uriString.contains(RouterName.myArticleCollections.location) &&
+        uri.pathSegments.contains('edit') &&
+        uri.pathSegments.contains('id')) {
+      return homeState.copyWith(
+          isMyCollections: true,
+          collectionTypeIndex: CollectionType.article.index,
+          showHandleCollectedBottomSheet: true,
+          collectId: uri.pathSegments.last as int);
+    }
+
+    if (uriString.contains(RouterName.myWebsiteCollections.location) &&
+        uri.pathSegments.contains('edit') &&
+        uri.pathSegments.contains('id')) {
+      return homeState.copyWith(
+          isMyCollections: true,
+          collectionTypeIndex: CollectionType.website.index,
+          showHandleCollectedBottomSheet: true,
+          collectId: uri.pathSegments.last as int);
+    }
+
     if (uriString == RouterName.myPoints.location) {
       return homeState.copyWith(
         isMyPoints: true,
@@ -411,6 +508,46 @@ class HomeState extends ChangeNotifier
     }
 
     if (isMyCollections) {
+      if (collectionTypeIndex == CollectionType.article.index) {
+        if (showHandleCollectedBottomSheet) {
+          if (collectId != null) {
+            return RouteInformation(
+              location: RouterName.editArticlesInCollect.location,
+              state: toJson(),
+            );
+          }
+
+          return RouteInformation(
+            location: RouterName.addArticlesToCollect.location,
+            state: toJson(),
+          );
+        }
+        return RouteInformation(
+          location: RouterName.myArticleCollections.location,
+          state: toJson(),
+        );
+      }
+
+      if (collectionTypeIndex == CollectionType.website.index) {
+        if (showHandleCollectedBottomSheet) {
+          if (collectId != null) {
+            return RouteInformation(
+              location: RouterName.editWebsitesInCollect.location,
+              state: toJson(),
+            );
+          }
+
+          return RouteInformation(
+            location: RouterName.addWebsitesToCollect.location,
+            state: toJson(),
+          );
+        }
+        return RouteInformation(
+          location: RouterName.myWebsiteCollections.location,
+          state: toJson(),
+        );
+      }
+
       return RouteInformation(
         location: RouterName.myCollections.location,
         state: toJson(),

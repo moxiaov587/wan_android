@@ -1,6 +1,28 @@
 part of '../locations.dart';
 
 class HomeLocation extends BeamLocation<HomeState> {
+  RouteName getHandleCollectedBottomSheetRouterName({
+    int? collectionTypeIndex,
+    int? collectId,
+  }) {
+    final CollectionType type = CollectionType.values[collectionTypeIndex ?? 0];
+
+    final bool isEdit = collectId != null;
+
+    switch (type) {
+      case CollectionType.article:
+        if (isEdit) {
+          return RouterName.editArticlesInCollect;
+        }
+        return RouterName.addArticlesToCollect;
+      case CollectionType.website:
+        if (isEdit) {
+          return RouterName.editWebsitesInCollect;
+        }
+        return RouterName.addWebsitesToCollect;
+    }
+  }
+
   @override
   HomeState createState(RouteInformation routeInformation) =>
       HomeState().fromRouteInformation(routeInformation);
@@ -28,6 +50,9 @@ class HomeLocation extends BeamLocation<HomeState> {
       isSettings: homeState.isSettings,
       isLanguages: homeState.isLanguages,
       isMyCollections: homeState.isMyCollections,
+      collectionTypeIndex: homeState.collectionTypeIndex,
+      showHandleCollectedBottomSheet: homeState.showHandleCollectedBottomSheet,
+      collectId: homeState.collectId,
       isMyPoints: homeState.isMyPoints,
       isMyShare: homeState.isMyShare,
       articleId: homeState.articleId,
@@ -47,7 +72,13 @@ class HomeLocation extends BeamLocation<HomeState> {
 
   @override
   List<BeamPage> buildPages(BuildContext context, HomeState state) {
-    LogUtils.d('$runtimeType build pages: current path = ${state.initialPath}');
+    LogUtils.d('$runtimeType build pages: state = $state');
+
+    final RouteName handleCollectedBottomSheetRouterName =
+        getHandleCollectedBottomSheetRouterName(
+      collectionTypeIndex: state.collectionTypeIndex,
+      collectId: state.collectId,
+    );
 
     return state.showSplash
         ? <BeamPage>[
@@ -217,7 +248,9 @@ class HomeLocation extends BeamLocation<HomeState> {
               BeamPage(
                 key: ValueKey<String>(RouterName.myCollections.location),
                 title: RouterName.myCollections.title,
-                child: const MyCollectionsScreen(),
+                child: MyCollectionsScreen(
+                  type: CollectionType.values[state.collectionTypeIndex ?? 0],
+                ),
                 onPopPage: (
                   _,
                   __,
@@ -226,10 +259,60 @@ class HomeLocation extends BeamLocation<HomeState> {
                 ) {
                   (state as HomeState).updateWith(
                     isMyCollections: false,
+                    collectionTypeIndex: -1,
                   );
 
                   return true;
                 },
+              ),
+            if (state.showHandleCollectedBottomSheet)
+              BeamPage(
+                key: ValueKey<String>(
+                    handleCollectedBottomSheetRouterName.location),
+                title: handleCollectedBottomSheetRouterName.title,
+                routeBuilder: (BuildContext context, RouteSettings settings,
+                    Widget child) {
+                  const Radius radius = Radius.circular(20);
+
+                  return ModalBottomSheetRoute<void>(
+                    clipBehavior: Clip.antiAlias,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        topLeft: radius,
+                        topRight: radius,
+                      ),
+                    ),
+                    isScrollControlled: true,
+                    constraints: BoxConstraints.tightFor(
+                      height: ScreenUtils.height * .8,
+                    ),
+                    builder: (_) => child,
+                    settings: settings,
+                    capturedThemes: InheritedTheme.capture(
+                      from: context,
+                      to: Beamer.of(context).navigator.context,
+                    ),
+                    barrierLabel: MaterialLocalizations.of(context)
+                        .modalBarrierDismissLabel,
+                  );
+                },
+                onPopPage: (
+                  _,
+                  __,
+                  RouteInformationSerializable<dynamic> state,
+                  ___,
+                ) {
+                  (state as HomeState).updateWith(
+                    showHandleCollectedBottomSheet: false,
+                    collectId: -1,
+                  );
+
+                  return true;
+                },
+                child: HandleCollectedBottomSheet(
+                  type: CollectionType.values[state.collectionTypeIndex ?? 0],
+                  collectId: state.collectId,
+                ),
               ),
             if (state.isMyPoints)
               BeamPage(

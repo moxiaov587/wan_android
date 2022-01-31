@@ -88,6 +88,41 @@ class RouterName {
     title: 'MyCollections',
   );
 
+  static RouteName myArticleCollections = RouteName(
+    title: 'MyArticleCollections',
+    location: '${myCollections.location}/articles',
+  );
+
+  static RouteName myWebsiteCollections = RouteName(
+    title: 'MyWebsiteCollections',
+    location: '${myCollections.location}/websites',
+  );
+
+  static List<String> myCollectionsTabsPath = <String>[
+    myArticleCollections.location,
+    myWebsiteCollections.location,
+  ];
+
+  static RouteName addArticlesToCollect = RouteName(
+    title: 'AddArticlesToCollect',
+    location: '${myArticleCollections.location}/add',
+  );
+
+  static RouteName addWebsitesToCollect = RouteName(
+    title: 'AddWebsitesToCollect',
+    location: '${myWebsiteCollections.location}/add',
+  );
+
+  static RouteName editArticlesInCollect = RouteName(
+    title: 'EditArticlesInCollect',
+    location: '${myArticleCollections.location}/edit/:id',
+  );
+
+  static RouteName editWebsitesInCollect = RouteName(
+    title: 'EditWebsitesInCollect',
+    location: '${myWebsiteCollections.location}/edit/:id',
+  );
+
   static RouteName myShare = const RouteName(
     title: 'MyShare',
   );

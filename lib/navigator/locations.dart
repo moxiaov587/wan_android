@@ -8,6 +8,7 @@ import '../screen/home/home.dart';
 import '../screen/splash.dart';
 import '../screen/unknown.dart';
 import '../utils/log.dart';
+import '../utils/screen.dart';
 import '../widget/custom_search_delegate.dart' show SearchPageRoute;
 import 'route/modal_bottom_sheet_route.dart';
 import 'route_name.dart';
