@@ -206,19 +206,6 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
       offset = Offset.zero;
     }
 
-    final BorderRadius inputBorderRadius = BorderRadius.all(
-      AppTheme.adornmentRadius,
-    );
-
-    final Color materialStateColor =
-        MaterialStateColor.resolveWith((Set<MaterialState> states) {
-      if (states.contains(MaterialState.focused)) {
-        return theme.primaryColor;
-      }
-
-      return theme.iconTheme.color!;
-    });
-
     return Semantics(
       explicitChildNodes: true,
       scopesRoute: true,
@@ -252,30 +239,26 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
                     hintStyle: theme.textTheme.bodyLarge,
                     contentPadding: EdgeInsets.zero,
                     prefixIconConstraints: const BoxConstraints.tightFor(
-                      width: 34.0,
-                      height: 30.0,
+                      width: 30.0,
                     ),
-                    prefixIconColor: materialStateColor,
-                    prefixIcon: const Padding(
-                      padding: EdgeInsets.only(
-                        left: 4,
-                      ),
-                      child: Icon(
-                        IconFontIcons.searchLine,
-                        size: 20.0,
-                      ),
+                    prefixIcon: const Icon(
+                      IconFontIcons.searchLine,
+                      size: 20.0,
                     ),
-                    suffixIconColor: materialStateColor,
+                    suffixIconConstraints: const BoxConstraints.tightFor(
+                      width: 30.0,
+                    ),
                     suffixIcon: ValueListenableBuilder<bool>(
                       valueListenable: _showCleanQuery,
                       builder: (_, bool value, Widget? child) {
                         return value
                             ? IconButton(
+                                padding: EdgeInsets.zero,
                                 hoverColor: Colors.transparent,
                                 splashColor: Colors.transparent,
                                 icon: const Icon(
                                   IconFontIcons.closeCircleLine,
-                                  size: 18,
+                                  size: 18.0,
                                 ),
                                 onPressed: () {
                                   widget.delegate.query = '';
@@ -284,23 +267,6 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
                             : child!;
                       },
                       child: const SizedBox.shrink(),
-                    ),
-                    filled: true,
-                    fillColor: theme.dialogBackgroundColor,
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: inputBorderRadius,
-                      borderSide: Divider.createBorderSide(
-                        context,
-                        color: theme.primaryColor,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: inputBorderRadius,
-                      borderSide: Divider.createBorderSide(
-                        context,
-                        color: Colors.transparent,
-                        width: 0.0,
-                      ),
                     ),
                   ),
                 ),
