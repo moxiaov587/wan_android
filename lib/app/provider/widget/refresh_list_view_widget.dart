@@ -117,7 +117,9 @@ class _RefreshListViewWidgetState<
             ref.watch(widget.provider).when(
                   (int nextPageNum, bool isLastPage, List<S> list) =>
                       list.isEmpty
-                          ? const EmptyWidget()
+                          ? const SliverFillRemaining(
+                              child: EmptyWidget(),
+                            )
                           : widget.builder(context, ref, list),
                   loading: () => const SliverFillRemaining(
                     child: LoadingWidget(),
@@ -266,7 +268,9 @@ class _AutoDisposeRefreshListViewWidgetState<
             ref.watch(widget.provider).when(
                   (int nextPageNum, bool isLastPage, List<S> list) =>
                       list.isEmpty
-                          ? const EmptyWidget()
+                          ? const SliverFillRemaining(
+                              child: EmptyWidget(),
+                            )
                           : widget.builder(context, ref, list),
                   loading: () => const SliverFillRemaining(
                     child: LoadingWidget(),
