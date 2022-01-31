@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:wan_android/navigator/router_delegate.dart';
-import 'package:wan_android/screen/authorized/provider/authorized_provider.dart';
 
 import '../../app/l10n/generated/l10n.dart';
 import '../../app/provider/view_state.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
 import '../../model/models.dart' show WebViewModel;
+import '../../navigator/router_delegate.dart';
+import '../../screen/authorized/provider/authorized_provider.dart';
 import '../../utils/debounce_throttle.dart';
 import '../../utils/screen.dart';
 import '../../widget/view_state_widget.dart';
