@@ -40,15 +40,28 @@ class API {
   static String userPointsRecord({required int pageNum}) =>
       '/lg/coin/list/$pageNum/json';
 
-  static String collect({required int pageNum}) =>
+  static String collectedArticles({required int pageNum}) =>
       '/lg/collect/list/$pageNum/json';
 
-  static String collectByArticleId({required int articleId}) =>
+  static const String addCollectedArticle = '/lg/collect/add/json';
+
+  static String updateCollectedArticle({required int collectId}) =>
+      '/lg/collect/user_article/update/$collectId/json';
+
+  static String addCollectedArticleByArticleId({required int articleId}) =>
       '/lg/collect/$articleId/json';
 
-  static String cancelCollectionByArticleId({required int articleId}) =>
+  static String deleteCollectedArticleByArticleId({required int articleId}) =>
       '/lg/uncollect_originId/$articleId/json';
 
-  static String cancelCollectionByCollectId({required int collectId}) =>
+  static String deleteCollectedArticleByCollectId({required int collectId}) =>
       '/lg/uncollect/$collectId/json';
+
+  static const String collectedWebsites = '/lg/collect/usertools/json';
+
+  static const String addCollectedWebsite = '/lg/collect/addtool/json';
+
+  static const String updateCollectedWebsite = '/lg/collect/updatetool/json';
+
+  static const String deleteCollectedWebsite = '/lg/collect/deletetool/json';
 }

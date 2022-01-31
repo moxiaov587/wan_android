@@ -174,7 +174,7 @@ class WanAndroidAPI {
   static Future<UserModel> register({
     required String username,
     required String password,
-    required String rePassword,
+    required String repassword,
     CancelToken? cancelToken,
   }) async {
     final Response<Map<String, dynamic>> response =
@@ -183,7 +183,7 @@ class WanAndroidAPI {
       queryParameters: <String, dynamic>{
         'username': username,
         'password': password,
-        'repassword': rePassword,
+        'repassword': repassword,
       },
       cancelToken: cancelToken,
     );
@@ -244,47 +244,147 @@ class WanAndroidAPI {
     );
   }
 
-  static Future<ModelToRefreshListData<CollectModel>> fetchCollectArticles(
+  static Future<ModelToRefreshListData<CollectedArticleModel>>
+      fetchCollectedArticles(
     int pageNum,
     int pageSize, {
     CancelToken? cancelToken,
   }) async {
     final Response<Map<String, dynamic>> response =
         await HttpUtils.get<Map<String, dynamic>>(
-      API.collect(
+      API.collectedArticles(
         pageNum: pageNum,
       ),
       queryParameters: <String, dynamic>{'page_size': pageSize},
       cancelToken: cancelToken,
     );
 
-    return ModelToRefreshListData<CollectModel>.fromJson(
+    return ModelToRefreshListData<CollectedArticleModel>.fromJson(
       json: response.data!,
-      formJson: CollectModel.fromJson,
+      formJson: CollectedArticleModel.fromJson,
     );
   }
 
-  static Future<void> collectArticle({
-    required int articleId,
+  static Future<CollectedArticleModel?> addCollectedArticle({
+    required String title,
+    required String author,
+    required String link,
   }) async {
-    await HttpUtils.post<dynamic>(API.collectByArticleId(articleId: articleId));
+    final Response<Map<String, dynamic>> response =
+        await HttpUtils.post<Map<String, dynamic>>(
+      API.addCollectedArticle,
+      queryParameters: <String, dynamic>{
+        'title': title,
+        'author': author,
+        'link': link,
+      },
+    );
+
+    if (response.data != null) {
+      return CollectedArticleModel.fromJson(response.data!);
+    }
+
+    return null;
   }
 
-  static Future<void> cancelCollectionArticle({
+  static Future<void> updateCollectedArticle({
+    required int id,
+    required String title,
+    required String author,
+    required String link,
+  }) async {
+    await HttpUtils.post<dynamic>(
+      API.updateCollectedArticle(collectId: id),
+      queryParameters: <String, dynamic>{
+        'title': title,
+        'author': author,
+        'link': link,
+      },
+    );
+  }
+
+  static Future<void> addCollectedArticleByArticleId({
     required int articleId,
   }) async {
     await HttpUtils.post<dynamic>(
-        API.cancelCollectionByArticleId(articleId: articleId));
+        API.addCollectedArticleByArticleId(articleId: articleId));
   }
 
-  static Future<void> cancelCollectionArticleByCollectId({
+  static Future<void> deleteCollectedArticleByArticleId({
+    required int articleId,
+  }) async {
+    await HttpUtils.post<dynamic>(
+        API.deleteCollectedArticleByArticleId(articleId: articleId));
+  }
+
+  static Future<void> deleteCollectedArticleByCollectId({
     required int collectId,
     int? articleId,
   }) async {
     await HttpUtils.post<dynamic>(
-      API.cancelCollectionByCollectId(collectId: collectId),
+      API.deleteCollectedArticleByCollectId(collectId: collectId),
       queryParameters: <String, dynamic>{
         'originId': articleId ?? -1,
+      },
+    );
+  }
+
+  static Future<List<CollectedWebsiteModel>> fetchCollectedWebsites({
+    CancelToken? cancelToken,
+  }) async {
+    final Response<List<dynamic>> response = await HttpUtils.get<List<dynamic>>(
+      API.collectedWebsites,
+      cancelToken: cancelToken,
+    );
+
+    return response.data!
+        .map((dynamic e) =>
+            CollectedWebsiteModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  static Future<CollectedWebsiteModel?> addCollectedWebsite({
+    required String title,
+    required String link,
+  }) async {
+    final Response<Map<String, dynamic>> response =
+        await HttpUtils.post<Map<String, dynamic>>(
+      API.addCollectedWebsite,
+      queryParameters: <String, dynamic>{
+        'name': title,
+        'link': link,
+      },
+    );
+
+    if (response.data != null) {
+      return CollectedWebsiteModel.fromJson(response.data!);
+    }
+
+    return null;
+  }
+
+  static Future<void> updateCollectedWebsite({
+    required int id,
+    required String title,
+    required String link,
+  }) async {
+    await HttpUtils.post<dynamic>(
+      API.updateCollectedWebsite,
+      queryParameters: <String, dynamic>{
+        'id': id,
+        'name': title,
+        'link': link,
+      },
+    );
+  }
+
+  static Future<void> deleteCollectedWebsite({
+    required int id,
+  }) async {
+    await HttpUtils.post<dynamic>(
+      API.deleteCollectedWebsite,
+      queryParameters: <String, dynamic>{
+        'id': id,
       },
     );
   }
