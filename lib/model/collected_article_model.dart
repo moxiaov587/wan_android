@@ -1,8 +1,8 @@
 part of 'models.dart';
 
 @freezed
-class CollectModel with _$CollectModel {
-  factory CollectModel({
+class CollectedArticleModel with _$CollectedArticleModel {
+  factory CollectedArticleModel({
     String? author,
     int? chapterId,
     String? chapterName,
@@ -20,8 +20,8 @@ class CollectModel with _$CollectModel {
     int? visible,
     @Default(0) int zan,
     @JsonKey(ignore: true) @Default(true) bool collect,
-  }) = _CollectModel;
+  }) = _CollectedArticleModel;
 
-  factory CollectModel.fromJson(Map<String, dynamic> json) =>
-      _$CollectModelFromJson(json);
+  factory CollectedArticleModel.fromJson(Map<String, dynamic> json) =>
+      _$CollectedArticleModelFromJson(json);
 }
