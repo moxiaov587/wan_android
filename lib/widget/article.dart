@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart' show TapGestureRecognizer;
 import 'package:flutter/material.dart';
 
 import '../app/l10n/generated/l10n.dart';
@@ -7,6 +8,7 @@ import '../contacts/unicode.dart';
 import '../extensions/extensions.dart';
 import '../model/models.dart';
 import '../navigator/router_delegate.dart';
+import '../utils/html_parse.dart';
 import '../widget/gap.dart';
 
 class ArticleTile extends StatelessWidget {
@@ -14,10 +16,13 @@ class ArticleTile extends StatelessWidget {
     Key? key,
     required this.article,
     this.query,
+    this.authorTextOrShareUserTextCanOnTap = true,
   }) : super(key: key);
 
   final ArticleModel article;
   final String? query;
+
+  final bool authorTextOrShareUserTextCanOnTap;
 
   TextSpan get _textSpace => const TextSpan(
         text: '${Unicode.halfWidthSpace}•${Unicode.halfWidthSpace}',
@@ -52,12 +57,47 @@ class ArticleTile extends StatelessWidget {
               children: <Widget>[
                 RichText(
                   text: TextSpan(
-                    text: article.author.strictValue ??
-                        article.shareUser.strictValue ??
-                        'null',
                     style: currentTheme.textTheme.bodyMedium,
                     children: <TextSpan>[
-                      _textSpace,
+                      if (article.author.strictValue != null)
+                        TextSpan(
+                          text: article.author.strictValue,
+                          style: authorTextOrShareUserTextCanOnTap
+                              ? TextStyle(
+                                  color: titleStyle.color,
+                                )
+                              : null,
+                          recognizer: authorTextOrShareUserTextCanOnTap
+                              ? (TapGestureRecognizer()
+                                ..onTap = () {
+                                  AppRouterDelegate.instance.currentBeamState
+                                      .updateWith(
+                                    author: article.author,
+                                  );
+                                })
+                              : null,
+                        )
+                      else if (article.shareUser.strictValue != null)
+                        TextSpan(
+                          text: article.shareUser.strictValue,
+                          style: authorTextOrShareUserTextCanOnTap
+                              ? TextStyle(
+                                  color: titleStyle.color,
+                                )
+                              : null,
+                          recognizer: authorTextOrShareUserTextCanOnTap
+                              ? (TapGestureRecognizer()
+                                ..onTap = () {
+                                  AppRouterDelegate.instance.currentBeamState
+                                      .updateWith(
+                                    userId: article.userId,
+                                  );
+                                })
+                              : null,
+                        ),
+                      if (article.author.strictValue == null ||
+                          article.shareUser.strictValue == null)
+                        _textSpace,
                       TextSpan(
                         text: article.niceDate,
                       ),
@@ -81,7 +121,8 @@ class ArticleTile extends StatelessWidget {
                   )
                 else
                   Text(
-                    article.title,
+                    HTMLParseUtils.parseArticleTitle(title: article.title) ??
+                        S.of(context).unknown,
                     style: titleStyle,
                   ),
                 Gap(
@@ -126,22 +167,13 @@ class ArticleTileSearchTitle extends StatelessWidget {
   final String title;
   final TextStyle textStyle;
 
-  List<String> get keywords => query.split(Unicode.halfWidthSpace).toList();
-
-  List<String> get words => title
-      .replaceAllMapped(RegExp(r'<[a-zA-Z]+.*?>([\s\S]*?)</[a-zA-Z]*?>'),
-          (Match match) {
-        final String? value = match.group(1);
-
-        if (value != null) {
-          return ',$value,';
-        }
-
-        return '';
-      })
-      .split(',')
-      .where((String word) => word.isNotEmpty)
+  List<String> get keywords => query
+      .split(Unicode.halfWidthSpace)
+      .map((String keyword) => keyword.toLowerCase())
       .toList();
+
+  List<String>? get words =>
+      HTMLParseUtils.parseSearchResultArticleTile(title: title);
 
   @override
   Widget build(BuildContext context) {
@@ -151,8 +183,8 @@ class ArticleTileSearchTitle extends StatelessWidget {
     return RichText(
       text: TextSpan(
         style: textStyle,
-        children: words.map((String word) {
-          final bool isKeywords = keywords.contains(word);
+        children: words?.map((String word) {
+          final bool isKeywords = keywords.contains(word.toLowerCase());
 
           return TextSpan(
             text: word,
@@ -186,7 +218,7 @@ class _TagTile extends StatelessWidget {
           vertical: kStyleUint / 2,
         ),
         child: Text(
-          text ?? 'null',
+          text ?? S.of(context).unknown,
           style: currentTheme.textTheme.bodySmall!.copyWith(
             height: 1.35,
           ),
