@@ -84,9 +84,9 @@ class CollectedArticleTile extends ConsumerWidget {
                 dismissThreshold: .65,
                 dismissalDuration: const Duration(milliseconds: 500),
                 onDismissed: () {
-                  ref.read(myCollectedArticleProvider.notifier).switchCollected(
+                  ref.read(myCollectedArticleProvider.notifier).switchCollect(
                         article.id,
-                        collected: false,
+                        changedValue: false,
                       );
                 },
                 confirmDismiss: () => ref
@@ -155,7 +155,9 @@ class CollectedArticleTile extends ConsumerWidget {
                             value: titleVerticalGap,
                           ),
                           Text(
-                            article.title ?? S.of(context).unknown,
+                            HTMLParseUtils.parseArticleTitle(
+                                    title: article.title) ??
+                                S.of(context).unknown,
                             style: currentTheme.textTheme.titleSmall,
                           ),
                         ],

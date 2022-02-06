@@ -73,9 +73,9 @@ class _CollectedWebsiteTile extends ConsumerWidget {
                 dismissThreshold: .65,
                 dismissalDuration: const Duration(milliseconds: 500),
                 onDismissed: () {
-                  ref.read(myCollectedWebsiteProvider.notifier).switchCollected(
+                  ref.read(myCollectedWebsiteProvider.notifier).switchCollect(
                         website.id,
-                        collected: false,
+                        changedValue: false,
                       );
                 },
                 confirmDismiss: () => ref
@@ -115,7 +115,8 @@ class _CollectedWebsiteTile extends ConsumerWidget {
                     child: Padding(
                       padding: AppTheme.bodyPadding,
                       child: Text(
-                        website.name ?? '',
+                        HTMLParseUtils.parseArticleTitle(title: website.name) ??
+                            S.of(context).unknown,
                         style: currentTheme.textTheme.titleSmall,
                       ),
                     ),

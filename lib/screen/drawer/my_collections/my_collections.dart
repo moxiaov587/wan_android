@@ -6,11 +6,13 @@ import '../../../app/l10n/generated/l10n.dart';
 import '../../../app/provider/view_state.dart';
 import '../../../app/provider/widget/provider_widget.dart';
 import '../../../app/theme/theme.dart';
+import '../../../contacts/icon_font_icons.dart';
 import '../../../contacts/instances.dart';
 import '../../../contacts/unicode.dart';
 import '../../../extensions/extensions.dart';
 import '../../../model/models.dart';
 import '../../../navigator/router_delegate.dart';
+import '../../../utils/html_parse.dart';
 import '../../../utils/screen.dart';
 import '../../../widget/custom_sliver_child_builder_delegate.dart';
 import '../../../widget/custom_text_form_field.dart';
@@ -82,7 +84,7 @@ class _MyCollectionsScreenState extends State<MyCollectionsScreen>
               );
             },
             icon: const Icon(
-              Icons.add,
+              IconFontIcons.addLine,
               size: 30.0,
             ),
           ),
