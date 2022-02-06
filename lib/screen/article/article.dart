@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/l10n/generated/l10n.dart';
 import '../../app/provider/view_state.dart';
@@ -13,7 +14,9 @@ import '../../model/models.dart' show WebViewModel;
 import '../../navigator/router_delegate.dart';
 import '../../screen/authorized/provider/authorized_provider.dart';
 import '../../utils/debounce_throttle.dart';
+import '../../utils/dialog.dart';
 import '../../utils/screen.dart';
+import '../../widget/popup_menu.dart';
 import '../../widget/view_state_widget.dart';
 import 'provider/article_provider.dart';
 
@@ -125,6 +128,40 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
             return Text(title ?? S.of(context).unknown);
           },
         ),
+        actions: <Widget>[
+          ref.watch(provider).whenOrNull(
+                    (WebViewModel? article) => PopupMenu(
+                      iconData: IconFontIcons.moreFill,
+                      children: <PopupMenuItemConfig>[
+                        PopupMenuItemConfig(
+                          iconData: IconFontIcons.clipboardLine,
+                          label: S.of(context).copyLink,
+                          onTap: () {
+                            Clipboard.setData(
+                                ClipboardData(text: article!.link));
+                            DialogUtils.success(
+                                S.of(context).copiedToClipboard);
+                          },
+                        ),
+                        PopupMenuItemConfig(
+                          iconData: IconFontIcons.externalLinkLine,
+                          label: S.of(context).browser,
+                          onTap: () async {
+                            final String uri =
+                                Uri.parse(article!.link).toString();
+                            if (await canLaunch(uri)) {
+                              await launch(uri);
+                            } else {
+                              DialogUtils.danger(
+                                  S.of(context).unableToOpenLink(uri));
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ) ??
+              const SizedBox.shrink(),
+        ],
       ),
       body: ref.watch(provider).when(
             (WebViewModel? article) => Column(
