@@ -23,11 +23,11 @@ import '../../widget/gap.dart';
 import 'provider/drawer_provider.dart';
 
 export 'my_collections/my_collections.dart';
+export 'my_share/my_share.dart';
 
 part 'about.dart';
 part 'languages.dart';
 part 'my_points.dart';
-part 'my_share.dart';
 part 'rank.dart';
 part 'settings.dart';
 
@@ -51,47 +51,47 @@ class HomeDrawer extends StatefulWidget {
 }
 
 class _HomeDrawerState extends State<HomeDrawer> {
-  final List<ListTileConfig> configs = <ListTileConfig>[
-    ListTileConfig(
-      iconData: IconFontIcons.coinLine,
-      title: S.current.myPoints,
-      onTap: () {
-        AppRouterDelegate.instance.currentBeamState.updateWith(
-          isMyPoints: true,
-        );
-      },
-    ),
-    ListTileConfig(
-      iconData: IconFontIcons.starLine,
-      title: S.current.myCollections,
-      onTap: () {
-        AppRouterDelegate.instance.currentBeamState.updateWith(
-          isMyCollections: true,
-        );
-      },
-    ),
-    ListTileConfig(
-      iconData: IconFontIcons.shareCircleLine,
-      title: S.current.myShare,
-      onTap: () {
-        AppRouterDelegate.instance.currentBeamState.updateWith(
-          isMyShare: true,
-        );
-      },
-    ),
-    ListTileConfig(
-      iconData: IconFontIcons.informationLine,
-      title: S.current.about,
-      onTap: () {
-        AppRouterDelegate.instance.currentBeamState.updateWith(
-          isAbout: true,
-        );
-      },
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final List<ListTileConfig> configs = <ListTileConfig>[
+      ListTileConfig(
+        iconData: IconFontIcons.coinLine,
+        title: S.of(context).myPoints,
+        onTap: () {
+          AppRouterDelegate.instance.currentBeamState.updateWith(
+            isMyPoints: true,
+          );
+        },
+      ),
+      ListTileConfig(
+        iconData: IconFontIcons.starLine,
+        title: S.of(context).myCollections,
+        onTap: () {
+          AppRouterDelegate.instance.currentBeamState.updateWith(
+            isMyCollections: true,
+          );
+        },
+      ),
+      ListTileConfig(
+        iconData: IconFontIcons.shareCircleLine,
+        title: S.of(context).myShare,
+        onTap: () {
+          AppRouterDelegate.instance.currentBeamState.updateWith(
+            isMyShare: true,
+          );
+        },
+      ),
+      ListTileConfig(
+        iconData: IconFontIcons.informationLine,
+        title: S.of(context).about,
+        onTap: () {
+          AppRouterDelegate.instance.currentBeamState.updateWith(
+            isAbout: true,
+          );
+        },
+      ),
+    ];
+
     const double avatarRadius = 30.0;
     return Drawer(
       elevation: 0.0,
