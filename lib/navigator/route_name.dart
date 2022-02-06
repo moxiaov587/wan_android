@@ -127,6 +127,21 @@ class RouterName {
     title: 'MyShare',
   );
 
+  static RouteName addSharedArticle = RouteName(
+    title: 'AddSharedArticle',
+    location: '${myShare.location}/add',
+  );
+
+  static RouteName theyShare = const RouteName(
+    title: 'TheyShare',
+    location: 'theyshare/:id',
+  );
+
+  static RouteName theyArticles = const RouteName(
+    title: 'TheyArticles',
+    location: 'theyarticles/:author',
+  );
+
   static RouteName about = const RouteName(
     title: 'About',
   );

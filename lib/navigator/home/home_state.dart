@@ -18,6 +18,9 @@ class HomeState extends ChangeNotifier
     int? collectId,
     bool isMyPoints = false,
     bool isMyShare = false,
+    bool showHandleSharedBottomSheet = false,
+    int? userId,
+    String? author,
     int? articleId,
     bool showSplash = false,
     bool isUnknown = false,
@@ -36,6 +39,9 @@ class HomeState extends ChangeNotifier
         _collectId = collectId,
         _isMyPoints = isMyPoints,
         _isMyShare = isMyShare,
+        _showHandleSharedBottomSheet = showHandleSharedBottomSheet,
+        _userId = userId,
+        _author = author,
         _articleId = articleId,
         _showSplash = showSplash,
         _isUnknown = isUnknown;
@@ -59,6 +65,10 @@ class HomeState extends ChangeNotifier
       collectId: json['collectId'] as int?,
       isMyPoints: json['isMyPoints'] as bool? ?? false,
       isMyShare: json['isMyShare'] as bool? ?? false,
+      showHandleSharedBottomSheet:
+          json['showHandleSharedBottomSheet'] as bool? ?? false,
+      userId: json['userId'] as int?,
+      author: json['author'] as String?,
       articleId: json['articleId'] as int?,
       showSplash: json['showSplash'] as bool? ?? false,
       isUnknown: json['isUnknown'] as bool? ?? false,
@@ -81,6 +91,9 @@ class HomeState extends ChangeNotifier
         'collectId': _collectId,
         'isMyPoints': _isMyPoints,
         'isMyShare': _isMyShare,
+        'showHandleSharedBottomSheet': _showHandleSharedBottomSheet,
+        'userId': _userId,
+        'author': _author,
         'articleId': _articleId,
         'showSplash': _showSplash,
         'isUnknown': _isUnknown,
@@ -131,6 +144,19 @@ class HomeState extends ChangeNotifier
   bool _isMyShare;
   bool get isMyShare => _isMyShare;
 
+  bool _showHandleSharedBottomSheet;
+  bool get showHandleSharedBottomSheet => _showHandleSharedBottomSheet;
+
+  int? _userId;
+  int? get userId => _userId;
+
+  bool get isTheyShare => _userId != null;
+
+  String? _author;
+  String? get author => _author;
+
+  bool get isTheyArticles => _author != null;
+
   int? _articleId;
   int? get articleId => _articleId;
 
@@ -158,6 +184,9 @@ class HomeState extends ChangeNotifier
     int? collectId,
     bool? isMyPoints,
     bool? isMyShare,
+    bool? showHandleSharedBottomSheet,
+    int? userId,
+    String? author,
     int? articleId,
     bool? showSplash,
     bool? isUnknown,
@@ -224,6 +253,18 @@ class HomeState extends ChangeNotifier
       _isMyShare = isMyShare;
     }
 
+    if (showHandleSharedBottomSheet != null) {
+      _showHandleSharedBottomSheet = showHandleSharedBottomSheet;
+    }
+
+    if (userId != null) {
+      _userId = userId == -1 ? null : userId;
+    }
+
+    if (author != null) {
+      _author = author.isEmpty ? null : author;
+    }
+
     if (articleId != null) {
       _articleId = articleId == -1 ? null : articleId;
     }
@@ -257,6 +298,9 @@ class HomeState extends ChangeNotifier
     int? collectId,
     bool? isMyPoints,
     bool? isMyShare,
+    bool? showHandleSharedBottomSheet,
+    int? userId,
+    String? author,
     int? articleId,
     bool? showSplash,
     bool? isUnknown,
@@ -279,6 +323,10 @@ class HomeState extends ChangeNotifier
       collectId: collectId ?? _collectId,
       isMyPoints: isMyPoints ?? _isMyPoints,
       isMyShare: isMyShare ?? _isMyShare,
+      showHandleSharedBottomSheet:
+          showHandleSharedBottomSheet ?? _showHandleSharedBottomSheet,
+      userId: userId ?? _userId,
+      author: author ?? _author,
       articleId: articleId ?? _articleId,
       showSplash: showSplash ?? _showSplash,
       isUnknown: isUnknown ?? _isUnknown,
@@ -320,6 +368,20 @@ class HomeState extends ChangeNotifier
         uri.pathSegments.contains('id')) {
       return homeState.copyWith(
         articleId: uri.pathSegments.last as int,
+      );
+    }
+
+    if (uri.pathSegments.first == RouterName.theyShare.title.toLowerCase() &&
+        uri.pathSegments.contains('id')) {
+      return homeState.copyWith(
+        userId: uri.pathSegments.last as int,
+      );
+    }
+
+    if (uri.pathSegments.first == RouterName.theyArticles.title.toLowerCase() &&
+        uri.pathSegments.contains('author')) {
+      return homeState.copyWith(
+        author: uri.pathSegments.last,
       );
     }
 
@@ -428,6 +490,13 @@ class HomeState extends ChangeNotifier
       );
     }
 
+    if (uriString == RouterName.addSharedArticle.location) {
+      return homeState.copyWith(
+        isMyShare: true,
+        showHandleSharedBottomSheet: true,
+      );
+    }
+
     if (uriString == RouterName.splash.location) {
       return homeState.copyWith(
         showSplash: true,
@@ -475,6 +544,20 @@ class HomeState extends ChangeNotifier
     if (isArticle) {
       return RouteInformation(
         location: '/${RouterName.article.title.toLowerCase()}/$_articleId',
+        state: toJson(),
+      );
+    }
+
+    if (isTheyShare) {
+      return RouteInformation(
+        location: '/${RouterName.theyShare.title.toLowerCase()}/$_userId',
+        state: toJson(),
+      );
+    }
+
+    if (isTheyArticles) {
+      return RouteInformation(
+        location: '/${RouterName.theyArticles.title.toLowerCase()}/$_author',
         state: toJson(),
       );
     }
@@ -557,6 +640,13 @@ class HomeState extends ChangeNotifier
     if (isMyPoints) {
       return RouteInformation(
         location: RouterName.myPoints.location,
+        state: toJson(),
+      );
+    }
+
+    if (showHandleSharedBottomSheet) {
+      return RouteInformation(
+        location: RouterName.addSharedArticle.location,
         state: toJson(),
       );
     }

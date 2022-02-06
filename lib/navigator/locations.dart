@@ -6,6 +6,7 @@ import '../screen/authorized/login.dart';
 import '../screen/drawer/drawer.dart';
 import '../screen/home/home.dart';
 import '../screen/splash.dart';
+import '../screen/they/they.dart';
 import '../screen/unknown.dart';
 import '../utils/log.dart';
 import '../utils/screen.dart';

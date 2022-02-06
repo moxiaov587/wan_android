@@ -350,6 +350,92 @@ class HomeLocation extends BeamLocation<HomeState> {
                   return true;
                 },
               ),
+            if (state.showHandleSharedBottomSheet)
+              BeamPage(
+                key: ValueKey<String>(RouterName.addSharedArticle.location),
+                title: RouterName.addSharedArticle.title,
+                routeBuilder: (BuildContext context, RouteSettings settings,
+                    Widget child) {
+                  const Radius radius = Radius.circular(20);
+
+                  return ModalBottomSheetRoute<void>(
+                    clipBehavior: Clip.antiAlias,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        topLeft: radius,
+                        topRight: radius,
+                      ),
+                    ),
+                    isScrollControlled: true,
+                    constraints: BoxConstraints.tightFor(
+                      height: ScreenUtils.height * .8,
+                    ),
+                    builder: (_) => child,
+                    settings: settings,
+                    capturedThemes: InheritedTheme.capture(
+                      from: context,
+                      to: Beamer.of(context).navigator.context,
+                    ),
+                    barrierLabel: MaterialLocalizations.of(context)
+                        .modalBarrierDismissLabel,
+                  );
+                },
+                onPopPage: (
+                  _,
+                  __,
+                  RouteInformationSerializable<dynamic> state,
+                  ___,
+                ) {
+                  (state as HomeState).updateWith(
+                    showHandleSharedBottomSheet: false,
+                  );
+
+                  return true;
+                },
+                child: const HandleSharedBottomSheet(),
+              ),
+            if (state.isTheyShare)
+              BeamPage(
+                key: ValueKey<String>(
+                    '/${RouterName.theyShare.title.toLowerCase()}/${state.userId}'),
+                title: RouterName.theyShare.title,
+                child: TheyShareScreen(
+                  userId: state.userId!,
+                ),
+                onPopPage: (
+                  _,
+                  __,
+                  RouteInformationSerializable<dynamic> state,
+                  ___,
+                ) {
+                  (state as HomeState).updateWith(
+                    userId: -1,
+                  );
+
+                  return true;
+                },
+              ),
+            if (state.isTheyArticles)
+              BeamPage(
+                key: ValueKey<String>(
+                    '/${RouterName.theyArticles.title.toLowerCase()}/${state.author}'),
+                title: RouterName.theyArticles.title,
+                child: TheyArticlesScreen(
+                  author: state.author!,
+                ),
+                onPopPage: (
+                  _,
+                  __,
+                  RouteInformationSerializable<dynamic> state,
+                  ___,
+                ) {
+                  (state as HomeState).updateWith(
+                    author: '',
+                  );
+
+                  return true;
+                },
+              ),
             if (state.isArticle)
               BeamPage(
                 key: ValueKey<String>(
