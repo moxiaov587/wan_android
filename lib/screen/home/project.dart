@@ -58,27 +58,57 @@ class _ProjectState extends State<_Project> with AutomaticKeepAliveClientMixin {
   }
 }
 
-class _ProjectTypeSwitchExtentProtoType extends StatelessWidget {
+class _ProjectTypeSwitchExtentProtoType extends ConsumerWidget {
   const _ProjectTypeSwitchExtentProtoType({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ThemeData theme = Theme.of(context);
     return Material(
-      color: currentTheme.scaffoldBackgroundColor,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: AppTheme.bodyPadding,
-            child: Ink(
-              decoration: BoxDecoration(
-                color: currentTheme.cardColor,
-                borderRadius: AppTheme.roundedBorderRadius,
-              ),
-              child: const _ProjectTypeSwitch(),
-            ),
+      color: theme.scaffoldBackgroundColor,
+      child: Padding(
+        padding: AppTheme.bodyPadding,
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Consumer(
+            builder: (_, WidgetRef ref, __) {
+              return CapsuleInk(
+                color: theme.cardColor,
+                onTap: ref.watch(currentProjectTypeProvider).when(
+                      (ProjectTypeModel? value) => () {
+                        AppRouterDelegate.instance.currentBeamState.updateWith(
+                          showProjectTypeBottomSheet: true,
+                        );
+                      },
+                      loading: () => null,
+                      error: (_, __, ___) => () {
+                        ref.read(projectTypesProvider.notifier).refresh();
+                      },
+                    ),
+                child: ref.watch(currentProjectTypeProvider).when(
+                      (ProjectTypeModel? value) => Text(value!.name),
+                      loading: () => const LoadingWidget(
+                        radius: 5.0,
+                      ),
+                      error: (_, __, ___) => Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          const Icon(
+                            IconFontIcons.refreshLine,
+                            size: 14.0,
+                          ),
+                          Gap(
+                            direction: GapDirection.horizontal,
+                            size: GapSize.small,
+                          ),
+                          Text(S.of(context).retry),
+                        ],
+                      ),
+                    ),
+              );
+            },
           ),
-        ],
+        ),
       ),
     );
   }
@@ -108,48 +138,6 @@ class _ProjectTypeSwitchSliverPinnedPersistentHeaderDelegate
   bool shouldRebuild(
           covariant SliverPinnedPersistentHeaderDelegate oldDelegate) =>
       false;
-}
-
-class _ProjectTypeSwitch extends ConsumerWidget {
-  const _ProjectTypeSwitch({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(currentProjectTypeProvider).when(
-          (ProjectTypeModel? value) => CapsuleInk(
-            onTap: () {
-              AppRouterDelegate.instance.currentBeamState.updateWith(
-                showProjectTypeBottomSheet: true,
-              );
-            },
-            child: Text(value!.name),
-          ),
-          loading: () => const CapsuleInk(
-            child: LoadingWidget(
-              radius: 5.0,
-            ),
-          ),
-          error: (_, __, ___) => CapsuleInk(
-            onTap: () {
-              ref.read(projectTypesProvider.notifier).refresh();
-            },
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const Icon(
-                  IconFontIcons.refreshLine,
-                  size: 14.0,
-                ),
-                Gap(
-                  direction: GapDirection.horizontal,
-                  size: GapSize.small,
-                ),
-                Text(S.of(context).retry),
-              ],
-            ),
-          ),
-        );
-  }
 }
 
 class ProjectTypeBottomSheet extends StatelessWidget {

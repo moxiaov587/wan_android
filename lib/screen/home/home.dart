@@ -105,8 +105,8 @@ class _HomeScreenState extends State<HomeScreen> {
         controller: _pageController,
         itemCount: _pages.length,
         itemBuilder: (_, int index) => Builder(
-          builder: (_) => Material(
-            color: currentTheme.scaffoldBackgroundColor,
+          builder: (BuildContext context) => Material(
+            color: Theme.of(context).scaffoldBackgroundColor,
             child: SafeArea(
               top: false,
               child: _pages[index],
