@@ -47,4 +47,10 @@ class IconFontIcons {
       IconData(0xee59, fontFamily: fontFamily);
   static const IconData sunFill = IconData(0xf1bc, fontFamily: fontFamily);
   static const IconData moonLine = IconData(0xef75, fontFamily: fontFamily);
+  static const IconData addLine = IconData(0xea13, fontFamily: fontFamily);
+  static const IconData externalLinkLine =
+      IconData(0xecaf, fontFamily: fontFamily);
+  static const IconData clipboardLine =
+      IconData(0xeb91, fontFamily: fontFamily);
+  static const IconData moreFill = IconData(0xef78, fontFamily: fontFamily);
 }
