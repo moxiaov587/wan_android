@@ -1,5 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.wan_android">
+   <queries>
+      <!-- If your app opens https URLs -->
+      <intent>
+        <action android:name="android.intent.action.VIEW" />
+        <data android:scheme="https" />
+      </intent>
+   </queries>
    <application
         android:label="wan_android"
         android:icon="@mipmap/ic_launcher">
