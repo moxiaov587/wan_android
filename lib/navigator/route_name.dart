@@ -72,8 +72,9 @@ class RouterName {
     title: 'Settings',
   );
 
-  static RouteName languages = const RouteName(
+  static RouteName languages = RouteName(
     title: 'Languages',
+    location: '${settings.location}/languages',
   );
 
   static RouteName rank = const RouteName(
