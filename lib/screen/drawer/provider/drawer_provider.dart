@@ -12,4 +12,5 @@ import '../my_collections/my_collections.dart' show CollectionType;
 
 part 'my_collections_provider.dart';
 part 'my_points_provider.dart';
+part 'my_share_provider.dart';
 part 'points_rank_provider.dart';
