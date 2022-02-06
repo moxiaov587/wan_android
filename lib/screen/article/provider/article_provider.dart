@@ -18,7 +18,8 @@ import '../../drawer/provider/drawer_provider.dart'
         MyCollectedArticleNotifier,
         MyCollectedWebsiteNotifier,
         kMyCollectedArticleProvider,
-        kMyCollectedWebsiteProvider;
+        kMyCollectedWebsiteProvider,
+        kMyShareProvider;
 import '../../home/provider/home_provider.dart';
 
 enum ArticleFrom {
@@ -39,6 +40,7 @@ const List<String> articles = <String>[
 
 const List<String> autoDisposeArticles = <String>[
   kSearchArticleProvider,
+  kMyShareProvider,
 ];
 
 const List<String> collects = <String>[
@@ -108,6 +110,10 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
       return previousValue;
     });
 
+    /// [kMyCollectedArticleProvider] and [kMyCollectedWebsiteProvider] is
+    /// autoDispose provider, So if they exist, it can be considered to be
+    /// currently in the [MyCollectionsScreen]
+    /// that is, they can be searched first from them
     if (providers.keys.contains(kMyCollectedArticleProvider)) {
       if (providers.keys.contains(kMyCollectedWebsiteProvider)) {
         from = kMyCollectedWebsiteProvider;
@@ -193,12 +199,12 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
     return webViewModel;
   }
 
-  void collect(bool collected) {
+  void collect(bool changedValue) {
     state.whenOrNull((WebViewModel? value) async {
       if (value != null) {
         state = ViewStateData<WebViewModel>(
           value: value.copyWith(
-            collect: collected,
+            collect: changedValue,
           ),
         );
         try {
@@ -211,7 +217,7 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
                   provider as AutoDisposeStateNotifierProvider<
                       MyCollectedWebsiteNotifier,
                       ListViewState<CollectedWebsiteModel>>;
-              if (collected) {
+              if (changedValue) {
                 final CollectedWebsiteModel? newCollectedWebsite =
                     await reader.call(realProvider.notifier).add(
                           title: value.title ?? '',
@@ -233,9 +239,9 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
                     .requestCancelCollect(collectId: value.id);
               }
 
-              reader.call(realProvider.notifier).switchCollected(
+              reader.call(realProvider.notifier).switchCollect(
                     id,
-                    collected: collected,
+                    changedValue: changedValue,
                   );
             } else {
               /// from MyCollectionsScreen - article
@@ -244,7 +250,7 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
                   realProvider = provider as AutoDisposeStateNotifierProvider<
                       MyCollectedArticleNotifier,
                       RefreshListViewState<CollectedArticleModel>>;
-              if (collected) {
+              if (changedValue) {
                 await WanAndroidAPI.addCollectedArticleByArticleId(
                     articleId: id);
               } else {
@@ -253,9 +259,9 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
                       articleId: value.originId,
                     );
               }
-              reader.call(realProvider.notifier).switchCollected(
+              reader.call(realProvider.notifier).switchCollect(
                     id,
-                    collected: collected,
+                    changedValue: changedValue,
                   );
 
               if (articleOrigin.isNotEmpty) {
@@ -267,9 +273,9 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
                                     BaseArticleNotifier,
                                     RefreshListViewState<ArticleModel>>)
                             .notifier)
-                        .switchCollected(
+                        .switchCollect(
                           value.originId!,
-                          collected: collected,
+                          changedValue: changedValue,
                         );
                   } else {
                     reader
@@ -277,9 +283,9 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
                                 as StateNotifierProvider<BaseArticleNotifier,
                                     RefreshListViewState<ArticleModel>>)
                             .notifier)
-                        .switchCollected(
+                        .switchCollect(
                           value.originId!,
-                          collected: collected,
+                          changedValue: changedValue,
                         );
                   }
                 }
@@ -288,7 +294,7 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
           } else {
             /// from other article screen
             /// eg. HomeArticleScreen, SearchScreen
-            if (collected) {
+            if (changedValue) {
               await WanAndroidAPI.addCollectedArticleByArticleId(articleId: id);
             } else {
               await WanAndroidAPI.deleteCollectedArticleByArticleId(
@@ -301,18 +307,18 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
                           BaseArticleNotifier,
                           RefreshListViewState<ArticleModel>>)
                       .notifier)
-                  .switchCollected(
+                  .switchCollect(
                     id,
-                    collected: collected,
+                    changedValue: changedValue,
                   );
             } else {
               reader
                   .call((provider as StateNotifierProvider<BaseArticleNotifier,
                           RefreshListViewState<ArticleModel>>)
                       .notifier)
-                  .switchCollected(
+                  .switchCollect(
                     id,
-                    collected: collected,
+                    changedValue: changedValue,
                   );
             }
           }
