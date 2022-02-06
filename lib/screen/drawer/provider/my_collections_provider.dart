@@ -141,18 +141,19 @@ class MyCollectedArticleNotifier
     }
   }
 
-  void switchCollected(
+  void switchCollect(
     int id, {
-    required bool collected,
+    required bool changedValue,
   }) {
     state.whenOrNull(
         (int pageNum, bool isLastPage, List<CollectedArticleModel> list) {
       final List<CollectedArticleModel> setCollectedList = list
-          .map((CollectedArticleModel collect) => collect.id == id
-              ? collect.copyWith(
-                  collect: collected,
-                )
-              : collect)
+          .map((CollectedArticleModel collectedArticle) =>
+              collectedArticle.id == id
+                  ? collectedArticle.copyWith(
+                      collect: changedValue,
+                    )
+                  : collectedArticle)
           .toList();
       state = RefreshListViewStateData<CollectedArticleModel>(
         pageNum: pageNum,
@@ -304,17 +305,18 @@ class MyCollectedWebsiteNotifier
     }
   }
 
-  void switchCollected(
+  void switchCollect(
     int id, {
-    required bool collected,
+    required bool changedValue,
   }) {
     state.whenOrNull((List<CollectedWebsiteModel> list) {
       final List<CollectedWebsiteModel> setCollectedList = list
-          .map((CollectedWebsiteModel collect) => collect.id == id
-              ? collect.copyWith(
-                  collect: collected,
-                )
-              : collect)
+          .map((CollectedWebsiteModel collectedWebsite) =>
+              collectedWebsite.id == id
+                  ? collectedWebsite.copyWith(
+                      collect: changedValue,
+                    )
+                  : collectedWebsite)
           .toList();
       state = ListViewStateData<CollectedWebsiteModel>(
         list: setCollectedList,
