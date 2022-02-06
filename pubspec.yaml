@@ -35,6 +35,10 @@ dependencies:
   flutter_inappwebview: ^5.3.2
   connectivity_plus: ^2.2.0
   flutter_slidable: ^1.2.0
+  shimmer: ^2.0.0
+  html: ^0.15.0
+  url_launcher: ^6.0.18
+  custom_pop_up_menu: ^1.2.3+1
 
 dev_dependencies:
   flutter_test:
