@@ -79,7 +79,6 @@ class ModelToRefreshListData<T> {
     );
   }
 
-  /// [curPage] actually the page number of the next page
   final int curPage;
   final List<T> datas;
   final int offset;
