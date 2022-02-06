@@ -576,16 +576,16 @@ class HomeState extends ChangeNotifier
       );
     }
 
-    if (isSettings) {
+    if (isLanguages) {
       return RouteInformation(
-        location: RouterName.settings.location,
+        location: RouterName.languages.location,
         state: toJson(),
       );
     }
 
-    if (isLanguages) {
+    if (isSettings) {
       return RouteInformation(
-        location: RouterName.languages.location,
+        location: RouterName.settings.location,
         state: toJson(),
       );
     }
