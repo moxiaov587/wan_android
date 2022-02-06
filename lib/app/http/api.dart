@@ -64,4 +64,20 @@ class API {
   static const String updateCollectedWebsite = '/lg/collect/updatetool/json';
 
   static const String deleteCollectedWebsite = '/lg/collect/deletetool/json';
+
+  static String shareArticle({required int pageNum}) =>
+      '/user/lg/private_articles/$pageNum/json';
+
+  static const String addShareArticle = '/lg/user_article/add/json';
+
+  static String deleteShareArticle({required int articleId}) =>
+      '/lg/user_article/delete/$articleId/json';
+
+  static String shareArticleByUserId(
+          {required int userId, required int pageNum}) =>
+      '/user/$userId/share_articles/$pageNum/json';
+
+  static String articleByAuthor(
+          {required String author, required int pageNum}) =>
+      '/article/list/$pageNum/json?author=$author';
 }

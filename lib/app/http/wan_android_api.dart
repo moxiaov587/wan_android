@@ -388,4 +388,75 @@ class WanAndroidAPI {
       },
     );
   }
+
+  static Future<TheyShareModel> fetchShareArticlesByUserId(
+    int pageNum,
+    int pageSize, {
+    required int userId,
+    CancelToken? cancelToken,
+  }) async {
+    final Response<Map<String, dynamic>> response =
+        await HttpUtils.get<Map<String, dynamic>>(
+      API.shareArticleByUserId(userId: userId, pageNum: pageNum),
+      queryParameters: <String, dynamic>{'page_size': pageSize},
+      cancelToken: cancelToken,
+    );
+
+    return TheyShareModel.fromJson(response.data!);
+  }
+
+  static Future<TheyShareModel> fetchShareArticles(
+    int pageNum,
+    int pageSize, {
+    CancelToken? cancelToken,
+  }) async {
+    final Response<dynamic> response = await HttpUtils.get<dynamic>(
+      API.shareArticle(pageNum: pageNum),
+      queryParameters: <String, dynamic>{'page_size': pageSize},
+      cancelToken: cancelToken,
+    );
+
+    return TheyShareModel.fromJson(response.data as Map<String, dynamic>);
+  }
+
+  static Future<void> addShareArticle({
+    required String title,
+    required String link,
+  }) async {
+    await HttpUtils.post<Map<String, dynamic>>(
+      API.addShareArticle,
+      queryParameters: <String, dynamic>{
+        'title': title,
+        'link': link,
+      },
+    );
+  }
+
+  static Future<void> deleteShareArticle({required int articleId}) async {
+    await HttpUtils.post<dynamic>(
+      API.deleteShareArticle(articleId: articleId),
+    );
+  }
+
+  static Future<ModelToRefreshListData<ArticleModel>> fetchArticlesByAuthor(
+    int pageNum,
+    int pageSize, {
+    required String author,
+    CancelToken? cancelToken,
+  }) async {
+    final Response<Map<String, dynamic>> response =
+        await HttpUtils.get<Map<String, dynamic>>(
+      API.articleByAuthor(
+        author: author,
+        pageNum: pageNum,
+      ),
+      queryParameters: <String, dynamic>{'page_size': pageSize},
+      cancelToken: cancelToken,
+    );
+
+    return ModelToRefreshListData<ArticleModel>.fromJson(
+      json: response.data!,
+      formJson: ArticleModel.fromJson,
+    );
+  }
 }
