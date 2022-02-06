@@ -55,6 +55,10 @@
     "english": "英文",
     "auto": "跟随系统",
 
+    "copyLink": "复制链接",
+    "copiedToClipboard": "已复制到剪贴板",
+    "browser": "浏览器",
+    "unableToOpenLink": "无法打开链接: {link}",
     "back": "返回",
     "forward": "前进",
     "collected": "已收藏",
@@ -91,7 +95,13 @@
     "link": "链接",
     "linkEmptyTips": "请输入链接",
     "linkFormatTips": "请检查链接的格式",
+    "addShare": "新增分享",
 
     "success": "成功",
-    "failed": "失败"
+    "failed": "失败",
+
+    "useDataTrafficTips": "当前正在使用数据流量",
+
+    "theyArticles": "Ta的文章",
+    "theyShare": "Ta的分享"
 }

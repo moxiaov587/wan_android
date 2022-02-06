@@ -55,6 +55,10 @@
     "english": "English",
     "auto": "Auto",
 
+    "copyLink": "Copy Link",
+    "copiedToClipboard": "Copied to clipboard",
+    "browser": "Browser",
+    "unableToOpenLink": "Unable to open link: {link}",
     "back": "Back",
     "forward": "Forward",
     "collected": "Collected",
@@ -91,7 +95,13 @@
     "link": "Link",
     "linkEmptyTips": "Please enter link",
     "linkFormatTips": "Please check the link format",
+    "addShare": "Add Share",
 
     "success": "Success",
-    "failed": "Failed"
+    "failed": "Failed",
+
+    "useDataTrafficTips": "Currently using data traffic",
+
+    "theyArticles": "They Articles",
+    "theyShare": "They Share"
 }
