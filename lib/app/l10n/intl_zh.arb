@@ -4,6 +4,7 @@
     "square": "广场",
     "question": "问答",
     "project": "项目",
+    "projectType": "项目类型",
     "search": "搜索",
     "searchHistory": "搜索历史",
     "popularKeyword": "搜索热词",
@@ -99,6 +100,7 @@
 
     "success": "成功",
     "failed": "失败",
+    "tapToRetry": "轻触重试",
 
     "useDataTrafficTips": "当前正在使用数据流量",
 

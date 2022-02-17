@@ -4,6 +4,7 @@
     "square": "Square",
     "question": "Q&A",
     "project": "Project",
+    "projectType": "Project Type",
     "search": "Search",
     "searchHistory": "Search History",
     "popularKeyword": "Popular Keyword",
@@ -99,6 +100,7 @@
 
     "success": "Success",
     "failed": "Failed",
+    "tapToRetry": "Tap to retry",
 
     "useDataTrafficTips": "Currently using data traffic",
 
