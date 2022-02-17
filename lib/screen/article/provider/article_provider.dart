@@ -22,15 +22,6 @@ import '../../drawer/provider/drawer_provider.dart'
         kMyShareProvider;
 import '../../home/provider/home_provider.dart';
 
-enum ArticleFrom {
-  home,
-  square,
-  question,
-  project,
-  search,
-  myCollections,
-}
-
 const List<String> articles = <String>[
   kHomeArticleProvider,
   kSquareArticleProvider,
