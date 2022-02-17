@@ -268,12 +268,36 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
                           height: _kExpandedHeight,
                           child: LoadingWidget(),
                         ),
-                        error: (_, __, ___) => SizedBox(
+                        error: (int? statusCode, String? message,
+                                String? detail) =>
+                            SizedBox(
                           height: _kExpandedHeight,
-                          child: CustomErrorWidget(
-                            onRetry: () {
-                              ref.read(homeBannerProvider.notifier).initData();
-                            },
+                          child: Ink(
+                            child: InkWell(
+                              onTap: () {
+                                ref
+                                    .read(homeBannerProvider.notifier)
+                                    .initData();
+                              },
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Icon(
+                                    IconFontIcons.refreshLine,
+                                    color:
+                                        currentTheme.textTheme.bodySmall!.color,
+                                    size: 36.0,
+                                  ),
+                                  Gap(
+                                    size: GapSize.big,
+                                  ),
+                                  Text(
+                                      '${message ?? detail ?? S.of(context).unknownError}(${statusCode ?? -1})'),
+                                  Gap(),
+                                  Text(S.of(context).tapToRetry),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       );
