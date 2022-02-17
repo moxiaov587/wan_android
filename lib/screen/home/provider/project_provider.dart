@@ -17,29 +17,26 @@ class ProjectTypeNotifier extends BaseListViewNotifier<ProjectTypeModel> {
 
   final CancelToken? cancelToken;
 
-  late int _selectedId;
+  int _selectedIndex = 0;
+  int get selectedIndex => _selectedIndex;
 
   @override
   Future<List<ProjectTypeModel>> loadData() async {
     final List<ProjectTypeModel> data = await WanAndroidAPI.fetchProjectTypes();
     data.first = data.first.copyWith(isSelected: true);
-    _selectedId = data.first.id;
     return data;
   }
 
   void selected(int index) {
     state.whenOrNull(
       (List<ProjectTypeModel> value) {
-        if (_selectedId != value[index].id) {
-          final int lastSelectedIndex = value.indexWhere(
-              (ProjectTypeModel element) => element.id == _selectedId);
-
-          value[lastSelectedIndex] =
-              value[lastSelectedIndex].copyWith(isSelected: false);
+        if (_selectedIndex != index) {
+          value[_selectedIndex] =
+              value[_selectedIndex].copyWith(isSelected: false);
 
           value[index] = value[index].copyWith(isSelected: true);
 
-          _selectedId = value[index].id;
+          _selectedIndex = index;
 
           state = ListViewState<ProjectTypeModel>(list: value);
         }
@@ -48,30 +45,20 @@ class ProjectTypeNotifier extends BaseListViewNotifier<ProjectTypeModel> {
   }
 }
 
-final StateProviderFamily<bool, int> projectTypeIsSelectedProvider =
-    StateProvider.family<bool, int>((StateProviderRef<bool> ref, int index) {
-  final bool isSelected = ref.watch(
-    projectTypesProvider.select(
-      (ListViewState<ProjectTypeModel> value) =>
-          value.whenOrNull(
-              (List<ProjectTypeModel> value) => value[index].isSelected) ??
-          false,
-    ),
-  );
-  return isSelected;
-});
-
 final StateProvider<ViewState<ProjectTypeModel>> currentProjectTypeProvider =
     StateProvider<ViewState<ProjectTypeModel>>(
         (StateProviderRef<ViewState<ProjectTypeModel>> ref) {
   return ref.watch(projectTypesProvider).when(
         (List<ProjectTypeModel> value) => ViewStateData<ProjectTypeModel>(
-          value: value.firstWhereOrNull(
-                  (ProjectTypeModel element) => element.isSelected) ??
-              value.first,
+          value: value[ref.read(projectTypesProvider.notifier).selectedIndex],
         ),
         loading: () => const ViewStateLoading<ProjectTypeModel>(),
-        error: (_, __, ___) => const ViewStateError<ProjectTypeModel>(),
+        error: (int? statusCode, String? message, String? detail) =>
+            ViewStateError<ProjectTypeModel>(
+          statusCode: statusCode,
+          message: message,
+          detail: detail,
+        ),
       );
 });
 
@@ -80,21 +67,25 @@ final StateNotifierProvider<ProjectNotifier, RefreshListViewState<ArticleModel>>
     StateNotifierProvider<ProjectNotifier, RefreshListViewState<ArticleModel>>(
   (StateNotifierProviderRef<ProjectNotifier, RefreshListViewState<ArticleModel>>
       ref) {
-    final int? categoryId = ref
-        .watch(currentProjectTypeProvider)
-        .whenOrNull<int?>((ProjectTypeModel? value) => value!.id);
-
-    if (categoryId != null) {
-      return ProjectNotifier(
-        const RefreshListViewState<ArticleModel>.loading(),
-        categoryId: categoryId,
-      )..initData();
-    } else {
-      return ProjectNotifier(
-        const RefreshListViewState<ArticleModel>.loading(),
-        categoryId: categoryId,
-      );
-    }
+    return ref.watch(currentProjectTypeProvider).when(
+          (ProjectTypeModel? value) => ProjectNotifier(
+            const RefreshListViewState<ArticleModel>.loading(),
+            categoryId: value!.id,
+          )..initData(),
+          loading: () => ProjectNotifier(
+            const RefreshListViewState<ArticleModel>.loading(),
+            categoryId: null,
+          ),
+          error: (int? statusCode, String? message, String? detail) =>
+              ProjectNotifier(
+            RefreshListViewState<ArticleModel>.error(
+              statusCode: statusCode,
+              message: message,
+              detail: detail,
+            ),
+            categoryId: null,
+          ),
+        );
   },
   name: kProjectArticleProvider,
 );
