@@ -57,7 +57,6 @@ class AppRouterDelegate {
                 (target as HomeLocation)
                   ..state.updateWith(
                     showSplash: true,
-                    rebuild: false,
                   ),
           ),
           BeamGuard(
@@ -77,7 +76,6 @@ class AppRouterDelegate {
                     isMyCollections: false,
                     isMyPoints: false,
                     isMyShare: false,
-                    rebuild: false,
                   ),
           ),
         ],
