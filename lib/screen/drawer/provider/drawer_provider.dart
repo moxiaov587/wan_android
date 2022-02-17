@@ -8,6 +8,13 @@ import '../../../app/provider/provider.dart';
 import '../../../app/provider/view_state.dart';
 import '../../../model/models.dart';
 import '../../../utils/dialog.dart';
+import '../../home/provider/home_provider.dart'
+    show
+        kHomeArticleProvider,
+        kSquareArticleProvider,
+        kQuestionArticleProvider,
+        kProjectArticleProvider,
+        BaseArticleNotifier;
 import '../my_collections/my_collections.dart' show CollectionType;
 
 part 'my_collections_provider.dart';

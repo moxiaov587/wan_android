@@ -1,5 +1,12 @@
 part of 'drawer_provider.dart';
 
+const List<String> articles = <String>[
+  kHomeArticleProvider,
+  kSquareArticleProvider,
+  kQuestionArticleProvider,
+  kProjectArticleProvider,
+];
+
 const String kMyCollectedArticleProvider = 'kMyCollectedArticleProvider';
 const String kMyCollectedWebsiteProvider = 'kMyCollectedWebsiteProvider';
 
@@ -19,6 +26,8 @@ final AutoDisposeStateNotifierProvider<MyCollectedArticleNotifier,
 
     return MyCollectedArticleNotifier(
       const RefreshListViewState<CollectedArticleModel>.loading(),
+      reader: ref.read,
+      providerContainer: ref.container,
       cancelToken: cancelToken,
     );
   },
@@ -29,11 +38,16 @@ class MyCollectedArticleNotifier
     extends BaseRefreshListViewNotifier<CollectedArticleModel> {
   MyCollectedArticleNotifier(
     RefreshListViewState<CollectedArticleModel> state, {
+    required this.reader,
+    required this.providerContainer,
     this.cancelToken,
   }) : super(
           state,
           initialPageNum: 0,
         );
+
+  final Reader reader;
+  final ProviderContainer providerContainer;
 
   final CancelToken? cancelToken;
 
@@ -141,27 +155,80 @@ class MyCollectedArticleNotifier
     }
   }
 
+  void switchOtherArticleCollect(
+    int id, {
+    required bool changedValue,
+  }) {
+    final Map<String, ProviderBase<dynamic>> providers = providerContainer
+        .getAllProviderElements()
+        .fold(<String, ProviderBase<dynamic>>{},
+            (Map<String, ProviderBase<dynamic>> previousValue,
+                ProviderElementBase<dynamic> e) {
+      if (articles.contains(e.provider.name)) {
+        return <String, ProviderBase<dynamic>>{
+          ...previousValue,
+          e.provider.name!: e.provider,
+        };
+      }
+      return previousValue;
+    });
+
+    late ProviderBase<dynamic> provider;
+
+    ArticleModel? article;
+
+    for (final String key in providers.keys) {
+      if (articles.contains(key)) {
+        provider = providers[key]!;
+        article = (reader.call(provider) as RefreshListViewState<ArticleModel>)
+            .whenOrNull((_, __, List<ArticleModel> list) => list)
+            ?.firstWhereOrNull((ArticleModel e) => e.id == id);
+
+        if (article != null) {
+          break;
+        }
+      }
+    }
+
+    if (article != null) {
+      reader
+          .call((provider as StateNotifierProvider<BaseArticleNotifier,
+                  RefreshListViewState<ArticleModel>>)
+              .notifier)
+          .switchCollect(
+            id,
+            changedValue: changedValue,
+          );
+    }
+  }
+
   void switchCollect(
     int id, {
     required bool changedValue,
   }) {
     state.whenOrNull(
         (int pageNum, bool isLastPage, List<CollectedArticleModel> list) {
-      final List<CollectedArticleModel> setCollectedList = list
-          .map((CollectedArticleModel collectedArticle) =>
-              collectedArticle.id == id
-                  ? collectedArticle.copyWith(
-                      collect: changedValue,
-                    )
-                  : collectedArticle)
-          .toList();
+      /// If it is not null, it means to collect from the article.
+      /// Need to check whether the article exists in the home tabs provider.
+      /// If there is a collection status that needs to be synchronized
+      int? originId;
+      final List<CollectedArticleModel> changedList =
+          list.map((CollectedArticleModel collectedArticle) {
+        if (collectedArticle.id == id) {
+          originId = collectedArticle.originId;
+          return collectedArticle.copyWith(
+            collect: changedValue,
+          );
+        }
+        return collectedArticle;
+      }).toList();
       state = RefreshListViewStateData<CollectedArticleModel>(
         pageNum: pageNum,
         isLastPage: isLastPage,
-        list: setCollectedList,
+        list: changedList,
       );
 
-      if (setCollectedList.firstWhereOrNull(
+      if (changedList.firstWhereOrNull(
               (CollectedArticleModel collect) => collect.collect) ==
           null) {
         if (isLastPage) {
@@ -175,6 +242,13 @@ class MyCollectedArticleNotifier
         } else {
           initData();
         }
+      }
+
+      if (originId != null) {
+        switchOtherArticleCollect(
+          originId!,
+          changedValue: changedValue,
+        );
       }
     });
   }
@@ -310,7 +384,7 @@ class MyCollectedWebsiteNotifier
     required bool changedValue,
   }) {
     state.whenOrNull((List<CollectedWebsiteModel> list) {
-      final List<CollectedWebsiteModel> setCollectedList = list
+      final List<CollectedWebsiteModel> changedList = list
           .map((CollectedWebsiteModel collectedWebsite) =>
               collectedWebsite.id == id
                   ? collectedWebsite.copyWith(
@@ -319,10 +393,10 @@ class MyCollectedWebsiteNotifier
                   : collectedWebsite)
           .toList();
       state = ListViewStateData<CollectedWebsiteModel>(
-        list: setCollectedList,
+        list: changedList,
       );
 
-      if (setCollectedList.firstWhereOrNull(
+      if (changedList.firstWhereOrNull(
               (CollectedWebsiteModel collect) => collect.collect) ==
           null) {
         Future<void>.delayed(Duration.zero, () {
