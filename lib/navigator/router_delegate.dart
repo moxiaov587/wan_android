@@ -72,7 +72,6 @@ class AppRouterDelegate {
                 (target as HomeLocation)
                   ..state.updateWith(
                     isLogin: true,
-                    isAbout: false,
                     isMyCollections: false,
                     isMyPoints: false,
                     isMyShare: false,
