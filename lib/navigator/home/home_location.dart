@@ -284,7 +284,7 @@ class HomeLocation extends BeamLocation<HomeState> {
                     ),
                     isScrollControlled: true,
                     constraints: BoxConstraints.tightFor(
-                      height: ScreenUtils.height * .8,
+                      height: ScreenUtils.height * .85,
                     ),
                     builder: (_) => child,
                     settings: settings,
