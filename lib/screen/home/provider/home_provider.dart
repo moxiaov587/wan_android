@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -77,12 +76,7 @@ final StateNotifierProvider<ArticleNotifier, RefreshListViewState<ArticleModel>>
 );
 
 class ArticleNotifier extends BaseArticleNotifier {
-  ArticleNotifier(
-    RefreshListViewState<ArticleModel> state, {
-    this.cancelToken,
-  }) : super(state);
-
-  final CancelToken? cancelToken;
+  ArticleNotifier(RefreshListViewState<ArticleModel> state) : super(state);
 
   @override
   Future<RefreshListViewStateData<ArticleModel>> loadData(
@@ -90,7 +84,6 @@ class ArticleNotifier extends BaseArticleNotifier {
     return (await WanAndroidAPI.fetchHomeArticles(
       pageNum,
       pageSize,
-      cancelToken: cancelToken,
     ))
         .toRefreshListViewStateData();
   }

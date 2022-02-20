@@ -12,12 +12,7 @@ final StateNotifierProvider<SquareNotifier, RefreshListViewState<ArticleModel>>
 );
 
 class SquareNotifier extends BaseArticleNotifier {
-  SquareNotifier(
-    RefreshListViewState<ArticleModel> state, {
-    this.cancelToken,
-  }) : super(state);
-
-  final CancelToken? cancelToken;
+  SquareNotifier(RefreshListViewState<ArticleModel> state) : super(state);
 
   @override
   Future<RefreshListViewStateData<ArticleModel>> loadData(
@@ -25,7 +20,6 @@ class SquareNotifier extends BaseArticleNotifier {
     return (await WanAndroidAPI.fetchSquareArticles(
       pageNum,
       pageSize,
-      cancelToken: cancelToken,
     ))
         .toRefreshListViewStateData();
   }

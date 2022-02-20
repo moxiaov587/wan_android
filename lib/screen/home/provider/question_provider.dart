@@ -12,12 +12,7 @@ final StateNotifierProvider<QuestionNotifier,
 );
 
 class QuestionNotifier extends BaseArticleNotifier {
-  QuestionNotifier(
-    RefreshListViewState<ArticleModel> state, {
-    this.cancelToken,
-  }) : super(state);
-
-  final CancelToken? cancelToken;
+  QuestionNotifier(RefreshListViewState<ArticleModel> state) : super(state);
 
   @override
   Future<RefreshListViewStateData<ArticleModel>> loadData(
@@ -25,7 +20,6 @@ class QuestionNotifier extends BaseArticleNotifier {
     return (await WanAndroidAPI.fetchQuestionArticles(
       pageNum,
       pageSize,
-      cancelToken: cancelToken,
     ))
         .toRefreshListViewStateData();
   }

@@ -10,12 +10,7 @@ final StateNotifierProvider<ProjectTypeNotifier,
 });
 
 class ProjectTypeNotifier extends BaseListViewNotifier<ProjectTypeModel> {
-  ProjectTypeNotifier(
-    ListViewState<ProjectTypeModel> state, {
-    this.cancelToken,
-  }) : super(state);
-
-  final CancelToken? cancelToken;
+  ProjectTypeNotifier(ListViewState<ProjectTypeModel> state) : super(state);
 
   int _selectedIndex = 0;
   int get selectedIndex => _selectedIndex;
@@ -94,11 +89,9 @@ class ProjectNotifier extends BaseArticleNotifier {
   ProjectNotifier(
     RefreshListViewState<ArticleModel> state, {
     required this.categoryId,
-    this.cancelToken,
   }) : super(state);
 
   final int? categoryId;
-  final CancelToken? cancelToken;
 
   @override
   Future<RefreshListViewStateData<ArticleModel>> loadData(
