@@ -31,6 +31,14 @@ class _ProjectState extends State<_Project> with AutomaticKeepAliveClientMixin {
             onInitState: (Reader reader) {
               reader.call(projectTypesProvider.notifier).initData();
             },
+            onRetry: (Reader reader) {
+              if (reader.call(projectTypesProvider)
+                  is ListViewStateError<ProjectTypeModel>) {
+                reader.call(projectTypesProvider.notifier).initData();
+              } else {
+                reader.call(projectArticleProvider.notifier).initData();
+              }
+            },
             builder: (_, __, List<ArticleModel> list) {
               return SliverList(
                 delegate: CustomSliverChildBuilderDelegate.separated(
@@ -85,14 +93,18 @@ class _ProjectTypeSwitchExtentProtoType extends ConsumerWidget {
                         ref.read(projectTypesProvider.notifier).refresh();
                       },
                     ),
-                child: ref.watch(currentProjectTypeProvider).when(
-                      (ProjectTypeModel? value) => Text(value!.name),
-                      loading: () => const LoadingWidget(
-                        radius: 5.0,
-                      ),
-                      error: (_, __, ___) => Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: ref.watch(currentProjectTypeProvider).when(
+                        (ProjectTypeModel? value) => <Widget>[
+                          Text(value!.name),
+                        ],
+                        loading: () => const <Widget>[
+                          LoadingWidget(
+                            radius: 5.0,
+                          ),
+                        ],
+                        error: (_, __, ___) => <Widget>[
                           const Icon(
                             IconFontIcons.refreshLine,
                             size: 14.0,
@@ -104,7 +116,7 @@ class _ProjectTypeSwitchExtentProtoType extends ConsumerWidget {
                           Text(S.of(context).retry),
                         ],
                       ),
-                    ),
+                ),
               );
             },
           ),
