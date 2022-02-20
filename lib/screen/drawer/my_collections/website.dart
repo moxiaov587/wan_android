@@ -24,13 +24,21 @@ class __WebsiteState extends State<_Website>
       onInitState: (Reader reader) {
         reader.call(myCollectedWebsiteProvider.notifier).initData();
       },
-      builder: (_, __, List<CollectedWebsiteModel> list) {
+      builder: (_, WidgetRef ref, List<CollectedWebsiteModel> list) {
         return SliverList(
           delegate: CustomSliverChildBuilderDelegate.separated(
             itemBuilder: (_, int index) {
-              return _CollectedWebsiteTile(
-                key: ValueKey<int>(list[index].id),
-                index: index,
+              return ProviderScope(
+                overrides: <Override>[
+                  _currentWebsiteProvider.overrideWithValue(
+                    ref.watch(myCollectedWebsiteProvider).whenOrNull(
+                          (List<CollectedWebsiteModel> list) => list[index],
+                        ),
+                  ),
+                ],
+                child: _CollectedWebsiteTile(
+                  key: ValueKey<int>(list[index].id),
+                ),
               );
             },
             itemCount: list.length,
@@ -41,28 +49,19 @@ class __WebsiteState extends State<_Website>
   }
 }
 
-class _CollectedWebsiteTile extends ConsumerWidget {
-  const _CollectedWebsiteTile({
-    Key? key,
-    required this.index,
-  }) : super(key: key);
+final AutoDisposeProvider<CollectedWebsiteModel?> _currentWebsiteProvider =
+    Provider.autoDispose<CollectedWebsiteModel?>(
+  (_) => null,
+);
 
-  final int index;
+class _CollectedWebsiteTile extends ConsumerWidget {
+  const _CollectedWebsiteTile({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final CollectedWebsiteModel? website = ref
-        .read(myCollectedWebsiteProvider)
-        .whenOrNull<CollectedWebsiteModel?>(
-            (List<CollectedWebsiteModel> list) => list.asMap()[index]);
+    final CollectedWebsiteModel? website = ref.read(_currentWebsiteProvider);
 
-    final bool collected = ref.watch(myCollectedWebsiteProvider.select(
-        (ListViewState<CollectedWebsiteModel> value) =>
-            value.whenOrNull((List<CollectedWebsiteModel> list) =>
-                list.asMap()[index]?.collect ?? false) ??
-            true));
-
-    return website != null && collected
+    return website != null && website.collect
         ? Slidable(
             key: key,
             endActionPane: ActionPane(

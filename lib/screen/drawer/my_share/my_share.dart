@@ -52,62 +52,21 @@ class MyShareScreen extends StatelessWidget {
           onInitState: (Reader reader) {
             reader.call(myShareArticlesProvider.notifier).initData();
           },
-          builder: (_, __, List<ArticleModel> list) {
+          builder: (_, WidgetRef ref, List<ArticleModel> list) {
             return SliverList(
               delegate: CustomSliverChildBuilderDelegate.separated(
                 itemBuilder: (_, int index) {
-                  return Consumer(
-                    builder: (_, WidgetRef ref, __) {
-                      final bool isDestroy = ref.watch(
-                              myShareArticlesProvider.select(
-                                  (RefreshListViewState<ArticleModel> value) =>
-                                      value.whenOrNull(
-                                          (_, __, List<ArticleModel> list) =>
-                                              list[index].isDestroy))) ??
-                          false;
-                      return isDestroy
-                          ? const SizedBox.shrink()
-                          : Slidable(
-                              key: ValueKey<int>(list[index].id),
-                              endActionPane: ActionPane(
-                                extentRatio: .45,
-                                motion: const ScrollMotion(),
-                                dismissible: DismissiblePane(
-                                  closeOnCancel: true,
-                                  dismissThreshold: .65,
-                                  dismissalDuration:
-                                      const Duration(milliseconds: 500),
-                                  onDismissed: () {
-                                    ref
-                                        .read(myShareArticlesProvider.notifier)
-                                        .destroy(list[index].id);
-                                  },
-                                  confirmDismiss: () => ref
-                                      .read(myShareArticlesProvider.notifier)
-                                      .requestDeleteShare(
-                                        articleId: list[index].id,
-                                      ),
-                                ),
-                                children: <Widget>[
-                                  DismissibleSlidableAction(
-                                    slidableExtentRatio: .25,
-                                    dismissiblePaneThreshold: .65,
-                                    label: '',
-                                    color: currentTheme.colorScheme.tertiary,
-                                    onTap: () {},
-                                  ),
-                                ],
-                              ),
-                              child: ConstrainedBox(
-                                constraints: BoxConstraints.tightFor(
-                                  width: ScreenUtils.width,
-                                ),
-                                child: ArticleTile(
-                                  article: list[index],
-                                ),
-                              ),
-                            );
-                    },
+                  return ProviderScope(
+                    overrides: <Override>[
+                      _currentShareArticleProvider.overrideWithValue(
+                        ref.watch(myShareArticlesProvider).whenOrNull(
+                              (_, __, List<ArticleModel> list) => list[index],
+                            ),
+                      ),
+                    ],
+                    child: _ShareArticleTile(
+                      key: ValueKey<int>(list[index].id),
+                    ),
                   );
                 },
                 itemCount: list.length,
@@ -117,5 +76,58 @@ class MyShareScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+final AutoDisposeProvider<ArticleModel?> _currentShareArticleProvider =
+    Provider.autoDispose<ArticleModel?>((_) => null);
+
+class _ShareArticleTile extends ConsumerWidget {
+  const _ShareArticleTile({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ArticleModel? article = ref.read(_currentShareArticleProvider);
+    return article == null || article.isDestroy
+        ? const SizedBox.shrink()
+        : Slidable(
+            key: ValueKey<int>(article.id),
+            endActionPane: ActionPane(
+              extentRatio: .45,
+              motion: const ScrollMotion(),
+              dismissible: DismissiblePane(
+                closeOnCancel: true,
+                dismissThreshold: .65,
+                dismissalDuration: const Duration(milliseconds: 500),
+                onDismissed: () {
+                  ref
+                      .read(myShareArticlesProvider.notifier)
+                      .destroy(article.id);
+                },
+                confirmDismiss: () => ref
+                    .read(myShareArticlesProvider.notifier)
+                    .requestDeleteShare(
+                      articleId: article.id,
+                    ),
+              ),
+              children: <Widget>[
+                DismissibleSlidableAction(
+                  slidableExtentRatio: .25,
+                  dismissiblePaneThreshold: .65,
+                  label: '',
+                  color: currentTheme.colorScheme.tertiary,
+                  onTap: () {},
+                ),
+              ],
+            ),
+            child: ConstrainedBox(
+              constraints: BoxConstraints.tightFor(
+                width: ScreenUtils.width,
+              ),
+              child: ArticleTile(
+                article: article,
+              ),
+            ),
+          );
   }
 }

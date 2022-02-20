@@ -23,13 +23,22 @@ class __ArticleState extends State<_Article>
       onInitState: (Reader reader) {
         reader.call(myCollectedArticleProvider.notifier).initData();
       },
-      builder: (_, __, List<CollectedArticleModel> list) {
+      builder: (_, WidgetRef ref, List<CollectedArticleModel> list) {
         return SliverList(
           delegate: CustomSliverChildBuilderDelegate.separated(
             itemBuilder: (_, int index) {
-              return CollectedArticleTile(
-                key: ValueKey<int>(list[index].id),
-                index: index,
+              return ProviderScope(
+                overrides: <Override>[
+                  _currentArticleProvider.overrideWithValue(
+                    ref.watch(myCollectedArticleProvider).whenOrNull(
+                          (_, __, List<CollectedArticleModel> list) =>
+                              list[index],
+                        ),
+                  ),
+                ],
+                child: _CollectedArticleTile(
+                  key: ValueKey<int>(list[index].id),
+                ),
               );
             },
             itemCount: list.length,
@@ -40,13 +49,13 @@ class __ArticleState extends State<_Article>
   }
 }
 
-class CollectedArticleTile extends ConsumerWidget {
-  const CollectedArticleTile({
-    Key? key,
-    required this.index,
-  }) : super(key: key);
+final AutoDisposeProvider<CollectedArticleModel?> _currentArticleProvider =
+    Provider.autoDispose<CollectedArticleModel?>(
+  (_) => null,
+);
 
-  final int index;
+class _CollectedArticleTile extends ConsumerWidget {
+  const _CollectedArticleTile({Key? key}) : super(key: key);
 
   TextSpan get _textSpace => const TextSpan(
         text: '${Unicode.halfWidthSpace}•${Unicode.halfWidthSpace}',
@@ -61,18 +70,9 @@ class CollectedArticleTile extends ConsumerWidget {
 
     final double titleVerticalGap = contentPadding.vertical / 2;
 
-    final CollectedArticleModel? article = ref
-        .read(myCollectedArticleProvider)
-        .whenOrNull<CollectedArticleModel?>(
-            (_, __, List<CollectedArticleModel> list) => list.asMap()[index]);
+    final CollectedArticleModel? article = ref.read(_currentArticleProvider);
 
-    final bool collected = ref.watch(myCollectedArticleProvider.select(
-        (RefreshListViewState<CollectedArticleModel> value) =>
-            value.whenOrNull((_, __, List<CollectedArticleModel> list) =>
-                list.asMap()[index]?.collect ?? false) ??
-            true));
-
-    return article != null && collected
+    return article != null && article.collect
         ? Slidable(
             groupTag: CollectionType.article.name,
             key: key,
