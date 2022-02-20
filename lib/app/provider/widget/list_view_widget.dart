@@ -1,14 +1,15 @@
 part of 'provider_widget.dart';
 
-typedef ListViewBuilder<S> = Widget Function(
+typedef ListViewBuilder<T> = Widget Function(
   BuildContext context,
   WidgetRef ref,
-  List<S> list,
+  List<T> list,
 );
 
 class ListViewWidget<
-    T extends StateNotifierProvider<BaseListViewNotifier<S>, ListViewState<S>>,
-    S> extends ConsumerStatefulWidget {
+    ProviderType extends StateNotifierProvider<BaseListViewNotifier<T>,
+        ListViewState<T>>,
+    T> extends ConsumerStatefulWidget {
   const ListViewWidget({
     Key? key,
     required this.provider,
@@ -16,22 +17,26 @@ class ListViewWidget<
     required this.builder,
     this.enablePullDown = false,
     this.slivers,
+    this.onRetry,
   }) : super(key: key);
 
-  final T provider;
+  final ProviderType provider;
   final ReaderCallback? onInitState;
-  final ListViewBuilder<S> builder;
+  final ListViewBuilder<T> builder;
   final bool enablePullDown;
 
   final List<Widget>? slivers;
+  final ReaderCallback? onRetry;
 
   @override
-  _ListViewWidgetState<T, S> createState() => _ListViewWidgetState<T, S>();
+  _ListViewWidgetState<ProviderType, T> createState() =>
+      _ListViewWidgetState<ProviderType, T>();
 }
 
 class _ListViewWidgetState<
-    T extends StateNotifierProvider<BaseListViewNotifier<S>, ListViewState<S>>,
-    S> extends ConsumerState<ListViewWidget<T, S>> {
+    ProviderType extends StateNotifierProvider<BaseListViewNotifier<T>,
+        ListViewState<T>>,
+    T> extends ConsumerState<ListViewWidget<ProviderType, T>> {
   late final RefreshController _refreshController;
 
   late final ScrollController _scrollController;
@@ -85,14 +90,13 @@ class _ListViewWidgetState<
               return CustomScrollView(
                 physics: physics,
                 slivers: <Widget>[
-                  /// if [RefreshListViewState] is [RefreshListViewStateLoading],
-                  /// disabled enablePullDown
+                  /// if [RefreshListViewState] is [RefreshListViewStateLoading]
+                  /// or [RefreshListViewStateError], disabled enablePullDown
                   ref.watch(
                     widget.provider.select(
-                      (ListViewState<S> value) =>
+                      (ListViewState<T> value) =>
                           value.whenOrNull(
                             (_) => const DropDownListHeader(),
-                            error: (_, __, ___) => const DropDownListHeader(),
                           ) ??
                           const SliverToBoxAdapter(),
                     ),
@@ -100,7 +104,7 @@ class _ListViewWidgetState<
                   if (widget.slivers != null && widget.slivers!.isNotEmpty)
                     ...widget.slivers!,
                   ref.watch(widget.provider).when(
-                        (List<S> list) => list.isEmpty
+                        (List<T> list) => list.isEmpty
                             ? const SliverFillRemaining(
                                 child: EmptyWidget(),
                               )
@@ -115,7 +119,13 @@ class _ListViewWidgetState<
                             statusCode: statusCode,
                             message: message,
                             detail: detail,
-                            onRetry: _refreshController.requestRefresh,
+                            onRetry: () {
+                              if (widget.onRetry != null) {
+                                widget.onRetry!.call(ref.read);
+                              } else {
+                                ref.read(widget.provider.notifier).initData();
+                              }
+                            },
                           ),
                         ),
                       )
@@ -133,8 +143,10 @@ class _ListViewWidgetState<
               Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
                   return ref.watch(widget.provider).when(
-                        (List<S> list) => list.isEmpty
-                            ? const EmptyWidget()
+                        (List<T> list) => list.isEmpty
+                            ? const SliverFillRemaining(
+                                child: EmptyWidget(),
+                              )
                             : widget.builder(context, ref, list),
                         loading: () => const SliverFillRemaining(
                           child: LoadingWidget(),
@@ -147,7 +159,11 @@ class _ListViewWidgetState<
                             message: message,
                             detail: detail,
                             onRetry: () {
-                              ref.read(widget.provider.notifier).initData();
+                              if (widget.onRetry != null) {
+                                widget.onRetry!.call(ref.read);
+                              } else {
+                                ref.read(widget.provider.notifier).initData();
+                              }
                             },
                           ),
                         ),
@@ -160,9 +176,9 @@ class _ListViewWidgetState<
 }
 
 class AutoDisposeListViewWidget<
-    T extends AutoDisposeStateNotifierProvider<BaseListViewNotifier<S>,
-        ListViewState<S>>,
-    S> extends ConsumerStatefulWidget {
+    ProviderType extends AutoDisposeStateNotifierProvider<
+        BaseListViewNotifier<T>, ListViewState<T>>,
+    T> extends ConsumerStatefulWidget {
   const AutoDisposeListViewWidget({
     Key? key,
     required this.provider,
@@ -170,24 +186,26 @@ class AutoDisposeListViewWidget<
     required this.builder,
     this.enablePullDown = false,
     this.slivers,
+    this.onRetry,
   }) : super(key: key);
 
-  final T provider;
+  final ProviderType provider;
   final ReaderCallback? onInitState;
-  final ListViewBuilder<S> builder;
+  final ListViewBuilder<T> builder;
   final bool enablePullDown;
 
   final List<Widget>? slivers;
+  final ReaderCallback? onRetry;
 
   @override
-  _AutoDisposeListViewWidgetState<T, S> createState() =>
-      _AutoDisposeListViewWidgetState<T, S>();
+  _AutoDisposeListViewWidgetState<ProviderType, T> createState() =>
+      _AutoDisposeListViewWidgetState<ProviderType, T>();
 }
 
 class _AutoDisposeListViewWidgetState<
-    T extends AutoDisposeStateNotifierProvider<BaseListViewNotifier<S>,
-        ListViewState<S>>,
-    S> extends ConsumerState<AutoDisposeListViewWidget<T, S>> {
+    ProviderType extends AutoDisposeStateNotifierProvider<
+        BaseListViewNotifier<T>, ListViewState<T>>,
+    T> extends ConsumerState<AutoDisposeListViewWidget<ProviderType, T>> {
   late final RefreshController _refreshController;
 
   late final ScrollController _scrollController;
@@ -241,14 +259,13 @@ class _AutoDisposeListViewWidgetState<
               return CustomScrollView(
                 physics: physics,
                 slivers: <Widget>[
-                  /// if [RefreshListViewState] is [RefreshListViewStateLoading],
-                  /// disabled enablePullDown
+                  /// if [RefreshListViewState] is [RefreshListViewStateLoading]
+                  /// or [RefreshListViewStateError], disabled enablePullDown
                   ref.watch(
                     widget.provider.select(
-                      (ListViewState<S> value) =>
+                      (ListViewState<T> value) =>
                           value.whenOrNull(
                             (_) => const DropDownListHeader(),
-                            error: (_, __, ___) => const DropDownListHeader(),
                           ) ??
                           const SliverToBoxAdapter(),
                     ),
@@ -256,7 +273,7 @@ class _AutoDisposeListViewWidgetState<
                   if (widget.slivers != null && widget.slivers!.isNotEmpty)
                     ...widget.slivers!,
                   ref.watch(widget.provider).when(
-                        (List<S> list) => list.isEmpty
+                        (List<T> list) => list.isEmpty
                             ? const SliverFillRemaining(
                                 child: EmptyWidget(),
                               )
@@ -271,7 +288,13 @@ class _AutoDisposeListViewWidgetState<
                             statusCode: statusCode,
                             message: message,
                             detail: detail,
-                            onRetry: _refreshController.requestRefresh,
+                            onRetry: () {
+                              if (widget.onRetry != null) {
+                                widget.onRetry!.call(ref.read);
+                              } else {
+                                ref.read(widget.provider.notifier).initData();
+                              }
+                            },
                           ),
                         ),
                       )
@@ -289,8 +312,10 @@ class _AutoDisposeListViewWidgetState<
               Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) {
                   return ref.watch(widget.provider).when(
-                        (List<S> list) => list.isEmpty
-                            ? const EmptyWidget()
+                        (List<T> list) => list.isEmpty
+                            ? const SliverFillRemaining(
+                                child: EmptyWidget(),
+                              )
                             : widget.builder(context, ref, list),
                         loading: () => const SliverFillRemaining(
                           child: LoadingWidget(),
@@ -303,7 +328,11 @@ class _AutoDisposeListViewWidgetState<
                             message: message,
                             detail: detail,
                             onRetry: () {
-                              ref.read(widget.provider.notifier).initData();
+                              if (widget.onRetry != null) {
+                                widget.onRetry!.call(ref.read);
+                              } else {
+                                ref.read(widget.provider.notifier).initData();
+                              }
                             },
                           ),
                         ),

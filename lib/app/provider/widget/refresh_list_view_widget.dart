@@ -2,16 +2,16 @@ part of 'provider_widget.dart';
 
 typedef ReaderCallback = void Function(Reader reader);
 
-typedef RefreshListViewBuilder<S> = Widget Function(
+typedef RefreshListViewBuilder<T> = Widget Function(
   BuildContext context,
   WidgetRef ref,
-  List<S> list,
+  List<T> list,
 );
 
 class RefreshListViewWidget<
-    T extends StateNotifierProvider<BaseRefreshListViewNotifier<S>,
-        RefreshListViewState<S>>,
-    S> extends ConsumerStatefulWidget {
+    ProviderType extends StateNotifierProvider<BaseRefreshListViewNotifier<T>,
+        RefreshListViewState<T>>,
+    T> extends ConsumerStatefulWidget {
   const RefreshListViewWidget({
     Key? key,
     required this.provider,
@@ -19,24 +19,26 @@ class RefreshListViewWidget<
     required this.builder,
     this.slivers,
     this.paddingBottom,
+    this.onRetry,
   }) : super(key: key);
 
-  final T provider;
+  final ProviderType provider;
   final ReaderCallback? onInitState;
-  final RefreshListViewBuilder<S> builder;
+  final RefreshListViewBuilder<T> builder;
 
   final List<Widget>? slivers;
   final double? paddingBottom;
+  final ReaderCallback? onRetry;
 
   @override
-  _RefreshListViewWidgetState<T, S> createState() =>
-      _RefreshListViewWidgetState<T, S>();
+  _RefreshListViewWidgetState<ProviderType, T> createState() =>
+      _RefreshListViewWidgetState<ProviderType, T>();
 }
 
 class _RefreshListViewWidgetState<
-    T extends StateNotifierProvider<BaseRefreshListViewNotifier<S>,
-        RefreshListViewState<S>>,
-    S> extends ConsumerState<RefreshListViewWidget<T, S>> {
+    ProviderType extends StateNotifierProvider<BaseRefreshListViewNotifier<T>,
+        RefreshListViewState<T>>,
+    T> extends ConsumerState<RefreshListViewWidget<ProviderType, T>> {
   final RefreshController _refreshController = RefreshController();
 
   @override
@@ -100,14 +102,13 @@ class _RefreshListViewWidgetState<
         return CustomScrollView(
           physics: physics,
           slivers: <Widget>[
-            /// if [RefreshListViewState] is [RefreshListViewStateLoading],
-            /// disabled enablePullDown
+            /// if [RefreshListViewState] is [RefreshListViewStateLoading] or
+            /// [RefreshListViewStateError], disabled enablePullDown
             ref.watch(
               widget.provider.select(
-                (RefreshListViewState<S> value) =>
+                (RefreshListViewState<T> value) =>
                     value.whenOrNull(
                       (_, __, ___) => const DropDownListHeader(),
-                      error: (_, __, ___) => const DropDownListHeader(),
                     ) ??
                     const SliverToBoxAdapter(),
               ),
@@ -115,7 +116,7 @@ class _RefreshListViewWidgetState<
             if (widget.slivers != null && widget.slivers!.isNotEmpty)
               ...widget.slivers!,
             ref.watch(widget.provider).when(
-                  (int nextPageNum, bool isLastPage, List<S> list) =>
+                  (int nextPageNum, bool isLastPage, List<T> list) =>
                       list.isEmpty
                           ? const SliverFillRemaining(
                               child: EmptyWidget(),
@@ -130,7 +131,13 @@ class _RefreshListViewWidgetState<
                       statusCode: statusCode,
                       message: message,
                       detail: detail,
-                      onRetry: _refreshController.requestRefresh,
+                      onRetry: () {
+                        if (widget.onRetry != null) {
+                          widget.onRetry!.call(ref.read);
+                        } else {
+                          ref.read(widget.provider.notifier).initData();
+                        }
+                      },
                     ),
                   ),
                 ),
@@ -139,7 +146,7 @@ class _RefreshListViewWidgetState<
             /// [RefreshListViewStateError], disabled enablePullUp
             ref.watch(
               widget.provider.select(
-                (RefreshListViewState<S> value) =>
+                (RefreshListViewState<T> value) =>
                     value.whenOrNull(
                         (_, __, ___) => const LoadMoreListFooter()) ??
                     const SliverToBoxAdapter(),
@@ -160,9 +167,9 @@ class _RefreshListViewWidgetState<
 }
 
 class AutoDisposeRefreshListViewWidget<
-    T extends AutoDisposeStateNotifierProvider<BaseRefreshListViewNotifier<S>,
-        RefreshListViewState<S>>,
-    S> extends ConsumerStatefulWidget {
+    ProviderType extends AutoDisposeStateNotifierProvider<
+        BaseRefreshListViewNotifier<T>, RefreshListViewState<T>>,
+    T> extends ConsumerStatefulWidget {
   const AutoDisposeRefreshListViewWidget({
     Key? key,
     required this.provider,
@@ -170,24 +177,27 @@ class AutoDisposeRefreshListViewWidget<
     required this.builder,
     this.slivers,
     this.paddingBottom,
+    this.onRetry,
   }) : super(key: key);
 
-  final T provider;
+  final ProviderType provider;
   final ReaderCallback? onInitState;
-  final RefreshListViewBuilder<S> builder;
+  final RefreshListViewBuilder<T> builder;
 
   final List<Widget>? slivers;
   final double? paddingBottom;
+  final ReaderCallback? onRetry;
 
   @override
-  _AutoDisposeRefreshListViewWidgetState<T, S> createState() =>
-      _AutoDisposeRefreshListViewWidgetState<T, S>();
+  _AutoDisposeRefreshListViewWidgetState<ProviderType, T> createState() =>
+      _AutoDisposeRefreshListViewWidgetState<ProviderType, T>();
 }
 
 class _AutoDisposeRefreshListViewWidgetState<
-    T extends AutoDisposeStateNotifierProvider<BaseRefreshListViewNotifier<S>,
-        RefreshListViewState<S>>,
-    S> extends ConsumerState<AutoDisposeRefreshListViewWidget<T, S>> {
+        ProviderType extends AutoDisposeStateNotifierProvider<
+            BaseRefreshListViewNotifier<T>, RefreshListViewState<T>>,
+        T>
+    extends ConsumerState<AutoDisposeRefreshListViewWidget<ProviderType, T>> {
   final RefreshController _refreshController = RefreshController();
 
   @override
@@ -251,14 +261,13 @@ class _AutoDisposeRefreshListViewWidgetState<
         return CustomScrollView(
           physics: physics,
           slivers: <Widget>[
-            /// if [RefreshListViewState] is [RefreshListViewStateLoading],
-            /// disabled enablePullDown
+            /// if [RefreshListViewState] is [RefreshListViewStateLoading] or
+            /// [RefreshListViewStateError], disabled enablePullDown
             ref.watch(
               widget.provider.select(
-                (RefreshListViewState<S> value) =>
+                (RefreshListViewState<T> value) =>
                     value.whenOrNull(
                       (_, __, ___) => const DropDownListHeader(),
-                      error: (_, __, ___) => const DropDownListHeader(),
                     ) ??
                     const SliverToBoxAdapter(),
               ),
@@ -266,7 +275,7 @@ class _AutoDisposeRefreshListViewWidgetState<
             if (widget.slivers != null && widget.slivers!.isNotEmpty)
               ...widget.slivers!,
             ref.watch(widget.provider).when(
-                  (int nextPageNum, bool isLastPage, List<S> list) =>
+                  (int nextPageNum, bool isLastPage, List<T> list) =>
                       list.isEmpty
                           ? const SliverFillRemaining(
                               child: EmptyWidget(),
@@ -281,7 +290,13 @@ class _AutoDisposeRefreshListViewWidgetState<
                       statusCode: statusCode,
                       message: message,
                       detail: detail,
-                      onRetry: _refreshController.requestRefresh,
+                      onRetry: () {
+                        if (widget.onRetry != null) {
+                          widget.onRetry!.call(ref.read);
+                        } else {
+                          ref.read(widget.provider.notifier).initData();
+                        }
+                      },
                     ),
                   ),
                 ),
@@ -290,7 +305,7 @@ class _AutoDisposeRefreshListViewWidgetState<
             /// [RefreshListViewStateError], disabled enablePullUp
             ref.watch(
               widget.provider.select(
-                (RefreshListViewState<S> value) =>
+                (RefreshListViewState<T> value) =>
                     value.whenOrNull(
                         (_, __, ___) => const LoadMoreListFooter()) ??
                     const SliverToBoxAdapter(),
