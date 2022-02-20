@@ -314,11 +314,7 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
             }
           }
         } catch (e, s) {
-          final String? message = getError(e, s).message;
-
-          if (message != null) {
-            DialogUtils.danger(message);
-          }
+          DialogUtils.danger(getError(e, s).message ?? S.current.failed);
         }
       }
     });
