@@ -144,7 +144,7 @@ class _HandleSharedBottomSheetState
                           }
                         },
                         onEditingComplete: () {
-                          onSubmitted();
+                          _linkFocusNode.unfocus();
                         },
                       ),
                     ],

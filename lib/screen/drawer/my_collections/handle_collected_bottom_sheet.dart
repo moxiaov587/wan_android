@@ -163,7 +163,7 @@ class _HandleCollectedBottomSheetState
                             onPressed: () {
                               onSubmitted(
                                 isEdit: collect != null,
-                                collectId: collect!.id,
+                                collectId: collect?.id,
                               );
                             },
                             child: Text(collect != null
@@ -258,10 +258,7 @@ class _HandleCollectedBottomSheetState
                                 }
                               },
                               onEditingComplete: () {
-                                onSubmitted(
-                                  isEdit: collect != null,
-                                  collectId: collect?.id,
-                                );
+                                _linkFocusNode.unfocus();
                               },
                             ),
                           ],

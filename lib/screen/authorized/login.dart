@@ -158,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                             hintText: S.of(context).password,
                           ),
                           onEditingComplete: () {
-                            onSubmitted(reader: ref.read);
+                            _passwordFocusNode.unfocus();
                           },
                         ),
                       ),

@@ -126,7 +126,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           controller: _repasswordTextEditingController,
                           focusNode: _repasswordFocusNode,
                           obscureText: true,
-                          textInputAction: TextInputAction.next,
+                          textInputAction: TextInputAction.done,
                           validator: (String? value) {
                             if (value == null || value.isEmpty) {
                               return S.of(context).repasswordEmptyTips;
@@ -143,7 +143,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             hintText: S.of(context).repassword,
                           ),
                           onEditingComplete: () {
-                            onSubmitted(reader: ref.read);
+                            _repasswordFocusNode.unfocus();
                           },
                         ),
                       ),
