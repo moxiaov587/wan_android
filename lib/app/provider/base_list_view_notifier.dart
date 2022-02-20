@@ -15,17 +15,11 @@ abstract class BaseListViewNotifier<T> extends StateNotifier<ListViewState<T>> {
     try {
       final List<T> data = await loadData();
 
-      if (data.isEmpty) {
-        state = ListViewState<T>(
-          list: <T>[],
-        );
-      } else {
-        onCompleted(data);
+      onCompleted(data);
 
-        state = ListViewState<T>(
-          list: data,
-        );
-      }
+      state = ListViewState<T>(
+        list: data,
+      );
 
       return RefreshControllerStatus.completed;
     } catch (e, s) {

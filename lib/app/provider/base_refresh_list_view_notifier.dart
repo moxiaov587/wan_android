@@ -32,21 +32,19 @@ abstract class BaseRefreshListViewNotifier<T>
         pageSize: pageSize,
       );
 
-      if (data.list.isEmpty) {
-        state = RefreshListViewState<T>(
-          list: <T>[],
-        );
+      onCompleted(data.list);
+
+      state = RefreshListViewState<T>(
+        pageNum: data.pageNum,
+        isLastPage: data.isLastPage,
+        list: data.list,
+      );
+
+      if (data.isLastPage) {
+        return RefreshControllerStatus.noData;
       } else {
-        onCompleted(data.list);
-
-        state = RefreshListViewState<T>(
-          pageNum: data.pageNum,
-          isLastPage: data.isLastPage,
-          list: data.list,
-        );
+        return RefreshControllerStatus.completed;
       }
-
-      return RefreshControllerStatus.completed;
     } catch (e, s) {
       onError(e, s);
 
