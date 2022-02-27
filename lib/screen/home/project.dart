@@ -192,7 +192,11 @@ class ProjectTypeBottomSheet extends StatelessWidget {
 
                             return ListTile(
                               selected: selected,
-                              title: Text(list[index].name),
+                              title: Text(
+                                HTMLParseUtils.parseArticleTitle(
+                                        title: list[index].name) ??
+                                    S.of(context).unknown,
+                              ),
                               onTap: () {
                                 ref
                                     .read(projectTypesProvider.notifier)

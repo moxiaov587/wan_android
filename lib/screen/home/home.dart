@@ -20,6 +20,7 @@ import '../../model/models.dart';
 import '../../navigator/route_name.dart';
 import '../../navigator/router_delegate.dart';
 import '../../utils/dialog.dart';
+import '../../utils/html_parse.dart';
 import '../../widget/article.dart';
 import '../../widget/capsule_ink.dart';
 import '../../widget/custom_bottom_navigation_bar.dart';
@@ -235,6 +236,7 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
             pinned: true,
             expandedHeight: _kExpandedHeight,
             flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
               title: ValueListenableBuilder<bool>(
                 valueListenable: _showAppBar,
                 builder: (_, bool show, Widget? child) {
