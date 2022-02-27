@@ -6,7 +6,10 @@ import 'package:connectivity_plus/connectivity_plus.dart'
     show ConnectivityResult;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show SystemChrome, SystemUiOverlayStyle;
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart'
+    show FlutterNativeSplash;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -17,11 +20,17 @@ import 'app/l10n/generated/l10n.dart';
 import 'app/theme/theme.dart' show AppTheme;
 import 'database/hive_boxes.dart';
 import 'navigator/router_delegate.dart';
+import 'screen/authorized/provider/authorized_provider.dart';
 import 'screen/provider/connectivity_provider.dart';
 import 'screen/provider/locale_provider.dart';
 import 'screen/provider/theme_provider.dart';
+import 'utils/dialog.dart';
 
 Future<void> main() async {
+  final WidgetsBinding widgetsBinding =
+      WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
   await Hive.initFlutter();
 
   await HiveBoxes.openBoxes();
@@ -32,6 +41,10 @@ Future<void> main() async {
     /// remove the # from URL
     Beamer.setPathUrlStrategy();
   }
+
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
+    statusBarColor: Colors.transparent,
+  ));
 
   final ProviderContainer providerContainer = ProviderContainer();
 
@@ -58,6 +71,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
     super.initState();
 
     WidgetsBinding.instance?.addObserver(this);
+    closeSplash();
     ref.read(connectivityProvider.notifier).initData();
     _connectivitySubscription = ref
         .read(connectivityProvider.notifier)
@@ -77,6 +91,18 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
   void didChangePlatformBrightness() {
     if (mounted) {
       setState(() {});
+    }
+  }
+
+  Future<void> closeSplash() async {
+    final String? errorCode =
+        await ref.read(authorizedProvider.notifier).initData();
+    FlutterNativeSplash.remove();
+
+    if (errorCode != null) {
+      Future<void>.delayed(const Duration(seconds: 3), () {
+        DialogUtils.tips(S.current.loginInfoInvalidTips(errorCode));
+      });
     }
   }
 

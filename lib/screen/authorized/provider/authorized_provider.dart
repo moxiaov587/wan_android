@@ -18,18 +18,19 @@ final StateNotifierProvider<AuthorizedNotifier, UserInfoModel?>
 class AuthorizedNotifier extends StateNotifier<UserInfoModel?> {
   AuthorizedNotifier() : super(null);
 
-  Future<void> initData() async {
+  Future<String?> initData() async {
     try {
       final bool isLogin = HiveBoxes.uniqueUserSettings?.isLogin ?? false;
 
       if (isLogin) {
         state = await WanAndroidAPI.fetchUserInfo();
       }
+
+      return null;
     } catch (e, s) {
       final BaseViewStateError error = BaseViewStateError.create(e, s);
 
-      DialogUtils.tips(
-          S.current.loginInfoInvalidTips(error.statusCode?.toString() ?? '-1'));
+      return error.statusCode?.toString() ?? '-1';
     }
   }
 

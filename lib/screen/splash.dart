@@ -7,6 +7,7 @@ import 'authorized/provider/authorized_provider.dart';
 import 'splash_provider.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
+  @Deprecated('Use [flutter_native_splash] in place of this')
   const SplashScreen({Key? key}) : super(key: key);
 
   @override
