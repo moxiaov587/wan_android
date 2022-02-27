@@ -5,7 +5,6 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 
 import '../contacts/instances.dart';
 import '../screen/authorized/provider/authorized_provider.dart';
-import '../screen/splash_provider.dart';
 import 'locations.dart';
 import 'route_name.dart';
 
@@ -45,20 +44,6 @@ class AppRouterDelegate {
           ],
         ),
         guards: <BeamGuard>[
-          BeamGuard(
-            guardNonMatching: true,
-            pathPatterns: <Pattern>[RouterName.splash.location],
-            check: (_, __) => reader.call(splashProvider),
-            beamTo: (
-              _,
-              __,
-              BeamLocation<RouteInformationSerializable<dynamic>> target,
-            ) =>
-                (target as HomeLocation)
-                  ..state.updateWith(
-                    showSplash: true,
-                  ),
-          ),
           BeamGuard(
             pathPatterns: <Pattern>[
               ...RouterName.homeDrawerPath,
