@@ -65,7 +65,6 @@ class BaseToast extends StatelessWidget {
 }
 
 const double _kDialogWidth = 270.0;
-const double _kDialogMaxHeight = 240.0;
 const double _kDialogContentMinHeight = 60.0;
 const double _kDialogBottomActionHeight = 44.0;
 const double _kDialogDividerWidth = 1.0;
@@ -96,12 +95,7 @@ class BaseConfirm extends StatelessWidget {
         _kDialogWidth / 2 - _kDialogDividerWidth / 2;
 
     return ConstrainedBox(
-      constraints: const BoxConstraints(
-        minHeight: 0.0,
-        maxHeight: _kDialogMaxHeight,
-        minWidth: _kDialogWidth,
-        maxWidth: _kDialogWidth,
-      ),
+      constraints: const BoxConstraints.tightFor(width: _kDialogWidth),
       child: Material(
         borderRadius: AppTheme.borderRadius,
         color: currentTheme.backgroundColor,
@@ -109,7 +103,7 @@ class BaseConfirm extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Padding(
-              padding: AppTheme.contentPadding,
+              padding: AppTheme.bodyPadding,
               child: Align(
                 child: Text(
                   title ??
@@ -120,23 +114,26 @@ class BaseConfirm extends StatelessWidget {
             ),
             const Divider(
               height: _kDialogDividerWidth,
+              indent: 0.0,
+              endIndent: 0.0,
             ),
             ConstrainedBox(
-              constraints: const BoxConstraints(
+              constraints: BoxConstraints(
                 minHeight: _kDialogContentMinHeight,
+                maxHeight: ScreenUtils.height / 2,
               ),
-              child: Align(
-                child: Padding(
-                  padding: AppTheme.bodyPadding,
-                  child: DefaultTextStyle(
-                    style: currentTheme.textTheme.titleSmall!,
-                    child: content,
-                  ),
+              child: SingleChildScrollView(
+                padding: AppTheme.bodyPadding,
+                child: DefaultTextStyle(
+                  style: currentTheme.textTheme.titleSmall!,
+                  child: content,
                 ),
               ),
             ),
             const Divider(
               height: _kDialogDividerWidth,
+              indent: 0.0,
+              endIndent: 0.0,
             ),
             Row(
               children: <Widget>[
@@ -169,6 +166,8 @@ class BaseConfirm extends StatelessWidget {
                   child: VerticalDivider(
                     width: _kDialogDividerWidth,
                     thickness: AppTheme.dividerTheme.thickness,
+                    indent: 0.0,
+                    endIndent: 0.0,
                     color: currentTheme.dividerColor,
                   ),
                 ),

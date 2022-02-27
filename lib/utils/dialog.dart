@@ -6,6 +6,7 @@ import '../app/theme/theme.dart';
 import '../contacts/instances.dart';
 import '../extensions/extensions.dart' show TextStyleExtension;
 import '../widget/loading.dart';
+import 'screen.dart';
 
 part '../widget/dialog.dart';
 
