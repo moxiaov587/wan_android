@@ -39,26 +39,26 @@ class HomeLocation extends BeamLocation<HomeState> {
         HomeState().fromRouteInformation(routeInformation);
     LogUtils.d('$runtimeType update state: path = $homeState');
 
-    // state.updateWith(
-    //   initialPath: homeState.initialPath,
-    //   showProjectTypeBottomSheet: homeState.showProjectTypeBottomSheet,
-    //   showSearch: homeState.showSearch,
-    //   isLogin: homeState.isLogin,
-    //   isRegister: homeState.isRegister,
-    //   isAbout: homeState.isAbout,
-    //   isRank: homeState.isRank,
-    //   isSettings: homeState.isSettings,
-    //   isLanguages: homeState.isLanguages,
-    //   isMyCollections: homeState.isMyCollections,
-    //   collectionTypeIndex: homeState.collectionTypeIndex,
-    //   showHandleCollectedBottomSheet: homeState.showHandleCollectedBottomSheet,
-    //   collectId: homeState.collectId,
-    //   isMyPoints: homeState.isMyPoints,
-    //   isMyShare: homeState.isMyShare,
-    //   articleId: homeState.articleId,
-    //   showSplash: homeState.showSplash,
-    //   isUnknown: homeState.isUnknown,
-    // );
+    state.updateWith(
+      initialPath: homeState.initialPath,
+      showProjectTypeBottomSheet: homeState.showProjectTypeBottomSheet,
+      showSearch: homeState.showSearch,
+      isLogin: homeState.isLogin,
+      isRegister: homeState.isRegister,
+      isAbout: homeState.isAbout,
+      isRank: homeState.isRank,
+      isSettings: homeState.isSettings,
+      isLanguages: homeState.isLanguages,
+      isMyCollections: homeState.isMyCollections,
+      collectionTypeIndex: homeState.collectionTypeIndex,
+      showHandleCollectedBottomSheet: homeState.showHandleCollectedBottomSheet,
+      collectId: homeState.collectId,
+      isMyPoints: homeState.isMyPoints,
+      isMyShare: homeState.isMyShare,
+      articleId: homeState.articleId,
+      showSplash: homeState.showSplash,
+      isUnknown: homeState.isUnknown,
+    );
   }
 
   @override
