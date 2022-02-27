@@ -39,6 +39,7 @@ dependencies:
   html: ^0.15.0
   url_launcher: ^6.0.18
   custom_pop_up_menu: ^1.2.3+1
+  flutter_native_splash: ^2.0.5
 
 dev_dependencies:
   flutter_test:
