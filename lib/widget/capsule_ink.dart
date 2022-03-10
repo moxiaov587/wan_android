@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../app/theme/theme.dart';
+import '../app/theme/app_theme.dart';
 import '../contacts/instances.dart';
 
 class CapsuleInk extends StatelessWidget {

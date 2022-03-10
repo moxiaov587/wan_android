@@ -7,6 +7,7 @@ int _kDefaultSemanticIndexCallback(Widget _, int localIndex) => localIndex;
 class CustomSliverChildBuilderDelegate {
   CustomSliverChildBuilderDelegate._();
 
+  // ignore: long-parameter-list
   static SliverChildBuilderDelegate separated({
     required Widget Function(BuildContext, int) itemBuilder,
     Widget Function(BuildContext, int)? separatorBuilder,
@@ -23,12 +24,10 @@ class CustomSliverChildBuilderDelegate {
       (BuildContext context, int index) {
         final int itemIndex = index ~/ 2;
         final Widget widget;
-        if (index.isEven) {
-          widget = itemBuilder(context, itemIndex);
-        } else {
-          widget =
-              separatorBuilder?.call(context, itemIndex) ?? const Divider();
-        }
+        widget = index.isEven
+            ? itemBuilder(context, itemIndex)
+            : separatorBuilder?.call(context, itemIndex) ?? const Divider();
+
         return widget;
       },
       childCount: math.max(

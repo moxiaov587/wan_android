@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 
 import '../app/l10n/generated/l10n.dart';
-import '../app/theme/theme.dart';
+import '../app/theme/app_theme.dart';
 import '../contacts/instances.dart';
 import '../extensions/extensions.dart' show TextStyleExtension;
-import '../widget/loading.dart';
-import 'screen.dart';
+import '../widget/rotate_loading.dart';
+import 'screen_utils.dart';
 
-part '../widget/dialog.dart';
+part '../widget/base_toast.dart';
+part '../widget/base_confirm.dart';
 
 class DialogUtils {
   DialogUtils._();
@@ -16,7 +17,7 @@ class DialogUtils {
   static const AlignmentGeometry _defaultAlignment = Alignment.bottomCenter;
 
   static Color get _maskBackground =>
-      currentIsDark ? AppColor.maskBackgroundDark : AppColor.maskBackground;
+      currentIsDark ? AppColors.maskBackgroundDark : AppColors.maskBackground;
 
   static void loading() {
     SmartDialog.showLoading(
@@ -91,6 +92,7 @@ class DialogUtils {
     );
   }
 
+  // ignore: long-parameter-list
   static void confirm({
     String? title,
     required Widget content,

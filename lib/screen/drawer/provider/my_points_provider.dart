@@ -27,8 +27,10 @@ class UserPointsRecordNotifier
   final CancelToken? cancelToken;
 
   @override
-  Future<RefreshListViewStateData<PointsModel>> loadData(
-      {required int pageNum, required int pageSize}) async {
+  Future<RefreshListViewStateData<PointsModel>> loadData({
+    required int pageNum,
+    required int pageSize,
+  }) async {
     return (await WanAndroidAPI.fetchUserPointsRecord(
       pageNum,
       pageSize,

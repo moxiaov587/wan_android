@@ -4,16 +4,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import '../app/l10n/generated/l10n.dart';
 import '../contacts/instances.dart';
 
-class ActionLabel {
-  const ActionLabel({
-    required this.label,
-    required this.color,
-  });
-
-  final String label;
-  final Color color;
-}
-
 class DismissibleSlidableAction extends StatefulWidget {
   const DismissibleSlidableAction({
     Key? key,
@@ -42,7 +32,9 @@ class _DismissibleSlidableActionState extends State<DismissibleSlidableAction> {
   late final ValueNotifier<ActionLabel> _actionLabelNotifier =
       ValueNotifier<ActionLabel>(
     ActionLabel(
-        label: widget.label, color: widget.color ?? currentTheme.primaryColor),
+      label: widget.label,
+      color: widget.color ?? currentTheme.primaryColor,
+    ),
   );
 
   double maxValue = 0;
@@ -109,29 +101,40 @@ class _DismissibleSlidableActionState extends State<DismissibleSlidableAction> {
       valueListenable: _actionLabelNotifier,
       builder: (_, ActionLabel actionLabel, __) {
         return Expanded(
-            child: Material(
-          child: SizedBox.expand(
-            child: Ink(
-              color: actionLabel.color,
-              child: InkWell(
-                onTap: () {
-                  slidable.close();
-                  widget.onTap();
-                },
-                child: Center(
-                  child: Text(
-                    actionLabel.label,
-                    textAlign: TextAlign.center,
-                    style: currentTheme.textTheme.bodyMedium!.copyWith(
-                      color: currentTheme.tooltipTheme.textStyle!.color,
+          child: Material(
+            child: SizedBox.expand(
+              child: Ink(
+                color: actionLabel.color,
+                child: InkWell(
+                  onTap: () {
+                    slidable.close();
+                    widget.onTap();
+                  },
+                  child: Center(
+                    child: Text(
+                      actionLabel.label,
+                      textAlign: TextAlign.center,
+                      style: currentTheme.textTheme.bodyMedium!.copyWith(
+                        color: currentTheme.tooltipTheme.textStyle!.color,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
           ),
-        ));
+        );
       },
     );
   }
+}
+
+class ActionLabel {
+  const ActionLabel({
+    required this.label,
+    required this.color,
+  });
+
+  final String label;
+  final Color color;
 }

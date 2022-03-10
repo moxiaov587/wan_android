@@ -1,4 +1,4 @@
-part of 'drawer.dart';
+part of 'home_drawer.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -7,13 +7,14 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<ListTileConfig> settings = <ListTileConfig>[
       ListTileConfig(
-          iconData: IconFontIcons.globalLine,
-          title: S.of(context).languages,
-          onTap: () {
-            AppRouterDelegate.instance.currentBeamState.updateWith(
-              isLanguages: true,
-            );
-          }),
+        iconData: IconFontIcons.globalLine,
+        title: S.of(context).languages,
+        onTap: () {
+          AppRouterDelegate.instance.currentBeamState.updateWith(
+            isLanguages: true,
+          );
+        },
+      ),
       ListTileConfig(
         iconData: IconFontIcons.deleteLine,
         title: S.of(context).clearCache,
@@ -41,6 +42,7 @@ class SettingsScreen extends StatelessWidget {
               delegate: CustomSliverChildBuilderDelegate.separated(
                 itemBuilder: (_, int index) {
                   final ListTileConfig config = settings[index];
+
                   return ListTile(
                     leading: Icon(config.iconData),
                     title: Text(config.title),

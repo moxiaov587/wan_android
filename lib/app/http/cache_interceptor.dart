@@ -16,13 +16,7 @@ const int _kCacheMaxCount = 10;
 
 const String _kMethodGetLowerCase = 'get';
 
-enum CacheOption {
-  needRefresh,
-  needCache,
-  isDiskCache,
-}
-
-class CacheInterceptors extends Interceptor {
+class CacheInterceptor extends Interceptor {
   final LinkedHashMap<String, ResponseCache> _cache =
       LinkedHashMap<String, ResponseCache>();
 
@@ -40,6 +34,21 @@ class CacheInterceptors extends Interceptor {
       .firstWhereOrNull((ResponseCache element) => element.uri == uri)
       ?.key;
 
+  void _onNeedRefresh({
+    required bool isDiskCache,
+    required String uriString,
+  }) {
+    if (isDiskCache) {
+      final dynamic key = _diskCacheKey(uriString);
+
+      if (key != null) {
+        HiveBoxes.responseCacheBox.delete(key);
+      }
+    } else {
+      _cache.remove(uriString);
+    }
+  }
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     final bool isDiskCache = _isDiskCache(options);
@@ -47,15 +56,7 @@ class CacheInterceptors extends Interceptor {
     final String uriString = options.uri.toString();
 
     if (_needRefresh(options)) {
-      if (isDiskCache) {
-        final dynamic key = _diskCacheKey(uriString);
-
-        if (key != null) {
-          HiveBoxes.responseCacheBox.delete(key);
-        }
-      } else {
-        _cache.remove(uriString);
-      }
+      _onNeedRefresh(isDiskCache: isDiskCache, uriString: uriString);
 
       handler.next(options);
 
@@ -113,7 +114,9 @@ class CacheInterceptors extends Interceptor {
 
   @override
   void onResponse(
-      Response<dynamic> response, ResponseInterceptorHandler handler) {
+    Response<dynamic> response,
+    ResponseInterceptorHandler handler,
+  ) {
     final RequestOptions options = response.requestOptions;
 
     if (_needCache(options)) {
@@ -137,4 +140,10 @@ class CacheInterceptors extends Interceptor {
 
     handler.next(response);
   }
+}
+
+enum CacheOption {
+  needRefresh,
+  needCache,
+  isDiskCache,
 }

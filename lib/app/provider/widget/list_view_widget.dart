@@ -112,8 +112,11 @@ class _ListViewWidgetState<
                         loading: () => const SliverFillRemaining(
                           child: LoadingWidget(),
                         ),
-                        error: (int? statusCode, String? message,
-                                String? detail) =>
+                        error: (
+                          int? statusCode,
+                          String? message,
+                          String? detail,
+                        ) =>
                             SliverFillRemaining(
                           child: CustomErrorWidget(
                             statusCode: statusCode,
@@ -128,7 +131,7 @@ class _ListViewWidgetState<
                             },
                           ),
                         ),
-                      )
+                      ),
                 ],
               );
             },
@@ -151,8 +154,11 @@ class _ListViewWidgetState<
                         loading: () => const SliverFillRemaining(
                           child: LoadingWidget(),
                         ),
-                        error: (int? statusCode, String? message,
-                                String? detail) =>
+                        error: (
+                          int? statusCode,
+                          String? message,
+                          String? detail,
+                        ) =>
                             SliverFillRemaining(
                           child: CustomErrorWidget(
                             statusCode: statusCode,
@@ -169,7 +175,7 @@ class _ListViewWidgetState<
                         ),
                       );
                 },
-              )
+              ),
             ],
           );
   }
@@ -281,8 +287,11 @@ class _AutoDisposeListViewWidgetState<
                         loading: () => const SliverFillRemaining(
                           child: LoadingWidget(),
                         ),
-                        error: (int? statusCode, String? message,
-                                String? detail) =>
+                        error: (
+                          int? statusCode,
+                          String? message,
+                          String? detail,
+                        ) =>
                             SliverFillRemaining(
                           child: CustomErrorWidget(
                             statusCode: statusCode,
@@ -297,7 +306,7 @@ class _AutoDisposeListViewWidgetState<
                             },
                           ),
                         ),
-                      )
+                      ),
                 ],
               );
             },
@@ -320,8 +329,11 @@ class _AutoDisposeListViewWidgetState<
                         loading: () => const SliverFillRemaining(
                           child: LoadingWidget(),
                         ),
-                        error: (int? statusCode, String? message,
-                                String? detail) =>
+                        error: (
+                          int? statusCode,
+                          String? message,
+                          String? detail,
+                        ) =>
                             SliverFillRemaining(
                           child: CustomErrorWidget(
                             statusCode: statusCode,
@@ -338,7 +350,7 @@ class _AutoDisposeListViewWidgetState<
                         ),
                       );
                 },
-              )
+              ),
             ],
           );
   }

@@ -7,7 +7,7 @@ import '../../../app/l10n/generated/l10n.dart';
 import '../../../app/provider/provider.dart';
 import '../../../app/provider/view_state.dart';
 import '../../../model/models.dart';
-import '../../../utils/dialog.dart';
+import '../../../utils/dialog_utils.dart';
 import '../../home/provider/home_provider.dart'
     show
         kHomeArticleProvider,
@@ -15,7 +15,7 @@ import '../../home/provider/home_provider.dart'
         kQuestionArticleProvider,
         kProjectArticleProvider,
         BaseArticleNotifier;
-import '../my_collections/my_collections.dart' show CollectionType;
+import '../my_collections/my_collections_screen.dart' show CollectionType;
 
 part 'my_collections_provider.dart';
 part 'my_points_provider.dart';

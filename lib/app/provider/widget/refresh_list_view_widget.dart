@@ -148,7 +148,8 @@ class _RefreshListViewWidgetState<
               widget.provider.select(
                 (RefreshListViewState<T> value) =>
                     value.whenOrNull(
-                        (_, __, ___) => const LoadMoreListFooter()) ??
+                      (_, __, ___) => const LoadMoreListFooter(),
+                    ) ??
                     const SliverToBoxAdapter(),
               ),
             ),
@@ -307,7 +308,8 @@ class _AutoDisposeRefreshListViewWidgetState<
               widget.provider.select(
                 (RefreshListViewState<T> value) =>
                     value.whenOrNull(
-                        (_, __, ___) => const LoadMoreListFooter()) ??
+                      (_, __, ___) => const LoadMoreListFooter(),
+                    ) ??
                     const SliverToBoxAdapter(),
               ),
             ),

@@ -3,10 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 
-import '../shape/bottom_app_bar_convex_shape.dart';
+import '../shape/convex_notched_rectangle.dart';
 
-part 'color.dart';
-part 'text_theme.dart';
+part 'app_colors.dart';
+part 'app_text_theme.dart';
 
 const double _kRadiusValue = 14.0;
 const double _kAdornmentRadiusValue = 4.0;
@@ -63,7 +63,7 @@ class AppTheme {
 
   static DividerThemeData get dividerTheme => const DividerThemeData(
         space: 0,
-        thickness: .7,
+        thickness: 0.7,
         indent: kStyleUint4,
         endIndent: kStyleUint4,
       );
@@ -109,39 +109,39 @@ class AppTheme {
   static MaterialStateColor get stateColorLight =>
       MaterialStateColor.resolveWith((Set<MaterialState> states) {
         if (states.contains(MaterialState.disabled)) {
-          return AppColor.text1.withAlpha(100);
+          return AppColors.text1.withAlpha(100);
         }
 
         if (states.contains(MaterialState.error)) {
-          return AppColor.error;
+          return AppColors.error;
         }
 
         if (states.contains(MaterialState.hovered) ||
             states.contains(MaterialState.focused) ||
             states.contains(MaterialState.selected)) {
-          return AppColor.primary;
+          return AppColors.primary;
         }
 
-        return AppColor.text1;
+        return AppColors.text1;
       });
 
   static MaterialStateColor get stateColorDark =>
       MaterialStateColor.resolveWith((Set<MaterialState> states) {
         if (states.contains(MaterialState.disabled)) {
-          return AppColor.text1Dark.withAlpha(100);
+          return AppColors.text1Dark.withAlpha(100);
         }
 
         if (states.contains(MaterialState.error)) {
-          return AppColor.errorDark;
+          return AppColors.errorDark;
         }
 
         if (states.contains(MaterialState.hovered) ||
             states.contains(MaterialState.focused) ||
             states.contains(MaterialState.selected)) {
-          return AppColor.primaryDark;
+          return AppColors.primaryDark;
         }
 
-        return AppColor.text1Dark;
+        return AppColors.text1Dark;
       });
 
   static InputDecorationTheme get inputDecorationTheme => InputDecorationTheme(
@@ -157,86 +157,87 @@ class AppTheme {
         ),
       );
 
+  // ignore: long-method
   static ThemeData get light => ThemeData.light().copyWith(
         useMaterial3: true,
         cupertinoOverrideTheme: const CupertinoThemeData(
           brightness: Brightness.light,
-          primaryColor: AppColor.primary,
+          primaryColor: AppColors.primary,
         ),
         appBarTheme: appBarTheme.copyWith(
           systemOverlayStyle: SystemUiOverlayStyle.dark,
-          backgroundColor: AppColor.appBar,
-          foregroundColor: AppColor.text1,
+          backgroundColor: AppColors.appBar,
+          foregroundColor: AppColors.text1,
         ),
-        primaryColor: AppColor.primary,
-        primaryColorLight: AppColor.primaryLight2,
-        primaryColorDark: AppColor.primary.shade7,
-        canvasColor: AppColor.background1,
-        shadowColor: AppColor.black,
-        scaffoldBackgroundColor: AppColor.scaffoldBackground,
-        bottomAppBarColor: AppColor.background1,
-        cardColor: AppColor.background1,
-        dividerColor: AppColor.border,
-        focusColor: AppColor.fill3,
-        hoverColor: AppColor.fill1,
+        primaryColor: AppColors.primary,
+        primaryColorLight: AppColors.primaryLight2,
+        primaryColorDark: AppColors.primary.shade7,
+        canvasColor: AppColors.background1,
+        shadowColor: AppColors.black,
+        scaffoldBackgroundColor: AppColors.scaffoldBackground,
+        bottomAppBarColor: AppColors.background1,
+        cardColor: AppColors.background1,
+        dividerColor: AppColors.border,
+        focusColor: AppColors.fill3,
+        hoverColor: AppColors.fill1,
         highlightColor: Colors.transparent,
-        splashColor: AppColor.splash,
-        selectedRowColor: AppColor.fill1,
-        unselectedWidgetColor: AppColor.fill4,
-        disabledColor: AppColor.secondaryDisabled,
-        secondaryHeaderColor: AppColor.primaryLight2,
-        backgroundColor: AppColor.background1,
-        dialogBackgroundColor: AppColor.menuBackground,
-        indicatorColor: AppColor.primary,
-        hintColor: AppColor.text4,
-        errorColor: AppColor.error,
-        toggleableActiveColor: AppColor.primary,
+        splashColor: AppColors.splash,
+        selectedRowColor: AppColors.fill1,
+        unselectedWidgetColor: AppColors.fill4,
+        disabledColor: AppColors.secondaryDisabled,
+        secondaryHeaderColor: AppColors.primaryLight2,
+        backgroundColor: AppColors.background1,
+        dialogBackgroundColor: AppColors.menuBackground,
+        indicatorColor: AppColors.primary,
+        hintColor: AppColors.text4,
+        errorColor: AppColors.error,
+        toggleableActiveColor: AppColors.primary,
         textTheme: AppTextTheme.lightTheme,
         iconTheme: IconThemeData(
-          color: AppColor.text1,
+          color: AppColors.text1,
           size: defaultIconSize,
         ),
         primaryIconTheme: IconThemeData(
-          color: AppColor.text3,
+          color: AppColors.text3,
           size: defaultIconSize,
         ),
         tooltipTheme: TooltipThemeData(
           decoration: BoxDecoration(
-            color: AppColor.tooltipBackground,
+            color: AppColors.tooltipBackground,
           ),
           textStyle: (kIsWeb
                   ? AppTextTheme.lightTheme.overline
                   : AppTextTheme.lightTheme.bodyText2)!
               .copyWith(
-            color: AppColor.white,
+            color: AppColors.white,
           ),
         ),
         dividerTheme: dividerTheme.copyWith(
-          color: AppColor.border,
+          color: AppColors.border,
         ),
         listTileTheme: listTileTheme.copyWith(
-          tileColor: AppColor.background1,
-          selectedTileColor: AppColor.background1,
+          tileColor: AppColors.background1,
+          selectedTileColor: AppColors.background1,
         ),
         checkboxTheme: CheckboxThemeData(
           shape: RoundedRectangleBorder(
             borderRadius: adornmentBorderRadius,
           ),
           side: BorderSide(
-            color: AppColor.text2,
-            width: .7,
+            color: AppColors.text2,
+            width: 0.7,
           ),
           fillColor: stateColorLight,
-          checkColor: MaterialStateProperty.all(AppColor.white),
+          checkColor: MaterialStateProperty.all(AppColors.white),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: buttonStyle.copyWith(
             backgroundColor: MaterialStateProperty.all(
-              AppColor.primary,
+              AppColors.primary,
             ),
             textStyle: MaterialStateProperty.all(
               buttonTextStyle.copyWith(
-                color: AppColor.white,
+                color: AppColors.white,
               ),
             ),
           ),
@@ -247,145 +248,146 @@ class AppTheme {
           ),
         ),
         floatingActionButtonTheme: floatingActionButtonTheme.copyWith(
-          backgroundColor: AppColor.appBar,
-          foregroundColor: AppColor.text2,
+          backgroundColor: AppColors.appBar,
+          foregroundColor: AppColors.text2,
         ),
         bottomAppBarTheme: bottomAppBarTheme.copyWith(
-          color: AppColor.appBar,
+          color: AppColors.appBar,
         ),
         bottomNavigationBarTheme: bottomNavigationBarTheme.copyWith(
-          backgroundColor: AppColor.appBar,
+          backgroundColor: AppColors.appBar,
         ),
         inputDecorationTheme: inputDecorationTheme.copyWith(
           prefixIconColor: stateColorLight,
           suffixIconColor: stateColorLight,
-          fillColor: AppColor.gray.shade1,
+          fillColor: AppColors.gray.shade1,
           focusedBorder: OutlineInputBorder(
             borderRadius: adornmentBorderRadius,
             borderSide: BorderSide(
-              color: AppColor.primary,
+              color: AppColors.primary,
               width: dividerTheme.thickness!,
             ),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: adornmentBorderRadius,
             borderSide: BorderSide(
-              color: AppColor.error,
+              color: AppColors.error,
               width: dividerTheme.thickness!,
             ),
           ),
           focusedErrorBorder: OutlineInputBorder(
             borderRadius: adornmentBorderRadius,
             borderSide: BorderSide(
-              color: AppColor.error,
+              color: AppColors.error,
               width: dividerTheme.thickness!,
             ),
           ),
         ),
         colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColor.primary,
-          primary: AppColor.primary,
-          onPrimary: AppColor.backgroundWhite,
-          primaryContainer: AppColor.primary.shade2,
-          onPrimaryContainer: AppColor.primary.shade9,
-          secondary: AppColor.success,
-          onSecondary: AppColor.backgroundWhite,
-          secondaryContainer: AppColor.success.shade2,
-          onSecondaryContainer: AppColor.success.shade9,
-          tertiary: AppColor.waring,
-          onTertiary: AppColor.backgroundWhite,
-          tertiaryContainer: AppColor.waring.shade2,
-          onTertiaryContainer: AppColor.waring.shade9,
-          error: AppColor.error,
-          onError: AppColor.backgroundWhite,
-          errorContainer: AppColor.error.shade2,
-          onErrorContainer: AppColor.error.shade9,
-          outline: AppColor.text4,
-          background: AppColor.backgroundWhite,
-          onBackground: AppColor.scaffoldBackground,
-          shadow: AppColor.black,
+          seedColor: AppColors.primary,
+          primary: AppColors.primary,
+          onPrimary: AppColors.backgroundWhite,
+          primaryContainer: AppColors.primary.shade2,
+          onPrimaryContainer: AppColors.primary.shade9,
+          secondary: AppColors.success,
+          onSecondary: AppColors.backgroundWhite,
+          secondaryContainer: AppColors.success.shade2,
+          onSecondaryContainer: AppColors.success.shade9,
+          tertiary: AppColors.waring,
+          onTertiary: AppColors.backgroundWhite,
+          tertiaryContainer: AppColors.waring.shade2,
+          onTertiaryContainer: AppColors.waring.shade9,
+          error: AppColors.error,
+          onError: AppColors.backgroundWhite,
+          errorContainer: AppColors.error.shade2,
+          onErrorContainer: AppColors.error.shade9,
+          outline: AppColors.text4,
+          background: AppColors.backgroundWhite,
+          onBackground: AppColors.scaffoldBackground,
+          shadow: AppColors.black,
         ),
       );
 
+  // ignore: long-method
   static ThemeData get dark => ThemeData.dark().copyWith(
         useMaterial3: true,
         cupertinoOverrideTheme: const CupertinoThemeData(
           brightness: Brightness.dark,
-          primaryColor: AppColor.primaryDark,
+          primaryColor: AppColors.primaryDark,
         ),
         appBarTheme: appBarTheme.copyWith(
           systemOverlayStyle: SystemUiOverlayStyle.light,
-          backgroundColor: AppColor.appBarDark,
-          foregroundColor: AppColor.text1Dark,
+          backgroundColor: AppColors.appBarDark,
+          foregroundColor: AppColors.text1Dark,
         ),
-        primaryColor: AppColor.primaryDark,
-        primaryColorLight: AppColor.primaryLight2Dark,
-        primaryColorDark: AppColor.primaryDark.shade7,
-        canvasColor: AppColor.background1Dark,
-        shadowColor: AppColor.white,
-        scaffoldBackgroundColor: AppColor.scaffoldBackgroundDark,
-        cardColor: AppColor.background1Dark,
-        dividerColor: AppColor.borderDark,
-        focusColor: AppColor.fill3Dark,
-        hoverColor: AppColor.fill1Dark,
+        primaryColor: AppColors.primaryDark,
+        primaryColorLight: AppColors.primaryLight2Dark,
+        primaryColorDark: AppColors.primaryDark.shade7,
+        canvasColor: AppColors.background1Dark,
+        shadowColor: AppColors.white,
+        scaffoldBackgroundColor: AppColors.scaffoldBackgroundDark,
+        cardColor: AppColors.background1Dark,
+        dividerColor: AppColors.borderDark,
+        focusColor: AppColors.fill3Dark,
+        hoverColor: AppColors.fill1Dark,
         highlightColor: Colors.transparent,
-        splashColor: AppColor.splashDark,
-        selectedRowColor: AppColor.fill1Dark,
-        unselectedWidgetColor: AppColor.fill4Dark,
-        disabledColor: AppColor.secondaryDisabledDark,
-        secondaryHeaderColor: AppColor.primaryLight2Dark,
-        backgroundColor: AppColor.background1Dark,
-        dialogBackgroundColor: AppColor.menuBackgroundDark,
-        indicatorColor: AppColor.primaryDark,
-        hintColor: AppColor.text4Dark,
-        errorColor: AppColor.errorDark,
-        toggleableActiveColor: AppColor.primaryDark,
+        splashColor: AppColors.splashDark,
+        selectedRowColor: AppColors.fill1Dark,
+        unselectedWidgetColor: AppColors.fill4Dark,
+        disabledColor: AppColors.secondaryDisabledDark,
+        secondaryHeaderColor: AppColors.primaryLight2Dark,
+        backgroundColor: AppColors.background1Dark,
+        dialogBackgroundColor: AppColors.menuBackgroundDark,
+        indicatorColor: AppColors.primaryDark,
+        hintColor: AppColors.text4Dark,
+        errorColor: AppColors.errorDark,
+        toggleableActiveColor: AppColors.primaryDark,
         textTheme: AppTextTheme.darkTheme,
         iconTheme: IconThemeData(
-          color: AppColor.text1Dark,
+          color: AppColors.text1Dark,
           size: defaultIconSize,
         ),
         primaryIconTheme: IconThemeData(
-          color: AppColor.text3Dark,
+          color: AppColors.text3Dark,
           size: defaultIconSize,
         ),
         tooltipTheme: TooltipThemeData(
           decoration: const BoxDecoration(
-            color: AppColor.tooltipBackgroundDark,
+            color: AppColors.tooltipBackgroundDark,
           ),
           textStyle: (kIsWeb
                   ? AppTextTheme.darkTheme.overline
                   : AppTextTheme.darkTheme.bodyText2)!
               .copyWith(
-            color: AppColor.whiteDark,
+            color: AppColors.whiteDark,
           ),
         ),
         dividerTheme: dividerTheme.copyWith(
-          color: AppColor.borderDark,
+          color: AppColors.borderDark,
         ),
         listTileTheme: listTileTheme.copyWith(
-          tileColor: AppColor.background2Dark,
-          selectedTileColor: AppColor.background2Dark,
+          tileColor: AppColors.background2Dark,
+          selectedTileColor: AppColors.background2Dark,
         ),
         checkboxTheme: CheckboxThemeData(
           shape: RoundedRectangleBorder(
             borderRadius: adornmentBorderRadius,
           ),
           side: BorderSide(
-            color: AppColor.text2Dark,
-            width: .7,
+            color: AppColors.text2Dark,
+            width: 0.7,
           ),
           fillColor: stateColorDark,
-          checkColor: MaterialStateProperty.all(AppColor.whiteDark),
+          checkColor: MaterialStateProperty.all(AppColors.whiteDark),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: buttonStyle.copyWith(
             backgroundColor: MaterialStateProperty.all(
-              AppColor.primaryDark,
+              AppColors.primaryDark,
             ),
             textStyle: MaterialStateProperty.all(
               buttonTextStyle.copyWith(
-                color: AppColor.whiteDark,
+                color: AppColors.whiteDark,
               ),
             ),
           ),
@@ -396,64 +398,64 @@ class AppTheme {
           ),
         ),
         floatingActionButtonTheme: floatingActionButtonTheme.copyWith(
-          backgroundColor: AppColor.appBarDark,
-          foregroundColor: AppColor.text2Dark,
+          backgroundColor: AppColors.appBarDark,
+          foregroundColor: AppColors.text2Dark,
         ),
         bottomAppBarTheme: bottomAppBarTheme.copyWith(
-          color: AppColor.appBarDark,
+          color: AppColors.appBarDark,
         ),
         bottomNavigationBarTheme: bottomNavigationBarTheme.copyWith(
-          backgroundColor: AppColor.appBarDark,
+          backgroundColor: AppColors.appBarDark,
         ),
         inputDecorationTheme: inputDecorationTheme.copyWith(
           prefixIconColor: stateColorDark,
           suffixIconColor: stateColorDark,
-          fillColor: AppColor.grayDark.shade1,
+          fillColor: AppColors.grayDark.shade1,
           focusedBorder: OutlineInputBorder(
             borderRadius: adornmentBorderRadius,
             borderSide: BorderSide(
-              color: AppColor.primaryDark,
+              color: AppColors.primaryDark,
               width: dividerTheme.thickness!,
             ),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: adornmentBorderRadius,
             borderSide: BorderSide(
-              color: AppColor.errorDark,
+              color: AppColors.errorDark,
               width: dividerTheme.thickness!,
             ),
           ),
           focusedErrorBorder: OutlineInputBorder(
             borderRadius: adornmentBorderRadius,
             borderSide: BorderSide(
-              color: AppColor.errorDark,
+              color: AppColors.errorDark,
               width: dividerTheme.thickness!,
             ),
           ),
         ),
         colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColor.primaryDark,
+          seedColor: AppColors.primaryDark,
           brightness: Brightness.dark,
-          primary: AppColor.primaryDark,
-          onPrimary: AppColor.backgroundWhiteDark,
-          primaryContainer: AppColor.primaryDark.shade2,
-          onPrimaryContainer: AppColor.primaryDark.shade9,
-          secondary: AppColor.successDark,
-          onSecondary: AppColor.backgroundWhiteDark,
-          secondaryContainer: AppColor.successDark.shade2,
-          onSecondaryContainer: AppColor.successDark.shade9,
-          tertiary: AppColor.waringDark,
-          onTertiary: AppColor.backgroundWhiteDark,
-          tertiaryContainer: AppColor.waringDark.shade2,
-          onTertiaryContainer: AppColor.waringDark.shade9,
-          error: AppColor.errorDark,
-          onError: AppColor.backgroundWhiteDark,
-          errorContainer: AppColor.errorDark.shade2,
-          onErrorContainer: AppColor.errorDark.shade9,
-          outline: AppColor.text4Dark,
-          background: AppColor.backgroundWhiteDark,
-          onBackground: AppColor.scaffoldBackgroundDark,
-          shadow: AppColor.blackDark,
+          primary: AppColors.primaryDark,
+          onPrimary: AppColors.backgroundWhiteDark,
+          primaryContainer: AppColors.primaryDark.shade2,
+          onPrimaryContainer: AppColors.primaryDark.shade9,
+          secondary: AppColors.successDark,
+          onSecondary: AppColors.backgroundWhiteDark,
+          secondaryContainer: AppColors.successDark.shade2,
+          onSecondaryContainer: AppColors.successDark.shade9,
+          tertiary: AppColors.waringDark,
+          onTertiary: AppColors.backgroundWhiteDark,
+          tertiaryContainer: AppColors.waringDark.shade2,
+          onTertiaryContainer: AppColors.waringDark.shade9,
+          error: AppColors.errorDark,
+          onError: AppColors.backgroundWhiteDark,
+          errorContainer: AppColors.errorDark.shade2,
+          onErrorContainer: AppColors.errorDark.shade9,
+          outline: AppColors.text4Dark,
+          background: AppColors.backgroundWhiteDark,
+          onBackground: AppColors.scaffoldBackgroundDark,
+          shadow: AppColors.blackDark,
         ),
       );
 }

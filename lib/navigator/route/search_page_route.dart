@@ -49,6 +49,7 @@ class SearchPageRoute<T> extends PageRoute<T> {
   Animation<double> createAnimation() {
     final Animation<double> animation = super.createAnimation();
     delegate._proxyAnimation.parent = animation;
+
     return animation;
   }
 
@@ -200,11 +201,7 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
     }
 
     late final Offset offset;
-    if (kIsWeb || Platform.isIOS) {
-      offset = const Offset(-12.0, 0);
-    } else {
-      offset = Offset.zero;
-    }
+    offset = kIsWeb || Platform.isIOS ? const Offset(-12.0, 0) : Offset.zero;
 
     return Semantics(
       explicitChildNodes: true,

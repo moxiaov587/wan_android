@@ -3,11 +3,12 @@ part of 'home_provider.dart';
 final StateNotifierProvider<ProjectTypeNotifier,
         ListViewState<ProjectTypeModel>> projectTypesProvider =
     StateNotifierProvider<ProjectTypeNotifier, ListViewState<ProjectTypeModel>>(
-        (_) {
-  return ProjectTypeNotifier(
-    const ListViewState<ProjectTypeModel>.loading(),
-  );
-});
+  (_) {
+    return ProjectTypeNotifier(
+      const ListViewState<ProjectTypeModel>.loading(),
+    );
+  },
+);
 
 class ProjectTypeNotifier extends BaseListViewNotifier<ProjectTypeModel> {
   ProjectTypeNotifier(ListViewState<ProjectTypeModel> state) : super(state);
@@ -19,6 +20,7 @@ class ProjectTypeNotifier extends BaseListViewNotifier<ProjectTypeModel> {
   Future<List<ProjectTypeModel>> loadData() async {
     final List<ProjectTypeModel> data = await WanAndroidAPI.fetchProjectTypes();
     data.first = data.first.copyWith(isSelected: true);
+
     return data;
   }
 
@@ -42,20 +44,21 @@ class ProjectTypeNotifier extends BaseListViewNotifier<ProjectTypeModel> {
 
 final StateProvider<ViewState<ProjectTypeModel>> currentProjectTypeProvider =
     StateProvider<ViewState<ProjectTypeModel>>(
-        (StateProviderRef<ViewState<ProjectTypeModel>> ref) {
-  return ref.watch(projectTypesProvider).when(
-        (List<ProjectTypeModel> value) => ViewStateData<ProjectTypeModel>(
-          value: value[ref.read(projectTypesProvider.notifier).selectedIndex],
-        ),
-        loading: () => const ViewStateLoading<ProjectTypeModel>(),
-        error: (int? statusCode, String? message, String? detail) =>
-            ViewStateError<ProjectTypeModel>(
-          statusCode: statusCode,
-          message: message,
-          detail: detail,
-        ),
-      );
-});
+  (StateProviderRef<ViewState<ProjectTypeModel>> ref) {
+    return ref.watch(projectTypesProvider).when(
+          (List<ProjectTypeModel> value) => ViewStateData<ProjectTypeModel>(
+            value: value[ref.read(projectTypesProvider.notifier).selectedIndex],
+          ),
+          loading: () => const ViewStateLoading<ProjectTypeModel>(),
+          error: (int? statusCode, String? message, String? detail) =>
+              ViewStateError<ProjectTypeModel>(
+            statusCode: statusCode,
+            message: message,
+            detail: detail,
+          ),
+        );
+  },
+);
 
 final StateNotifierProvider<ProjectNotifier, RefreshListViewState<ArticleModel>>
     projectArticleProvider =
@@ -94,10 +97,15 @@ class ProjectNotifier extends BaseArticleNotifier {
   final int? categoryId;
 
   @override
-  Future<RefreshListViewStateData<ArticleModel>> loadData(
-      {required int pageNum, required int pageSize}) async {
-    return (await WanAndroidAPI.fetchProjectArticles(pageNum, pageSize,
-            categoryId: categoryId!))
+  Future<RefreshListViewStateData<ArticleModel>> loadData({
+    required int pageNum,
+    required int pageSize,
+  }) async {
+    return (await WanAndroidAPI.fetchProjectArticles(
+      pageNum,
+      pageSize,
+      categoryId: categoryId!,
+    ))
         .toRefreshListViewStateData();
   }
 }

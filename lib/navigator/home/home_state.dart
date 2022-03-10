@@ -168,6 +168,7 @@ class HomeState extends ChangeNotifier
   bool _isUnknown;
   bool get isUnknown => _isUnknown;
 
+  // ignore: long-parameter-list, long-method
   void updateWith({
     String? initialPath,
     bool? showProjectTypeBottomSheet,
@@ -334,6 +335,7 @@ class HomeState extends ChangeNotifier
   }
 
   @override
+  // ignore: long-parameter-list, long-method
   HomeState fromRouteInformation(RouteInformation routeInformation) {
     final Uri uri =
         Uri.parse(routeInformation.location ?? RouterName.home.location);
@@ -343,7 +345,8 @@ class HomeState extends ChangeNotifier
     final String uriString = uri.toString();
 
     final HomeState homeState = HomeState.fromJson(
-        routeInformation.state as Map<String, dynamic>? ?? <String, dynamic>{});
+      routeInformation.state as Map<String, dynamic>? ?? <String, dynamic>{},
+    );
 
     if (RouterName.homeTabsPath.contains(uriString)) {
       return homeState.copyWith(
@@ -462,20 +465,22 @@ class HomeState extends ChangeNotifier
         uri.pathSegments.contains('edit') &&
         uri.pathSegments.contains('id')) {
       return homeState.copyWith(
-          isMyCollections: true,
-          collectionTypeIndex: CollectionType.article.index,
-          showHandleCollectedBottomSheet: true,
-          collectId: uri.pathSegments.last as int);
+        isMyCollections: true,
+        collectionTypeIndex: CollectionType.article.index,
+        showHandleCollectedBottomSheet: true,
+        collectId: uri.pathSegments.last as int,
+      );
     }
 
     if (uriString.contains(RouterName.myWebsiteCollections.location) &&
         uri.pathSegments.contains('edit') &&
         uri.pathSegments.contains('id')) {
       return homeState.copyWith(
-          isMyCollections: true,
-          collectionTypeIndex: CollectionType.website.index,
-          showHandleCollectedBottomSheet: true,
-          collectId: uri.pathSegments.last as int);
+        isMyCollections: true,
+        collectionTypeIndex: CollectionType.website.index,
+        showHandleCollectedBottomSheet: true,
+        collectId: uri.pathSegments.last as int,
+      );
     }
 
     if (uriString == RouterName.myPoints.location) {
@@ -509,6 +514,7 @@ class HomeState extends ChangeNotifier
   }
 
   @override
+  // ignore: long-parameter-list, long-method
   RouteInformation toRouteInformation() {
     LogUtils.d('$runtimeType to routeInformation');
 
@@ -605,6 +611,7 @@ class HomeState extends ChangeNotifier
             state: toJson(),
           );
         }
+
         return RouteInformation(
           location: RouterName.myArticleCollections.location,
           state: toJson(),
@@ -625,6 +632,7 @@ class HomeState extends ChangeNotifier
             state: toJson(),
           );
         }
+
         return RouteInformation(
           location: RouterName.myWebsiteCollections.location,
           state: toJson(),

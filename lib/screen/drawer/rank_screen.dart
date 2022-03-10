@@ -1,4 +1,4 @@
-part of 'drawer.dart';
+part of 'home_drawer.dart';
 
 const double _kCurrentUserRankTileHeight = 56.0;
 

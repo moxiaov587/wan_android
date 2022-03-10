@@ -1,11 +1,5 @@
 part of 'provider.dart';
 
-enum RefreshControllerStatus {
-  completed,
-  failed,
-  noData,
-}
-
 abstract class BaseRefreshListViewNotifier<T>
     extends StateNotifier<RefreshListViewState<T>> {
   BaseRefreshListViewNotifier(
@@ -40,11 +34,9 @@ abstract class BaseRefreshListViewNotifier<T>
         list: data.list,
       );
 
-      if (data.isLastPage) {
-        return RefreshControllerStatus.noData;
-      } else {
-        return RefreshControllerStatus.completed;
-      }
+      return data.isLastPage
+          ? RefreshControllerStatus.noData
+          : RefreshControllerStatus.completed;
     } catch (e, s) {
       onError(e, s);
 
@@ -84,11 +76,9 @@ abstract class BaseRefreshListViewNotifier<T>
             ],
           );
 
-          if (data.isLastPage) {
-            return RefreshControllerStatus.noData;
-          } else {
-            return RefreshControllerStatus.completed;
-          }
+          return data.isLastPage
+              ? RefreshControllerStatus.noData
+              : RefreshControllerStatus.completed;
         } catch (e) {
           return RefreshControllerStatus.failed;
         }
@@ -121,4 +111,10 @@ abstract class BaseRefreshListViewNotifier<T>
       detail: detail,
     );
   }
+}
+
+enum RefreshControllerStatus {
+  completed,
+  failed,
+  noData,
 }

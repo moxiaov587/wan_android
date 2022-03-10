@@ -1,4 +1,4 @@
-part of 'my_collections.dart';
+part of 'my_collections_screen.dart';
 
 class HandleCollectedBottomSheet extends ConsumerStatefulWidget {
   const HandleCollectedBottomSheet({
@@ -53,6 +53,7 @@ class _HandleCollectedBottomSheetState
       _authorFocusNode = FocusNode();
     }
 
+    // ignore: prefer-async-await
     ref.read(provider.notifier).initData().then((_) {
       ref.read(provider).whenOrNull((CollectedCommonModel? collect) {
         if (collect != null) {
@@ -93,35 +94,31 @@ class _HandleCollectedBottomSheetState
       bool result = false;
       switch (widget.type) {
         case CollectionType.article:
-          if (isEdit) {
-            result = await ref.read(myCollectedArticleProvider.notifier).update(
-                  collectId: collectId!,
-                  title: _titleTextEditingController.text,
-                  author: _authorTextEditingController.text,
-                  link: _linkTextEditingController.text,
-                );
-          } else {
-            result = await ref.read(myCollectedArticleProvider.notifier).add(
-                  title: _titleTextEditingController.text,
-                  author: _authorTextEditingController.text,
-                  link: _linkTextEditingController.text,
-                );
-          }
+          result = isEdit
+              ? await ref.read(myCollectedArticleProvider.notifier).update(
+                    collectId: collectId!,
+                    title: _titleTextEditingController.text,
+                    author: _authorTextEditingController.text,
+                    link: _linkTextEditingController.text,
+                  )
+              : await ref.read(myCollectedArticleProvider.notifier).add(
+                    title: _titleTextEditingController.text,
+                    author: _authorTextEditingController.text,
+                    link: _linkTextEditingController.text,
+                  );
           break;
         case CollectionType.website:
-          if (isEdit) {
-            result = await ref.read(myCollectedWebsiteProvider.notifier).update(
-                  collectId: collectId!,
-                  title: _titleTextEditingController.text,
-                  link: _linkTextEditingController.text,
-                );
-          } else {
-            result = await ref.read(myCollectedWebsiteProvider.notifier).add(
-                      title: _titleTextEditingController.text,
-                      link: _linkTextEditingController.text,
-                    ) !=
-                null;
-          }
+          result = isEdit
+              ? await ref.read(myCollectedWebsiteProvider.notifier).update(
+                    collectId: collectId!,
+                    title: _titleTextEditingController.text,
+                    link: _linkTextEditingController.text,
+                  )
+              : await ref.read(myCollectedWebsiteProvider.notifier).add(
+                        title: _titleTextEditingController.text,
+                        link: _linkTextEditingController.text,
+                      ) !=
+                  null;
           break;
       }
 
@@ -148,7 +145,8 @@ class _HandleCollectedBottomSheetState
                           TextButton(
                             style: ButtonStyle(
                               textStyle: MaterialStateProperty.all(
-                                  currentTheme.textTheme.titleMedium),
+                                currentTheme.textTheme.titleMedium,
+                              ),
                             ),
                             onPressed: () {
                               Navigator.of(context).maybePop();
@@ -203,6 +201,7 @@ class _HandleCollectedBottomSheetState
                                 if (value == null || value.isEmpty) {
                                   return S.of(context).titleEmptyTips;
                                 }
+
                                 return null;
                               },
                               onEditingComplete: () {
@@ -228,6 +227,7 @@ class _HandleCollectedBottomSheetState
                                   if (value == null || value.isEmpty) {
                                     return S.of(context).authorEmptyTips;
                                   }
+
                                   return null;
                                 },
                                 onEditingComplete: () {
@@ -249,13 +249,12 @@ class _HandleCollectedBottomSheetState
                                 if (value.strictValue == null) {
                                   return S.of(context).linkEmptyTips;
                                 }
-                                if (RegExp(
-                                        r'^(((ht|f)tps?):\/\/)?[\w-]+(\.[\w-]+)+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$')
-                                    .hasMatch(value!)) {
-                                  return null;
-                                } else {
-                                  return S.of(context).linkFormatTips;
-                                }
+
+                                return RegExp(
+                                  r'^(((ht|f)tps?):\/\/)?[\w-]+(\.[\w-]+)+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$',
+                                ).hasMatch(value!)
+                                    ? null
+                                    : S.of(context).linkFormatTips;
                               },
                               onEditingComplete: () {
                                 _linkFocusNode.unfocus();

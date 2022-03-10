@@ -2,13 +2,13 @@ part of 'they_provider.dart';
 
 final AutoDisposeStateNotifierProviderFamily<TheyShareNotifier,
         RefreshListViewState<ArticleModel>, int> theyShareProvider =
-    StateNotifierProvider.family.autoDispose<
-        TheyShareNotifier,
-        RefreshListViewState<ArticleModel>,
-        int>((AutoDisposeStateNotifierProviderRef<TheyShareNotifier,
-                RefreshListViewState<ArticleModel>>
-            ref,
-        int userId) {
+    StateNotifierProvider.family.autoDispose<TheyShareNotifier,
+        RefreshListViewState<ArticleModel>, int>((
+  AutoDisposeStateNotifierProviderRef<TheyShareNotifier,
+          RefreshListViewState<ArticleModel>>
+      ref,
+  int userId,
+) {
   final CancelToken cancelToken = CancelToken();
 
   ref.onDispose(() {
@@ -36,8 +36,10 @@ class TheyShareNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
   UserPointsModel? get userPoints => _userPoints;
 
   @override
-  Future<RefreshListViewStateData<ArticleModel>> loadData(
-      {required int pageNum, required int pageSize}) async {
+  Future<RefreshListViewStateData<ArticleModel>> loadData({
+    required int pageNum,
+    required int pageSize,
+  }) async {
     final TheyShareModel userShareArticleModel =
         await WanAndroidAPI.fetchShareArticlesByUserId(
       pageNum,

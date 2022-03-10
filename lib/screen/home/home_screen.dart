@@ -12,27 +12,28 @@ import '../../../app/provider/widget/provider_widget.dart';
 import '../../../database/hive_boxes.dart';
 import '../../../widget/view_state_widget.dart';
 import '../../app/l10n/generated/l10n.dart';
-import '../../app/theme/theme.dart';
+import '../../app/theme/app_theme.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
 import '../../database/model/models.dart' show SearchHistory;
 import '../../model/models.dart';
+import '../../navigator/app_router_delegate.dart';
 import '../../navigator/route_name.dart';
-import '../../navigator/router_delegate.dart';
-import '../../utils/dialog.dart';
-import '../../utils/html_parse.dart';
+import '../../utils/dialog_utils.dart';
+import '../../utils/html_parse_utils.dart';
 import '../../widget/article.dart';
 import '../../widget/capsule_ink.dart';
 import '../../widget/custom_bottom_navigation_bar.dart';
 import '../../widget/custom_search_delegate.dart';
 import '../../widget/custom_sliver_child_builder_delegate.dart';
 import '../../widget/gap.dart';
-import '../drawer/drawer.dart';
+import '../drawer/home_drawer.dart';
 import 'provider/home_provider.dart';
 
 part 'project.dart';
-part 'question.dart';
-part 'search.dart';
+part 'project_type_bottom_sheet.dart';
+part 'qa.dart';
+part 'home_search_delegate.dart';
 part 'square.dart';
 
 const String kSearchOriginParams = 'origin';
@@ -84,7 +85,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     Future<void>.delayed(Duration.zero, () {
       if (RouterName.homeDrawerPath.contains(
-          context.currentBeamLocation.state.routeInformation.location)) {
+        context.currentBeamLocation.state.routeInformation.location,
+      )) {
         Instances.scaffoldStateKey.currentState?.openDrawer();
       }
     });
@@ -206,6 +208,7 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
             _showAppBar.value) {
           _showAppBar.value = false;
         }
+
         return false;
       },
       child: RefreshListViewWidget<
@@ -270,8 +273,11 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
                           height: _kExpandedHeight,
                           child: LoadingWidget(),
                         ),
-                        error: (int? statusCode, String? message,
-                                String? detail) =>
+                        error: (
+                          int? statusCode,
+                          String? message,
+                          String? detail,
+                        ) =>
                             SizedBox(
                           height: _kExpandedHeight,
                           child: Ink(
@@ -294,7 +300,8 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
                                     size: GapSize.big,
                                   ),
                                   Text(
-                                      '${message ?? detail ?? S.of(context).unknownError}(${statusCode ?? -1})'),
+                                    '${message ?? detail ?? S.of(context).unknownError}(${statusCode ?? -1})',
+                                  ),
                                   Gap(),
                                   Text(S.of(context).tapToRetry),
                                 ],
@@ -367,8 +374,8 @@ class __BannerCarouselItemState extends State<_BannerCarouselItem> {
                 alignment: Alignment.centerRight,
                 width: MediaQuery.of(context).size.width,
                 height: 50.0,
-                color: colors.first?.withOpacity(.2) ??
-                    currentTheme.backgroundColor.withOpacity(.2),
+                color: colors.first?.withOpacity(0.2) ??
+                    currentTheme.backgroundColor.withOpacity(0.2),
                 child: DefaultTextStyle(
                   style: currentTheme.textTheme.titleMedium!.copyWith(
                     color: colors.last,

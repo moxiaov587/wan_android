@@ -45,6 +45,7 @@ class LogUtils {
     _printLog(message, '$tag 💠', stackTrace);
   }
 
+  // ignore: long-parameter-list
   static void _printLog(
     dynamic message,
     String? tag,

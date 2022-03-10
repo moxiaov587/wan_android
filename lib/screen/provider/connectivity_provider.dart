@@ -5,14 +5,15 @@ import 'package:riverpod/riverpod.dart';
 import '../../app/l10n/generated/l10n.dart';
 import '../../app/provider/provider.dart';
 import '../../app/provider/view_state.dart';
-import '../../utils/dialog.dart';
+import '../../utils/dialog_utils.dart';
 
 final StateNotifierProvider<ConnectivityNotifier, ViewState<ConnectivityResult>>
     connectivityProvider =
     StateNotifierProvider<ConnectivityNotifier, ViewState<ConnectivityResult>>(
-        (_) {
-  return ConnectivityNotifier();
-});
+  (_) {
+    return ConnectivityNotifier();
+  },
+);
 
 class ConnectivityNotifier extends BaseViewNotifier<ConnectivityResult> {
   ConnectivityNotifier() : super(const ViewState<ConnectivityResult>.loading());
@@ -24,7 +25,8 @@ class ConnectivityNotifier extends BaseViewNotifier<ConnectivityResult> {
 
   bool get isDisconnected =>
       state.whenOrNull(
-          (ConnectivityResult? result) => result == ConnectivityResult.none) ??
+        (ConnectivityResult? result) => result == ConnectivityResult.none,
+      ) ??
       false;
 
   @override

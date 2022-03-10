@@ -115,7 +115,10 @@ abstract class CustomSearchDelegate<T> {
     assert(query != null);
     _queryTextController.text = value;
     _queryTextController.selection = TextSelection.fromPosition(
-        TextPosition(offset: _queryTextController.text.length));
+      TextPosition(
+        offset: _queryTextController.text.length,
+      ),
+    );
   }
 
   /// Transition from the suggestions returned by [buildSuggestions] to the

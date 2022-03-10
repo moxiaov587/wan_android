@@ -1,49 +1,24 @@
-part of 'theme.dart';
+part of 'app_theme.dart';
 
-class ArcoColor extends ColorSwatch<int> {
-  const ArcoColor(int primary, Map<int, Color> swatch) : super(primary, swatch);
-
-  Color get shade1 => this[1]!;
-
-  Color get shade2 => this[2]!;
-
-  Color get shade3 => this[3]!;
-
-  Color get shade4 => this[4]!;
-
-  Color get shade5 => this[5]!;
-
-  /// default
-  Color get shade6 => this[6]!;
-
-  Color get shade7 => this[7]!;
-
-  Color get shade8 => this[8]!;
-
-  Color get shade9 => this[9]!;
-
-  Color get shade10 => this[10]!;
-}
-
-class AppColor {
-  AppColor._();
+class AppColors {
+  AppColors._();
 
   static const Color white = Color(0xffffffff);
-  static Color whiteDark = white.withOpacity(.9);
+  static final Color whiteDark = white.withOpacity(0.9);
 
   static const Color black = Color(0xff000000);
   static const Color blackDark = Color(0xff000000);
 
-  static Color maskBackground = gray.shade10.withOpacity(.6);
-  static Color maskBackgroundDark = grayDark.shade1.withOpacity(.6);
+  static final Color maskBackground = gray.shade10.withOpacity(0.6);
+  static final Color maskBackgroundDark = grayDark.shade1.withOpacity(0.6);
 
   static const Color menuBackground = white;
   static const Color menuBackgroundDark = background2Dark;
 
-  static Color tooltipBackground = gray.shade10;
+  static final Color tooltipBackground = gray.shade10;
   static const Color tooltipBackgroundDark = background5Dark;
 
-  static Color border = gray.shade3;
+  static final Color border = gray.shade3;
   static const Color borderDark = Color(0xff333335);
 
   static const Color background1 = white;
@@ -53,52 +28,52 @@ class AppColor {
   static const Color background5 = white;
   static const Color backgroundWhite = white;
 
-  static Color background1Dark = grayDark.shade1;
+  static final Color background1Dark = grayDark.shade1;
   static const Color background2Dark = Color(0xff232324);
   static const Color background3Dark = Color(0xff2a2a2b);
   static const Color background4Dark = Color(0xff313132);
   static const Color background5Dark = Color(0xff373739);
   static const Color backgroundWhiteDark = Color(0xfff6f6f6);
 
-  static Color text1 = gray.shade10;
-  static Color text2 = gray.shade8;
-  static Color text3 = gray.shade6;
-  static Color text4 = gray.shade4;
+  static final Color text1 = gray.shade10;
+  static final Color text2 = gray.shade8;
+  static final Color text3 = gray.shade6;
+  static final Color text4 = gray.shade4;
 
-  static Color text1Dark = white.withOpacity(.9);
-  static Color text2Dark = white.withOpacity(.7);
-  static Color text3Dark = white.withOpacity(.5);
-  static Color text4Dark = white.withOpacity(.3);
+  static final Color text1Dark = white.withOpacity(0.9);
+  static final Color text2Dark = white.withOpacity(0.7);
+  static final Color text3Dark = white.withOpacity(0.5);
+  static final Color text4Dark = white.withOpacity(0.3);
 
-  static Color fill1 = gray.shade1;
-  static Color fill2 = gray.shade2;
-  static Color fill3 = gray.shade3;
-  static Color fill4 = gray.shade4;
+  static final Color fill1 = gray.shade1;
+  static final Color fill2 = gray.shade2;
+  static final Color fill3 = gray.shade3;
+  static final Color fill4 = gray.shade4;
 
-  static Color fill1Dark = white.withOpacity(.04);
-  static Color fill2Dark = white.withOpacity(.08);
-  static Color fill3Dark = white.withOpacity(.12);
-  static Color fill4Dark = white.withOpacity(.16);
+  static final Color fill1Dark = white.withOpacity(0.04);
+  static final Color fill2Dark = white.withOpacity(0.08);
+  static final Color fill3Dark = white.withOpacity(0.12);
+  static final Color fill4Dark = white.withOpacity(0.16);
 
-  static Color primaryLight1 = arcoBlue.shade1;
-  static Color primaryLight2 = arcoBlue.shade2;
-  static Color primaryLight3 = arcoBlue.shade3;
-  static Color primaryLight4 = arcoBlue.shade4;
+  static final Color primaryLight1 = arcoBlue.shade1;
+  static final Color primaryLight2 = arcoBlue.shade2;
+  static final Color primaryLight3 = arcoBlue.shade3;
+  static final Color primaryLight4 = arcoBlue.shade4;
 
-  static Color primaryLight1Dark = arcoBlueDark.shade6.withOpacity(.2);
-  static Color primaryLight2Dark = arcoBlueDark.shade6.withOpacity(.35);
-  static Color primaryLight3Dark = arcoBlueDark.shade6.withOpacity(.5);
-  static Color primaryLight4Dark = arcoBlueDark.shade6.withOpacity(.65);
+  static final Color primaryLight1Dark = arcoBlueDark.shade6.withOpacity(0.2);
+  static final Color primaryLight2Dark = arcoBlueDark.shade6.withOpacity(0.35);
+  static final Color primaryLight3Dark = arcoBlueDark.shade6.withOpacity(0.5);
+  static final Color primaryLight4Dark = arcoBlueDark.shade6.withOpacity(0.65);
 
-  static Color secondary = gray.shade2;
-  static Color secondaryHover = gray.shade3;
-  static Color secondaryActive = gray.shade4;
-  static Color secondaryDisabled = gray.shade1;
+  static final Color secondary = gray.shade2;
+  static final Color secondaryHover = gray.shade3;
+  static final Color secondaryActive = gray.shade4;
+  static final Color secondaryDisabled = gray.shade1;
 
-  static Color secondaryDark = grayDark.shade9.withOpacity(.08);
-  static Color secondaryHoverDark = grayDark.shade8.withOpacity(.16);
-  static Color secondaryActiveDark = grayDark.shade7.withOpacity(.24);
-  static Color secondaryDisabledDark = grayDark.shade9.withOpacity(.09);
+  static final Color secondaryDark = grayDark.shade9.withOpacity(0.08);
+  static final Color secondaryHoverDark = grayDark.shade8.withOpacity(0.16);
+  static final Color secondaryActiveDark = grayDark.shade7.withOpacity(0.24);
+  static final Color secondaryDisabledDark = grayDark.shade9.withOpacity(0.09);
 
   static const ArcoColor primary = arcoBlue;
   static const ArcoColor success = green;
@@ -110,8 +85,8 @@ class AppColor {
   static const ArcoColor waringDark = orangeDark;
   static const ArcoColor errorDark = redDark;
 
-  static Color splash = gray.shade4.withAlpha(50);
-  static Color splashDark = gray.shade7.withAlpha(50);
+  static final Color splash = gray.shade4.withAlpha(50);
+  static final Color splashDark = gray.shade7.withAlpha(50);
 
   static const Color appBar = Color(0xfff2f3f6);
   static const Color appBarDark = background4Dark;
@@ -526,4 +501,29 @@ class AppColor {
     10: Color(0xfff6f6f6),
   });
   static const int _grayDarkPrimaryValue = 0xff929293;
+}
+
+class ArcoColor extends ColorSwatch<int> {
+  const ArcoColor(int primary, Map<int, Color> swatch) : super(primary, swatch);
+
+  Color get shade1 => this[1]!;
+
+  Color get shade2 => this[2]!;
+
+  Color get shade3 => this[3]!;
+
+  Color get shade4 => this[4]!;
+
+  Color get shade5 => this[5]!;
+
+  /// default
+  Color get shade6 => this[6]!;
+
+  Color get shade7 => this[7]!;
+
+  Color get shade8 => this[8]!;
+
+  Color get shade9 => this[9]!;
+
+  Color get shade10 => this[10]!;
 }

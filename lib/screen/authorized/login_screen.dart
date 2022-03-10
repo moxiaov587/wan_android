@@ -6,12 +6,12 @@ import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
 import '../../database/hive_boxes.dart';
 import '../../database/model/models.dart';
-import '../../navigator/router_delegate.dart';
+import '../../navigator/app_router_delegate.dart';
 import '../../screen/authorized/provider/authorized_provider.dart';
 import '../../widget/custom_text_form_field.dart';
 import '../../widget/gap.dart';
 
-part 'register.dart';
+part 'register_screen.dart';
 
 const EdgeInsets _kBodyPadding = EdgeInsets.fromLTRB(32.0, 40.0, 32.0, 0.0);
 
@@ -127,6 +127,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                           if (value == null || value.isEmpty) {
                             return S.of(context).usernameEmptyTips;
                           }
+
                           return null;
                         },
                         decoration: InputDecoration(
@@ -151,6 +152,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                             if (value == null || value.isEmpty) {
                               return S.of(context).passwordEmptyTips;
                             }
+
                             return null;
                           },
                           decoration: InputDecoration(
@@ -213,9 +215,11 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                               isRegister: true,
                             );
                           },
-                          child: Text(S.of(context).register),
+                          child: Text(
+                            S.of(context).register,
+                          ),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),

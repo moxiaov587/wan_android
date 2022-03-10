@@ -33,8 +33,10 @@ class MyShareArticlesNotifier
   final CancelToken? cancelToken;
 
   @override
-  Future<RefreshListViewStateData<ArticleModel>> loadData(
-      {required int pageNum, required int pageSize}) async {
+  Future<RefreshListViewStateData<ArticleModel>> loadData({
+    required int pageNum,
+    required int pageSize,
+  }) async {
     return (await WanAndroidAPI.fetchShareArticles(
       pageNum,
       pageSize,

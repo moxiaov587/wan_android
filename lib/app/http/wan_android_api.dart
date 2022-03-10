@@ -11,7 +11,7 @@ class WanAndroidAPI {
   static Future<List<BannerModel>> fetchHomeBanners({
     CancelToken? cancelToken,
   }) async {
-    final Response<List<dynamic>> response = await HttpUtils.get(
+    final Response<List<dynamic>> response = await Http.get(
       API.banner,
       cancelToken: cancelToken,
     );
@@ -27,7 +27,7 @@ class WanAndroidAPI {
     CancelToken? cancelToken,
   }) async {
     final Response<Map<String, dynamic>> response =
-        await HttpUtils.get<Map<String, dynamic>>(
+        await Http.get<Map<String, dynamic>>(
       API.article(
         pageNum: pageNum,
       ),
@@ -47,13 +47,14 @@ class WanAndroidAPI {
     CancelToken? cancelToken,
   }) async {
     final Response<Map<String, dynamic>> response =
-        await HttpUtils.get<Map<String, dynamic>>(
+        await Http.get<Map<String, dynamic>>(
       API.square(
         pageNum: pageNum,
       ),
       queryParameters: <String, dynamic>{'page_size': pageSize},
       cancelToken: cancelToken,
     );
+
     return ModelToRefreshListData<ArticleModel>.fromJson(
       json: response.data!,
       formJson: ArticleModel.fromJson,
@@ -66,7 +67,7 @@ class WanAndroidAPI {
     CancelToken? cancelToken,
   }) async {
     final Response<Map<String, dynamic>> response =
-        await HttpUtils.get<Map<String, dynamic>>(
+        await Http.get<Map<String, dynamic>>(
       API.qa(
         pageNum: pageNum,
       ),
@@ -83,14 +84,15 @@ class WanAndroidAPI {
   static Future<List<ProjectTypeModel>> fetchProjectTypes({
     CancelToken? cancelToken,
   }) async {
-    final Response<List<dynamic>> response = await HttpUtils.get<List<dynamic>>(
+    final Response<List<dynamic>> response = await Http.get<List<dynamic>>(
       API.projectType,
       cancelToken: cancelToken,
     );
 
     return response.data!
         .map(
-            (dynamic e) => ProjectTypeModel.fromJson(e as Map<String, dynamic>))
+          (dynamic e) => ProjectTypeModel.fromJson(e as Map<String, dynamic>),
+        )
         .toList();
   }
 
@@ -101,7 +103,7 @@ class WanAndroidAPI {
     CancelToken? cancelToken,
   }) async {
     final Response<Map<String, dynamic>> response =
-        await HttpUtils.get<Map<String, dynamic>>(
+        await Http.get<Map<String, dynamic>>(
       API.project(
         pageNum: pageNum,
         categoryId: categoryId,
@@ -123,7 +125,7 @@ class WanAndroidAPI {
     CancelToken? cancelToken,
   }) async {
     final Response<Map<String, dynamic>> response =
-        await HttpUtils.post<Map<String, dynamic>>(
+        await Http.post<Map<String, dynamic>>(
       API.search(pageNum: pageNum),
       queryParameters: <String, dynamic>{
         'page_size': pageSize,
@@ -141,7 +143,7 @@ class WanAndroidAPI {
   static Future<List<SearchKeywordModel>> fetchSearchPopularKeywords({
     CancelToken? cancelToken,
   }) async {
-    final Response<List<dynamic>> response = await HttpUtils.get(
+    final Response<List<dynamic>> response = await Http.get(
       API.searchPopularKeywords,
       cancelToken: cancelToken,
       needCache: true,
@@ -159,7 +161,7 @@ class WanAndroidAPI {
     CancelToken? cancelToken,
   }) async {
     final Response<Map<String, dynamic>> response =
-        await HttpUtils.post<Map<String, dynamic>>(
+        await Http.post<Map<String, dynamic>>(
       API.login,
       queryParameters: <String, dynamic>{
         'username': username,
@@ -178,7 +180,7 @@ class WanAndroidAPI {
     CancelToken? cancelToken,
   }) async {
     final Response<Map<String, dynamic>> response =
-        await HttpUtils.post<Map<String, dynamic>>(
+        await Http.post<Map<String, dynamic>>(
       API.register,
       queryParameters: <String, dynamic>{
         'username': username,
@@ -192,14 +194,14 @@ class WanAndroidAPI {
   }
 
   static Future<void> logout() async {
-    await HttpUtils.get<dynamic>(API.logout);
+    await Http.get<dynamic>(API.logout);
   }
 
   static Future<UserInfoModel> fetchUserInfo({
     CancelToken? cancelToken,
   }) async {
     final Response<Map<String, dynamic>> response =
-        await HttpUtils.post<Map<String, dynamic>>(
+        await Http.post<Map<String, dynamic>>(
       API.userInfo,
       cancelToken: cancelToken,
     );
@@ -212,12 +214,13 @@ class WanAndroidAPI {
     CancelToken? cancelToken,
   }) async {
     final Response<Map<String, dynamic>> response =
-        await HttpUtils.get<Map<String, dynamic>>(
+        await Http.get<Map<String, dynamic>>(
       API.pointsRank(
         pageNum: pageNum,
       ),
       cancelToken: cancelToken,
     );
+
     return ModelToRefreshListData<UserPointsModel>.fromJson(
       json: response.data!,
       formJson: UserPointsModel.fromJson,
@@ -230,7 +233,7 @@ class WanAndroidAPI {
     CancelToken? cancelToken,
   }) async {
     final Response<Map<String, dynamic>> response =
-        await HttpUtils.get<Map<String, dynamic>>(
+        await Http.get<Map<String, dynamic>>(
       API.userPointsRecord(
         pageNum: pageNum,
       ),
@@ -251,7 +254,7 @@ class WanAndroidAPI {
     CancelToken? cancelToken,
   }) async {
     final Response<Map<String, dynamic>> response =
-        await HttpUtils.get<Map<String, dynamic>>(
+        await Http.get<Map<String, dynamic>>(
       API.collectedArticles(
         pageNum: pageNum,
       ),
@@ -271,7 +274,7 @@ class WanAndroidAPI {
     required String link,
   }) async {
     final Response<Map<String, dynamic>> response =
-        await HttpUtils.post<Map<String, dynamic>>(
+        await Http.post<Map<String, dynamic>>(
       API.addCollectedArticle,
       queryParameters: <String, dynamic>{
         'title': title,
@@ -293,7 +296,7 @@ class WanAndroidAPI {
     required String author,
     required String link,
   }) async {
-    await HttpUtils.post<dynamic>(
+    await Http.post<dynamic>(
       API.updateCollectedArticle(collectId: id),
       queryParameters: <String, dynamic>{
         'title': title,
@@ -306,22 +309,24 @@ class WanAndroidAPI {
   static Future<void> addCollectedArticleByArticleId({
     required int articleId,
   }) async {
-    await HttpUtils.post<dynamic>(
-        API.addCollectedArticleByArticleId(articleId: articleId));
+    await Http.post<dynamic>(
+      API.addCollectedArticleByArticleId(articleId: articleId),
+    );
   }
 
   static Future<void> deleteCollectedArticleByArticleId({
     required int articleId,
   }) async {
-    await HttpUtils.post<dynamic>(
-        API.deleteCollectedArticleByArticleId(articleId: articleId));
+    await Http.post<dynamic>(
+      API.deleteCollectedArticleByArticleId(articleId: articleId),
+    );
   }
 
   static Future<void> deleteCollectedArticleByCollectId({
     required int collectId,
     int? articleId,
   }) async {
-    await HttpUtils.post<dynamic>(
+    await Http.post<dynamic>(
       API.deleteCollectedArticleByCollectId(collectId: collectId),
       queryParameters: <String, dynamic>{
         'originId': articleId ?? -1,
@@ -332,7 +337,7 @@ class WanAndroidAPI {
   static Future<List<CollectedWebsiteModel>> fetchCollectedWebsites({
     CancelToken? cancelToken,
   }) async {
-    final Response<List<dynamic>> response = await HttpUtils.get<List<dynamic>>(
+    final Response<List<dynamic>> response = await Http.get<List<dynamic>>(
       API.collectedWebsites,
       cancelToken: cancelToken,
     );
@@ -348,7 +353,7 @@ class WanAndroidAPI {
     required String link,
   }) async {
     final Response<Map<String, dynamic>> response =
-        await HttpUtils.post<Map<String, dynamic>>(
+        await Http.post<Map<String, dynamic>>(
       API.addCollectedWebsite,
       queryParameters: <String, dynamic>{
         'name': title,
@@ -368,7 +373,7 @@ class WanAndroidAPI {
     required String title,
     required String link,
   }) async {
-    await HttpUtils.post<dynamic>(
+    await Http.post<dynamic>(
       API.updateCollectedWebsite,
       queryParameters: <String, dynamic>{
         'id': id,
@@ -381,7 +386,7 @@ class WanAndroidAPI {
   static Future<void> deleteCollectedWebsite({
     required int id,
   }) async {
-    await HttpUtils.post<dynamic>(
+    await Http.post<dynamic>(
       API.deleteCollectedWebsite,
       queryParameters: <String, dynamic>{
         'id': id,
@@ -396,7 +401,7 @@ class WanAndroidAPI {
     CancelToken? cancelToken,
   }) async {
     final Response<Map<String, dynamic>> response =
-        await HttpUtils.get<Map<String, dynamic>>(
+        await Http.get<Map<String, dynamic>>(
       API.shareArticleByUserId(userId: userId, pageNum: pageNum),
       queryParameters: <String, dynamic>{'page_size': pageSize},
       cancelToken: cancelToken,
@@ -410,7 +415,7 @@ class WanAndroidAPI {
     int pageSize, {
     CancelToken? cancelToken,
   }) async {
-    final Response<dynamic> response = await HttpUtils.get<dynamic>(
+    final Response<dynamic> response = await Http.get<dynamic>(
       API.shareArticle(pageNum: pageNum),
       queryParameters: <String, dynamic>{'page_size': pageSize},
       cancelToken: cancelToken,
@@ -423,7 +428,7 @@ class WanAndroidAPI {
     required String title,
     required String link,
   }) async {
-    await HttpUtils.post<Map<String, dynamic>>(
+    await Http.post<Map<String, dynamic>>(
       API.addShareArticle,
       queryParameters: <String, dynamic>{
         'title': title,
@@ -433,7 +438,7 @@ class WanAndroidAPI {
   }
 
   static Future<void> deleteShareArticle({required int articleId}) async {
-    await HttpUtils.post<dynamic>(
+    await Http.post<dynamic>(
       API.deleteShareArticle(articleId: articleId),
     );
   }
@@ -445,7 +450,7 @@ class WanAndroidAPI {
     CancelToken? cancelToken,
   }) async {
     final Response<Map<String, dynamic>> response =
-        await HttpUtils.get<Map<String, dynamic>>(
+        await Http.get<Map<String, dynamic>>(
       API.articleByAuthor(
         author: author,
         pageNum: pageNum,

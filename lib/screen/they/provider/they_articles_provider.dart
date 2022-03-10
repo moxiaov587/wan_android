@@ -2,13 +2,13 @@ part of 'they_provider.dart';
 
 final AutoDisposeStateNotifierProviderFamily<TheyArticlesNotifier,
         RefreshListViewState<ArticleModel>, String> theyArticlesProvider =
-    StateNotifierProvider.family.autoDispose<
-        TheyArticlesNotifier,
-        RefreshListViewState<ArticleModel>,
-        String>((AutoDisposeStateNotifierProviderRef<TheyArticlesNotifier,
-                RefreshListViewState<ArticleModel>>
-            ref,
-        String author) {
+    StateNotifierProvider.family.autoDispose<TheyArticlesNotifier,
+        RefreshListViewState<ArticleModel>, String>((
+  AutoDisposeStateNotifierProviderRef<TheyArticlesNotifier,
+          RefreshListViewState<ArticleModel>>
+      ref,
+  String author,
+) {
   final CancelToken cancelToken = CancelToken();
 
   ref.onDispose(() {
@@ -33,8 +33,10 @@ class TheyArticlesNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
   final CancelToken? cancelToken;
 
   @override
-  Future<RefreshListViewStateData<ArticleModel>> loadData(
-      {required int pageNum, required int pageSize}) async {
+  Future<RefreshListViewStateData<ArticleModel>> loadData({
+    required int pageNum,
+    required int pageSize,
+  }) async {
     return (await WanAndroidAPI.fetchArticlesByAuthor(
       pageNum,
       pageSize,

@@ -1,4 +1,4 @@
-part of 'my_collections.dart';
+part of 'my_collections_screen.dart';
 
 class _Website extends StatefulWidget {
   const _Website({Key? key}) : super(key: key);
@@ -15,6 +15,7 @@ class __WebsiteState extends State<_Website>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
     return AutoDisposeListViewWidget<
         AutoDisposeStateNotifierProvider<MyCollectedWebsiteNotifier,
             ListViewState<CollectedWebsiteModel>>,
@@ -65,11 +66,11 @@ class _CollectedWebsiteTile extends ConsumerWidget {
         ? Slidable(
             key: key,
             endActionPane: ActionPane(
-              extentRatio: .25,
+              extentRatio: 0.25,
               motion: const ScrollMotion(),
               dismissible: DismissiblePane(
                 closeOnCancel: true,
-                dismissThreshold: .65,
+                dismissThreshold: 0.65,
                 dismissalDuration: const Duration(milliseconds: 500),
                 onDismissed: () {
                   ref.read(myCollectedWebsiteProvider.notifier).switchCollect(
@@ -85,8 +86,8 @@ class _CollectedWebsiteTile extends ConsumerWidget {
               ),
               children: <Widget>[
                 DismissibleSlidableAction(
-                  slidableExtentRatio: .25,
-                  dismissiblePaneThreshold: .65,
+                  slidableExtentRatio: 0.25,
+                  dismissiblePaneThreshold: 0.65,
                   label: S.of(context).edit,
                   onTap: () {
                     AppRouterDelegate.instance.currentBeamState.updateWith(

@@ -2,9 +2,9 @@ import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../contacts/instances.dart';
-import '../navigator/router_delegate.dart';
+import '../navigator/app_router_delegate.dart';
 import 'authorized/provider/authorized_provider.dart';
-import 'splash_provider.dart';
+import 'provider/splash_provider.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   @Deprecated('Use [flutter_native_splash] in place of this')

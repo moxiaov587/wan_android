@@ -1,4 +1,4 @@
-part of 'my_share.dart';
+part of 'my_share_screen.dart';
 
 class HandleSharedBottomSheet extends ConsumerStatefulWidget {
   const HandleSharedBottomSheet({
@@ -71,7 +71,8 @@ class _HandleSharedBottomSheetState
                     TextButton(
                       style: ButtonStyle(
                         textStyle: MaterialStateProperty.all(
-                            currentTheme.textTheme.titleMedium),
+                          currentTheme.textTheme.titleMedium,
+                        ),
                       ),
                       onPressed: () {
                         Navigator.of(context).maybePop();
@@ -81,7 +82,8 @@ class _HandleSharedBottomSheetState
                     TextButton(
                       style: ButtonStyle(
                         textStyle: MaterialStateProperty.all(
-                            currentTheme.textTheme.titleMedium!.semiBoldWeight),
+                          currentTheme.textTheme.titleMedium!.semiBoldWeight,
+                        ),
                       ),
                       onPressed: () {
                         onSubmitted();
@@ -115,6 +117,7 @@ class _HandleSharedBottomSheetState
                           if (value == null || value.isEmpty) {
                             return S.of(context).titleEmptyTips;
                           }
+
                           return null;
                         },
                         onEditingComplete: () {
@@ -135,13 +138,12 @@ class _HandleSharedBottomSheetState
                           if (value.strictValue == null) {
                             return S.of(context).linkEmptyTips;
                           }
-                          if (RegExp(
-                                  r'^(((ht|f)tps?):\/\/)?[\w-]+(\.[\w-]+)+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$')
-                              .hasMatch(value!)) {
-                            return null;
-                          } else {
-                            return S.of(context).linkFormatTips;
-                          }
+
+                          return RegExp(
+                            r'^(((ht|f)tps?):\/\/)?[\w-]+(\.[\w-]+)+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$',
+                          ).hasMatch(value!)
+                              ? null
+                              : S.of(context).linkFormatTips;
                         },
                         onEditingComplete: () {
                           _linkFocusNode.unfocus();

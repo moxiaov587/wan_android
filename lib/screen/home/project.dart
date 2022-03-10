@@ -1,4 +1,4 @@
-part of 'home.dart';
+part of 'home_screen.dart';
 
 class _Project extends StatefulWidget {
   const _Project({Key? key}) : super(key: key);
@@ -53,8 +53,7 @@ class _ProjectState extends State<_Project> with AutomaticKeepAliveClientMixin {
             },
             slivers: <Widget>[
               SliverPinnedPersistentHeader(
-                delegate:
-                    _ProjectTypeSwitchSliverPinnedPersistentHeaderDelegate(
+                delegate: _ProjectTypeSwitchSliverHeaderDelegate(
                   extentProtoType: const _ProjectTypeSwitchExtentProtoType(),
                 ),
               ),
@@ -72,6 +71,7 @@ class _ProjectTypeSwitchExtentProtoType extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ThemeData theme = Theme.of(context);
+
     return Material(
       color: theme.scaffoldBackgroundColor,
       child: Padding(
@@ -126,9 +126,9 @@ class _ProjectTypeSwitchExtentProtoType extends ConsumerWidget {
   }
 }
 
-class _ProjectTypeSwitchSliverPinnedPersistentHeaderDelegate
+class _ProjectTypeSwitchSliverHeaderDelegate
     extends SliverPinnedPersistentHeaderDelegate {
-  _ProjectTypeSwitchSliverPinnedPersistentHeaderDelegate({
+  _ProjectTypeSwitchSliverHeaderDelegate({
     required Widget extentProtoType,
   }) : super(
           minExtentProtoType: extentProtoType,
@@ -148,75 +148,7 @@ class _ProjectTypeSwitchSliverPinnedPersistentHeaderDelegate
 
   @override
   bool shouldRebuild(
-          covariant SliverPinnedPersistentHeaderDelegate oldDelegate) =>
+    covariant SliverPinnedPersistentHeaderDelegate oldDelegate,
+  ) =>
       false;
-}
-
-class ProjectTypeBottomSheet extends StatelessWidget {
-  const ProjectTypeBottomSheet({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Material(
-        color: currentTheme.cardColor,
-        child: Column(
-          children: <Widget>[
-            ListTile(
-              title: Text(
-                S.of(context).projectType,
-                textAlign: TextAlign.center,
-                style: currentTheme.textTheme.titleLarge,
-              ),
-            ),
-            const Divider(),
-            Expanded(
-              child: ListViewWidget<
-                  StateNotifierProvider<ProjectTypeNotifier,
-                      ListViewState<ProjectTypeModel>>,
-                  ProjectTypeModel>(
-                provider: projectTypesProvider,
-                builder: (_, __, List<ProjectTypeModel> list) {
-                  return SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (_, int index) {
-                        return Consumer(
-                          builder: (_, WidgetRef ref, __) {
-                            final bool selected = ref.watch(
-                                projectTypesProvider.select(
-                                    (ListViewState<ProjectTypeModel> value) =>
-                                        value.whenOrNull(
-                                            (List<ProjectTypeModel> list) =>
-                                                list[index].isSelected) ??
-                                        false));
-
-                            return ListTile(
-                              selected: selected,
-                              title: Text(
-                                HTMLParseUtils.parseArticleTitle(
-                                        title: list[index].name) ??
-                                    S.of(context).unknown,
-                              ),
-                              onTap: () {
-                                ref
-                                    .read(projectTypesProvider.notifier)
-                                    .selected(index);
-
-                                Navigator.of(context).maybePop();
-                              },
-                            );
-                          },
-                        );
-                      },
-                      childCount: list.length,
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

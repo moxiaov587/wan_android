@@ -56,6 +56,7 @@ class _BottomSheetSuspendedCurve extends ParametricCurve<double> {
 
     final double curveProgress = (t - startingPoint) / (1 - startingPoint);
     final double transformed = curve.transform(curveProgress);
+
     return lerpDouble(startingPoint, 1, transformed)!;
   }
 
@@ -109,12 +110,13 @@ class _ModalBottomSheetState<T> extends State<_ModalBottomSheet<T>> {
     }
   }
 
-  void handleDragStart(DragStartDetails details) {
+  void handleDragStart(DragStartDetails _) {
     // Allow the bottom sheet to track the user's finger accurately.
     animationCurve = Curves.linear;
   }
 
-  void handleDragEnd(DragEndDetails details, {bool? isClosing}) {
+  // ignore: avoid-unused-parameters
+  void handleDragEnd(DragEndDetails _, {bool? isClosing}) {
     // Allow the bottom sheet to animate smoothly from its current position.
     animationCurve = _BottomSheetSuspendedCurve(
       widget.route!.animation!.value,
@@ -158,6 +160,7 @@ class _ModalBottomSheetState<T> extends State<_ModalBottomSheet<T>> {
               ? 1.0
               : widget.route!.animation!.value,
         );
+
         return Semantics(
           scopesRoute: true,
           namesRoute: true,
@@ -166,7 +169,9 @@ class _ModalBottomSheetState<T> extends State<_ModalBottomSheet<T>> {
           child: ClipRect(
             child: CustomSingleChildLayout(
               delegate: _ModalBottomSheetLayout(
-                  animationValue, widget.isScrollControlled),
+                animationValue,
+                widget.isScrollControlled,
+              ),
               child: child,
             ),
           ),
@@ -265,12 +270,16 @@ class ModalBottomSheetRoute<T> extends PopupRoute<T> {
     } else {
       _animationController = BottomSheet.createAnimationController(navigator!);
     }
+
     return _animationController!;
   }
 
   @override
-  Widget buildPage(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation) {
+  Widget buildPage(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+  ) {
     // By definition, the bottom sheet is aligned to the bottom of the page
     // and isn't exposed to the top padding of the MediaQuery.
     final Widget bottomSheet = MediaQuery.removePadding(
@@ -280,6 +289,7 @@ class ModalBottomSheetRoute<T> extends PopupRoute<T> {
         builder: (BuildContext context) {
           final BottomSheetThemeData sheetTheme =
               Theme.of(context).bottomSheetTheme;
+
           return _ModalBottomSheet<T>(
             route: this,
             backgroundColor: backgroundColor ??
@@ -296,6 +306,7 @@ class ModalBottomSheetRoute<T> extends PopupRoute<T> {
         },
       ),
     );
+
     return capturedThemes.wrap(bottomSheet);
   }
 }

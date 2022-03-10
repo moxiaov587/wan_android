@@ -1,12 +1,14 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import '../../utils/log.dart';
+import '../../utils/log_utils.dart';
 
-class ErrorInterceptors extends Interceptor {
+class ErrorInterceptor extends Interceptor {
   @override
   void onResponse(
-      Response<dynamic> response, ResponseInterceptorHandler handler) {
+    Response<dynamic> response,
+    ResponseInterceptorHandler handler,
+  ) {
     final ResponseData responseData =
         ResponseData.fromJson(response.data as Map<String, dynamic>);
 
@@ -26,22 +28,22 @@ class ErrorInterceptors extends Interceptor {
         err.response?.statusCode == HttpStatus.seeOther ||
         err.response?.statusCode == HttpStatus.temporaryRedirect) {
       handler.next(err);
-      return;
-    }
-    if (err.response?.statusCode == 401) {
+    } else {
+      if (err.response?.statusCode == 401) {
+        LogUtils.e(
+          'Session is outdated, calling updater...',
+          withStackTrace: false,
+        );
+        // updateTicket();
+      }
       LogUtils.e(
-        'Session is outdated, calling updater...',
+        'Error when requesting ${err.requestOptions.uri} '
+        '${err.response?.statusCode}'
+        ': ${err.response?.data}',
         withStackTrace: false,
       );
-      // updateTicket();
+      handler.reject(err);
     }
-    LogUtils.e(
-      'Error when requesting ${err.requestOptions.uri} '
-      '${err.response?.statusCode}'
-      ': ${err.response?.data}',
-      withStackTrace: false,
-    );
-    handler.reject(err);
   }
 }
 

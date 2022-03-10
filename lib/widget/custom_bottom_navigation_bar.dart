@@ -25,21 +25,20 @@ class CustomBottomNavigationBar extends StatefulWidget {
     this.mouseCursor,
     this.enableFeedback,
     this.landscapeLayout,
-  })  : assert(items != null),
-        assert(items.length.isEven),
+  })  : assert(items.length.isEven),
         assert(
           items.every((BottomNavigationBarItem item) => item.label != null),
           'Every item must have a non-null title or label',
         ),
         assert(0 <= currentIndex && currentIndex < items.length),
         assert(elevation == null || elevation >= 0.0),
-        assert(iconSize != null && iconSize >= 0.0),
+        assert(iconSize >= 0.0),
         assert(
           selectedItemColor == null,
           'Either selectedItemColor can be specified, but not both',
         ),
-        assert(selectedFontSize != null && selectedFontSize >= 0.0),
-        assert(unselectedFontSize != null && unselectedFontSize >= 0.0),
+        assert(selectedFontSize >= 0.0),
+        assert(unselectedFontSize >= 0.0),
         super(key: key);
 
   /// Defines the appearance of the button items that are arrayed within the
@@ -216,12 +215,7 @@ class _BottomNavigationTile extends StatelessWidget {
     required this.mouseCursor,
     required this.enableFeedback,
     required this.layout,
-  })  : assert(item != null),
-        assert(animation != null),
-        assert(selected != null),
-        assert(selectedLabelStyle != null),
-        assert(unselectedLabelStyle != null),
-        assert(mouseCursor != null);
+  }) : assert(animation != null);
 
   final BottomNavigationBarItem item;
   final Animation<double> animation;
@@ -403,8 +397,7 @@ class _TileIcon extends StatelessWidget {
     required this.item,
     required this.selectedIconTheme,
     required this.unselectedIconTheme,
-  })  : assert(selected != null),
-        assert(item != null),
+  })  : assert(item != null),
         super(key: key);
 
   final ColorTween colorTween;
@@ -447,11 +440,7 @@ class _Label extends StatelessWidget {
     required this.item,
     required this.selectedLabelStyle,
     required this.unselectedLabelStyle,
-  })  : assert(colorTween != null),
-        assert(animation != null),
-        assert(item != null),
-        assert(selectedLabelStyle != null),
-        assert(unselectedLabelStyle != null),
+  })  : assert(animation != null),
         super(key: key);
 
   final ColorTween colorTween;
@@ -580,6 +569,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
     // No animated segue if the length of the items list changes.
     if (widget.items.length != oldWidget.items.length) {
       _resetState();
+
       return;
     }
 
@@ -597,15 +587,16 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
   static TextStyle _effectiveTextStyle(TextStyle? textStyle, double fontSize) {
     textStyle ??= const TextStyle();
     // Prefer the font size on textStyle if present.
+
     return textStyle.fontSize == null
         ? textStyle.copyWith(fontSize: fontSize)
         : textStyle;
   }
 
+  // ignore: long-method
   List<Widget> _createTiles(BottomNavigationBarLandscapeLayout layout) {
     final MaterialLocalizations localizations =
         MaterialLocalizations.of(context);
-    assert(localizations != null);
 
     final ThemeData themeData = Theme.of(context);
     final BottomNavigationBarThemeData bottomTheme =
@@ -649,35 +640,41 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
           ),
         );
       }
-      tiles.add(_BottomNavigationTile(
-        widget.items[i],
-        _animations[i],
-        widget.iconSize,
-        selectedIconTheme:
-            widget.selectedIconTheme ?? bottomTheme.selectedIconTheme,
-        unselectedIconTheme:
-            widget.unselectedIconTheme ?? bottomTheme.unselectedIconTheme,
-        selectedLabelStyle: effectiveSelectedLabelStyle,
-        unselectedLabelStyle: effectiveUnselectedLabelStyle,
-        enableFeedback:
-            widget.enableFeedback ?? bottomTheme.enableFeedback ?? true,
-        onTap: () {
-          widget.onTap?.call(i);
-        },
-        colorTween: colorTween,
-        flex: _evaluateFlex(_animations[i]),
-        selected: i == widget.currentIndex,
-        showSelectedLabels:
-            widget.showSelectedLabels ?? bottomTheme.showSelectedLabels ?? true,
-        showUnselectedLabels: widget.showUnselectedLabels ??
-            bottomTheme.showUnselectedLabels ??
-            true,
-        indexLabel: localizations.tabLabel(
-            tabIndex: i + 1, tabCount: widget.items.length),
-        mouseCursor: effectiveMouseCursor,
-        layout: layout,
-      ));
+      tiles.add(
+        _BottomNavigationTile(
+          widget.items[i],
+          _animations[i],
+          widget.iconSize,
+          selectedIconTheme:
+              widget.selectedIconTheme ?? bottomTheme.selectedIconTheme,
+          unselectedIconTheme:
+              widget.unselectedIconTheme ?? bottomTheme.unselectedIconTheme,
+          selectedLabelStyle: effectiveSelectedLabelStyle,
+          unselectedLabelStyle: effectiveUnselectedLabelStyle,
+          enableFeedback:
+              widget.enableFeedback ?? bottomTheme.enableFeedback ?? true,
+          onTap: () {
+            widget.onTap?.call(i);
+          },
+          colorTween: colorTween,
+          flex: _evaluateFlex(_animations[i]),
+          selected: i == widget.currentIndex,
+          showSelectedLabels: widget.showSelectedLabels ??
+              bottomTheme.showSelectedLabels ??
+              true,
+          showUnselectedLabels: widget.showUnselectedLabels ??
+              bottomTheme.showUnselectedLabels ??
+              true,
+          indexLabel: localizations.tabLabel(
+            tabIndex: i + 1,
+            tabCount: widget.items.length,
+          ),
+          mouseCursor: effectiveMouseCursor,
+          layout: layout,
+        ),
+      );
     }
+
     return tiles;
   }
 
@@ -707,7 +704,8 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
         color: backgroundColor,
         child: ConstrainedBox(
           constraints: BoxConstraints(
-              minHeight: kBottomNavigationBarHeight + additionalBottomPadding),
+            minHeight: kBottomNavigationBarHeight + additionalBottomPadding,
+          ),
           child: Material(
             // Splashes.
             type: MaterialType.transparency,
@@ -763,6 +761,7 @@ class _Bar extends StatelessWidget {
         ),
       );
     }
+
     return Material(
       elevation: elevation,
       color: color,

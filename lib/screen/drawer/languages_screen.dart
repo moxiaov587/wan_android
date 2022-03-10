@@ -1,4 +1,4 @@
-part of 'drawer.dart';
+part of 'home_drawer.dart';
 
 class LanguagesScreen extends StatelessWidget {
   const LanguagesScreen({Key? key}) : super(key: key);
@@ -39,6 +39,7 @@ class LanguagesScreen extends StatelessWidget {
                     return value.contains(languages);
                   }),
                 );
+
                 return ListTile(
                   selected: selected,
                   title: Text(

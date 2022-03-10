@@ -30,7 +30,14 @@ class HomeLocation extends BeamLocation<HomeState> {
   @override
   void initState() {
     super.initState();
+    // ignore: always-remove-listener
     state.addListener(notifyListeners);
+  }
+
+  @override
+  void disposeState() {
+    state.removeListener(notifyListeners);
+    super.disposeState();
   }
 
   @override
@@ -62,15 +69,10 @@ class HomeLocation extends BeamLocation<HomeState> {
   }
 
   @override
-  void disposeState() {
-    state.removeListener(notifyListeners);
-    super.disposeState();
-  }
-
-  @override
   List<Pattern> get pathPatterns => <Pattern>['/*'];
 
   @override
+  // ignore: long-method
   List<BeamPage> buildPages(BuildContext context, HomeState state) {
     LogUtils.d('$runtimeType build pages: state = $state');
 
@@ -112,8 +114,11 @@ class HomeLocation extends BeamLocation<HomeState> {
               BeamPage(
                 key: ValueKey<String>(RouterName.projectType.location),
                 title: RouterName.projectType.title,
-                routeBuilder: (BuildContext context, RouteSettings settings,
-                    Widget child) {
+                routeBuilder: (
+                  BuildContext context,
+                  RouteSettings settings,
+                  Widget child,
+                ) {
                   const Radius radius = Radius.circular(20);
 
                   return ModalBottomSheetRoute<void>(
@@ -268,10 +273,14 @@ class HomeLocation extends BeamLocation<HomeState> {
             if (state.showHandleCollectedBottomSheet)
               BeamPage(
                 key: ValueKey<String>(
-                    handleCollectedBottomSheetRouterName.location),
+                  handleCollectedBottomSheetRouterName.location,
+                ),
                 title: handleCollectedBottomSheetRouterName.title,
-                routeBuilder: (BuildContext context, RouteSettings settings,
-                    Widget child) {
+                routeBuilder: (
+                  BuildContext context,
+                  RouteSettings settings,
+                  Widget child,
+                ) {
                   const Radius radius = Radius.circular(20);
 
                   return ModalBottomSheetRoute<void>(
@@ -284,7 +293,7 @@ class HomeLocation extends BeamLocation<HomeState> {
                     ),
                     isScrollControlled: true,
                     constraints: BoxConstraints.tightFor(
-                      height: ScreenUtils.height * .85,
+                      height: ScreenUtils.height * 0.85,
                     ),
                     builder: (_) => child,
                     settings: settings,
@@ -354,8 +363,11 @@ class HomeLocation extends BeamLocation<HomeState> {
               BeamPage(
                 key: ValueKey<String>(RouterName.addSharedArticle.location),
                 title: RouterName.addSharedArticle.title,
-                routeBuilder: (BuildContext context, RouteSettings settings,
-                    Widget child) {
+                routeBuilder: (
+                  BuildContext context,
+                  RouteSettings settings,
+                  Widget child,
+                ) {
                   const Radius radius = Radius.circular(20);
 
                   return ModalBottomSheetRoute<void>(
@@ -368,7 +380,7 @@ class HomeLocation extends BeamLocation<HomeState> {
                     ),
                     isScrollControlled: true,
                     constraints: BoxConstraints.tightFor(
-                      height: ScreenUtils.height * .8,
+                      height: ScreenUtils.height * 0.8,
                     ),
                     builder: (_) => child,
                     settings: settings,
@@ -397,7 +409,8 @@ class HomeLocation extends BeamLocation<HomeState> {
             if (state.isTheyShare)
               BeamPage(
                 key: ValueKey<String>(
-                    '/${RouterName.theyShare.title.toLowerCase()}/${state.userId}'),
+                  '/${RouterName.theyShare.title.toLowerCase()}/${state.userId}',
+                ),
                 title: RouterName.theyShare.title,
                 child: TheyShareScreen(
                   userId: state.userId!,
@@ -418,7 +431,8 @@ class HomeLocation extends BeamLocation<HomeState> {
             if (state.isTheyArticles)
               BeamPage(
                 key: ValueKey<String>(
-                    '/${RouterName.theyArticles.title.toLowerCase()}/${state.author}'),
+                  '/${RouterName.theyArticles.title.toLowerCase()}/${state.author}',
+                ),
                 title: RouterName.theyArticles.title,
                 child: TheyArticlesScreen(
                   author: state.author!,
@@ -439,7 +453,8 @@ class HomeLocation extends BeamLocation<HomeState> {
             if (state.isArticle)
               BeamPage(
                 key: ValueKey<String>(
-                    '/${RouterName.article.title.toLowerCase()}/${state.articleId}'),
+                  '/${RouterName.article.title.toLowerCase()}/${state.articleId}',
+                ),
                 title: RouterName.article.title,
                 child: ArticleScreen(
                   id: state.articleId!,

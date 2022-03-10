@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../app/l10n/generated/l10n.dart';
-import '../app/theme/theme.dart';
+import '../app/theme/app_theme.dart';
 import '../contacts/instances.dart';
 import 'gap.dart';
 
@@ -61,8 +61,8 @@ class _RotateLoadingState extends State<RotateLoading>
               Expanded(
                 child: CustomPaint(
                   size: Size(
-                    widget.size * .75,
-                    widget.size * .75,
+                    widget.size * 0.75,
+                    widget.size * 0.75,
                   ),
                   painter: RotateLoadingPainter(
                     _animationController,
@@ -135,22 +135,22 @@ class RotateLoadingPainter extends CustomPainter {
 
     canvas.rotate(animation.value * 2.0 * math.pi);
 
-    for (int i = 0; i < colorsCount; i++) {
+    for (int index = 0; index < colorsCount; index++) {
       canvas.save();
-      canvas.translate(offsets[i].dx, offsets[i].dy);
+      canvas.translate(offsets[index].dx, offsets[index].dy);
       canvas.rotate(rotateTween.evaluate(animation));
-      canvas.translate(-offsets[i].dx, -offsets[i].dy);
+      canvas.translate(-offsets[index].dx, -offsets[index].dy);
 
       canvas.drawRRect(
         RRect.fromRectAndRadius(
           Rect.fromCenter(
-            center: offsets[i],
+            center: offsets[index],
             width: width,
             height: width,
           ),
           AppTheme.adornmentRadius,
         ),
-        paint..color = colors[i],
+        paint..color = colors[index],
       );
 
       canvas.restore();

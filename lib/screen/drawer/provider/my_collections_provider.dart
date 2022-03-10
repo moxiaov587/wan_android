@@ -52,8 +52,10 @@ class MyCollectedArticleNotifier
   final CancelToken? cancelToken;
 
   @override
-  Future<RefreshListViewStateData<CollectedArticleModel>> loadData(
-      {required int pageNum, required int pageSize}) async {
+  Future<RefreshListViewStateData<CollectedArticleModel>> loadData({
+    required int pageNum,
+    required int pageSize,
+  }) async {
     return (await WanAndroidAPI.fetchCollectedArticles(
       pageNum,
       pageSize,
@@ -72,7 +74,10 @@ class MyCollectedArticleNotifier
 
       final CollectedArticleModel? data =
           await WanAndroidAPI.addCollectedArticle(
-              title: title, author: author, link: link);
+        title: title,
+        author: author,
+        link: link,
+      );
 
       if (data != null) {
         initData();
@@ -98,8 +103,11 @@ class MyCollectedArticleNotifier
     required String author,
     required String link,
   }) async {
-    return await state.whenOrNull<Future<bool>?>((int pageNum, bool isLastPage,
-            List<CollectedArticleModel> list) async {
+    return await state.whenOrNull<Future<bool>?>((
+          int pageNum,
+          bool isLastPage,
+          List<CollectedArticleModel> list,
+        ) async {
           try {
             DialogUtils.loading();
 
@@ -115,13 +123,14 @@ class MyCollectedArticleNotifier
               isLastPage: isLastPage,
               list: list
                   .map(
-                      (CollectedArticleModel article) => article.id == collectId
-                          ? article.copyWith(
-                              title: title,
-                              author: author,
-                              link: link,
-                            )
-                          : article)
+                    (CollectedArticleModel article) => article.id == collectId
+                        ? article.copyWith(
+                            title: title,
+                            author: author,
+                            link: link,
+                          )
+                        : article,
+                  )
                   .toList(),
             );
 
@@ -159,19 +168,23 @@ class MyCollectedArticleNotifier
     int id, {
     required bool changedValue,
   }) {
-    final Map<String, ProviderBase<dynamic>> providers = providerContainer
-        .getAllProviderElements()
-        .fold(<String, ProviderBase<dynamic>>{},
-            (Map<String, ProviderBase<dynamic>> previousValue,
-                ProviderElementBase<dynamic> e) {
-      if (articles.contains(e.provider.name)) {
-        return <String, ProviderBase<dynamic>>{
-          ...previousValue,
-          e.provider.name!: e.provider,
-        };
-      }
-      return previousValue;
-    });
+    final Map<String, ProviderBase<dynamic>> providers =
+        providerContainer.getAllProviderElements().fold(
+      <String, ProviderBase<dynamic>>{},
+      (
+        Map<String, ProviderBase<dynamic>> previousValue,
+        ProviderElementBase<dynamic> e,
+      ) {
+        if (articles.contains(e.provider.name)) {
+          return <String, ProviderBase<dynamic>>{
+            ...previousValue,
+            e.provider.name!: e.provider,
+          };
+        }
+
+        return previousValue;
+      },
+    );
 
     late ProviderBase<dynamic> provider;
 
@@ -207,50 +220,58 @@ class MyCollectedArticleNotifier
     required bool changedValue,
   }) {
     state.whenOrNull(
-        (int pageNum, bool isLastPage, List<CollectedArticleModel> list) {
-      /// If it is not null, it means to collect from the article.
-      /// Need to check whether the article exists in the home tabs provider.
-      /// If there is a collection status that needs to be synchronized
-      int? originId;
-      final List<CollectedArticleModel> changedList =
-          list.map((CollectedArticleModel collectedArticle) {
-        if (collectedArticle.id == id) {
-          originId = collectedArticle.originId;
-          return collectedArticle.copyWith(
-            collect: changedValue,
+      (
+        int pageNum,
+        bool isLastPage,
+        List<CollectedArticleModel> list,
+      ) {
+        /// If it is not null, it means to collect from the article.
+        /// Need to check whether the article exists in the home tabs provider.
+        /// If there is a collection status that needs to be synchronized
+        int? originId;
+        final List<CollectedArticleModel> changedList =
+            list.map((CollectedArticleModel collectedArticle) {
+          if (collectedArticle.id == id) {
+            originId = collectedArticle.originId;
+
+            return collectedArticle.copyWith(
+              collect: changedValue,
+            );
+          }
+
+          return collectedArticle;
+        }).toList();
+        state = RefreshListViewStateData<CollectedArticleModel>(
+          pageNum: pageNum,
+          isLastPage: isLastPage,
+          list: changedList,
+        );
+
+        if (changedList.firstWhereOrNull(
+              (CollectedArticleModel collect) => collect.collect,
+            ) ==
+            null) {
+          if (isLastPage) {
+            Future<void>.delayed(Duration.zero, () {
+              state = RefreshListViewStateData<CollectedArticleModel>(
+                pageNum: pageNum,
+                isLastPage: isLastPage,
+                list: <CollectedArticleModel>[],
+              );
+            });
+          } else {
+            initData();
+          }
+        }
+
+        if (originId != null) {
+          switchOtherArticleCollect(
+            originId!,
+            changedValue: changedValue,
           );
         }
-        return collectedArticle;
-      }).toList();
-      state = RefreshListViewStateData<CollectedArticleModel>(
-        pageNum: pageNum,
-        isLastPage: isLastPage,
-        list: changedList,
-      );
-
-      if (changedList.firstWhereOrNull(
-              (CollectedArticleModel collect) => collect.collect) ==
-          null) {
-        if (isLastPage) {
-          Future<void>.delayed(Duration.zero, () {
-            state = RefreshListViewStateData<CollectedArticleModel>(
-              pageNum: pageNum,
-              isLastPage: isLastPage,
-              list: <CollectedArticleModel>[],
-            );
-          });
-        } else {
-          initData();
-        }
-      }
-
-      if (originId != null) {
-        switchOtherArticleCollect(
-          originId!,
-          changedValue: changedValue,
-        );
-      }
-    });
+      },
+    );
   }
 }
 
@@ -329,37 +350,39 @@ class MyCollectedWebsiteNotifier
     required String link,
   }) async {
     return await state.whenOrNull<Future<bool>?>(
-            (List<CollectedWebsiteModel> list) async {
-          try {
-            DialogUtils.loading();
+          (List<CollectedWebsiteModel> list) async {
+            try {
+              DialogUtils.loading();
 
-            await WanAndroidAPI.updateCollectedWebsite(
-              id: collectId,
-              title: title,
-              link: link,
-            );
+              await WanAndroidAPI.updateCollectedWebsite(
+                id: collectId,
+                title: title,
+                link: link,
+              );
 
-            state = ListViewStateData<CollectedWebsiteModel>(
-              list: list
-                  .map(
+              state = ListViewStateData<CollectedWebsiteModel>(
+                list: list
+                    .map(
                       (CollectedWebsiteModel website) => website.id == collectId
                           ? website.copyWith(
                               name: title,
                               link: link,
                             )
-                          : website)
-                  .toList(),
-            );
+                          : website,
+                    )
+                    .toList(),
+              );
 
-            return true;
-          } catch (e, s) {
-            DialogUtils.danger(getError(e, s).message ?? S.current.failed);
+              return true;
+            } catch (e, s) {
+              DialogUtils.danger(getError(e, s).message ?? S.current.failed);
 
-            return false;
-          } finally {
-            DialogUtils.dismiss();
-          }
-        }) ??
+              return false;
+            } finally {
+              DialogUtils.dismiss();
+            }
+          },
+        ) ??
         false;
   }
 
@@ -397,7 +420,8 @@ class MyCollectedWebsiteNotifier
       );
 
       if (changedList.firstWhereOrNull(
-              (CollectedWebsiteModel collect) => collect.collect) ==
+            (CollectedWebsiteModel collect) => collect.collect,
+          ) ==
           null) {
         Future<void>.delayed(Duration.zero, () {
           state = const ListViewStateData<CollectedWebsiteModel>(
@@ -424,10 +448,12 @@ final AutoDisposeStateNotifierProviderFamily<CollectedNotifier,
     collectedModelProvider = StateNotifierProvider.autoDispose.family<
         CollectedNotifier,
         ViewState<CollectedCommonModel>,
-        CollectionTypeModel>((AutoDisposeStateNotifierProviderRef<
-                CollectedNotifier, ViewState<CollectedCommonModel>>
-            ref,
-        CollectionTypeModel typeModel) {
+        CollectionTypeModel>((
+  AutoDisposeStateNotifierProviderRef<CollectedNotifier,
+          ViewState<CollectedCommonModel>>
+      ref,
+  CollectionTypeModel typeModel,
+) {
   return CollectedNotifier(
     const ViewState<CollectedCommonModel>.loading(),
     reader: ref.read,
@@ -458,9 +484,10 @@ class CollectedNotifier extends BaseViewNotifier<CollectedCommonModel> {
         final CollectedArticleModel? articleModel = reader
             .call(myCollectedArticleProvider)
             .whenOrNull<CollectedArticleModel?>(
-                (_, __, List<CollectedArticleModel> list) =>
-                    list.firstWhereOrNull((CollectedArticleModel article) =>
-                        article.id == typeModel.id));
+              (_, __, List<CollectedArticleModel> list) =>
+                  list.firstWhereOrNull((CollectedArticleModel article) =>
+                      article.id == typeModel.id),
+            );
 
         if (articleModel != null) {
           model = CollectedCommonModel(
@@ -475,9 +502,10 @@ class CollectedNotifier extends BaseViewNotifier<CollectedCommonModel> {
         final CollectedWebsiteModel? websiteModel = reader
             .call(myCollectedWebsiteProvider)
             .whenOrNull<CollectedWebsiteModel?>(
-                (List<CollectedWebsiteModel> list) => list.firstWhereOrNull(
-                    (CollectedWebsiteModel website) =>
-                        website.id == typeModel.id));
+              (List<CollectedWebsiteModel> list) => list.firstWhereOrNull(
+                (CollectedWebsiteModel website) => website.id == typeModel.id,
+              ),
+            );
 
         if (websiteModel != null) {
           model = CollectedCommonModel(

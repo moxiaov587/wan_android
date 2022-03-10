@@ -1,4 +1,4 @@
-part of 'home.dart';
+part of 'home_screen.dart';
 
 class _QA extends StatefulWidget {
   const _QA({Key? key}) : super(key: key);

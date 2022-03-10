@@ -5,15 +5,15 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import '../../../app/l10n/generated/l10n.dart';
 import '../../../app/provider/view_state.dart';
 import '../../../app/provider/widget/provider_widget.dart';
-import '../../../app/theme/theme.dart';
+import '../../../app/theme/app_theme.dart';
 import '../../../contacts/icon_font_icons.dart';
 import '../../../contacts/instances.dart';
 import '../../../contacts/unicode.dart';
 import '../../../extensions/extensions.dart';
 import '../../../model/models.dart';
-import '../../../navigator/router_delegate.dart';
-import '../../../utils/html_parse.dart';
-import '../../../utils/screen.dart';
+import '../../../navigator/app_router_delegate.dart';
+import '../../../utils/html_parse_utils.dart';
+import '../../../utils/screen_utils.dart';
 import '../../../widget/custom_sliver_child_builder_delegate.dart';
 import '../../../widget/custom_text_form_field.dart';
 import '../../../widget/dismissible_slidable_action.dart';
@@ -24,11 +24,6 @@ import '../provider/drawer_provider.dart';
 part 'article.dart';
 part 'handle_collected_bottom_sheet.dart';
 part 'website.dart';
-
-enum CollectionType {
-  article,
-  website,
-}
 
 class MyCollectionsScreen extends StatefulWidget {
   const MyCollectionsScreen({
@@ -130,4 +125,9 @@ class _MyCollectionsScreenState extends State<MyCollectionsScreen>
       ),
     );
   }
+}
+
+enum CollectionType {
+  article,
+  website,
 }

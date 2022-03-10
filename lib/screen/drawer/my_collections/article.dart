@@ -1,4 +1,4 @@
-part of 'my_collections.dart';
+part of 'my_collections_screen.dart';
 
 class _Article extends StatefulWidget {
   const _Article({Key? key}) : super(key: key);
@@ -15,6 +15,7 @@ class __ArticleState extends State<_Article>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
     return AutoDisposeRefreshListViewWidget<
         AutoDisposeStateNotifierProvider<MyCollectedArticleNotifier,
             RefreshListViewState<CollectedArticleModel>>,
@@ -77,11 +78,11 @@ class _CollectedArticleTile extends ConsumerWidget {
             groupTag: CollectionType.article.name,
             key: key,
             endActionPane: ActionPane(
-              extentRatio: .25,
+              extentRatio: 0.25,
               motion: const ScrollMotion(),
               dismissible: DismissiblePane(
                 closeOnCancel: true,
-                dismissThreshold: .65,
+                dismissThreshold: 0.65,
                 dismissalDuration: const Duration(milliseconds: 500),
                 onDismissed: () {
                   ref.read(myCollectedArticleProvider.notifier).switchCollect(
@@ -98,8 +99,8 @@ class _CollectedArticleTile extends ConsumerWidget {
               ),
               children: <Widget>[
                 DismissibleSlidableAction(
-                  slidableExtentRatio: .25,
-                  dismissiblePaneThreshold: .65,
+                  slidableExtentRatio: 0.25,
+                  dismissiblePaneThreshold: 0.65,
                   label: S.of(context).edit,
                   onTap: () {
                     AppRouterDelegate.instance.currentBeamState.updateWith(
@@ -147,7 +148,7 @@ class _CollectedArticleTile extends ConsumerWidget {
                                 if (article.chapterName.strictValue != null)
                                   TextSpan(
                                     text: article.chapterName.strictValue,
-                                  )
+                                  ),
                               ],
                             ),
                           ),
@@ -156,7 +157,8 @@ class _CollectedArticleTile extends ConsumerWidget {
                           ),
                           Text(
                             HTMLParseUtils.parseArticleTitle(
-                                    title: article.title) ??
+                                  title: article.title,
+                                ) ??
                                 S.of(context).unknown,
                             style: currentTheme.textTheme.titleSmall,
                           ),

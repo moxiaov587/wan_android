@@ -7,7 +7,7 @@ import '../../../app/provider/provider.dart';
 import '../../../database/hive_boxes.dart';
 import '../../../database/model/models.dart';
 import '../../../model/models.dart';
-import '../../../utils/dialog.dart' show DialogUtils;
+import '../../../utils/dialog_utils.dart' show DialogUtils;
 
 final StateNotifierProvider<AuthorizedNotifier, UserInfoModel?>
     authorizedProvider =
@@ -41,7 +41,7 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?> {
 
       state = null;
 
-      HttpUtils.cookieJar.deleteAll();
+      Http.cookieJar.deleteAll();
 
       await HiveBoxes.userSettingsBox.putAt(
         0,
@@ -62,6 +62,68 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?> {
     }
   }
 
+  Future<void> handleCacheByLogin(
+    int userId, {
+    required String username,
+  }) async {
+    await HiveBoxes.authorizedCacheBox.put(
+      userId,
+      AuthorizedCache(
+        id: userId,
+        username: username,
+      ),
+    );
+
+    if (HiveBoxes.uniqueUserSettings != null &&
+        HiveBoxes.uniqueUserSettings!.rememberPassword) {
+      await HiveBoxes.userSettingsBox.putAt(
+        0,
+        HiveBoxes.uniqueUserSettings!.copyWith(
+          isLogin: true,
+          rememberPassword: false,
+        ),
+      );
+    } else {
+      await HiveBoxes.userSettingsBox.add(
+        UserSettings(
+          isLogin: true,
+        ),
+      );
+    }
+  }
+
+  Future<void> handleCacheByLoginAndRememberPassword(
+    int userId, {
+    required String username,
+    required String password,
+  }) async {
+    await HiveBoxes.authorizedCacheBox.put(
+      userId,
+      AuthorizedCache(
+        id: userId,
+        username: username,
+        password: password,
+      ),
+    );
+
+    if (HiveBoxes.uniqueUserSettings == null) {
+      await HiveBoxes.userSettingsBox.add(
+        UserSettings(
+          isLogin: true,
+          rememberPassword: true,
+        ),
+      );
+    } else {
+      await HiveBoxes.userSettingsBox.putAt(
+        0,
+        HiveBoxes.uniqueUserSettings!.copyWith(
+          isLogin: true,
+          rememberPassword: true,
+        ),
+      );
+    }
+  }
+
   Future<bool> login({
     required String username,
     required String password,
@@ -69,7 +131,7 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?> {
   }) async {
     DialogUtils.loading();
     try {
-      final UserModel model = await WanAndroidAPI.login(
+      final UserModel user = await WanAndroidAPI.login(
         username: username,
         password: password,
       );
@@ -77,56 +139,13 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?> {
       state = await WanAndroidAPI.fetchUserInfo();
 
       if (rememberPassword) {
-        await HiveBoxes.authorizedCacheBox.put(
-          model.id,
-          AuthorizedCache(
-            id: model.id,
-            username: username,
-            password: password,
-          ),
+        await handleCacheByLoginAndRememberPassword(
+          user.id,
+          username: username,
+          password: password,
         );
-
-        if (HiveBoxes.uniqueUserSettings == null) {
-          await HiveBoxes.userSettingsBox.add(
-            UserSettings(
-              isLogin: true,
-              rememberPassword: true,
-            ),
-          );
-        } else {
-          await HiveBoxes.userSettingsBox.putAt(
-            0,
-            HiveBoxes.uniqueUserSettings!.copyWith(
-              isLogin: true,
-              rememberPassword: true,
-            ),
-          );
-        }
       } else {
-        await HiveBoxes.authorizedCacheBox.put(
-          model.id,
-          AuthorizedCache(
-            id: model.id,
-            username: username,
-          ),
-        );
-
-        if (HiveBoxes.uniqueUserSettings != null &&
-            HiveBoxes.uniqueUserSettings!.rememberPassword) {
-          await HiveBoxes.userSettingsBox.putAt(
-            0,
-            HiveBoxes.uniqueUserSettings!.copyWith(
-              isLogin: true,
-              rememberPassword: false,
-            ),
-          );
-        } else {
-          await HiveBoxes.userSettingsBox.add(
-            UserSettings(
-              isLogin: true,
-            ),
-          );
-        }
+        await handleCacheByLogin(user.id, username: username);
       }
 
       DialogUtils.success(S.current.loginSuccess);
@@ -136,7 +155,8 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?> {
       final BaseViewStateError error = BaseViewStateError.create(e, s);
 
       DialogUtils.danger(
-          error.message ?? error.detail ?? S.current.loginFailed);
+        error.message ?? error.detail ?? S.current.loginFailed,
+      );
 
       return false;
     } finally {
@@ -172,7 +192,8 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?> {
       final BaseViewStateError error = BaseViewStateError.create(e, s);
 
       DialogUtils.danger(
-          error.message ?? error.detail ?? S.current.registerFailed);
+        error.message ?? error.detail ?? S.current.registerFailed,
+      );
 
       return false;
     } finally {

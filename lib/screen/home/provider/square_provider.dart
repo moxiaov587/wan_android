@@ -15,8 +15,10 @@ class SquareNotifier extends BaseArticleNotifier {
   SquareNotifier(RefreshListViewState<ArticleModel> state) : super(state);
 
   @override
-  Future<RefreshListViewStateData<ArticleModel>> loadData(
-      {required int pageNum, required int pageSize}) async {
+  Future<RefreshListViewStateData<ArticleModel>> loadData({
+    required int pageNum,
+    required int pageSize,
+  }) async {
     return (await WanAndroidAPI.fetchSquareArticles(
       pageNum,
       pageSize,

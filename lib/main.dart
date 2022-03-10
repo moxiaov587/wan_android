@@ -17,14 +17,14 @@ import 'package:pull_to_refresh/pull_to_refresh.dart' show RefreshLocalizations;
 
 import 'app/http/http.dart';
 import 'app/l10n/generated/l10n.dart';
-import 'app/theme/theme.dart' show AppTheme;
+import 'app/theme/app_theme.dart' show AppTheme;
 import 'database/hive_boxes.dart';
-import 'navigator/router_delegate.dart';
+import 'navigator/app_router_delegate.dart';
 import 'screen/authorized/provider/authorized_provider.dart';
 import 'screen/provider/connectivity_provider.dart';
 import 'screen/provider/locale_provider.dart';
 import 'screen/provider/theme_provider.dart';
-import 'utils/dialog.dart';
+import 'utils/dialog_utils.dart';
 
 Future<void> main() async {
   final WidgetsBinding widgetsBinding =
@@ -35,7 +35,7 @@ Future<void> main() async {
 
   await HiveBoxes.openBoxes();
 
-  await HttpUtils.initConfig();
+  await Http.initConfig();
 
   if (kIsWeb) {
     /// remove the # from URL

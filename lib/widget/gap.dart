@@ -1,16 +1,5 @@
 import 'package:flutter/material.dart';
 
-enum GapDirection {
-  horizontal,
-  vertical,
-}
-
-enum GapSize {
-  small,
-  normal,
-  big,
-}
-
 class Gap extends StatelessWidget {
   const Gap({
     Key? key,
@@ -48,4 +37,15 @@ class Gap extends StatelessWidget {
             height: isVertical ? real : null,
           );
   }
+}
+
+enum GapDirection {
+  horizontal,
+  vertical,
+}
+
+enum GapSize {
+  small,
+  normal,
+  big,
 }

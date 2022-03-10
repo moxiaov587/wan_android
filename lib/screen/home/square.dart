@@ -1,4 +1,4 @@
-part of 'home.dart';
+part of 'home_screen.dart';
 
 class _Square extends StatefulWidget {
   const _Square({Key? key}) : super(key: key);

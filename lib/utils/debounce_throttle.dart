@@ -9,6 +9,7 @@ VoidCallback debounce(
   assert(callback != null);
   assert(duration != null && duration > Duration.zero);
   Timer? _debounce;
+
   return () {
     if (_debounce?.isActive ?? false) {
       _debounce?.cancel();
@@ -26,6 +27,7 @@ VoidCallback throttle(
   assert(callback != null);
   assert(duration != null && duration > Duration.zero);
   Timer? _throttle;
+
   return () {
     if (_throttle?.isActive ?? false) {
       return;

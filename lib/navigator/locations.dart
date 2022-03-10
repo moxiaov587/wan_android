@@ -1,15 +1,15 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 
-import '../screen/article/article.dart';
-import '../screen/authorized/login.dart';
-import '../screen/drawer/drawer.dart';
-import '../screen/home/home.dart';
-import '../screen/splash.dart';
+import '../screen/article/article_screen.dart';
+import '../screen/authorized/login_screen.dart';
+import '../screen/drawer/home_drawer.dart';
+import '../screen/home/home_screen.dart';
+import '../screen/splash_screen.dart';
 import '../screen/they/they.dart';
-import '../screen/unknown.dart';
-import '../utils/log.dart';
-import '../utils/screen.dart';
+import '../screen/unknown_screen.dart';
+import '../utils/log_utils.dart';
+import '../utils/screen_utils.dart';
 import '../widget/custom_search_delegate.dart' show SearchPageRoute;
 import 'route/modal_bottom_sheet_route.dart';
 import 'route_name.dart';

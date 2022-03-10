@@ -7,13 +7,13 @@ const String boxPrefix = 'app';
 class HiveBoxes {
   const HiveBoxes._();
 
-  static late Box<ResponseCache> responseCacheBox;
+  static late final Box<ResponseCache> responseCacheBox;
 
-  static late Box<SearchHistory> searchHistoryBox;
+  static late final Box<SearchHistory> searchHistoryBox;
 
-  static late Box<AuthorizedCache> authorizedCacheBox;
+  static late final Box<AuthorizedCache> authorizedCacheBox;
 
-  static late Box<UserSettings> userSettingsBox;
+  static late final Box<UserSettings> userSettingsBox;
 
   static UserSettings? get uniqueUserSettings =>
       HiveBoxes.userSettingsBox.isNotEmpty

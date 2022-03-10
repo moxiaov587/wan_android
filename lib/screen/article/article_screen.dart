@@ -11,11 +11,11 @@ import '../../app/provider/view_state.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
 import '../../model/models.dart' show WebViewModel;
-import '../../navigator/router_delegate.dart';
+import '../../navigator/app_router_delegate.dart';
 import '../../screen/authorized/provider/authorized_provider.dart';
 import '../../utils/debounce_throttle.dart';
-import '../../utils/dialog.dart';
-import '../../utils/screen.dart';
+import '../../utils/dialog_utils.dart';
+import '../../utils/screen_utils.dart';
 import '../../widget/popup_menu.dart';
 import '../../widget/view_state_widget.dart';
 import 'provider/article_provider.dart';
@@ -69,11 +69,8 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
   void didChangeMetrics() {
     super.didChangeMetrics();
 
-    if (WidgetsBinding.instance!.window.viewInsets.bottom != 0) {
-      _showKeyboardNotifier.value = true;
-    } else {
-      _showKeyboardNotifier.value = false;
-    }
+    _showKeyboardNotifier.value =
+        WidgetsBinding.instance!.window.viewInsets.bottom != 0;
   }
 
   @override
@@ -108,22 +105,24 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                 .watch(
               provider.select(
                 (ViewState<WebViewModel> value) => value.when(
-                    (WebViewModel? value) => value?.title,
-                    loading: () => S.of(context).loading,
-                    error: (_, __, ___) => S.of(context).loadFailed),
+                  (WebViewModel? value) => value?.title,
+                  loading: () => S.of(context).loading,
+                  error: (_, __, ___) => S.of(context).loadFailed,
+                ),
               ),
             )
                 ?.replaceAllMapped(
-                    RegExp(r'<[a-zA-Z]+.*?>([\s\S]*?)</[a-zA-Z]*?>'),
-                    (Match match) {
-              final String? value = match.group(1);
+              RegExp(r'<[a-zA-Z]+.*?>([\s\S]*?)</[a-zA-Z]*?>'),
+              (Match match) {
+                final String? value = match.group(1);
 
-              if (value != null) {
-                return value;
-              }
+                if (value != null) {
+                  return value;
+                }
 
-              return '';
-            });
+                return '';
+              },
+            );
 
             return Text(title ?? S.of(context).unknown);
           },
@@ -138,9 +137,11 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                           label: S.of(context).copyLink,
                           onTap: () {
                             Clipboard.setData(
-                                ClipboardData(text: article!.link));
+                              ClipboardData(text: article!.link),
+                            );
                             DialogUtils.success(
-                                S.of(context).copiedToClipboard);
+                              S.of(context).copiedToClipboard,
+                            );
                           },
                         ),
                         PopupMenuItemConfig(
@@ -153,7 +154,8 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                               await launch(uri);
                             } else {
                               DialogUtils.danger(
-                                  S.of(context).unableToOpenLink(uri));
+                                S.of(context).unableToOpenLink(uri),
+                              );
                             }
                           },
                         ),
@@ -173,7 +175,8 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                         valueListenable: _useDesktopModeNotifier,
                         builder: (_, bool useDesktopMode, __) => InAppWebView(
                           key: ValueKey<String>(
-                              '${useDesktopMode ? 'desktop' : 'recommended'}_${article!.link}'),
+                            '${useDesktopMode ? 'desktop' : 'recommended'}_${article!.link}',
+                          ),
                           initialUrlRequest: URLRequest(
                             url: Uri.parse(article.link),
                           ),
@@ -222,21 +225,27 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                           ) async {
                             if (createWindowAction.request.url != null) {
                               await controller.loadUrl(
-                                  urlRequest: createWindowAction.request);
+                                urlRequest: createWindowAction.request,
+                              );
+
                               return true;
                             }
+
                             return false;
                           },
                           onProgressChanged: (_, int progress) {
                             _progress.add(progress / 100);
                           },
-                          onLoadStop: (InAppWebViewController controller,
-                              Uri? url) async {
+                          onLoadStop: (
+                            InAppWebViewController controller,
+                            Uri? url,
+                          ) async {
                             hideProgress();
                           },
-                          shouldOverrideUrlLoading:
-                              (InAppWebViewController controller,
-                                  NavigationAction navigationAction) async {
+                          shouldOverrideUrlLoading: (
+                            InAppWebViewController controller,
+                            NavigationAction navigationAction,
+                          ) async {
                             if (!<String>[
                               'http',
                               'https',
@@ -248,6 +257,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                             ].contains(navigationAction.request.url?.scheme)) {
                               return NavigationActionPolicy.CANCEL;
                             }
+
                             return NavigationActionPolicy.ALLOW;
                           },
                           onUpdateVisitedHistory:
@@ -315,7 +325,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                           color: currentTheme.backgroundColor.withAlpha(100),
                           offset: const Offset(0.0, -2.0),
                           blurRadius: 8.0,
-                        )
+                        ),
                       ],
                     ),
                     child: Padding(
@@ -331,7 +341,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                               return IconButton(
                                 tooltip: S.of(context).back,
                                 disabledColor: currentTheme.iconTheme.color!
-                                    .withOpacity(.5),
+                                    .withOpacity(0.5),
                                 onPressed: canGoBack
                                     ? () {
                                         _inAppWebViewController.goBack();
@@ -347,7 +357,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                               return IconButton(
                                 tooltip: S.of(context).forward,
                                 disabledColor: currentTheme.iconTheme.color!
-                                    .withOpacity(.5),
+                                    .withOpacity(0.5),
                                 onPressed: canGoForward
                                     ? () {
                                         _inAppWebViewController.goForward();
@@ -361,12 +371,15 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                             builder: (_, WidgetRef ref, __) {
                               final bool collect = ref.watch(
                                 provider.select(
-                                    (ViewState<WebViewModel> value) =>
-                                        value.whenOrNull(
-                                            (WebViewModel? article) =>
-                                                article!.collect) ??
-                                        false),
+                                  (ViewState<WebViewModel> value) =>
+                                      value.whenOrNull(
+                                        (WebViewModel? article) =>
+                                            article!.collect,
+                                      ) ??
+                                      false,
+                                ),
                               );
+
                               return IconButton(
                                 tooltip: collect
                                     ? S.of(context).collected
@@ -404,14 +417,20 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                           ),
                           ValueListenableBuilder<bool>(
                             valueListenable: _useDesktopModeNotifier,
-                            builder: (_, bool useDesktop, __) {
+                            builder: (
+                              _,
+                              bool useDesktop,
+                              __,
+                            ) {
                               return IconButton(
                                 tooltip: useDesktop
                                     ? S.of(context).desktop
                                     : S.of(context).recommend,
-                                onPressed: debounce(() {
-                                  _useDesktopModeNotifier.value = !useDesktop;
-                                }),
+                                onPressed: debounce(
+                                  () {
+                                    _useDesktopModeNotifier.value = !useDesktop;
+                                  },
+                                ),
                                 color: useDesktop
                                     ? currentTheme.primaryColor
                                     : null,
@@ -422,7 +441,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                                 ),
                               );
                             },
-                          )
+                          ),
                         ],
                       ),
                     ),

@@ -1,4 +1,4 @@
-part of 'login.dart';
+part of 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -85,6 +85,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           if (value == null || value.isEmpty) {
                             return S.of(context).usernameEmptyTips;
                           }
+
                           return null;
                         },
                         decoration: InputDecoration(
@@ -108,6 +109,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           if (value == null || value.isEmpty) {
                             return S.of(context).passwordEmptyTips;
                           }
+
                           return null;
                         },
                         decoration: InputDecoration(
@@ -136,6 +138,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   .of(context)
                                   .passwordAndRepasswordNotTheSameTips;
                             }
+
                             return null;
                           },
                           decoration: InputDecoration(

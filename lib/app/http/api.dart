@@ -13,7 +13,7 @@ class API {
 
   static String qa({required int pageNum}) => '/wenda/list/$pageNum/json';
 
-  static String projectType = '/project/tree/json';
+  static const String projectType = '/project/tree/json';
 
   static String project({
     required int pageNum,
@@ -73,11 +73,15 @@ class API {
   static String deleteShareArticle({required int articleId}) =>
       '/lg/user_article/delete/$articleId/json';
 
-  static String shareArticleByUserId(
-          {required int userId, required int pageNum}) =>
+  static String shareArticleByUserId({
+    required int userId,
+    required int pageNum,
+  }) =>
       '/user/$userId/share_articles/$pageNum/json';
 
-  static String articleByAuthor(
-          {required String author, required int pageNum}) =>
+  static String articleByAuthor({
+    required String author,
+    required int pageNum,
+  }) =>
       '/article/list/$pageNum/json?author=$author';
 }

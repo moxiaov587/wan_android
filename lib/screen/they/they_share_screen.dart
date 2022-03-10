@@ -58,6 +58,7 @@ class _TheyShareScreenState extends State<TheyShareScreen> {
                     builder: (_, WidgetRef ref, __) {
                       final UserPointsModel? userPoints =
                           ref.watch(provider.notifier).userPoints;
+
                       return ConstrainedBox(
                         constraints: const BoxConstraints.tightFor(
                           height: 120.0,
@@ -91,7 +92,7 @@ class _TheyShareScreenState extends State<TheyShareScreen> {
                                             ),
                                           ],
                                         ),
-                                      )
+                                      ),
                                     ],
                                   ),
                                   Positioned.fill(
@@ -102,18 +103,19 @@ class _TheyShareScreenState extends State<TheyShareScreen> {
                                         style: currentTheme
                                             .textTheme.displayLarge!
                                             .copyWith(
-                                                color: currentTheme.cardColor,
-                                                fontStyle: FontStyle.italic,
-                                                shadows: <Shadow>[
-                                              Shadow(
-                                                color: currentTheme.textTheme
-                                                    .labelSmall!.color!,
-                                                offset: const Offset(
-                                                  5.0,
-                                                  5.0,
-                                                ),
+                                          color: currentTheme.cardColor,
+                                          fontStyle: FontStyle.italic,
+                                          shadows: <Shadow>[
+                                            Shadow(
+                                              color: currentTheme
+                                                  .textTheme.labelSmall!.color!,
+                                              offset: const Offset(
+                                                5.0,
+                                                5.0,
                                               ),
-                                            ]),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),

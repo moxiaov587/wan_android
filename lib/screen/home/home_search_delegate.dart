@@ -1,4 +1,4 @@
-part of 'home.dart';
+part of 'home_screen.dart';
 
 class HomeSearchDelegate extends CustomSearchDelegate<void> {
   @override
@@ -8,7 +8,11 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
         style: ButtonStyle(
           padding: ButtonStyleButton.allOrNull<EdgeInsets>(
             const EdgeInsets.fromLTRB(
-                0.0, kStyleUint2, kStyleUint3, kStyleUint2),
+              0.0,
+              kStyleUint2,
+              kStyleUint3,
+              kStyleUint2,
+            ),
           ),
           overlayColor: ButtonStyleButton.allOrNull<Color>(
             Colors.transparent,
@@ -24,7 +28,7 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
         onPressed: () {
           close(context, null);
         },
-      )
+      ),
     ];
   }
 
@@ -151,57 +155,60 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
 
     return CustomScrollView(
       slivers: <Widget>[
-        ref.watch(searchHistoryProvider).whenOrNull((List<SearchHistory> list) {
-              if (list.isEmpty) {
-                return searchHistoryEmpty;
-              } else {
-                return SliverPadding(
-                  padding: AppTheme.bodyPaddingOnlyHorizontal,
-                  sliver: SliverToBoxAdapter(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text(
-                              S.of(context).searchHistory,
-                              style: currentTheme.textTheme.titleSmall,
-                            ),
-                            IconButton(
-                              padding: EdgeInsets.zero,
-                              alignment: Alignment.centerRight,
-                              splashColor: Colors.transparent,
-                              onPressed: () async {
-                                await HiveBoxes.searchHistoryBox.clear();
-                                ref
-                                    .read(searchHistoryProvider.notifier)
-                                    .initData();
-                              },
-                              icon: const Icon(IconFontIcons.deleteLine),
-                            ),
-                          ],
+        ref.watch(searchHistoryProvider).whenOrNull(
+              (List<SearchHistory> list) {
+                return list.isEmpty
+                    ? searchHistoryEmpty
+                    : SliverPadding(
+                        padding: AppTheme.bodyPaddingOnlyHorizontal,
+                        sliver: SliverToBoxAdapter(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text(
+                                    S.of(context).searchHistory,
+                                    style: currentTheme.textTheme.titleSmall,
+                                  ),
+                                  IconButton(
+                                    padding: EdgeInsets.zero,
+                                    alignment: Alignment.centerRight,
+                                    splashColor: Colors.transparent,
+                                    onPressed: () async {
+                                      await HiveBoxes.searchHistoryBox.clear();
+                                      ref
+                                          .read(searchHistoryProvider.notifier)
+                                          .initData();
+                                    },
+                                    icon: const Icon(
+                                      IconFontIcons.deleteLine,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Wrap(
+                                spacing: wrapSpace,
+                                runSpacing: wrapSpace,
+                                children: list.reversed
+                                    .map(
+                                      (SearchHistory e) => CapsuleInk(
+                                        child: Text(e.keyword),
+                                        onTap: () {
+                                          widget.onTap.call(e.keyword);
+                                        },
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            ],
+                          ),
                         ),
-                        Wrap(
-                          spacing: wrapSpace,
-                          runSpacing: wrapSpace,
-                          children: list.reversed
-                              .map(
-                                (SearchHistory e) => CapsuleInk(
-                                  child: Text(e.keyword),
-                                  onTap: () {
-                                    widget.onTap.call(e.keyword);
-                                  },
-                                ),
-                              )
-                              .toList(),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }
-            }) ??
+                      );
+              },
+            ) ??
             searchHistoryEmpty,
         SliverPadding(
           padding: AppTheme.bodyPadding,
@@ -243,7 +250,7 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
                             onTap: ref
                                 .read(searchPopularKeywordProvider.notifier)
                                 .initData,
-                          )
+                          ),
                         ],
                       ),
                 ),

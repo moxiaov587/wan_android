@@ -4,44 +4,32 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/l10n/generated/l10n.dart';
 import '../../app/provider/view_state.dart';
 import '../../app/provider/widget/provider_widget.dart';
-import '../../app/theme/theme.dart';
+import '../../app/theme/app_theme.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
 import '../../contacts/unicode.dart';
 import '../../database/hive_boxes.dart';
 import '../../extensions/extensions.dart';
 import '../../model/models.dart';
-import '../../navigator/router_delegate.dart';
+import '../../navigator/app_router_delegate.dart';
 import '../../screen/authorized/provider/authorized_provider.dart';
 import '../../screen/provider/locale_provider.dart';
 import '../../screen/provider/theme_provider.dart';
-import '../../utils/dialog.dart';
-import '../../utils/screen.dart';
+import '../../utils/dialog_utils.dart';
+import '../../utils/screen_utils.dart';
 import '../../widget/animated_counter.dart';
 import '../../widget/custom_sliver_child_builder_delegate.dart';
 import '../../widget/gap.dart';
 import 'provider/drawer_provider.dart';
 
-export 'my_collections/my_collections.dart';
-export 'my_share/my_share.dart';
+export 'my_collections/my_collections_screen.dart';
+export 'my_share/my_share_screen.dart';
 
-part 'about.dart';
-part 'languages.dart';
-part 'my_points.dart';
-part 'rank.dart';
-part 'settings.dart';
-
-class ListTileConfig {
-  ListTileConfig({
-    required this.iconData,
-    required this.title,
-    required this.onTap,
-  });
-
-  final IconData iconData;
-  final String title;
-  final VoidCallback onTap;
-}
+part 'about_screen.dart';
+part 'languages_screen.dart';
+part 'my_points_screen.dart';
+part 'rank_screen.dart';
+part 'settings_screen.dart';
 
 class HomeDrawer extends StatefulWidget {
   const HomeDrawer({Key? key}) : super(key: key);
@@ -93,6 +81,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
     ];
 
     const double avatarRadius = 30.0;
+
     return Drawer(
       elevation: 0.0,
       child: CustomScrollView(
@@ -126,8 +115,10 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   Consumer(
                     builder: (_, WidgetRef ref, __) {
                       final String? nickname = ref.watch(
-                          authorizedProvider.select(
-                              (UserInfoModel? value) => value?.user.username));
+                        authorizedProvider.select(
+                          (UserInfoModel? value) => value?.user.username,
+                        ),
+                      );
 
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -169,6 +160,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
               itemCount: configs.length,
               itemBuilder: (_, int index) {
                 final ListTileConfig config = configs[index];
+
                 return ListTile(
                   minLeadingWidth: 24.0,
                   leading: Icon(config.iconData),
@@ -212,12 +204,12 @@ class _HomeDrawerState extends State<HomeDrawer> {
                         );
                       },
                       icon: const Icon(IconFontIcons.settingsLine),
-                    )
+                    ),
                   ],
                 ),
                 SizedBox(
                   height: ScreenUtils.bottomSafeHeight,
-                )
+                ),
               ],
             ),
           ),
@@ -225,6 +217,18 @@ class _HomeDrawerState extends State<HomeDrawer> {
       ),
     );
   }
+}
+
+class ListTileConfig {
+  ListTileConfig({
+    required this.iconData,
+    required this.title,
+    required this.onTap,
+  });
+
+  final IconData iconData;
+  final String title;
+  final VoidCallback onTap;
 }
 
 class _LevelTag extends StatelessWidget {

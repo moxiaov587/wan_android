@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:flutter/material.dart';
 
-import '../app/theme/theme.dart';
+import '../app/theme/app_theme.dart';
 import '../contacts/instances.dart';
 import '../widget/gap.dart';
 
@@ -36,6 +36,7 @@ class _PopupMenuState extends State<PopupMenu> {
       0,
       widget.children.length * 2 - 1,
     );
+
     return CustomPopupMenu(
       controller: _controller,
       verticalMargin: 0.0,
@@ -58,7 +59,7 @@ class _PopupMenuState extends State<PopupMenu> {
                       },
                     )
                   else
-                    const Divider()
+                    const Divider(),
               ],
             ),
           ),

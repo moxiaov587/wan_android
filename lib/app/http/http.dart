@@ -8,12 +8,12 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'cache_interceptors.dart';
-import 'error_interceptors.dart';
-import 'logging_interceptors.dart';
+import 'cache_interceptor.dart';
+import 'error_interceptor.dart';
+import 'logging_interceptor.dart';
 
-class HttpUtils {
-  const HttpUtils._();
+class Http {
+  const Http._();
 
   static const bool _isProxyEnabled = false;
   static const String _proxyDestination = '';
@@ -23,17 +23,8 @@ class HttpUtils {
   static final Dio dio = Dio(_options);
   static final Dio tokenDio = Dio(_options);
 
-  static late PersistCookieJar cookieJar;
-  static late CookieManager cookieManager;
-
-  static Future<void> updateToken() async {
-    dio
-      ..lock()
-      ..clear();
-
-    /// TODO:
-    dio.unlock();
-  }
+  static late final PersistCookieJar cookieJar;
+  static late final CookieManager cookieManager;
 
   static Future<void> initConfig() async {
     if (!kIsWeb) {
@@ -51,8 +42,8 @@ class HttpUtils {
     dio.options.baseUrl = 'https://www.wanandroid.com';
 
     dio.interceptors
-      ..add(ErrorInterceptors())
-      ..add(CacheInterceptors());
+      ..add(ErrorInterceptor())
+      ..add(CacheInterceptor());
 
     if (kDebugMode && shouldLogRequest) {
       dio.interceptors.add(LoggingInterceptor());
@@ -61,18 +52,19 @@ class HttpUtils {
   }
 
   static Future<void> initCookieManagement() async {
-    final Directory _d = await getTemporaryDirectory();
-    if (!Directory('${_d.path}/cookie_jar').existsSync()) {
-      Directory('${_d.path}/cookie_jar').createSync();
+    final Directory directory = await getTemporaryDirectory();
+    if (!Directory('${directory.path}/cookie_jar').existsSync()) {
+      Directory('${directory.path}/cookie_jar').createSync();
     }
 
     cookieJar = PersistCookieJar(
-      storage: FileStorage('${_d.path}/cookie_jar'),
+      storage: FileStorage('${directory.path}/cookie_jar'),
       ignoreExpires: true,
     );
     cookieManager = CookieManager(cookieJar);
   }
 
+  // ignore: long-parameter-list
   static Future<Response<T>> get<T>(
     String url, {
     Map<String, dynamic>? queryParameters,
@@ -88,6 +80,7 @@ class HttpUtils {
         queryParameters: queryParameters,
         cancelToken: cancelToken,
         options: (options ?? Options()).copyWith(
+          headers: headers,
           extra: <String, dynamic>{
             ...options?.extra ?? <String, dynamic>{},
             ..._buildMethodGetCacheOptionsExtra(
@@ -99,6 +92,7 @@ class HttpUtils {
         ),
       );
 
+  // ignore: long-parameter-list
   static Future<Response<T>> post<T>(
     String url, {
     dynamic data,
@@ -111,10 +105,13 @@ class HttpUtils {
         url,
         queryParameters: queryParameters,
         data: data,
-        options: options,
+        options: (options ?? Options()).copyWith(
+          headers: headers,
+        ),
         cancelToken: cancelToken,
       );
 
+  // ignore: long-parameter-list
   static Future<Response<T>> delete<T>(
     String url, {
     Map<String, dynamic>? data,
@@ -128,7 +125,9 @@ class HttpUtils {
         data: data,
         queryParameters: queryParameters,
         cancelToken: cancelToken,
-        options: options,
+        options: (options ?? Options()).copyWith(
+          headers: headers,
+        ),
       );
 
   static BaseOptions get _options {

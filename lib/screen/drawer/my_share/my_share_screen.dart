@@ -5,13 +5,13 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import '../../../app/l10n/generated/l10n.dart';
 import '../../../app/provider/view_state.dart';
 import '../../../app/provider/widget/provider_widget.dart';
-import '../../../app/theme/theme.dart';
+import '../../../app/theme/app_theme.dart';
 import '../../../contacts/icon_font_icons.dart';
 import '../../../contacts/instances.dart';
 import '../../../extensions/extensions.dart';
 import '../../../model/models.dart';
-import '../../../navigator/router_delegate.dart';
-import '../../../utils/screen.dart';
+import '../../../navigator/app_router_delegate.dart';
+import '../../../utils/screen_utils.dart';
 import '../../../widget/article.dart';
 import '../../../widget/custom_sliver_child_builder_delegate.dart';
 import '../../../widget/custom_text_form_field.dart';
@@ -88,16 +88,17 @@ class _ShareArticleTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ArticleModel? article = ref.read(_currentShareArticleProvider);
+
     return article == null || article.isDestroy
         ? const SizedBox.shrink()
         : Slidable(
             key: ValueKey<int>(article.id),
             endActionPane: ActionPane(
-              extentRatio: .45,
+              extentRatio: 0.45,
               motion: const ScrollMotion(),
               dismissible: DismissiblePane(
                 closeOnCancel: true,
-                dismissThreshold: .65,
+                dismissThreshold: 0.65,
                 dismissalDuration: const Duration(milliseconds: 500),
                 onDismissed: () {
                   ref
@@ -112,8 +113,8 @@ class _ShareArticleTile extends ConsumerWidget {
               ),
               children: <Widget>[
                 DismissibleSlidableAction(
-                  slidableExtentRatio: .25,
-                  dismissiblePaneThreshold: .65,
+                  slidableExtentRatio: 0.25,
+                  dismissiblePaneThreshold: 0.65,
                   label: '',
                   color: currentTheme.colorScheme.tertiary,
                   onTap: () {},

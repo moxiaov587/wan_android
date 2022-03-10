@@ -1,4 +1,4 @@
-part of 'drawer.dart';
+part of 'home_drawer.dart';
 
 class MyPointsScreen extends StatelessWidget {
   const MyPointsScreen({Key? key}) : super(key: key);
@@ -61,28 +61,29 @@ class MyPointsScreen extends StatelessWidget {
                 key: const ValueKey<String>('total_points_widget'),
                 padding: AppTheme.bodyPadding * 2,
                 sliver: SliverToBoxAdapter(
-                    child: ColoredBox(
-                  color: currentTheme.scaffoldBackgroundColor,
-                  child: Column(
-                    children: <Widget>[
-                      Consumer(
-                        builder: (_, WidgetRef ref, __) => AnimatedCounter(
-                          count: ref
-                              .read(authorizedProvider)!
-                              .userPoints
-                              .coinCount,
+                  child: ColoredBox(
+                    color: currentTheme.scaffoldBackgroundColor,
+                    child: Column(
+                      children: <Widget>[
+                        Consumer(
+                          builder: (_, WidgetRef ref, __) => AnimatedCounter(
+                            count: ref
+                                .read(authorizedProvider)!
+                                .userPoints
+                                .coinCount,
+                          ),
                         ),
-                      ),
-                      Gap(
-                        size: GapSize.big,
-                      ),
-                      Text(
-                        S.of(context).totalPoints,
-                        style: currentTheme.textTheme.titleMedium,
-                      ),
-                    ],
+                        Gap(
+                          size: GapSize.big,
+                        ),
+                        Text(
+                          S.of(context).totalPoints,
+                          style: currentTheme.textTheme.titleMedium,
+                        ),
+                      ],
+                    ),
                   ),
-                )),
+                ),
               ),
             ],
           ),
