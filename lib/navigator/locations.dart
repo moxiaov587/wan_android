@@ -5,7 +5,6 @@ import '../screen/article/article_screen.dart';
 import '../screen/authorized/login_screen.dart';
 import '../screen/drawer/home_drawer.dart';
 import '../screen/home/home_screen.dart';
-import '../screen/splash_screen.dart';
 import '../screen/they/they.dart';
 import '../screen/unknown_screen.dart';
 import '../utils/log_utils.dart';

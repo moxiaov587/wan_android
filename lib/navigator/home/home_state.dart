@@ -22,7 +22,6 @@ class HomeState extends ChangeNotifier
     int? userId,
     String? author,
     int? articleId,
-    bool showSplash = false,
     bool isUnknown = false,
   })  : _initialPath = initialPath,
         _showProjectTypeBottomSheet = showProjectTypeBottomSheet,
@@ -43,7 +42,6 @@ class HomeState extends ChangeNotifier
         _userId = userId,
         _author = author,
         _articleId = articleId,
-        _showSplash = showSplash,
         _isUnknown = isUnknown;
 
   factory HomeState.fromJson(Map<String, dynamic> json) {
@@ -70,7 +68,6 @@ class HomeState extends ChangeNotifier
       userId: json['userId'] as int?,
       author: json['author'] as String?,
       articleId: json['articleId'] as int?,
-      showSplash: json['showSplash'] as bool? ?? false,
       isUnknown: json['isUnknown'] as bool? ?? false,
     );
   }
@@ -95,7 +92,6 @@ class HomeState extends ChangeNotifier
         'userId': _userId,
         'author': _author,
         'articleId': _articleId,
-        'showSplash': _showSplash,
         'isUnknown': _isUnknown,
       };
 
@@ -162,9 +158,6 @@ class HomeState extends ChangeNotifier
 
   bool get isArticle => _articleId != null;
 
-  bool _showSplash;
-  bool get showSplash => _showSplash;
-
   bool _isUnknown;
   bool get isUnknown => _isUnknown;
 
@@ -189,7 +182,6 @@ class HomeState extends ChangeNotifier
     int? userId,
     String? author,
     int? articleId,
-    bool? showSplash,
     bool? isUnknown,
     bool rebuild = true,
   }) {
@@ -270,10 +262,6 @@ class HomeState extends ChangeNotifier
       _articleId = articleId == -1 ? null : articleId;
     }
 
-    if (showSplash != null) {
-      _showSplash = showSplash;
-    }
-
     if (isUnknown != null) {
       _isUnknown = isUnknown;
     }
@@ -303,7 +291,6 @@ class HomeState extends ChangeNotifier
     int? userId,
     String? author,
     int? articleId,
-    bool? showSplash,
     bool? isUnknown,
   }) {
     return HomeState(
@@ -329,7 +316,6 @@ class HomeState extends ChangeNotifier
       userId: userId ?? _userId,
       author: author ?? _author,
       articleId: articleId ?? _articleId,
-      showSplash: showSplash ?? _showSplash,
       isUnknown: isUnknown ?? _isUnknown,
     );
   }
@@ -502,12 +488,6 @@ class HomeState extends ChangeNotifier
       );
     }
 
-    if (uriString == RouterName.splash.location) {
-      return homeState.copyWith(
-        showSplash: true,
-      );
-    }
-
     return homeState.copyWith(
       isUnknown: true,
     );
@@ -519,13 +499,6 @@ class HomeState extends ChangeNotifier
     LogUtils.d('$runtimeType to routeInformation');
 
     /// The order here should be reversed from the Location [buildPages]
-    if (showSplash) {
-      return RouteInformation(
-        location: RouterName.splash.location,
-        state: toJson(),
-      );
-    }
-
     if (isUnknown) {
       return RouteInformation(
         location: RouterName.unknown.location,
