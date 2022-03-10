@@ -8,6 +8,9 @@ class API {
   static String article({required int pageNum}) =>
       '/article/list/$pageNum/json';
 
+  static String articleInfo({required int articleId}) =>
+      '/article/$articleId/info/json';
+
   static String square({required int pageNum}) =>
       '/user_article/list/$pageNum/json';
 

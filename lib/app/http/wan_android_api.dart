@@ -81,6 +81,22 @@ class WanAndroidAPI {
     );
   }
 
+  static Future<ArticleModel?> fetchArticleInfo({
+    required int articleId,
+    CancelToken? cancelToken,
+  }) async {
+    final Response<dynamic> response = await Http.get<dynamic>(
+      API.articleInfo(articleId: articleId),
+      cancelToken: cancelToken,
+    );
+
+    if (response.data == null) {
+      return null;
+    }
+
+    return ArticleModel.fromJson(response.data as Map<String, dynamic>);
+  }
+
   static Future<List<ProjectTypeModel>> fetchProjectTypes({
     CancelToken? cancelToken,
   }) async {
