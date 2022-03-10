@@ -15,6 +15,7 @@ import '../../navigator/app_router_delegate.dart';
 import '../../screen/authorized/provider/authorized_provider.dart';
 import '../../utils/debounce_throttle.dart';
 import '../../utils/dialog_utils.dart';
+import '../../utils/html_parse_utils.dart';
 import '../../utils/screen_utils.dart';
 import '../../widget/popup_menu.dart';
 import '../../widget/view_state_widget.dart';
@@ -101,8 +102,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
       appBar: AppBar(
         title: Consumer(
           builder: (_, WidgetRef ref, __) {
-            final String? title = ref
-                .watch(
+            final String? title = ref.watch(
               provider.select(
                 (ViewState<WebViewModel> value) => value.when(
                   (WebViewModel? value) => value?.title,
@@ -110,21 +110,10 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                   error: (_, __, ___) => S.of(context).loadFailed,
                 ),
               ),
-            )
-                ?.replaceAllMapped(
-              RegExp(r'<[a-zA-Z]+.*?>([\s\S]*?)</[a-zA-Z]*?>'),
-              (Match match) {
-                final String? value = match.group(1);
-
-                if (value != null) {
-                  return value;
-                }
-
-                return '';
-              },
             );
 
-            return Text(title ?? S.of(context).unknown);
+            return Text(HTMLParseUtils.parseArticleTitle(title: title) ??
+                S.of(context).unknown);
           },
         ),
         actions: <Widget>[
