@@ -45,6 +45,28 @@ flutter_native_splash:
   #image_dark: assets/splash-invert.png
   image_dark: assets/splash.png
 
+  # Android 12 handles the splash screen differently than previous versions.  Please visit
+  # https://developer.android.com/guide/topics/ui/splash-screen
+  # Following are Android 12 specific parameter.
+  android_12:
+    # The image parameter sets the splash screen icon image.  If this parameter is not specified,
+    # the app's launcher icon will be used instead.
+    # Please note that the splash screen will be clipped to a circle on the center of the screen.
+    # App icon with an icon background: This should be 960×960 pixels, and fit within a circle
+    # 640 pixels in diameter.
+    # App icon without an icon background: This should be 1152×1152 pixels, and fit within a circle
+    # 768 pixels in diameter.
+    #image: assets/android12splash.png
+
+    # App icon background color.
+    icon_background_color: "#ffffff"
+
+    # The image_dark parameter and icon_background_color_dark set the image and icon background
+    # color when the device is in dark mode. If they are not specified, the app will use the
+    # parameters from above.
+    #image_dark: assets/android12splash-invert.png
+    icon_background_color_dark: "#17171a"
+
   # The android, ios and web parameters can be used to disable generating a splash screen on a given
   # platform.
   android: true
@@ -75,7 +97,7 @@ flutter_native_splash:
   #       To show the notification bar, add the following code to your Flutter app:
   #       WidgetsFlutterBinding.ensureInitialized();
   #       SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom, SystemUiOverlay.top]);
-  fullscreen: true
+  # fullscreen: true
   
   # If you have changed the name(s) of your info.plist file(s), you can specify the filename(s) 
   # with the info_plist_files parameter.  Remove only the # characters in the three lines below,
