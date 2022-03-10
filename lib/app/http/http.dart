@@ -12,6 +12,8 @@ import 'cache_interceptor.dart';
 import 'error_interceptor.dart';
 import 'logging_interceptor.dart';
 
+const String kBaseUrl = 'https://www.wanandroid.com';
+
 class Http {
   const Http._();
 
@@ -39,7 +41,7 @@ class Http {
           .onHttpClientCreate = _clientCreate;
     }
 
-    dio.options.baseUrl = 'https://www.wanandroid.com';
+    dio.options.baseUrl = kBaseUrl;
 
     dio.interceptors
       ..add(ErrorInterceptor())
