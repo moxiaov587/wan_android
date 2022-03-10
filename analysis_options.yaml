@@ -19,6 +19,8 @@
 # Android Studio, and the `flutter analyze` command.
 
 analyzer:
+  plugins:
+    - dart_code_metrics
   strong-mode:
     implicit-casts: false
     implicit-dynamic: false
@@ -47,7 +49,81 @@ analyzer:
     - "**.g.dart"
     - "**.freezed.dart"
       # Ignore i10n generated files
-    - "lib/app/l10n/generated/*"
+    - "lib/app/l10n/generated/**"
+    - "lib/app/shape/convex_notched_rectangle.dart"
+
+dart_code_metrics:
+  anti-patterns:
+    - long-method
+    - long-parameter-list
+  metrics:
+    cyclomatic-complexity: 20
+    maintainability-index: 50
+    maximum-nesting: 5
+    number-of-parameters: 5
+    source-lines-of-code: 50
+    technical-debt:
+      threshold: 1
+      todo-cost: 4
+      ignore-cost: 8
+      ignore-for-file-cost: 16
+      as-dynamic-cost: 16
+      deprecated-annotations-cost: 2
+      file-nullsafety-migration-cost: 2
+      unit-type: "hours"
+  metrics-exclude:
+      # Ignore model generated files
+    - "**.g.dart"
+    - "**.freezed.dart"
+      # Ignore i10n generated files
+    - "lib/app/l10n/generated/**"
+    - "lib/app/shape/convex_notched_rectangle.dart"
+  rules:
+    - always-remove-listener
+    - avoid-collection-methods-with-unrelated-types
+    # - avoid-dynamic:
+    - avoid-global-state
+    # - avoid-late-keyword:
+    - avoid-missing-enum-constant-in-map
+    - avoid-unnecessary-type-assertions
+    - avoid-unnecessary-type-casts
+    - avoid-unused-parameters
+    - binary-expression-operand-order
+    - double-literal-format
+    - newline-before-return
+    - no-boolean-literal-compare
+    # - no-empty-block
+    - no-equal-then-else
+    - no-object-declaration
+    - prefer-async-await
+    - prefer-conditional-expressions
+    - prefer-correct-identifier-length:
+        exceptions:
+          - id
+          - ok
+          - qa
+          - i
+    - prefer-correct-type-name:
+        excluded: [ '_QA' ]
+        max-length: 44
+    - prefer-first
+    - prefer-last
+    - prefer-match-file-name:
+        exclude:
+          - "**.g.dart"
+          - "**.freezed.dart"
+            # Ignore i10n generated files
+          - "lib/app/l10n/generated/**"
+          - "lib/**/provider/**"
+          - "lib/main.dart"
+    - prefer-trailing-comma
+  exclude:
+    - "bin/cache/**"
+      # Ignore model generated files
+    - "**.g.dart"
+    - "**.freezed.dart"
+      # Ignore i10n generated files
+    - "lib/app/l10n/generated/**"
 
 linter:
   rules:
