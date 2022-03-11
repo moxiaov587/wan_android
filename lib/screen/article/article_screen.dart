@@ -6,6 +6,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../app/http/http.dart';
 import '../../app/l10n/generated/l10n.dart';
 import '../../app/provider/view_state.dart';
 import '../../contacts/icon_font_icons.dart';
@@ -25,11 +26,9 @@ class ArticleScreen extends ConsumerStatefulWidget {
   const ArticleScreen({
     Key? key,
     required this.id,
-    this.withCookie = false,
   }) : super(key: key);
 
   final int id;
-  final bool withCookie;
 
   @override
   _ArticleScreenState createState() => _ArticleScreenState();
@@ -171,8 +170,8 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                           ),
                           initialOptions: InAppWebViewGroupOptions(
                             crossPlatform: InAppWebViewOptions(
-                              cacheEnabled: widget.withCookie,
-                              clearCache: !widget.withCookie,
+                              cacheEnabled: article.withCookie,
+                              clearCache: !article.withCookie,
                               horizontalScrollBarEnabled: false,
                               verticalScrollBarEnabled: false,
                               javaScriptCanOpenWindowsAutomatically: true,
@@ -224,6 +223,11 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                           },
                           onProgressChanged: (_, int progress) {
                             _progress.add(progress / 100);
+                          },
+                          onLoadStart: (_, Uri? uri) {
+                            if (article.withCookie) {
+                              Http.syncCookies(uri);
+                            }
                           },
                           onLoadStop: (
                             InAppWebViewController controller,

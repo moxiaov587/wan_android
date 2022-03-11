@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/http/error_interceptor.dart' show AppException;
-import '../../../app/http/http.dart' show kBaseUrl;
+import '../../../app/http/http.dart' show kDomain, kBaseUrl;
 import '../../../app/http/wan_android_api.dart';
 import '../../../app/l10n/generated/l10n.dart';
 import '../../../app/provider/provider.dart';
@@ -205,8 +205,10 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
   }
 
   String formatArticleLink(String link) {
-    if (link.contains('http://')) {
-      return link.replaceFirstMapped('http://', (_) => 'https://');
+    const String httpUrl = 'http://$kDomain';
+
+    if (link.contains(httpUrl)) {
+      return link.replaceFirstMapped(httpUrl, (_) => 'https://$kDomain');
     } else if (link.startsWith('/')) {
       return '$kBaseUrl$link';
     }
@@ -251,7 +253,9 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
         await findArticle();
 
     if (webViewModel != null) {
-      return webViewModel;
+      return webViewModel.copyWith(
+        withCookie: webViewModel.link.contains(kDomain),
+      );
     } else {
       throw AppException(
         errorCode: 404,

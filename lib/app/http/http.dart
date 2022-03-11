@@ -6,13 +6,18 @@ import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart' as web_view
+    show CookieManager, HTTPCookieSameSitePolicy;
 import 'package:path_provider/path_provider.dart';
+
+import '../../utils/log_utils.dart';
 
 import 'cache_interceptor.dart';
 import 'error_interceptor.dart';
 import 'logging_interceptor.dart';
 
-const String kBaseUrl = 'https://www.wanandroid.com';
+const String kDomain = 'www.wanandroid.com';
+const String kBaseUrl = 'https://$kDomain';
 
 class Http {
   const Http._();
@@ -27,6 +32,9 @@ class Http {
 
   static late final PersistCookieJar cookieJar;
   static late final CookieManager cookieManager;
+
+  static final web_view.CookieManager webViewCookieManager =
+      web_view.CookieManager.instance();
 
   static Future<void> initConfig() async {
     if (!kIsWeb) {
@@ -64,6 +72,31 @@ class Http {
       ignoreExpires: true,
     );
     cookieManager = CookieManager(cookieJar);
+  }
+
+  static Future<void> _setCookie(Cookie cookie) =>
+      webViewCookieManager.setCookie(
+        url: Uri.parse(kBaseUrl),
+        name: cookie.name,
+        value: cookie.value,
+        domain: cookie.domain ?? kDomain,
+        path: cookie.path ?? '/',
+        expiresDate: cookie.expires?.millisecondsSinceEpoch,
+        isSecure: cookie.secure,
+        maxAge: cookie.maxAge,
+        sameSite: web_view.HTTPCookieSameSitePolicy.LAX,
+      );
+
+  /// Sync local cookies to webview under the same domain name
+  static Future<void> syncCookies(Uri? uri) async {
+    try {
+      final List<Cookie> cookies =
+          await cookieJar.loadForRequest(uri ?? Uri.parse(kBaseUrl));
+
+      Future.forEach<Cookie>(cookies, _setCookie);
+    } catch (e) {
+      LogUtils.e("Error when sync WebView's cookies: $e");
+    }
   }
 
   // ignore: long-parameter-list
