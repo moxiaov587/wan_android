@@ -142,7 +142,7 @@ class HomeLocation extends BeamLocation<HomeState> {
               settings: settings,
             );
           },
-          child: const SizedBox.shrink(),
+          child: nil,
           onPopPage: (
             _,
             __,

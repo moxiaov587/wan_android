@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart'
     hide RefreshIndicator, RefreshIndicatorState;
+import 'package:nil/nil.dart' show nil;
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../contacts/icon_font_icons.dart';
@@ -125,7 +126,7 @@ class _DropDownListHeaderState
   @override
   Widget buildContent(BuildContext context, RefreshStatus? mode) {
     final Widget textWidget = _buildText(mode);
-    final Widget iconWidget = _buildIcon(mode) ?? const SizedBox.shrink();
+    final Widget iconWidget = _buildIcon(mode) ?? nil;
 
     return SizedBox(
       height: widget.height,
@@ -240,7 +241,7 @@ class _LoadMoreListFooterState extends LoadIndicatorState<LoadMoreListFooter> {
   @override
   Widget buildContent(BuildContext context, LoadStatus? mode) {
     final Widget textWidget = _buildText(mode);
-    final Widget iconWidget = _buildIcon(mode) ?? const SizedBox.shrink();
+    final Widget iconWidget = _buildIcon(mode) ?? nil;
 
     return SizedBox(
       height: widget.height,

@@ -148,7 +148,7 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
   @override
   Widget build(BuildContext context) {
     const Widget searchHistoryEmpty = SliverToBoxAdapter(
-      child: SizedBox.shrink(),
+      child: nil,
     );
 
     final double wrapSpace = AppTheme.bodyPaddingOnlyVertical.vertical / 2;

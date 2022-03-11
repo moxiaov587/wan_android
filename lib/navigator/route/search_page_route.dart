@@ -212,8 +212,7 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
         data: theme,
         child: Scaffold(
           appBar: AppBar(
-            leading: widget.delegate.buildLeading(context) ??
-                const SizedBox.shrink(),
+            leading: widget.delegate.buildLeading(context) ?? nil,
             leadingWidth:
                 widget.delegate.buildLeading(context) == null ? 0.0 : null,
             title: Transform.translate(
@@ -263,7 +262,7 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
                               )
                             : child!;
                       },
-                      child: const SizedBox.shrink(),
+                      child: nil,
                     ),
                   ),
                 ),

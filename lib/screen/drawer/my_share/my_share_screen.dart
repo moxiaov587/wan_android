@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:nil/nil.dart' show nil;
 
 import '../../../app/l10n/generated/l10n.dart';
 import '../../../app/provider/view_state.dart';
@@ -90,7 +91,7 @@ class _ShareArticleTile extends ConsumerWidget {
     final ArticleModel? article = ref.read(_currentShareArticleProvider);
 
     return article == null || article.isDestroy
-        ? const SizedBox.shrink()
+        ? nil
         : Slidable(
             key: ValueKey<int>(article.id),
             endActionPane: ActionPane(

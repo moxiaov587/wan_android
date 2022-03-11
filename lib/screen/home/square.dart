@@ -18,7 +18,7 @@ class _SquareState extends State<_Square> with AutomaticKeepAliveClientMixin {
     return Column(
       children: <Widget>[
         AppBar(
-          leading: const SizedBox.shrink(),
+          leading: nil,
           leadingWidth: 0.0,
           title: Text(S.of(context).square),
         ),

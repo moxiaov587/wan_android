@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nil/nil.dart' show nil;
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/http/http.dart';
@@ -150,7 +151,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                       ],
                     ),
                   ) ??
-              const SizedBox.shrink(),
+              nil,
         ],
       ),
       body: ref.watch(provider).when(
@@ -307,7 +308,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                           child: child,
                         );
                       },
-                      child: showKeyboard ? const SizedBox.shrink() : child,
+                      child: showKeyboard ? nil : child,
                     );
                   },
                   child: DecoratedBox(

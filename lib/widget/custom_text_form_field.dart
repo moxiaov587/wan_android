@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'
     show MaxLengthEnforcement, TextInputFormatter;
+import 'package:nil/nil.dart' show nil;
 
 import '../contacts/icon_font_icons.dart';
 import '../contacts/instances.dart';
@@ -156,7 +157,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                   )
                 : child!;
           },
-          child: const SizedBox.shrink(),
+          child: nil,
         ),
       ),
       keyboardType: widget.keyboardType,

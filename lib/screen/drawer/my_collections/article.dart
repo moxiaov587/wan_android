@@ -170,6 +170,6 @@ class _CollectedArticleTile extends ConsumerWidget {
               ),
             ),
           )
-        : const SizedBox.shrink();
+        : nil;
   }
 }

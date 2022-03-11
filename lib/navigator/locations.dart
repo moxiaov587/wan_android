@@ -1,5 +1,6 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
+import 'package:nil/nil.dart' show nil;
 
 import '../screen/article/article_screen.dart';
 import '../screen/authorized/login_screen.dart';

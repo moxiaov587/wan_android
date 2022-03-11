@@ -125,6 +125,6 @@ class _CollectedWebsiteTile extends ConsumerWidget {
               ),
             ),
           )
-        : const SizedBox.shrink();
+        : nil;
   }
 }

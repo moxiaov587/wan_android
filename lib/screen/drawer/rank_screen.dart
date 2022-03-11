@@ -100,7 +100,7 @@ class RankScreen extends StatelessWidget {
                     ) ??
                     empty!;
               },
-              child: const SizedBox.shrink(),
+              child: nil,
             ),
           ),
         ],

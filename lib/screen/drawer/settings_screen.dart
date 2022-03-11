@@ -59,7 +59,7 @@ class SettingsScreen extends StatelessWidget {
               child: Consumer(
                 builder: (_, WidgetRef ref, Widget? title) =>
                     ref.watch(authorizedProvider) == null
-                        ? const SizedBox.shrink()
+                        ? nil
                         : ListTile(
                             iconColor: currentTheme.errorColor,
                             textColor: currentTheme.errorColor,

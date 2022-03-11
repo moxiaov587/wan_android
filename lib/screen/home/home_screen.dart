@@ -5,6 +5,7 @@ import 'package:extended_sliver/extended_sliver.dart';
 import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nil/nil.dart' show nil;
 import 'package:palette_generator/palette_generator.dart';
 
 import '../../../app/provider/view_state.dart';
@@ -30,10 +31,10 @@ import '../../widget/gap.dart';
 import '../drawer/home_drawer.dart';
 import 'provider/home_provider.dart';
 
+part 'home_search_delegate.dart';
 part 'project.dart';
 part 'project_type_bottom_sheet.dart';
 part 'qa.dart';
-part 'home_search_delegate.dart';
 part 'square.dart';
 
 const String kSearchOriginParams = 'origin';
@@ -234,7 +235,7 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
         },
         slivers: <Widget>[
           SliverAppBar(
-            leading: const SizedBox.shrink(),
+            leading: nil,
             leadingWidth: 0.0,
             pinned: true,
             expandedHeight: _kExpandedHeight,
@@ -250,7 +251,7 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
                         )
                       : child!;
                 },
-                child: const SizedBox.shrink(),
+                child: nil,
               ),
               background: Consumer(
                 builder: (_, WidgetRef ref, __) {

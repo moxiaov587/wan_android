@@ -18,7 +18,7 @@ class _ProjectState extends State<_Project> with AutomaticKeepAliveClientMixin {
     return Column(
       children: <Widget>[
         AppBar(
-          leading: const SizedBox.shrink(),
+          leading: nil,
           leadingWidth: 0.0,
           title: Text(S.of(context).project),
         ),
