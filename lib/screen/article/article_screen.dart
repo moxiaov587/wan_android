@@ -117,8 +117,19 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
           },
         ),
         actions: <Widget>[
-          ref.watch(provider).whenOrNull(
-                    (WebViewModel? article) => PopupMenu(
+          Consumer(
+            builder: (_, WidgetRef ref, Widget? empty) {
+              final WebViewModel? article = ref.watch(
+                provider.select(
+                  (ViewState<WebViewModel> model) =>
+                      model.whenOrNull<WebViewModel?>(
+                    (WebViewModel? article) => article,
+                  ),
+                ),
+              );
+
+              return article != null
+                  ? PopupMenu(
                       iconData: IconFontIcons.moreFill,
                       children: <PopupMenuItemConfig>[
                         PopupMenuItemConfig(
@@ -126,7 +137,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                           label: S.of(context).copyLink,
                           onTap: () {
                             Clipboard.setData(
-                              ClipboardData(text: article!.link),
+                              ClipboardData(text: article.link),
                             );
                             DialogUtils.success(
                               S.of(context).copiedToClipboard,
@@ -138,7 +149,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                           label: S.of(context).browser,
                           onTap: () async {
                             final String uri =
-                                Uri.parse(article!.link).toString();
+                                Uri.parse(article.link).toString();
                             if (await canLaunch(uri)) {
                               await launch(uri);
                             } else {
@@ -149,9 +160,11 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                           },
                         ),
                       ],
-                    ),
-                  ) ??
-              nil,
+                    )
+                  : empty!;
+            },
+            child: nil,
+          ),
         ],
       ),
       body: ref.watch(provider).when(

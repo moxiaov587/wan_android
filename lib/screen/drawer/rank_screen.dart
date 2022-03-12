@@ -55,8 +55,15 @@ class RankScreen extends StatelessWidget {
             bottom: 0.0,
             child: Consumer(
               builder: (BuildContext context, WidgetRef ref, Widget? empty) {
-                return ref.watch(pointsRankProvider).whenOrNull(
-                      (_, __, ___) {
+                final bool showUserRank = ref.watch(
+                  pointsRankProvider.select(
+                    (RefreshListViewState<UserPointsModel> vm) =>
+                        vm.whenOrNull((_, __, ___) => true) ?? false,
+                  ),
+                );
+
+                return showUserRank
+                    ? Builder(builder: (_) {
                         final UserPointsModel? points =
                             ref.read(authorizedProvider)?.userPoints;
 
@@ -96,9 +103,8 @@ class RankScreen extends StatelessWidget {
                                 ),
                               )
                             : empty!;
-                      },
-                    ) ??
-                    empty!;
+                      })
+                    : const SizedBox.shrink();
               },
               child: nil,
             ),
