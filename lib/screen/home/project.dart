@@ -27,6 +27,11 @@ class _ProjectState extends State<_Project> with AutomaticKeepAliveClientMixin {
               StateNotifierProvider<ProjectNotifier,
                   RefreshListViewState<ArticleModel>>,
               ArticleModel>(
+            paddingVertical: EdgeInsets.only(
+              bottom: currentTheme
+                      .floatingActionButtonTheme.sizeConstraints!.minWidth /
+                  2,
+            ),
             provider: projectArticleProvider,
             onInitState: (Reader reader) {
               reader.call(projectTypesProvider.notifier).initData();

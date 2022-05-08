@@ -20,7 +20,7 @@ class RankScreen extends StatelessWidget {
               AutoDisposeStateNotifierProvider<PointsRankNotifier,
                   RefreshListViewState<UserPointsModel>>,
               UserPointsModel>(
-            paddingBottom: paddingBottom,
+            paddingVertical: EdgeInsets.only(bottom: paddingBottom),
             provider: pointsRankProvider,
             onInitState: (Reader reader) {
               reader.call(pointsRankProvider.notifier).initData();
