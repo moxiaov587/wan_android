@@ -30,6 +30,13 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?> {
     } catch (e, s) {
       final BaseViewStateError error = BaseViewStateError.create(e, s);
 
+      await HiveBoxes.userSettingsBox.putAt(
+        0,
+        (HiveBoxes.uniqueUserSettings ?? UserSettings()).copyWith(
+          isLogin: false,
+        ),
+      );
+
       return error.statusCode?.toString() ?? '-1';
     }
   }
