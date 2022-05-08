@@ -113,6 +113,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
       final Locale? locale = ref.watch(localeProvider);
 
       return MaterialApp.router(
+        onGenerateTitle: (BuildContext context) => S.of(context).appName,
         routeInformationParser: BeamerParser(),
         routerDelegate: AppRouterDelegate.instance.delegate,
         backButtonDispatcher: BeamerBackButtonDispatcher(
