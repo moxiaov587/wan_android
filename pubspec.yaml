@@ -30,7 +30,7 @@ dependencies:
   intl: ^0.17.0
   extended_image: ^6.0.1
   palette_generator: ^0.3.2
-  flutter_smart_dialog: ^3.1.0
+  flutter_smart_dialog: ^4.0.0
   animated_flip_counter: ^0.2.1
   flutter_inappwebview: ^5.3.2
   connectivity_plus: ^2.2.0
@@ -39,7 +39,7 @@ dependencies:
   html: ^0.15.0
   url_launcher: ^6.0.18
   custom_pop_up_menu: ^1.2.3+1
-  flutter_native_splash: ^2.1.0
+  flutter_native_splash: ^2.1.6
   nil: ^1.1.1
 
 dev_dependencies:
