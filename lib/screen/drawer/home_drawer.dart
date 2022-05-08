@@ -91,49 +91,49 @@ class _HomeDrawerState extends State<HomeDrawer> {
             child: DrawerHeader(
               margin: EdgeInsets.zero,
               padding: EdgeInsets.zero,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: IconButton(
-                      onPressed: () {
-                        AppRouterDelegate.instance.currentBeamState.updateWith(
-                          isRank: true,
-                        );
-                      },
-                      icon: const Icon(IconFontIcons.honourLine),
+              child: Consumer(
+                builder: (_, WidgetRef ref, Widget? child) {
+                  final String? name = ref.watch(
+                    authorizedProvider.select(
+                      (UserInfoModel? userInfo) =>
+                          userInfo?.user.nickname.strictValue ??
+                          userInfo?.user.publicName.strictValue,
                     ),
-                  ),
-                  const CircleAvatar(
-                    radius: avatarRadius,
-                    child: Icon(
-                      IconFontIcons.userFill,
-                      size: avatarRadius,
-                    ),
-                  ),
-                  Gap(),
-                  Consumer(
-                    builder: (_, WidgetRef ref, __) {
-                      final String? nickname = ref.watch(
-                        authorizedProvider.select(
-                          (UserInfoModel? value) => value?.user.username,
-                        ),
-                      );
+                  );
 
-                      return Row(
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      child!,
+                      CircleAvatar(
+                        backgroundColor: currentTheme.dividerColor,
+                        radius: avatarRadius,
+                        child: name != null
+                            ? Text(
+                                name.substring(0, 1).toUpperCase(),
+                                style: currentTheme.textTheme.titleLarge,
+                              )
+                            : Icon(
+                                IconFontIcons.userFill,
+                                size: avatarRadius,
+                                color:
+                                    currentTheme.textTheme.displayMedium!.color,
+                              ),
+                      ),
+                      Gap(),
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Text(
-                            nickname ?? S.of(context).noLogin,
+                            name ?? S.of(context).noLogin,
                             style: currentTheme.textTheme.titleMedium,
                           ),
-                          if (nickname != null)
+                          if (name != null)
                             Gap(
                               direction: GapDirection.horizontal,
                               size: GapSize.small,
                             ),
-                          if (nickname != null)
+                          if (name != null)
                             Consumer(
                               builder: (_, WidgetRef ref, __) {
                                 final int? level = ref.watch(
@@ -149,10 +149,21 @@ class _HomeDrawerState extends State<HomeDrawer> {
                               },
                             ),
                         ],
+                      ),
+                    ],
+                  );
+                },
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    onPressed: () {
+                      AppRouterDelegate.instance.currentBeamState.updateWith(
+                        isRank: true,
                       );
                     },
+                    icon: const Icon(IconFontIcons.honourLine),
                   ),
-                ],
+                ),
               ),
             ),
           ),
@@ -192,9 +203,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
                                 .read(themeProvider.notifier)
                                 .switchThemes(index);
                           },
-                          icon: Icon(isDark
-                              ? IconFontIcons.sunFill
-                              : IconFontIcons.moonLine),
+                          icon: Icon(
+                            isDark
+                                ? IconFontIcons.sunFill
+                                : IconFontIcons.moonLine,
+                          ),
                         );
                       },
                     ),
