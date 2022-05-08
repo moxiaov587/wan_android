@@ -20,7 +20,7 @@ class BaseToast extends StatelessWidget {
 
     switch (type) {
       case ToastType.success:
-        background = currentTheme.primaryColor;
+        background = currentTheme.colorScheme.secondary;
         break;
       case ToastType.danger:
         background = currentTheme.errorColor;
@@ -38,14 +38,14 @@ class BaseToast extends StatelessWidget {
       alignment: alignment,
       child: Container(
         decoration: BoxDecoration(
-          color: background,
-          borderRadius: BorderRadius.circular(16.0),
+          color: background.withOpacity(0.7),
+          borderRadius: AppTheme.roundedBorderRadius,
         ),
         margin: const EdgeInsets.symmetric(
           horizontal: 30.0,
           vertical: 50.0,
         ),
-        padding: AppTheme.bodyPadding,
+        padding: AppTheme.contentPadding,
         child: Text(
           msg,
           style: currentTheme.textTheme.bodyLarge!.copyWith(

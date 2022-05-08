@@ -19,11 +19,13 @@ class SettingsScreen extends StatelessWidget {
         iconData: IconFontIcons.deleteLine,
         title: S.of(context).clearCache,
         onTap: () {
-          DialogUtils.confirm(
+          DialogUtils.confirm<void>(
             isDanger: true,
             content: Text(S.of(context).clearCacheWarning),
             confirmCallback: () {
               HiveBoxes.clearCache();
+
+              return Future<void>.value();
             },
           );
         },

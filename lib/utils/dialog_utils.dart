@@ -20,14 +20,14 @@ class DialogUtils {
       currentIsDark ? AppColors.maskBackgroundDark : AppColors.maskBackground;
 
   static void loading() {
-    SmartDialog.showLoading(
-      background: _maskBackground,
-      widget: const RotateLoading(),
+    SmartDialog.showLoading<void>(
+      maskColor: _maskBackground,
+      builder: (BuildContext context) => const RotateLoading(),
     );
   }
 
   static void dismiss({SmartStatus status = SmartStatus.loading}) {
-    SmartDialog.dismiss(
+    SmartDialog.dismiss<void>(
       status: status,
     );
   }
@@ -38,8 +38,8 @@ class DialogUtils {
   }) {
     SmartDialog.showToast(
       '',
-      maskColorTemp: _maskBackground,
-      widget: BaseToast(
+      maskColor: _maskBackground,
+      builder: (BuildContext context) => BaseToast(
         type: ToastType.tips,
         alignment: alignment ?? _defaultAlignment,
         msg: msg,
@@ -53,8 +53,8 @@ class DialogUtils {
   }) {
     SmartDialog.showToast(
       '',
-      maskColorTemp: _maskBackground,
-      widget: BaseToast(
+      maskColor: _maskBackground,
+      builder: (BuildContext context) => BaseToast(
         type: ToastType.success,
         alignment: alignment ?? _defaultAlignment,
         msg: msg,
@@ -68,8 +68,8 @@ class DialogUtils {
   }) {
     SmartDialog.showToast(
       '',
-      maskColorTemp: _maskBackground,
-      widget: BaseToast(
+      maskColor: _maskBackground,
+      builder: (BuildContext context) => BaseToast(
         type: ToastType.danger,
         alignment: alignment ?? _defaultAlignment,
         msg: msg,
@@ -83,8 +83,8 @@ class DialogUtils {
   }) {
     SmartDialog.showToast(
       '',
-      maskColorTemp: _maskBackground,
-      widget: BaseToast(
+      maskColor: _maskBackground,
+      builder: (BuildContext context) => BaseToast(
         type: ToastType.waring,
         alignment: alignment ?? _defaultAlignment,
         msg: msg,
@@ -93,28 +93,37 @@ class DialogUtils {
   }
 
   // ignore: long-parameter-list
-  static void confirm({
+  static Future<T?> confirm<T>({
     String? title,
     required Widget content,
     String? confirmText,
     String? cancelText,
-    required Function() confirmCallback,
+    required Future<T?> Function() confirmCallback,
     Function()? cancelCallback,
     bool isDanger = false,
+    String? tag,
   }) {
-    SmartDialog.show(
-      maskColorTemp: _maskBackground,
-      widget: BaseConfirm(
+    return SmartDialog.show<T>(
+      tag: tag,
+      maskColor: _maskBackground,
+      animationType: SmartAnimationType.centerFadeAndOtherScale,
+      builder: (BuildContext context) => BaseConfirm(
         title: title,
         content: content,
         confirmText: confirmText,
         cancelText: cancelText,
-        confirmHandle: () {
-          SmartDialog.dismiss();
-          confirmCallback.call();
+        confirmHandle: () async {
+          final T? result = await confirmCallback.call();
+          SmartDialog.dismiss(
+            result: result,
+            tag: tag,
+          );
         },
         cancelHandle: () {
-          SmartDialog.dismiss();
+          SmartDialog.dismiss(
+            result: null,
+            tag: tag,
+          );
           cancelCallback?.call();
         },
         isDanger: isDanger,
