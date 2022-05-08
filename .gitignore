@@ -52,5 +52,8 @@ assets_generator_arguments
 **.g.dart
 **.freezed.dart
 
-#i10n_generator
+# i10n generator
 lib/app/l10n/generated/
+
+# fvm
+.fvm/
