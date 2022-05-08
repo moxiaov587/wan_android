@@ -14,20 +14,20 @@ class RefreshListViewWidget<
     T> extends ConsumerStatefulWidget {
   const RefreshListViewWidget({
     Key? key,
+    this.paddingVertical,
     required this.provider,
     this.onInitState,
     required this.builder,
     this.slivers,
-    this.paddingBottom,
     this.onRetry,
   }) : super(key: key);
 
+  final EdgeInsets? paddingVertical;
   final ProviderType provider;
   final ReaderCallback? onInitState;
   final RefreshListViewBuilder<T> builder;
 
   final List<Widget>? slivers;
-  final double? paddingBottom;
   final ReaderCallback? onRetry;
 
   @override
@@ -99,6 +99,8 @@ class _RefreshListViewWidgetState<
         }
       },
       builder: (_, RefreshPhysics physics) {
+        final List<Widget>? headerSlivers = widget.slivers;
+
         return CustomScrollView(
           physics: physics,
           slivers: <Widget>[
@@ -108,13 +110,19 @@ class _RefreshListViewWidgetState<
               widget.provider.select(
                 (RefreshListViewState<T> value) =>
                     value.whenOrNull(
-                      (_, __, ___) => const DropDownListHeader(),
+                      (_, __, ___) => DropDownListHeader(
+                        marginTop: widget.paddingVertical?.top,
+                      ),
                     ) ??
-                    const SliverToBoxAdapter(),
+                    SliverToBoxAdapter(
+                      child: SizedBox(
+                        height: widget.paddingVertical?.top ?? 0.0,
+                      ),
+                    ),
               ),
             ),
-            if (widget.slivers != null && widget.slivers!.isNotEmpty)
-              ...widget.slivers!,
+            if (headerSlivers != null && headerSlivers.isNotEmpty)
+              ...headerSlivers,
             ref.watch(widget.provider).when(
                   (int nextPageNum, bool isLastPage, List<T> list) =>
                       list.isEmpty
@@ -148,17 +156,16 @@ class _RefreshListViewWidgetState<
               widget.provider.select(
                 (RefreshListViewState<T> value) =>
                     value.whenOrNull(
-                      (_, __, ___) => const LoadMoreListFooter(),
+                      (_, __, ___) => LoadMoreListFooter(
+                        marginBottom: widget.paddingVertical?.bottom,
+                      ),
                     ) ??
-                    const SliverToBoxAdapter(),
+                    SliverToBoxAdapter(
+                      child: SizedBox(
+                        height: widget.paddingVertical?.bottom ?? 0.0,
+                      ),
+                    ),
               ),
-            ),
-            SliverToBoxAdapter(
-              child: widget.paddingBottom != null
-                  ? SizedBox(
-                      height: widget.paddingBottom,
-                    )
-                  : null,
             ),
           ],
         );
@@ -173,20 +180,20 @@ class AutoDisposeRefreshListViewWidget<
     T> extends ConsumerStatefulWidget {
   const AutoDisposeRefreshListViewWidget({
     Key? key,
+    this.paddingVertical,
     required this.provider,
     this.onInitState,
     required this.builder,
     this.slivers,
-    this.paddingBottom,
     this.onRetry,
   }) : super(key: key);
 
+  final EdgeInsets? paddingVertical;
   final ProviderType provider;
   final ReaderCallback? onInitState;
   final RefreshListViewBuilder<T> builder;
 
   final List<Widget>? slivers;
-  final double? paddingBottom;
   final ReaderCallback? onRetry;
 
   @override
@@ -259,6 +266,8 @@ class _AutoDisposeRefreshListViewWidgetState<
         }
       },
       builder: (_, RefreshPhysics physics) {
+        final List<Widget>? headerSlivers = widget.slivers;
+
         return CustomScrollView(
           physics: physics,
           slivers: <Widget>[
@@ -268,13 +277,19 @@ class _AutoDisposeRefreshListViewWidgetState<
               widget.provider.select(
                 (RefreshListViewState<T> value) =>
                     value.whenOrNull(
-                      (_, __, ___) => const DropDownListHeader(),
+                      (_, __, ___) => DropDownListHeader(
+                        marginTop: widget.paddingVertical?.top,
+                      ),
                     ) ??
-                    const SliverToBoxAdapter(),
+                    SliverToBoxAdapter(
+                      child: SizedBox(
+                        height: widget.paddingVertical?.top ?? 0.0,
+                      ),
+                    ),
               ),
             ),
-            if (widget.slivers != null && widget.slivers!.isNotEmpty)
-              ...widget.slivers!,
+            if (headerSlivers != null && headerSlivers.isNotEmpty)
+              ...headerSlivers,
             ref.watch(widget.provider).when(
                   (int nextPageNum, bool isLastPage, List<T> list) =>
                       list.isEmpty
@@ -308,17 +323,16 @@ class _AutoDisposeRefreshListViewWidgetState<
               widget.provider.select(
                 (RefreshListViewState<T> value) =>
                     value.whenOrNull(
-                      (_, __, ___) => const LoadMoreListFooter(),
+                      (_, __, ___) => LoadMoreListFooter(
+                        marginBottom: widget.paddingVertical?.bottom,
+                      ),
                     ) ??
-                    const SliverToBoxAdapter(),
+                    SliverToBoxAdapter(
+                      child: SizedBox(
+                        height: widget.paddingVertical?.bottom ?? 0.0,
+                      ),
+                    ),
               ),
-            ),
-            SliverToBoxAdapter(
-              child: widget.paddingBottom != null
-                  ? SizedBox(
-                      height: widget.paddingBottom,
-                    )
-                  : null,
             ),
           ],
         );

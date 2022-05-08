@@ -14,6 +14,7 @@ class DropDownListHeader extends RefreshIndicator {
     double height = 60.0,
     Duration completeDuration = const Duration(milliseconds: 600),
     this.textStyle,
+    this.marginTop,
     this.releaseText,
     this.refreshingText,
     this.canTwoLevelIcon,
@@ -31,7 +32,7 @@ class DropDownListHeader extends RefreshIndicator {
           key: key,
           refreshStyle: refreshStyle,
           completeDuration: completeDuration,
-          height: height,
+          height: height + (marginTop ?? 0.0),
         );
 
   final String? releaseText,
@@ -49,6 +50,8 @@ class DropDownListHeader extends RefreshIndicator {
       twoLevelView;
 
   final TextStyle? textStyle;
+
+  final double? marginTop;
 
   @override
   State createState() {
@@ -128,18 +131,29 @@ class _DropDownListHeaderState
     final Widget textWidget = _buildText(mode);
     final Widget iconWidget = _buildIcon(mode) ?? nil;
 
+    final double? marginTop = widget.marginTop;
+
+    Widget body = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        iconWidget,
+        const SizedBox(
+          width: 15.0,
+        ),
+        textWidget,
+      ],
+    );
+
+    if (marginTop != null) {
+      body = Padding(
+        padding: EdgeInsets.only(top: marginTop),
+        child: body,
+      );
+    }
+
     return SizedBox(
       height: widget.height,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          iconWidget,
-          const SizedBox(
-            width: 15.0,
-          ),
-          textWidget,
-        ],
-      ),
+      child: body,
     );
   }
 }
@@ -151,6 +165,7 @@ class LoadMoreListFooter extends LoadIndicator {
     LoadStyle loadStyle = LoadStyle.ShowAlways,
     double height = 60.0,
     this.textStyle,
+    this.marginBottom,
     this.loadingText,
     this.noDataText,
     this.noMoreIcon,
@@ -165,7 +180,7 @@ class LoadMoreListFooter extends LoadIndicator {
   }) : super(
           key: key,
           loadStyle: loadStyle,
-          height: height,
+          height: height + (marginBottom ?? 0.0),
           onClick: onClick,
         );
 
@@ -174,6 +189,8 @@ class LoadMoreListFooter extends LoadIndicator {
   final Widget? idleIcon, loadingIcon, noMoreIcon, failedIcon, canLoadingIcon;
 
   final TextStyle? textStyle;
+
+  final double? marginBottom;
 
   /// notice that ,this attrs only works for LoadStyle.ShowWhenLoading
   final Duration completeDuration;
@@ -243,18 +260,29 @@ class _LoadMoreListFooterState extends LoadIndicatorState<LoadMoreListFooter> {
     final Widget textWidget = _buildText(mode);
     final Widget iconWidget = _buildIcon(mode) ?? nil;
 
+    final double? marginBottom = widget.marginBottom;
+
+    Widget body = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        iconWidget,
+        const SizedBox(
+          width: 15.0,
+        ),
+        textWidget,
+      ],
+    );
+
+    if (marginBottom != null) {
+      body = Padding(
+        padding: EdgeInsets.only(bottom: marginBottom),
+        child: body,
+      );
+    }
+
     return SizedBox(
       height: widget.height,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          iconWidget,
-          const SizedBox(
-            width: 15.0,
-          ),
-          textWidget,
-        ],
-      ),
+      child: body,
     );
   }
 }
