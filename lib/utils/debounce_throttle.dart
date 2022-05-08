@@ -3,20 +3,33 @@ import 'dart:async' show Timer;
 import 'package:flutter/foundation.dart';
 
 VoidCallback debounce(
-  VoidCallback callback, [
+  VoidCallback callback, {
   Duration duration = const Duration(seconds: 1),
-]) {
-  assert(callback != null);
-  assert(duration != null && duration > Duration.zero);
+  bool triggerNow = true,
+}) {
+  assert(duration > Duration.zero);
   Timer? _debounce;
 
   return () {
     if (_debounce?.isActive ?? false) {
       _debounce?.cancel();
     }
-    _debounce = Timer(duration, () {
-      callback.call();
-    });
+
+    if (triggerNow) {
+      final bool exec = _debounce == null;
+
+      _debounce = Timer(duration, () {
+        _debounce = null;
+      });
+
+      if (exec) {
+        callback.call();
+      }
+    } else {
+      _debounce = Timer(duration, () {
+        callback.call();
+      });
+    }
   };
 }
 
