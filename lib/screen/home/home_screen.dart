@@ -16,18 +16,22 @@ import '../../app/l10n/generated/l10n.dart';
 import '../../app/theme/app_theme.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
+import '../../contacts/unicode.dart';
 import '../../database/model/models.dart' show SearchHistory;
+import '../../extensions/extensions.dart';
 import '../../model/models.dart';
 import '../../navigator/app_router_delegate.dart';
 import '../../navigator/route_name.dart';
 import '../../utils/dialog_utils.dart';
 import '../../utils/html_parse_utils.dart';
+import '../../utils/screen_utils.dart';
 import '../../widget/article.dart';
 import '../../widget/capsule_ink.dart';
 import '../../widget/custom_bottom_navigation_bar.dart';
 import '../../widget/custom_search_delegate.dart';
 import '../../widget/custom_sliver_child_builder_delegate.dart';
 import '../../widget/gap.dart';
+import '../authorized/provider/authorized_provider.dart';
 import '../drawer/home_drawer.dart';
 import 'provider/home_provider.dart';
 
@@ -189,8 +193,6 @@ class _Home extends StatefulWidget {
 }
 
 class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
-  final ValueNotifier<bool> _showAppBar = ValueNotifier<bool>(false);
-
   @override
   bool get wantKeepAlive => true;
 
@@ -198,122 +200,279 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     super.build(context);
 
-    return NotificationListener<ScrollNotification>(
-      onNotification: (ScrollNotification notification) {
-        if (notification.metrics.axisDirection == AxisDirection.down &&
-            notification.metrics.pixels > _kExpandedHeight &&
-            !_showAppBar.value) {
-          _showAppBar.value = true;
-        } else if (notification.metrics.axisDirection == AxisDirection.down &&
-            notification.metrics.pixels < _kExpandedHeight &&
-            _showAppBar.value) {
-          _showAppBar.value = false;
-        }
-
-        return false;
+    return RefreshListViewWidget<
+        StateNotifierProvider<ArticleNotifier,
+            RefreshListViewState<ArticleModel>>,
+        ArticleModel>(
+      paddingVertical: EdgeInsets.only(
+        top: ScreenUtils.topSafeHeight,
+        bottom:
+            currentTheme.floatingActionButtonTheme.sizeConstraints!.minWidth /
+                2,
+      ),
+      provider: homeArticleProvider,
+      onInitState: (Reader reader) {
+        reader.call(homeBannerProvider.notifier).initData();
+        reader.call(homeArticleProvider.notifier).initData();
       },
-      child: RefreshListViewWidget<
-          StateNotifierProvider<ArticleNotifier,
-              RefreshListViewState<ArticleModel>>,
-          ArticleModel>(
-        provider: homeArticleProvider,
-        onInitState: (Reader reader) {
-          reader.call(homeBannerProvider.notifier).initData();
-          reader.call(homeArticleProvider.notifier).initData();
-        },
-        builder: (_, __, List<ArticleModel> list) {
-          return SliverList(
-            delegate: CustomSliverChildBuilderDelegate.separated(
-              itemBuilder: (_, int index) {
-                return ArticleTile(
-                  article: list[index],
-                );
-              },
-              itemCount: list.length,
-            ),
-          );
-        },
-        slivers: <Widget>[
-          SliverAppBar(
-            leading: nil,
-            leadingWidth: 0.0,
-            pinned: true,
-            expandedHeight: _kExpandedHeight,
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              title: ValueListenableBuilder<bool>(
-                valueListenable: _showAppBar,
-                builder: (_, bool show, Widget? child) {
-                  return show
-                      ? Text(
-                          S.of(context).appName,
-                          style: currentTheme.textTheme.titleLarge,
-                        )
-                      : child!;
-                },
-                child: nil,
+      builder: (_, __, List<ArticleModel> list) {
+        return SliverList(
+          delegate: CustomSliverChildBuilderDelegate.separated(
+            itemBuilder: (_, int index) {
+              return ArticleTile(
+                article: list[index],
+              );
+            },
+            itemCount: list.length,
+          ),
+        );
+      },
+      slivers: const <Widget>[
+        _HomeAppBar(),
+      ],
+    );
+  }
+}
+
+class _HomeAppBar extends StatefulWidget {
+  const _HomeAppBar({Key? key}) : super(key: key);
+
+  @override
+  State<_HomeAppBar> createState() => __HomeAppBarState();
+}
+
+class __HomeAppBarState extends State<_HomeAppBar>
+    with SingleTickerProviderStateMixin {
+  @override
+  Widget build(BuildContext context) {
+    return SliverPersistentHeader(
+      pinned: true,
+      delegate: _HomeAppBarDelegate(
+        this,
+        minHeight: 56.0,
+        maxHeight: 200.0,
+      ),
+    );
+  }
+}
+
+class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
+  const _HomeAppBarDelegate(
+    this.vsync, {
+    required this.minHeight,
+    required this.maxHeight,
+  });
+
+  final double minHeight;
+
+  final double maxHeight;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    final double visibleHeight = maxExtent - minExtent;
+
+    final double progress = (shrinkOffset / visibleHeight).clamp(0.0, 1.0);
+
+    final double reversedProgress = (1 - progress).clamp(0.0, 1.0);
+
+    return Stack(
+      fit: StackFit.expand,
+      children: <Widget>[
+        Opacity(
+          opacity: progress,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: currentIsDark
+                    ? <Color>[
+                        AppColors.arcoBlueDark.shade5,
+                        AppColors.arcoBlueDark.shade3,
+                      ]
+                    : <Color>[
+                        AppColors.arcoBlue.shade3,
+                        AppColors.arcoBlue.shade5,
+                      ],
               ),
-              background: Consumer(
-                builder: (_, WidgetRef ref, __) {
-                  return ref.watch(homeBannerProvider).when(
-                        (List<BannerModel> list) =>
-                            ExtendedImageGesturePageView.builder(
-                          itemBuilder: (BuildContext context, int index) {
-                            return _BannerCarouselItem(
-                              image: ExtendedImage.network(
-                                list[index].imagePath,
-                                fit: BoxFit.fill,
-                                height: 200.0,
-                              ),
-                              title: list[index].title,
-                            );
-                          },
-                          itemCount: list.length,
-                        ),
-                        loading: () => const SizedBox(
-                          height: _kExpandedHeight,
-                          child: LoadingWidget(),
-                        ),
-                        error: (
-                          int? statusCode,
-                          String? message,
-                          String? detail,
-                        ) =>
-                            SizedBox(
-                          height: _kExpandedHeight,
-                          child: Ink(
-                            child: InkWell(
-                              onTap: () {
-                                ref
-                                    .read(homeBannerProvider.notifier)
-                                    .initData();
-                              },
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Icon(
-                                    IconFontIcons.refreshLine,
-                                    color:
-                                        currentTheme.textTheme.bodySmall!.color,
-                                    size: 36.0,
-                                  ),
-                                  Gap(
-                                    size: GapSize.big,
-                                  ),
-                                  Text(
-                                    '${message ?? detail ?? S.of(context).unknownError}(${statusCode ?? -1})',
-                                  ),
-                                  Gap(),
-                                  Text(S.of(context).tapToRetry),
-                                ],
-                              ),
+            ),
+            child: Padding(
+              padding: EdgeInsets.only(top: ScreenUtils.topSafeHeight),
+              child: Consumer(
+                builder: (_, WidgetRef ref, Widget? title) {
+                  final UserInfoModel? userInfo =
+                      ref.watch<UserInfoModel?>(authorizedProvider);
+
+                  if (userInfo == null) {
+                    return title!;
+                  }
+
+                  return _HomeAppBarUserInfo(userInfo: userInfo);
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      S.of(context).appName,
+                      style: currentTheme.textTheme.titleLarge,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          top: -shrinkOffset,
+          left: 0.0,
+          right: 0.0,
+          height: maxExtent,
+          child: Opacity(
+            opacity: reversedProgress,
+            child: Consumer(
+              builder: (_, WidgetRef ref, __) {
+                return ref.watch(homeBannerProvider).when(
+                      (List<BannerModel> list) =>
+                          ExtendedImageGesturePageView.builder(
+                        itemBuilder: (BuildContext context, int index) {
+                          return _BannerCarouselItem(
+                            image: ExtendedImage.network(
+                              list[index].imagePath,
+                              fit: BoxFit.fill,
+                              height: _kExpandedHeight,
+                            ),
+                            title: list[index].title,
+                          );
+                        },
+                        itemCount: list.length,
+                      ),
+                      loading: () => const SizedBox(
+                        height: _kExpandedHeight,
+                        child: LoadingWidget(),
+                      ),
+                      error: (
+                        int? statusCode,
+                        String? message,
+                        String? detail,
+                      ) =>
+                          SizedBox(
+                        height: _kExpandedHeight,
+                        child: Ink(
+                          child: InkWell(
+                            onTap: () {
+                              ref.read(homeBannerProvider.notifier).initData();
+                            },
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Icon(
+                                  IconFontIcons.refreshLine,
+                                  color:
+                                      currentTheme.textTheme.bodySmall!.color,
+                                  size: 36.0,
+                                ),
+                                Gap(
+                                  size: GapSize.big,
+                                ),
+                                Text(
+                                  '${message ?? detail ?? S.of(context).unknownError}(${statusCode ?? -1})',
+                                ),
+                                Gap(),
+                                Text(S.of(context).tapToRetry),
+                              ],
                             ),
                           ),
                         ),
-                      );
-                },
+                      ),
+                    );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  double get maxExtent => maxHeight;
+
+  @override
+  double get minExtent => minHeight + ScreenUtils.topSafeHeight;
+
+  @override
+  final TickerProvider vsync;
+
+  @override
+  bool shouldRebuild(covariant _HomeAppBarDelegate oldDelegate) {
+    return vsync != oldDelegate.vsync ||
+        minHeight != oldDelegate.minHeight ||
+        maxHeight != oldDelegate.maxHeight;
+  }
+}
+
+class _HomeAppBarUserInfo extends StatelessWidget {
+  const _HomeAppBarUserInfo({Key? key, required this.userInfo})
+      : super(key: key);
+
+  final UserInfoModel userInfo;
+
+  String? get name =>
+      userInfo.user.nickname.strictValue ??
+      userInfo.user.publicName.strictValue;
+
+  int get level => userInfo.userPoints.level;
+
+  @override
+  Widget build(BuildContext context) {
+    late Color color;
+
+    if (level >= 750) {
+      color = currentTheme.errorColor;
+    } else if (level < 750 && level >= 500) {
+      color = currentTheme.colorScheme.tertiary;
+    } else if (level < 500 && level >= 250) {
+      color = currentTheme.primaryColor;
+    } else {
+      color = currentTheme.colorScheme.secondary;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          GestureDetector(
+            onTap: () {
+              Instances.scaffoldStateKey.currentState?.openDrawer();
+            },
+            child: CircleAvatar(
+              backgroundColor: currentTheme.cardColor,
+              child: Text(
+                name?.substring(0, 1).toUpperCase() ?? '-',
+                style: currentTheme.textTheme.titleLarge,
               ),
             ),
+          ),
+          Gap(direction: GapDirection.horizontal),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                name ?? '',
+                style: currentTheme.textTheme.titleSmall,
+              ),
+              Text(
+                'Lv${Unicode.halfWidthSpace}$level',
+                style: currentTheme.textTheme.bodySmall!.copyWith(
+                  color: color,
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -344,21 +503,41 @@ class __BannerCarouselItemState extends State<_BannerCarouselItem> {
   void initState() {
     super.initState();
 
-    PaletteGenerator.fromImageProvider(
-      widget.image.image,
-      maximumColorCount: 20,
-    ).then((PaletteGenerator paletteGenerator) {
+    initCarouselItemTitleColor();
+  }
+
+  Future<void> initCarouselItemTitleColor() async {
+    try {
+      final PaletteGenerator paletteGenerator =
+          await PaletteGenerator.fromImageProvider(
+        widget.image.image,
+        maximumColorCount: 20,
+      );
+
+      final Color? color = paletteGenerator.vibrantColor?.color;
+
       colorsNotifier.value = <Color?>[
-        paletteGenerator.vibrantColor?.color,
-        paletteGenerator.vibrantColor?.titleTextColor,
+        color,
+        if ((color?.computeLuminance() ?? 0) > 0.179)
+          AppColors.white
+        else
+          AppColors.whiteDark,
       ];
-    });
+    } catch (_) {}
+  }
+
+  @override
+  void didUpdateWidget(covariant _BannerCarouselItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.title != widget.title) {
+      initCarouselItemTitleColor();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
-      alignment: Alignment.center,
       fit: StackFit.expand,
       children: <Widget>[
         widget.image,
@@ -373,7 +552,7 @@ class __BannerCarouselItemState extends State<_BannerCarouselItem> {
                   right: 16.0,
                 ),
                 alignment: Alignment.centerRight,
-                width: MediaQuery.of(context).size.width,
+                width: ScreenUtils.width,
                 height: 50.0,
                 color: colors.first?.withOpacity(0.2) ??
                     currentTheme.backgroundColor.withOpacity(0.2),
