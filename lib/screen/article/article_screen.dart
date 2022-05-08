@@ -148,10 +148,12 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                           iconData: IconFontIcons.externalLinkLine,
                           label: S.of(context).browser,
                           onTap: () async {
-                            final String uri =
-                                Uri.parse(article.link).toString();
-                            if (await canLaunch(uri)) {
-                              await launch(uri);
+                            final Uri uri = Uri.parse(article.link);
+                            if (await canLaunchUrl(uri)) {
+                              await launchUrl(
+                                uri,
+                                mode: LaunchMode.externalApplication,
+                              );
                             } else {
                               DialogUtils.danger(
                                 S.of(context).unableToOpenLink(uri),
@@ -163,7 +165,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                     )
                   : empty!;
             },
-            child: nil,
+            child: const SizedBox.shrink(),
           ),
         ],
       ),
