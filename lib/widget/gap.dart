@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 
 class Gap extends StatelessWidget {
   const Gap({
-    Key? key,
+    super.key,
     this.direction = GapDirection.vertical,
     this.size = GapSize.normal,
     this.value,
     this.backgroundColor,
-  })  : isVertical = direction == GapDirection.vertical,
-        super(key: key);
+  }) : isVertical = direction == GapDirection.vertical;
 
   final GapDirection direction;
   final GapSize size;

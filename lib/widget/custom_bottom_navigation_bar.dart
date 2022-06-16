@@ -5,7 +5,7 @@ import 'package:vector_math/vector_math_64.dart' show Vector3;
 
 class CustomBottomNavigationBar extends StatefulWidget {
   CustomBottomNavigationBar({
-    Key? key,
+    super.key,
     required this.items,
     this.onTap,
     this.currentIndex = 0,
@@ -38,8 +38,7 @@ class CustomBottomNavigationBar extends StatefulWidget {
           'Either selectedItemColor can be specified, but not both',
         ),
         assert(selectedFontSize >= 0.0),
-        assert(unselectedFontSize >= 0.0),
-        super(key: key);
+        assert(unselectedFontSize >= 0.0);
 
   /// Defines the appearance of the button items that are arrayed within the
   /// bottom navigation bar.
@@ -241,7 +240,6 @@ class _BottomNavigationTile extends StatelessWidget {
     // need to divide the changes in flex allotment into smaller pieces to
     // produce smooth animation. We do this by multiplying the flex value
     // (which is an integer) by a large number.
-    const int size = 1;
 
     final double selectedFontSize = selectedLabelStyle.fontSize!;
 
@@ -360,7 +358,6 @@ class _BottomNavigationTile extends StatelessWidget {
     );
 
     return Expanded(
-      flex: size,
       child: result,
     );
   }
@@ -371,8 +368,7 @@ class _BottomNavigationTile extends StatelessWidget {
 // icon-space-label row, where space is 8 pixels. Otherwise return a
 // icon-label column.
 class _Tile extends StatelessWidget {
-  const _Tile({Key? key, required this.icon, required this.label})
-      : super(key: key);
+  const _Tile({required this.icon, required this.label});
 
   final Widget icon;
   final Widget label;
@@ -389,7 +385,6 @@ class _Tile extends StatelessWidget {
 
 class _TileIcon extends StatelessWidget {
   const _TileIcon({
-    Key? key,
     required this.colorTween,
     required this.animation,
     required this.iconSize,
@@ -397,8 +392,7 @@ class _TileIcon extends StatelessWidget {
     required this.item,
     required this.selectedIconTheme,
     required this.unselectedIconTheme,
-  })  : assert(item != null),
-        super(key: key);
+  }) : assert(item != null);
 
   final ColorTween colorTween;
   final Animation<double> animation;
@@ -434,14 +428,12 @@ class _TileIcon extends StatelessWidget {
 
 class _Label extends StatelessWidget {
   const _Label({
-    Key? key,
     required this.colorTween,
     required this.animation,
     required this.item,
     required this.selectedLabelStyle,
     required this.unselectedLabelStyle,
-  })  : assert(animation != null),
-        super(key: key);
+  }) : assert(animation != null);
 
   final ColorTween colorTween;
   final Animation<double> animation;
@@ -734,12 +726,11 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
 // BottomNavigationBarLandscapeLayout.centered
 class _Bar extends StatelessWidget {
   const _Bar({
-    Key? key,
     required this.child,
     required this.layout,
     required this.elevation,
     required this.color,
-  }) : super(key: key);
+  });
 
   final Widget child;
   final BottomNavigationBarLandscapeLayout layout;

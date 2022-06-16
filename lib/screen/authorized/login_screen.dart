@@ -16,7 +16,7 @@ part 'register_screen.dart';
 const EdgeInsets _kBodyPadding = EdgeInsets.fromLTRB(32.0, 40.0, 32.0, 0.0);
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   _LoginScreenState createState() => _LoginScreenState();

@@ -21,11 +21,7 @@ const String kProjectArticleProvider = 'kProjectArticleProvider';
 
 abstract class BaseArticleNotifier
     extends BaseRefreshListViewNotifier<ArticleModel> {
-  BaseArticleNotifier(RefreshListViewState<ArticleModel> state)
-      : super(
-          state,
-          initialPageNum: 0,
-        );
+  BaseArticleNotifier(super.state) : super(initialPageNum: 0);
 
   void switchCollect(
     int id, {
@@ -56,7 +52,7 @@ final StateNotifierProvider<BannerNotifier, ListViewState<BannerModel>>
 });
 
 class BannerNotifier extends BaseListViewNotifier<BannerModel> {
-  BannerNotifier(ListViewState<BannerModel> state) : super(state);
+  BannerNotifier(super.state);
 
   @override
   Future<List<BannerModel>> loadData() {
@@ -76,7 +72,7 @@ final StateNotifierProvider<ArticleNotifier, RefreshListViewState<ArticleModel>>
 );
 
 class ArticleNotifier extends BaseArticleNotifier {
-  ArticleNotifier(RefreshListViewState<ArticleModel> state) : super(state);
+  ArticleNotifier(super.state);
 
   @override
   Future<RefreshListViewStateData<ArticleModel>> loadData({

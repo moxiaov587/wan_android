@@ -47,9 +47,9 @@ const double _kExpandedHeight = 200.0;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
-    Key? key,
+    super.key,
     required this.initialPath,
-  }) : super(key: key);
+  });
 
   final String initialPath;
 
@@ -152,30 +152,22 @@ class _HomeScreenState extends State<HomeScreen> {
               BottomNavigationBarItem(
                 label: S.of(context).home,
                 icon: const Icon(IconFontIcons.homeLine),
-                activeIcon: const Icon(
-                  IconFontIcons.homeFill,
-                ),
+                activeIcon: const Icon(IconFontIcons.homeFill),
               ),
               BottomNavigationBarItem(
                 label: S.of(context).square,
                 icon: const Icon(IconFontIcons.seedlingLine),
-                activeIcon: const Icon(
-                  IconFontIcons.seedlingFill,
-                ),
+                activeIcon: const Icon(IconFontIcons.seedlingFill),
               ),
               BottomNavigationBarItem(
                 label: S.of(context).question,
                 icon: const Icon(IconFontIcons.questionnaireLine),
-                activeIcon: const Icon(
-                  IconFontIcons.questionnaireFill,
-                ),
+                activeIcon: const Icon(IconFontIcons.questionnaireFill),
               ),
               BottomNavigationBarItem(
                 label: S.of(context).project,
                 icon: const Icon(IconFontIcons.androidLine),
-                activeIcon: const Icon(
-                  IconFontIcons.androidFill,
-                ),
+                activeIcon: const Icon(IconFontIcons.androidFill),
               ),
             ],
           ),
@@ -186,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class _Home extends StatefulWidget {
-  const _Home({Key? key}) : super(key: key);
+  const _Home();
 
   @override
   State<_Home> createState() => _HomeState();
@@ -220,6 +212,9 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
           delegate: CustomSliverChildBuilderDelegate.separated(
             itemBuilder: (_, int index) {
               return ArticleTile(
+                key: ValueKey<String>(
+                  'home_article_${list[index].id}',
+                ),
                 article: list[index],
               );
             },
@@ -235,7 +230,7 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
 }
 
 class _HomeAppBar extends StatefulWidget {
-  const _HomeAppBar({Key? key}) : super(key: key);
+  const _HomeAppBar();
 
   @override
   State<_HomeAppBar> createState() => __HomeAppBarState();
@@ -336,10 +331,12 @@ class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
             child: Consumer(
               builder: (_, WidgetRef ref, __) {
                 return ref.watch(homeBannerProvider).when(
-                      (List<BannerModel> list) =>
-                          ExtendedImageGesturePageView.builder(
+                      (List<BannerModel> list) => PageView.builder(
                         itemBuilder: (BuildContext context, int index) {
                           return _BannerCarouselItem(
+                            key: ValueKey<String>(
+                              'home_banner_${list[index].id}',
+                            ),
                             image: ExtendedImage.network(
                               list[index].imagePath,
                               fit: BoxFit.fill,
@@ -415,8 +412,7 @@ class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
 }
 
 class _HomeAppBarUserInfo extends StatelessWidget {
-  const _HomeAppBarUserInfo({Key? key, required this.userInfo})
-      : super(key: key);
+  const _HomeAppBarUserInfo({required this.userInfo});
 
   final UserInfoModel userInfo;
 
@@ -443,7 +439,6 @@ class _HomeAppBarUserInfo extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           GestureDetector(
             onTap: () {
@@ -482,10 +477,10 @@ class _HomeAppBarUserInfo extends StatelessWidget {
 
 class _BannerCarouselItem extends StatefulWidget {
   const _BannerCarouselItem({
-    Key? key,
+    super.key,
     required this.image,
     required this.title,
-  }) : super(key: key);
+  });
 
   final ExtendedImage image;
 

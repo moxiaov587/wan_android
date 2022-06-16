@@ -2,11 +2,11 @@ part of 'article.dart';
 
 class ArticleTile extends StatelessWidget {
   const ArticleTile({
-    Key? key,
+    super.key,
     required this.article,
     this.query,
     this.authorTextOrShareUserTextCanOnTap = true,
-  }) : super(key: key);
+  });
 
   final ArticleModel article;
   final String? query;
@@ -129,8 +129,9 @@ class ArticleTile extends StatelessWidget {
                     if (hasTags)
                       ...article.tags!
                           .map(
-                            (TagModel e) => _TagTile(
-                              text: e.name,
+                            (TagModel tag) => _TagTile(
+                              key: UniqueKey(),
+                              text: tag.name,
                             ),
                           )
                           .toList(),
@@ -147,9 +148,9 @@ class ArticleTile extends StatelessWidget {
 
 class _TagTile extends StatelessWidget {
   const _TagTile({
-    Key? key,
+    super.key,
     required this.text,
-  }) : super(key: key);
+  });
 
   final String? text;
 

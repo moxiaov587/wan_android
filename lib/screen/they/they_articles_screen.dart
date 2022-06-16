@@ -2,9 +2,9 @@ part of 'they.dart';
 
 class TheyArticlesScreen extends StatefulWidget {
   const TheyArticlesScreen({
-    Key? key,
+    super.key,
     required this.author,
-  }) : super(key: key);
+  });
 
   final String author;
 
@@ -37,6 +37,9 @@ class _TheyArticlesScreenState extends State<TheyArticlesScreen> {
               delegate: CustomSliverChildBuilderDelegate.separated(
                 itemBuilder: (_, int index) {
                   return ArticleTile(
+                    key: ValueKey<String>(
+                      'they_article_${list[index].id}',
+                    ),
                     authorTextOrShareUserTextCanOnTap: false,
                     article: list[index],
                   );

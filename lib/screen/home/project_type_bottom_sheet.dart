@@ -1,7 +1,7 @@
 part of 'home_screen.dart';
 
 class ProjectTypeBottomSheet extends StatelessWidget {
-  const ProjectTypeBottomSheet({Key? key}) : super(key: key);
+  const ProjectTypeBottomSheet({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -2,10 +2,9 @@ part of '../../widget/custom_search_delegate.dart';
 
 class SearchPageRoute<T> extends PageRoute<T> {
   SearchPageRoute({
+    super.settings,
     required this.delegate,
-    RouteSettings? settings,
-  })  : assert(delegate != null),
-        super(settings: settings) {
+  }) : assert(delegate != null) {
     assert(
       delegate._route == null,
       'The ${delegate.runtimeType} instance is currently used by another active '

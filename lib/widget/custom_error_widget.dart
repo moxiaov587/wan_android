@@ -2,12 +2,12 @@ part of 'view_state_widget.dart';
 
 class CustomErrorWidget extends ConsumerWidget {
   const CustomErrorWidget({
-    Key? key,
+    super.key,
     this.statusCode,
     this.message,
     this.detail,
     this.onRetry,
-  }) : super(key: key);
+  });
 
   final int? statusCode;
   final String? message;

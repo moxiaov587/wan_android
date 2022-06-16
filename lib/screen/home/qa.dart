@@ -1,7 +1,7 @@
 part of 'home_screen.dart';
 
 class _QA extends StatefulWidget {
-  const _QA({Key? key}) : super(key: key);
+  const _QA();
 
   @override
   State<_QA> createState() => _QAState();
@@ -41,6 +41,9 @@ class _QAState extends State<_QA> with AutomaticKeepAliveClientMixin {
                 delegate: CustomSliverChildBuilderDelegate.separated(
                   itemBuilder: (_, int index) {
                     return ArticleTile(
+                      key: ValueKey<String>(
+                        'qa_article_${list[index].id}',
+                      ),
                       article: list[index],
                     );
                   },

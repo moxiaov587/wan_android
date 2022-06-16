@@ -67,6 +67,9 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
           delegate: CustomSliverChildBuilderDelegate.separated(
             itemBuilder: (_, int index) {
               return ArticleTile(
+                key: ValueKey<String>(
+                  'search_article_${list[index].id}',
+                ),
                 article: list[index],
                 query: query,
               );
@@ -124,10 +127,9 @@ typedef SearchHistoryCallback = Function(String keyword);
 
 class _Suggestions extends ConsumerStatefulWidget {
   const _Suggestions({
-    Key? key,
     required this.onTap,
     this.onInitData,
-  }) : super(key: key);
+  });
 
   final SearchHistoryCallback onTap;
 
@@ -243,13 +245,13 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
                         ],
                         error: (_, __, ___) => <Widget>[
                           CapsuleInk(
+                            onTap: ref
+                                .read(searchPopularKeywordProvider.notifier)
+                                .initData,
                             child: const Icon(
                               IconFontIcons.refreshLine,
                               size: 16.0,
                             ),
-                            onTap: ref
-                                .read(searchPopularKeywordProvider.notifier)
-                                .initData,
                           ),
                         ],
                       ),

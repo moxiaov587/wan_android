@@ -26,9 +26,9 @@ final AutoDisposeStateNotifierProvider<MyShareArticlesNotifier,
 class MyShareArticlesNotifier
     extends BaseRefreshListViewNotifier<ArticleModel> {
   MyShareArticlesNotifier(
-    RefreshListViewState<ArticleModel> state, {
+    super.state, {
     this.cancelToken,
-  }) : super(state);
+  });
 
   final CancelToken? cancelToken;
 

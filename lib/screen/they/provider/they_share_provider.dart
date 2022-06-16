@@ -24,10 +24,10 @@ final AutoDisposeStateNotifierProviderFamily<TheyShareNotifier,
 
 class TheyShareNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
   TheyShareNotifier(
-    RefreshListViewState<ArticleModel> state, {
+    super.state, {
     required this.userId,
     this.cancelToken,
-  }) : super(state);
+  });
 
   final int userId;
   final CancelToken? cancelToken;

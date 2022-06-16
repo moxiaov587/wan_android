@@ -11,7 +11,7 @@ final StateNotifierProvider<ProjectTypeNotifier,
 );
 
 class ProjectTypeNotifier extends BaseListViewNotifier<ProjectTypeModel> {
-  ProjectTypeNotifier(ListViewState<ProjectTypeModel> state) : super(state);
+  ProjectTypeNotifier(super.state);
 
   int _selectedIndex = 0;
   int get selectedIndex => _selectedIndex;
@@ -90,9 +90,9 @@ final StateNotifierProvider<ProjectNotifier, RefreshListViewState<ArticleModel>>
 
 class ProjectNotifier extends BaseArticleNotifier {
   ProjectNotifier(
-    RefreshListViewState<ArticleModel> state, {
+    super.state, {
     required this.categoryId,
-  }) : super(state);
+  });
 
   final int? categoryId;
 

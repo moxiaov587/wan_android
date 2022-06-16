@@ -1,7 +1,7 @@
 part of 'my_collections_screen.dart';
 
 class _Website extends StatefulWidget {
-  const _Website({Key? key}) : super(key: key);
+  const _Website();
 
   @override
   __WebsiteState createState() => __WebsiteState();
@@ -38,7 +38,9 @@ class __WebsiteState extends State<_Website>
                   ),
                 ],
                 child: _CollectedWebsiteTile(
-                  key: ValueKey<int>(list[index].id),
+                  key: ValueKey<String>(
+                    'my_collections_website_${list[index].id}',
+                  ),
                 ),
               );
             },
@@ -56,7 +58,7 @@ final AutoDisposeProvider<CollectedWebsiteModel?> _currentWebsiteProvider =
 );
 
 class _CollectedWebsiteTile extends ConsumerWidget {
-  const _CollectedWebsiteTile({Key? key}) : super(key: key);
+  const _CollectedWebsiteTile({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

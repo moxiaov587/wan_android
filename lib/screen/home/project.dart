@@ -1,7 +1,7 @@
 part of 'home_screen.dart';
 
 class _Project extends StatefulWidget {
-  const _Project({Key? key}) : super(key: key);
+  const _Project();
 
   @override
   State<_Project> createState() => _ProjectState();
@@ -49,6 +49,9 @@ class _ProjectState extends State<_Project> with AutomaticKeepAliveClientMixin {
                 delegate: CustomSliverChildBuilderDelegate.separated(
                   itemBuilder: (_, int index) {
                     return ArticleTile(
+                      key: ValueKey<String>(
+                        'project_article_${list[index].id}',
+                      ),
                       article: list[index],
                     );
                   },
@@ -71,7 +74,7 @@ class _ProjectState extends State<_Project> with AutomaticKeepAliveClientMixin {
 }
 
 class _ProjectTypeSwitchExtentProtoType extends ConsumerWidget {
-  const _ProjectTypeSwitchExtentProtoType({Key? key}) : super(key: key);
+  const _ProjectTypeSwitchExtentProtoType();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -11,10 +11,10 @@ const Duration _kCountAnimatedDuration = Duration(milliseconds: 400);
 
 class AnimatedCounter extends StatefulWidget {
   const AnimatedCounter({
-    Key? key,
+    super.key,
     required this.count,
     this.duration = const Duration(milliseconds: 1400),
-  }) : super(key: key);
+  });
 
   final int count;
   final Duration duration;

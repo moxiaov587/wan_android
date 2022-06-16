@@ -2,9 +2,9 @@ part of 'view_state_widget.dart';
 
 class LoadingWidget extends StatelessWidget {
   const LoadingWidget({
-    Key? key,
+    super.key,
     this.radius = 25.0,
-  }) : super(key: key);
+  });
 
   final double radius;
 

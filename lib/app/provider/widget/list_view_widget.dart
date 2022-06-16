@@ -11,14 +11,14 @@ class ListViewWidget<
         ListViewState<T>>,
     T> extends ConsumerStatefulWidget {
   const ListViewWidget({
-    Key? key,
+    super.key,
     required this.provider,
     this.onInitState,
     required this.builder,
     this.enablePullDown = false,
     this.slivers,
     this.onRetry,
-  }) : super(key: key);
+  });
 
   final ProviderType provider;
   final ReaderCallback? onInitState;
@@ -69,21 +69,21 @@ class _ListViewWidgetState<
   Widget build(BuildContext context) {
     return widget.enablePullDown
         ? SmartRefresher.builder(
-            enablePullDown: true,
             controller: _refreshController,
             onRefresh: () async {
               final RefreshControllerStatus? status =
                   await ref.read(widget.provider.notifier).refresh();
               switch (status) {
+                case RefreshControllerStatus.noData:
+                case null:
+                  // [status] is null
+                  break;
                 case RefreshControllerStatus.completed:
                   _refreshController.refreshCompleted();
                   break;
                 case RefreshControllerStatus.failed:
                   _refreshController.refreshFailed();
                   break;
-                default:
-
-                /// [status] is null
               }
             },
             builder: (_, RefreshPhysics physics) {
@@ -186,14 +186,14 @@ class AutoDisposeListViewWidget<
         BaseListViewNotifier<T>, ListViewState<T>>,
     T> extends ConsumerStatefulWidget {
   const AutoDisposeListViewWidget({
-    Key? key,
+    super.key,
     required this.provider,
     this.onInitState,
     required this.builder,
     this.enablePullDown = false,
     this.slivers,
     this.onRetry,
-  }) : super(key: key);
+  });
 
   final ProviderType provider;
   final ReaderCallback? onInitState;
@@ -244,21 +244,21 @@ class _AutoDisposeListViewWidgetState<
   Widget build(BuildContext context) {
     return widget.enablePullDown
         ? SmartRefresher.builder(
-            enablePullDown: true,
             controller: _refreshController,
             onRefresh: () async {
               final RefreshControllerStatus? status =
                   await ref.read(widget.provider.notifier).refresh();
               switch (status) {
+                case null:
+                case RefreshControllerStatus.noData:
+                  // [status] is null
+                  break;
                 case RefreshControllerStatus.completed:
                   _refreshController.refreshCompleted();
                   break;
                 case RefreshControllerStatus.failed:
                   _refreshController.refreshFailed();
                   break;
-                default:
-
-                /// [status] is null
               }
             },
             builder: (_, RefreshPhysics physics) {

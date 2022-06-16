@@ -1,9 +1,7 @@
 part of 'my_share_screen.dart';
 
 class HandleSharedBottomSheet extends ConsumerStatefulWidget {
-  const HandleSharedBottomSheet({
-    Key? key,
-  }) : super(key: key);
+  const HandleSharedBottomSheet({super.key});
 
   @override
   _HandleSharedBottomSheetState createState() =>
@@ -50,7 +48,9 @@ class _HandleSharedBottomSheetState
           );
 
       if (result) {
-        Navigator.of(context).maybePop();
+        if (mounted) {
+          Navigator.of(context).maybePop();
+        }
       }
     }
   }

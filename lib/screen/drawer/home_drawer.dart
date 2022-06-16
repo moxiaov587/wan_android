@@ -33,7 +33,7 @@ part 'rank_screen.dart';
 part 'settings_screen.dart';
 
 class HomeDrawer extends StatefulWidget {
-  const HomeDrawer({Key? key}) : super(key: key);
+  const HomeDrawer({super.key});
 
   @override
   _HomeDrawerState createState() => _HomeDrawerState();
@@ -247,10 +247,8 @@ class ListTileConfig {
 
 class _LevelTag extends StatelessWidget {
   const _LevelTag({
-    Key? key,
     int? level,
-  })  : _level = level ?? 1,
-        super(key: key);
+  }) : _level = level ?? 1;
 
   final int _level;
 

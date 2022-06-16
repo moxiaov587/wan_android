@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart'
     hide RefreshIndicator, RefreshIndicatorState;
-import 'package:nil/nil.dart' show nil;
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../contacts/icon_font_icons.dart';
@@ -9,10 +8,10 @@ import '../../../contacts/instances.dart';
 
 class DropDownListHeader extends RefreshIndicator {
   const DropDownListHeader({
-    Key? key,
-    RefreshStyle refreshStyle = RefreshStyle.Follow,
+    super.key,
+    super.refreshStyle,
+    super.completeDuration,
     double height = 60.0,
-    Duration completeDuration = const Duration(milliseconds: 600),
     this.textStyle,
     this.marginTop,
     this.releaseText,
@@ -28,12 +27,7 @@ class DropDownListHeader extends RefreshIndicator {
     this.completeIcon = const Icon(IconFontIcons.checkLine),
     this.idleIcon = const Icon(IconFontIcons.arrowDownLine),
     this.releaseIcon = const Icon(IconFontIcons.refreshLine),
-  }) : super(
-          key: key,
-          refreshStyle: refreshStyle,
-          completeDuration: completeDuration,
-          height: height + (marginTop ?? 0.0),
-        );
+  }) : super(height: height + (marginTop ?? 0.0));
 
   final String? releaseText,
       idleText,
@@ -69,6 +63,12 @@ class _DropDownListHeaderState
     late String text;
 
     switch (mode) {
+      case null:
+      case RefreshStatus.twoLevelOpening:
+      case RefreshStatus.twoLeveling:
+      case RefreshStatus.twoLevelClosing:
+        text = '';
+        break;
       case RefreshStatus.canRefresh:
         text = widget.releaseText ?? strings.canRefreshText!;
         break;
@@ -87,8 +87,6 @@ class _DropDownListHeaderState
       case RefreshStatus.canTwoLevel:
         text = widget.canTwoLevelText ?? strings.canTwoLevelText!;
         break;
-      default:
-        text = '';
     }
 
     return Text(
@@ -99,6 +97,11 @@ class _DropDownListHeaderState
 
   Widget? _buildIcon(RefreshStatus? mode) {
     switch (mode) {
+      case null:
+      case RefreshStatus.twoLevelOpening:
+      case RefreshStatus.twoLeveling:
+      case RefreshStatus.twoLevelClosing:
+        return widget.twoLevelView;
       case RefreshStatus.canRefresh:
         return widget.releaseIcon;
       case RefreshStatus.completed:
@@ -116,8 +119,6 @@ class _DropDownListHeaderState
         return widget.idleIcon;
       case RefreshStatus.canTwoLevel:
         return widget.canTwoLevelIcon;
-      default:
-        return widget.twoLevelView;
     }
   }
 
@@ -129,7 +130,7 @@ class _DropDownListHeaderState
   @override
   Widget buildContent(BuildContext context, RefreshStatus? mode) {
     final Widget textWidget = _buildText(mode);
-    final Widget iconWidget = _buildIcon(mode) ?? nil;
+    final Widget iconWidget = _buildIcon(mode) ?? const SizedBox.shrink();
 
     final double? marginTop = widget.marginTop;
 
@@ -160,9 +161,9 @@ class _DropDownListHeaderState
 
 class LoadMoreListFooter extends LoadIndicator {
   const LoadMoreListFooter({
-    Key? key,
-    VoidCallback? onClick,
-    LoadStyle loadStyle = LoadStyle.ShowAlways,
+    super.key,
+    super.onClick,
+    super.loadStyle,
     double height = 60.0,
     this.textStyle,
     this.marginBottom,
@@ -177,12 +178,7 @@ class LoadMoreListFooter extends LoadIndicator {
     this.loadingIcon,
     this.canLoadingIcon = const Icon(IconFontIcons.restartLine),
     this.idleIcon = const Icon(IconFontIcons.arrowUpLine),
-  }) : super(
-          key: key,
-          loadStyle: loadStyle,
-          height: height + (marginBottom ?? 0.0),
-          onClick: onClick,
-        );
+  }) : super(height: height + (marginBottom ?? 0.0));
 
   final String? idleText, loadingText, noDataText, failedText, canLoadingText;
 
@@ -208,6 +204,10 @@ class _LoadMoreListFooterState extends LoadIndicatorState<LoadMoreListFooter> {
     late String text;
 
     switch (mode) {
+      case null:
+      case LoadStatus.idle:
+        text = widget.idleText ?? strings.idleLoadingText!;
+        break;
       case LoadStatus.loading:
         text = widget.loadingText ?? strings.loadingText!;
         break;
@@ -220,8 +220,6 @@ class _LoadMoreListFooterState extends LoadIndicatorState<LoadMoreListFooter> {
       case LoadStatus.canLoading:
         text = widget.canLoadingText ?? strings.canLoadingText!;
         break;
-      default:
-        text = widget.idleText ?? strings.idleLoadingText!;
     }
 
     return Text(
@@ -232,6 +230,9 @@ class _LoadMoreListFooterState extends LoadIndicatorState<LoadMoreListFooter> {
 
   Widget? _buildIcon(LoadStatus? mode) {
     switch (mode) {
+      case null:
+      case LoadStatus.idle:
+        return widget.idleIcon;
       case LoadStatus.loading:
         return widget.loadingIcon ??
             const SizedBox(
@@ -245,8 +246,6 @@ class _LoadMoreListFooterState extends LoadIndicatorState<LoadMoreListFooter> {
         return widget.failedIcon;
       case LoadStatus.canLoading:
         return widget.canLoadingIcon;
-      default:
-        return widget.idleIcon;
     }
   }
 
@@ -258,7 +257,7 @@ class _LoadMoreListFooterState extends LoadIndicatorState<LoadMoreListFooter> {
   @override
   Widget buildContent(BuildContext context, LoadStatus? mode) {
     final Widget textWidget = _buildText(mode);
-    final Widget iconWidget = _buildIcon(mode) ?? nil;
+    final Widget iconWidget = _buildIcon(mode) ?? const SizedBox.shrink();
 
     final double? marginBottom = widget.marginBottom;
 

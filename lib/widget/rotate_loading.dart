@@ -9,11 +9,10 @@ import 'gap.dart';
 
 class RotateLoading extends StatefulWidget {
   const RotateLoading({
-    Key? key,
+    super.key,
     this.width = 20.0,
   })  : space = width / 4.0,
-        size = width * 6.0,
-        super(key: key);
+        size = width * 6.0;
 
   final double width;
   final double space;

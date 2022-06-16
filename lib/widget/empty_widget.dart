@@ -2,11 +2,11 @@ part of 'view_state_widget.dart';
 
 class EmptyWidget extends StatelessWidget {
   const EmptyWidget({
-    Key? key,
+    super.key,
     this.message,
     this.detail,
     this.onRetry,
-  }) : super(key: key);
+  });
 
   final String? message;
   final String? detail;

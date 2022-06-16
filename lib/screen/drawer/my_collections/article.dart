@@ -1,7 +1,7 @@
 part of 'my_collections_screen.dart';
 
 class _Article extends StatefulWidget {
-  const _Article({Key? key}) : super(key: key);
+  const _Article();
 
   @override
   __ArticleState createState() => __ArticleState();
@@ -38,7 +38,9 @@ class __ArticleState extends State<_Article>
                   ),
                 ],
                 child: _CollectedArticleTile(
-                  key: ValueKey<int>(list[index].id),
+                  key: ValueKey<String>(
+                    'my_collections_article_${list[index].id}',
+                  ),
                 ),
               );
             },
@@ -56,7 +58,7 @@ final AutoDisposeProvider<CollectedArticleModel?> _currentArticleProvider =
 );
 
 class _CollectedArticleTile extends ConsumerWidget {
-  const _CollectedArticleTile({Key? key}) : super(key: key);
+  const _CollectedArticleTile({super.key});
 
   TextSpan get _textSpace => const TextSpan(
         text: '${Unicode.halfWidthSpace}•${Unicode.halfWidthSpace}',

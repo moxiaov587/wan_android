@@ -37,12 +37,11 @@ final AutoDisposeStateNotifierProvider<MyCollectedArticleNotifier,
 class MyCollectedArticleNotifier
     extends BaseRefreshListViewNotifier<CollectedArticleModel> {
   MyCollectedArticleNotifier(
-    RefreshListViewState<CollectedArticleModel> state, {
+    super.state, {
     required this.reader,
     required this.providerContainer,
     this.cancelToken,
   }) : super(
-          state,
           initialPageNum: 0,
         );
 
@@ -299,9 +298,9 @@ final AutoDisposeStateNotifierProvider<MyCollectedWebsiteNotifier,
 class MyCollectedWebsiteNotifier
     extends BaseListViewNotifier<CollectedWebsiteModel> {
   MyCollectedWebsiteNotifier(
-    ListViewState<CollectedWebsiteModel> state, {
+    super.state, {
     this.cancelToken,
-  }) : super(state);
+  });
 
   final CancelToken? cancelToken;
 
@@ -463,10 +462,10 @@ final AutoDisposeStateNotifierProviderFamily<CollectedNotifier,
 
 class CollectedNotifier extends BaseViewNotifier<CollectedCommonModel> {
   CollectedNotifier(
-    ViewState<CollectedCommonModel> state, {
+    super.state, {
     required this.reader,
     required this.typeModel,
-  }) : super(state);
+  });
 
   final Reader reader;
   final CollectionTypeModel typeModel;

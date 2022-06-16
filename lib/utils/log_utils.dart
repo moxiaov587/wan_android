@@ -1,6 +1,6 @@
 /// https://github.com/openjmu/OpenJMU/blob/master/lib/utils/log_utils.dart
 
-import 'dart:developer' as _dev;
+import 'dart:developer' as dev;
 
 import 'package:logging/logging.dart';
 
@@ -55,7 +55,7 @@ class LogUtils {
     bool withStackTrace = true,
   }) {
     if (isError) {
-      _dev.log(
+      dev.log(
         '${DateTime.now().millisecondsSinceEpoch} - An error occurred.',
         time: DateTime.now(),
         name: tag ?? _TAG,
@@ -65,7 +65,7 @@ class LogUtils {
             (isError && withStackTrace ? StackTrace.current : null),
       );
     } else {
-      _dev.log(
+      dev.log(
         '${DateTime.now().millisecondsSinceEpoch} - $message',
         time: DateTime.now(),
         name: tag ?? _TAG,

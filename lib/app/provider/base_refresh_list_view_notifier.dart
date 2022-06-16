@@ -3,10 +3,10 @@ part of 'provider.dart';
 abstract class BaseRefreshListViewNotifier<T>
     extends StateNotifier<RefreshListViewState<T>> {
   BaseRefreshListViewNotifier(
-    RefreshListViewState<T> state, {
+    super.state, {
     this.initialPageNum = 1,
     this.pageSize = 20,
-  }) : super(state);
+  });
 
   final int initialPageNum;
 
@@ -51,39 +51,40 @@ abstract class BaseRefreshListViewNotifier<T>
 
   void onCompleted(List<T> data) {}
 
-  Future<RefreshControllerStatus?> loadMore() async {
-    return await state.whenOrNull<Future<RefreshControllerStatus?>>(
-      (int pageNum, bool isLastPage, List<T> list) async {
-        try {
-          /// Prevent no data state not being set on initialization
-          if (isLastPage) {
-            return RefreshControllerStatus.noData;
-          }
+  Future<RefreshControllerStatus?> loadMore() {
+    return state.whenOrNull<Future<RefreshControllerStatus?>>(
+          (int pageNum, bool isLastPage, List<T> list) async {
+            try {
+              /// Prevent no data state not being set on initialization
+              if (isLastPage) {
+                return RefreshControllerStatus.noData;
+              }
 
-          final RefreshListViewStateData<T> data = await loadData(
-            pageNum: pageNum + 1,
-            pageSize: pageSize,
-          );
+              final RefreshListViewStateData<T> data = await loadData(
+                pageNum: pageNum + 1,
+                pageSize: pageSize,
+              );
 
-          onCompleted(data.list);
+              onCompleted(data.list);
 
-          state = RefreshListViewState<T>(
-            pageNum: data.pageNum,
-            isLastPage: data.isLastPage,
-            list: <T>[
-              ...list,
-              ...data.list,
-            ],
-          );
+              state = RefreshListViewState<T>(
+                pageNum: data.pageNum,
+                isLastPage: data.isLastPage,
+                list: <T>[
+                  ...list,
+                  ...data.list,
+                ],
+              );
 
-          return data.isLastPage
-              ? RefreshControllerStatus.noData
-              : RefreshControllerStatus.completed;
-        } catch (e) {
-          return RefreshControllerStatus.failed;
-        }
-      },
-    );
+              return data.isLastPage
+                  ? RefreshControllerStatus.noData
+                  : RefreshControllerStatus.completed;
+            } catch (e) {
+              return RefreshControllerStatus.failed;
+            }
+          },
+        ) ??
+        Future<RefreshControllerStatus?>.value();
   }
 
   @override

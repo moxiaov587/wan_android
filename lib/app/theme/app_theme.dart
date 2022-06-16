@@ -232,10 +232,10 @@ class AppTheme {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: buttonStyle.copyWith(
-            backgroundColor: MaterialStateProperty.all(
+            backgroundColor: MaterialStateProperty.all<Color>(
               AppColors.primary,
             ),
-            textStyle: MaterialStateProperty.all(
+            textStyle: MaterialStateProperty.all<TextStyle>(
               buttonTextStyle.copyWith(
                 color: AppColors.white,
               ),
@@ -382,10 +382,10 @@ class AppTheme {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: buttonStyle.copyWith(
-            backgroundColor: MaterialStateProperty.all(
+            backgroundColor: MaterialStateProperty.all<Color>(
               AppColors.primaryDark,
             ),
-            textStyle: MaterialStateProperty.all(
+            textStyle: MaterialStateProperty.all<TextStyle>(
               buttonTextStyle.copyWith(
                 color: AppColors.whiteDark,
               ),

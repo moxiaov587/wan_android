@@ -1,7 +1,7 @@
 part of 'home_drawer.dart';
 
 class LanguagesScreen extends StatelessWidget {
-  const LanguagesScreen({Key? key}) : super(key: key);
+  const LanguagesScreen({super.key});
 
   String translate(BuildContext context, {required String value}) {
     switch (value) {

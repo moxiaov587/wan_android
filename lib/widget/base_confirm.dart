@@ -7,7 +7,7 @@ const double _kDialogDividerWidth = 1.0;
 
 class BaseConfirm extends StatelessWidget {
   const BaseConfirm({
-    Key? key,
+    super.key,
     required this.title,
     required this.content,
     required this.confirmText,
@@ -15,7 +15,7 @@ class BaseConfirm extends StatelessWidget {
     required this.confirmHandle,
     required this.cancelHandle,
     required this.isDanger,
-  }) : super(key: key);
+  });
 
   final String? title;
   final Widget content;

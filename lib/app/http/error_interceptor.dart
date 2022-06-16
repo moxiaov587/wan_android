@@ -22,11 +22,12 @@ class ErrorInterceptor extends Interceptor {
 
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) {
-    if (err.response?.isRedirect == true ||
-        err.response?.statusCode == HttpStatus.movedPermanently ||
-        err.response?.statusCode == HttpStatus.movedTemporarily ||
-        err.response?.statusCode == HttpStatus.seeOther ||
-        err.response?.statusCode == HttpStatus.temporaryRedirect) {
+    if (err.response?.isRedirect ??
+        false ||
+            err.response?.statusCode == HttpStatus.movedPermanently ||
+            err.response?.statusCode == HttpStatus.movedTemporarily ||
+            err.response?.statusCode == HttpStatus.seeOther ||
+            err.response?.statusCode == HttpStatus.temporaryRedirect) {
       handler.next(err);
     } else {
       if (err.response?.statusCode == 401) {

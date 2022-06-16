@@ -10,14 +10,14 @@ final AutoDisposeStateNotifierProviderFamily<SearchNotifier,
         ref,
     String keyword,
   ) {
-    final CancelToken _cancelToken = CancelToken();
+    final CancelToken cancelToken = CancelToken();
 
-    ref.onDispose(() => _cancelToken.cancel());
+    ref.onDispose(() => cancelToken.cancel());
 
     return SearchNotifier(
       const RefreshListViewState<ArticleModel>.loading(),
       keyword: keyword,
-      cancelToken: _cancelToken,
+      cancelToken: cancelToken,
     );
   },
   name: kSearchArticleProvider,
@@ -25,10 +25,10 @@ final AutoDisposeStateNotifierProviderFamily<SearchNotifier,
 
 class SearchNotifier extends BaseArticleNotifier {
   SearchNotifier(
-    RefreshListViewState<ArticleModel> state, {
+    super.state, {
     required this.keyword,
     this.cancelToken,
-  }) : super(state);
+  });
 
   final String keyword;
 
@@ -60,8 +60,7 @@ final AutoDisposeStateNotifierProvider<SearchPopularKeywordNotifier,
 
 class SearchPopularKeywordNotifier
     extends BaseListViewNotifier<SearchKeywordModel> {
-  SearchPopularKeywordNotifier(ListViewState<SearchKeywordModel> state)
-      : super(state);
+  SearchPopularKeywordNotifier(super.state);
 
   @override
   Future<List<SearchKeywordModel>> loadData() {
@@ -79,7 +78,7 @@ final AutoDisposeStateNotifierProvider<SearchHistoryNotifier,
 });
 
 class SearchHistoryNotifier extends BaseListViewNotifier<SearchHistory> {
-  SearchHistoryNotifier(ListViewState<SearchHistory> state) : super(state);
+  SearchHistoryNotifier(super.state);
 
   @override
   Future<List<SearchHistory>> loadData() async {

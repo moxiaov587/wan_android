@@ -3,7 +3,7 @@ part of 'home_drawer.dart';
 const double _kCurrentUserRankTileHeight = 56.0;
 
 class RankScreen extends StatelessWidget {
-  const RankScreen({Key? key}) : super(key: key);
+  const RankScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -94,6 +94,9 @@ class RankScreen extends StatelessWidget {
                                   ],
                                 ),
                                 child: _RankTile(
+                                  key: ValueKey<String>(
+                                    'rank_tile_${points.userId}',
+                                  ),
                                   rank: points.rank,
                                   nickname: fullName.strictValue ??
                                       points.nickname.strictValue ??
@@ -117,12 +120,12 @@ class RankScreen extends StatelessWidget {
 
 class _RankTile extends StatelessWidget {
   const _RankTile({
-    Key? key,
+    super.key,
     required this.rank,
     required this.nickname,
     required this.level,
     required this.totalPoints,
-  }) : super(key: key);
+  });
 
   final String? rank;
   final String? nickname;

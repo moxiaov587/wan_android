@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart' show Locale;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod/riverpod.dart';
 
 import '../../database/hive_boxes.dart';
 import '../../database/model/models.dart';
@@ -13,7 +12,7 @@ final StateNotifierProvider<LocaleNotifier, Locale?> localeProvider =
 });
 
 class LocaleNotifier extends StateNotifier<Locale?> {
-  LocaleNotifier(Locale? state) : super(state);
+  LocaleNotifier(super.state);
 
   static const List<String> localeList = <String>['', 'en', 'zh_CN'];
 

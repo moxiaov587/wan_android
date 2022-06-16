@@ -12,7 +12,7 @@ final StateNotifierProvider<SquareNotifier, RefreshListViewState<ArticleModel>>
 );
 
 class SquareNotifier extends BaseArticleNotifier {
-  SquareNotifier(RefreshListViewState<ArticleModel> state) : super(state);
+  SquareNotifier(super.state);
 
   @override
   Future<RefreshListViewStateData<ArticleModel>> loadData({

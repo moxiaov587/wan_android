@@ -504,7 +504,7 @@ class AppColors {
 }
 
 class ArcoColor extends ColorSwatch<int> {
-  const ArcoColor(int primary, Map<int, Color> swatch) : super(primary, swatch);
+  const ArcoColor(super.primary, super.swatch);
 
   Color get shade1 => this[1]!;
 

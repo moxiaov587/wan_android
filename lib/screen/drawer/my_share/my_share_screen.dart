@@ -23,7 +23,7 @@ import '../provider/drawer_provider.dart';
 part 'handle_shared_bottom_sheet.dart';
 
 class MyShareScreen extends StatelessWidget {
-  const MyShareScreen({Key? key}) : super(key: key);
+  const MyShareScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +66,9 @@ class MyShareScreen extends StatelessWidget {
                       ),
                     ],
                     child: _ShareArticleTile(
-                      key: ValueKey<int>(list[index].id),
+                      key: ValueKey<String>(
+                        'my_share_article_${list[index].id}',
+                      ),
                     ),
                   );
                 },
@@ -84,7 +86,7 @@ final AutoDisposeProvider<ArticleModel?> _currentShareArticleProvider =
     Provider.autoDispose<ArticleModel?>((_) => null);
 
 class _ShareArticleTile extends ConsumerWidget {
-  const _ShareArticleTile({Key? key}) : super(key: key);
+  const _ShareArticleTile({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -93,7 +95,6 @@ class _ShareArticleTile extends ConsumerWidget {
     return article == null || article.isDestroy
         ? nil
         : Slidable(
-            key: ValueKey<int>(article.id),
             endActionPane: ActionPane(
               extentRatio: 0.45,
               motion: const ScrollMotion(),

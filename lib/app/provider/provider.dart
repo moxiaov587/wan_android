@@ -23,19 +23,26 @@ class BaseViewStateError {
     String? detail;
 
     if (e is DioError) {
-      if (e.type == DioErrorType.connectTimeout ||
-          e.type == DioErrorType.sendTimeout ||
-          e.type == DioErrorType.receiveTimeout) {
-        // timeout
-        statusCode = -1;
-      } else if (e.type == DioErrorType.response) {
-        // incorrect status, such as 404, 503...
-        final Response<dynamic>? response = e.response;
-        if (response != null) {
-          statusCode = response.statusCode;
-        }
-      } else if (e.type == DioErrorType.cancel) {
-        //TODO: to be continue...
+      switch (e.type) {
+        case DioErrorType.connectTimeout:
+        case DioErrorType.sendTimeout:
+        case DioErrorType.receiveTimeout:
+          // timeout
+          statusCode = -1;
+          break;
+        case DioErrorType.response:
+          // incorrect status, such as 404, 503...
+          final Response<dynamic>? response = e.response;
+          if (response != null) {
+            statusCode = response.statusCode;
+          }
+          break;
+        case DioErrorType.cancel:
+          // TODO:
+          break;
+        case DioErrorType.other:
+          // TODO:
+          break;
       }
     } else if (e is AppException) {
       statusCode = e.errorCode;

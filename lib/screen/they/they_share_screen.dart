@@ -2,9 +2,9 @@ part of 'they.dart';
 
 class TheyShareScreen extends StatefulWidget {
   const TheyShareScreen({
-    Key? key,
+    super.key,
     required this.userId,
-  }) : super(key: key);
+  });
 
   final int userId;
 
@@ -36,6 +36,9 @@ class _TheyShareScreenState extends State<TheyShareScreen> {
               delegate: CustomSliverChildBuilderDelegate.separated(
                 itemBuilder: (_, int index) {
                   return ArticleTile(
+                    key: ValueKey<String>(
+                      'they_share_article_${list[index].id}',
+                    ),
                     authorTextOrShareUserTextCanOnTap: false,
                     article: list[index],
                   );
@@ -141,7 +144,6 @@ class _TheyShareScreenState extends State<TheyShareScreen> {
                                   ),
                                   Gap(),
                                   Shimmer.fromColors(
-                                    enabled: true,
                                     baseColor: currentTheme.focusColor,
                                     highlightColor: currentTheme.hoverColor,
                                     child: ClipRRect(
@@ -158,7 +160,6 @@ class _TheyShareScreenState extends State<TheyShareScreen> {
                                   ),
                                   Gap(),
                                   Shimmer.fromColors(
-                                    enabled: true,
                                     baseColor: currentTheme.focusColor,
                                     highlightColor: currentTheme.hoverColor,
                                     child: ClipRRect(

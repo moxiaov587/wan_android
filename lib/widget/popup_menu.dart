@@ -9,10 +9,10 @@ import '../widget/gap.dart';
 
 class PopupMenu extends StatefulWidget {
   const PopupMenu({
-    Key? key,
+    super.key,
     required this.iconData,
     required this.children,
-  }) : super(key: key);
+  });
 
   final IconData iconData;
   final List<PopupMenuItemConfig> children;
@@ -93,10 +93,9 @@ class PopupMenuItemConfig {
 
 class _PopupMenuItem extends StatelessWidget {
   const _PopupMenuItem({
-    Key? key,
     required this.config,
     required this.hideMenu,
-  }) : super(key: key);
+  });
 
   final PopupMenuItemConfig config;
   final VoidCallback hideMenu;

@@ -68,7 +68,7 @@ class _BottomSheetSuspendedCurve extends ParametricCurve<double> {
 
 class _ModalBottomSheet<T> extends StatefulWidget {
   const _ModalBottomSheet({
-    Key? key,
+    super.key,
     this.route,
     this.backgroundColor,
     this.elevation,
@@ -78,8 +78,7 @@ class _ModalBottomSheet<T> extends StatefulWidget {
     this.isScrollControlled = false,
     this.enableDrag = true,
   })  : assert(isScrollControlled != null),
-        assert(enableDrag != null),
-        super(key: key);
+        assert(enableDrag != null);
 
   final ModalBottomSheetRoute<T>? route;
   final bool isScrollControlled;
@@ -212,6 +211,7 @@ class _ModalBottomSheetLayout extends SingleChildLayoutDelegate {
 
 class ModalBottomSheetRoute<T> extends PopupRoute<T> {
   ModalBottomSheetRoute({
+    super.settings,
     this.builder,
     required this.capturedThemes,
     this.barrierLabel,
@@ -224,12 +224,10 @@ class ModalBottomSheetRoute<T> extends PopupRoute<T> {
     this.isDismissible = true,
     this.enableDrag = true,
     this.isScrollControlled = false,
-    RouteSettings? settings,
     this.transitionAnimationController,
   })  : assert(isScrollControlled != null),
         assert(isDismissible != null),
-        assert(enableDrag != null),
-        super(settings: settings);
+        assert(enableDrag != null);
 
   final WidgetBuilder? builder;
   final CapturedThemes capturedThemes;

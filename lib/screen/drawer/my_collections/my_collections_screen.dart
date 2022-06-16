@@ -28,9 +28,9 @@ part 'website.dart';
 
 class MyCollectionsScreen extends StatefulWidget {
   const MyCollectionsScreen({
-    Key? key,
+    super.key,
     required this.type,
-  }) : super(key: key);
+  });
 
   final CollectionType type;
 

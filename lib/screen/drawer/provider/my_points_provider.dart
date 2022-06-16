@@ -6,23 +6,24 @@ final AutoDisposeStateNotifierProvider<UserPointsRecordNotifier,
         RefreshListViewState<PointsModel>>((AutoDisposeStateNotifierProviderRef<
             UserPointsRecordNotifier, RefreshListViewState<PointsModel>>
         ref) {
-  final CancelToken _cancelToken = CancelToken();
+  final CancelToken cancelToken = CancelToken();
+
   ref.onDispose(() {
-    _cancelToken.cancel();
+    cancelToken.cancel();
   });
 
   return UserPointsRecordNotifier(
     const RefreshListViewState<PointsModel>.loading(),
-    cancelToken: _cancelToken,
+    cancelToken: cancelToken,
   );
 });
 
 class UserPointsRecordNotifier
     extends BaseRefreshListViewNotifier<PointsModel> {
   UserPointsRecordNotifier(
-    RefreshListViewState<PointsModel> state, {
+    super.state, {
     this.cancelToken,
-  }) : super(state);
+  });
 
   final CancelToken? cancelToken;
 

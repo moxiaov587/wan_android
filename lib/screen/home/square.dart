@@ -1,7 +1,7 @@
 part of 'home_screen.dart';
 
 class _Square extends StatefulWidget {
-  const _Square({Key? key}) : super(key: key);
+  const _Square();
 
   @override
   State<_Square> createState() => _SquareState();
@@ -41,6 +41,9 @@ class _SquareState extends State<_Square> with AutomaticKeepAliveClientMixin {
                 delegate: CustomSliverChildBuilderDelegate.separated(
                   itemBuilder: (_, int index) {
                     return ArticleTile(
+                      key: ValueKey<String>(
+                        'square_article_${list[index].id}',
+                      ),
                       article: list[index],
                     );
                   },

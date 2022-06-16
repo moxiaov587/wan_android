@@ -12,7 +12,7 @@ final StateNotifierProvider<QuestionNotifier,
 );
 
 class QuestionNotifier extends BaseArticleNotifier {
-  QuestionNotifier(RefreshListViewState<ArticleModel> state) : super(state);
+  QuestionNotifier(super.state);
 
   @override
   Future<RefreshListViewStateData<ArticleModel>> loadData({

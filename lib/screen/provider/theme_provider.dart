@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart' show ThemeMode;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod/riverpod.dart';
 
 import '../../database/hive_boxes.dart';
 import '../../database/model/models.dart';
@@ -13,7 +12,7 @@ final StateNotifierProvider<ThemeNotifier, ThemeMode> themeProvider =
 });
 
 class ThemeNotifier extends StateNotifier<ThemeMode> {
-  ThemeNotifier(ThemeMode state) : super(state);
+  ThemeNotifier(super.state);
 
   static const Map<int, ThemeMode> themeModes = <int, ThemeMode>{
     0: ThemeMode.system,

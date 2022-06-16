@@ -7,24 +7,24 @@ final AutoDisposeStateNotifierProvider<PointsRankNotifier,
   (AutoDisposeStateNotifierProviderRef<PointsRankNotifier,
           RefreshListViewState<UserPointsModel>>
       ref) {
-    final CancelToken _cancelToken = CancelToken();
+    final CancelToken cancelToken = CancelToken();
+
     ref.onDispose(() {
-      _cancelToken.cancel();
+      cancelToken.cancel();
     });
 
     return PointsRankNotifier(
       const RefreshListViewState<UserPointsModel>.loading(),
-      cancelToken: _cancelToken,
+      cancelToken: cancelToken,
     );
   },
 );
 
 class PointsRankNotifier extends BaseRefreshListViewNotifier<UserPointsModel> {
   PointsRankNotifier(
-    RefreshListViewState<UserPointsModel> state, {
+    super.state, {
     this.cancelToken,
   }) : super(
-          state,
           pageSize: 30,
         );
 

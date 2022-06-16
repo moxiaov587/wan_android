@@ -8,7 +8,7 @@ import '../contacts/instances.dart';
 
 class CustomTextFormField extends StatefulWidget {
   const CustomTextFormField({
-    Key? key,
+    super.key,
     required this.controller,
     this.focusNode,
     this.decoration = const InputDecoration(),
@@ -51,7 +51,7 @@ class CustomTextFormField extends StatefulWidget {
     this.scrollController,
     this.restorationId,
     this.enableIMEPersonalizedLearning = true,
-  }) : super(key: key);
+  });
 
   final TextEditingController controller;
   final FocusNode? focusNode;

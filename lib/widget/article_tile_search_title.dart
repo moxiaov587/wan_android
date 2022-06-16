@@ -2,11 +2,11 @@ part of 'article.dart';
 
 class ArticleTileSearchTitle extends StatelessWidget {
   const ArticleTileSearchTitle({
-    Key? key,
+    super.key,
     required this.query,
     required this.title,
     required this.textStyle,
-  }) : super(key: key);
+  });
 
   final String query;
   final String title;

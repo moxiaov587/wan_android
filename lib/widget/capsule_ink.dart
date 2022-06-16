@@ -5,11 +5,11 @@ import '../contacts/instances.dart';
 
 class CapsuleInk extends StatelessWidget {
   const CapsuleInk({
-    Key? key,
+    super.key,
     this.color,
     required this.child,
     this.onTap,
-  }) : super(key: key);
+  });
 
   final Color? color;
   final Widget child;
@@ -24,6 +24,7 @@ class CapsuleInk extends StatelessWidget {
       ),
       child: InkWell(
         borderRadius: AppTheme.roundedBorderRadius,
+        onTap: onTap,
         child: Padding(
           padding: AppTheme.contentPadding,
           child: DefaultTextStyle(
@@ -33,7 +34,6 @@ class CapsuleInk extends StatelessWidget {
             child: child,
           ),
         ),
-        onTap: onTap,
       ),
     );
   }

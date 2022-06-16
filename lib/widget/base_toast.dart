@@ -2,11 +2,11 @@ part of '../utils/dialog_utils.dart';
 
 class BaseToast extends StatelessWidget {
   const BaseToast({
-    Key? key,
+    super.key,
     required this.type,
     required this.alignment,
     required this.msg,
-  }) : super(key: key);
+  });
 
   final ToastType type;
 
@@ -28,7 +28,7 @@ class BaseToast extends StatelessWidget {
       case ToastType.waring:
         background = currentTheme.colorScheme.tertiary;
         break;
-      default:
+      case ToastType.tips:
         background =
             (currentTheme.tooltipTheme.decoration as BoxDecoration?)!.color!;
         break;

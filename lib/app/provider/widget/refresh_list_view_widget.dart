@@ -13,14 +13,14 @@ class RefreshListViewWidget<
         RefreshListViewState<T>>,
     T> extends ConsumerStatefulWidget {
   const RefreshListViewWidget({
-    Key? key,
+    super.key,
     this.paddingVertical,
     required this.provider,
     this.onInitState,
     required this.builder,
     this.slivers,
     this.onRetry,
-  }) : super(key: key);
+  });
 
   final EdgeInsets? paddingVertical;
   final ProviderType provider;
@@ -57,7 +57,6 @@ class _RefreshListViewWidgetState<
   @override
   Widget build(BuildContext context) {
     return SmartRefresher.builder(
-      enablePullDown: true,
       enablePullUp: true,
       controller: _refreshController,
       onRefresh: () async {
@@ -85,6 +84,8 @@ class _RefreshListViewWidgetState<
             await ref.read(widget.provider.notifier).loadMore();
 
         switch (status) {
+          case null:
+            break;
           case RefreshControllerStatus.completed:
             _refreshController.loadComplete();
             break;
@@ -93,8 +94,6 @@ class _RefreshListViewWidgetState<
             break;
           case RefreshControllerStatus.failed:
             _refreshController.loadFailed();
-            break;
-          default:
             break;
         }
       },
@@ -114,10 +113,8 @@ class _RefreshListViewWidgetState<
                         marginTop: widget.paddingVertical?.top,
                       ),
                     ) ??
-                    SliverToBoxAdapter(
-                      child: SizedBox(
-                        height: widget.paddingVertical?.top ?? 0.0,
-                      ),
+                    const SliverToBoxAdapter(
+                      child: SizedBox.shrink(),
                     ),
               ),
             ),
@@ -160,10 +157,8 @@ class _RefreshListViewWidgetState<
                         marginBottom: widget.paddingVertical?.bottom,
                       ),
                     ) ??
-                    SliverToBoxAdapter(
-                      child: SizedBox(
-                        height: widget.paddingVertical?.bottom ?? 0.0,
-                      ),
+                    const SliverToBoxAdapter(
+                      child: SizedBox.shrink(),
                     ),
               ),
             ),
@@ -179,14 +174,14 @@ class AutoDisposeRefreshListViewWidget<
         BaseRefreshListViewNotifier<T>, RefreshListViewState<T>>,
     T> extends ConsumerStatefulWidget {
   const AutoDisposeRefreshListViewWidget({
-    Key? key,
+    super.key,
     this.paddingVertical,
     required this.provider,
     this.onInitState,
     required this.builder,
     this.slivers,
     this.onRetry,
-  }) : super(key: key);
+  });
 
   final EdgeInsets? paddingVertical;
   final ProviderType provider;
@@ -224,7 +219,6 @@ class _AutoDisposeRefreshListViewWidgetState<
   @override
   Widget build(BuildContext context) {
     return SmartRefresher.builder(
-      enablePullDown: true,
       enablePullUp: true,
       controller: _refreshController,
       onRefresh: () async {
@@ -252,6 +246,8 @@ class _AutoDisposeRefreshListViewWidgetState<
             await ref.read(widget.provider.notifier).loadMore();
 
         switch (status) {
+          case null:
+            break;
           case RefreshControllerStatus.completed:
             _refreshController.loadComplete();
             break;
@@ -260,8 +256,6 @@ class _AutoDisposeRefreshListViewWidgetState<
             break;
           case RefreshControllerStatus.failed:
             _refreshController.loadFailed();
-            break;
-          default:
             break;
         }
       },
@@ -281,10 +275,8 @@ class _AutoDisposeRefreshListViewWidgetState<
                         marginTop: widget.paddingVertical?.top,
                       ),
                     ) ??
-                    SliverToBoxAdapter(
-                      child: SizedBox(
-                        height: widget.paddingVertical?.top ?? 0.0,
-                      ),
+                    const SliverToBoxAdapter(
+                      child: SizedBox.shrink(),
                     ),
               ),
             ),
@@ -327,10 +319,8 @@ class _AutoDisposeRefreshListViewWidgetState<
                         marginBottom: widget.paddingVertical?.bottom,
                       ),
                     ) ??
-                    SliverToBoxAdapter(
-                      child: SizedBox(
-                        height: widget.paddingVertical?.bottom ?? 0.0,
-                      ),
+                    const SliverToBoxAdapter(
+                      child: SizedBox.shrink(),
                     ),
               ),
             ),

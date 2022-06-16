@@ -24,10 +24,10 @@ final AutoDisposeStateNotifierProviderFamily<TheyArticlesNotifier,
 
 class TheyArticlesNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
   TheyArticlesNotifier(
-    RefreshListViewState<ArticleModel> state, {
+    super.state, {
     required this.author,
     this.cancelToken,
-  }) : super(state);
+  });
 
   final String author;
   final CancelToken? cancelToken;

@@ -2,11 +2,10 @@ part of 'my_collections_screen.dart';
 
 class HandleCollectedBottomSheet extends ConsumerStatefulWidget {
   const HandleCollectedBottomSheet({
-    Key? key,
+    super.key,
     required this.type,
     required this.collectId,
-  })  : isArticles = type == CollectionType.article,
-        super(key: key);
+  }) : isArticles = type == CollectionType.article;
 
   final CollectionType type;
   final int? collectId;
@@ -53,21 +52,7 @@ class _HandleCollectedBottomSheetState
       _authorFocusNode = FocusNode();
     }
 
-    // ignore: prefer-async-await
-    ref.read(provider.notifier).initData().then((_) {
-      ref.read(provider).whenOrNull((CollectedCommonModel? collect) {
-        if (collect != null) {
-          _titleTextEditingController.text = collect.title;
-          _linkTextEditingController.text = collect.link;
-
-          if (widget.isArticles) {
-            _authorTextEditingController.text = collect.author ?? '';
-          }
-        }
-      });
-
-      _titleFocusNode.requestFocus();
-    });
+    initData();
   }
 
   @override
@@ -84,6 +69,23 @@ class _HandleCollectedBottomSheetState
       _authorFocusNode.dispose();
     }
     super.dispose();
+  }
+
+  Future<void> initData() async {
+    await ref.read(provider.notifier).initData();
+
+    ref.read(provider).whenOrNull((CollectedCommonModel? collect) {
+      if (collect != null) {
+        _titleTextEditingController.text = collect.title;
+        _linkTextEditingController.text = collect.link;
+
+        if (widget.isArticles) {
+          _authorTextEditingController.text = collect.author ?? '';
+        }
+      }
+    });
+
+    _titleFocusNode.requestFocus();
   }
 
   Future<void> onSubmitted({
@@ -123,7 +125,9 @@ class _HandleCollectedBottomSheetState
       }
 
       if (result) {
-        Navigator.of(context).maybePop();
+        if (mounted) {
+          Navigator.of(context).maybePop();
+        }
       }
     }
   }

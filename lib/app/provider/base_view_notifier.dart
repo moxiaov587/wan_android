@@ -1,7 +1,7 @@
 part of 'provider.dart';
 
 abstract class BaseViewNotifier<T> extends StateNotifier<ViewState<T>> {
-  BaseViewNotifier(ViewState<T> state) : super(state);
+  BaseViewNotifier(super.state);
 
   Future<void> initData() async {
     await refresh();

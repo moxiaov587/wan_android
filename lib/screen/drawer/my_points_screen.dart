@@ -1,7 +1,7 @@
 part of 'home_drawer.dart';
 
 class MyPointsScreen extends StatelessWidget {
-  const MyPointsScreen({Key? key}) : super(key: key);
+  const MyPointsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

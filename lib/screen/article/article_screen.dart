@@ -25,9 +25,9 @@ import 'provider/article_provider.dart';
 
 class ArticleScreen extends ConsumerStatefulWidget {
   const ArticleScreen({
-    Key? key,
+    super.key,
     required this.id,
-  }) : super(key: key);
+  });
 
   final int id;
 
@@ -61,7 +61,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
 
     ref.read(provider.notifier).initData();
   }
@@ -71,7 +71,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
     super.didChangeMetrics();
 
     _showKeyboardNotifier.value =
-        WidgetsBinding.instance!.window.viewInsets.bottom != 0;
+        WidgetsBinding.instance.window.viewInsets.bottom != 0;
   }
 
   @override
@@ -83,7 +83,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
     _canGoBackNotifier.dispose();
     _canGoForwardModeNotifier.dispose();
     _showKeyboardNotifier.dispose();
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -191,7 +191,6 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                               horizontalScrollBarEnabled: false,
                               verticalScrollBarEnabled: false,
                               javaScriptCanOpenWindowsAutomatically: true,
-                              supportZoom: true,
                               transparentBackground: true,
                               useShouldOverrideUrlLoading: true,
                               preferredContentMode: useDesktopMode
@@ -200,22 +199,14 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                             ),
                             android: AndroidInAppWebViewOptions(
                               useHybridComposition: true,
-                              builtInZoomControls: true,
-                              displayZoomControls: false,
                               forceDark: currentIsDark
                                   ? AndroidForceDark.FORCE_DARK_ON
                                   : AndroidForceDark.FORCE_DARK_OFF,
-                              loadWithOverviewMode: true,
                               mixedContentMode: AndroidMixedContentMode
                                   .MIXED_CONTENT_ALWAYS_ALLOW,
                               safeBrowsingEnabled: false,
-                              supportMultipleWindows: false,
                             ),
                             ios: IOSInAppWebViewOptions(
-                              allowsAirPlayForMediaPlayback: true,
-                              allowsBackForwardNavigationGestures: true,
-                              allowsLinkPreview: true,
-                              allowsPictureInPictureMediaPlayback: true,
                               isFraudulentWebsiteWarningEnabled: false,
                             ),
                           ),
@@ -287,7 +278,6 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                         ),
                       ),
                       Positioned(
-                        top: null,
                         child: PreferredSize(
                           preferredSize: Size(ScreenUtils.width, 5.0),
                           child: StreamBuilder<double>(

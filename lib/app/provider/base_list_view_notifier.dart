@@ -1,7 +1,7 @@
 part of 'provider.dart';
 
 abstract class BaseListViewNotifier<T> extends StateNotifier<ListViewState<T>> {
-  BaseListViewNotifier(ListViewState<T> state) : super(state);
+  BaseListViewNotifier(super.state);
 
   Future<void> initData() async {
     if (state != ListViewState<T>.loading()) {

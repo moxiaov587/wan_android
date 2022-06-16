@@ -6,13 +6,13 @@ import '../contacts/instances.dart';
 
 class DismissibleSlidableAction extends StatefulWidget {
   const DismissibleSlidableAction({
-    Key? key,
+    super.key,
     required this.slidableExtentRatio,
     required this.dismissiblePaneThreshold,
     required this.label,
     this.color,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   final double slidableExtentRatio;
   final double dismissiblePaneThreshold;
