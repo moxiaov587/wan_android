@@ -27,7 +27,6 @@ import '../../utils/html_parse_utils.dart';
 import '../../utils/screen_utils.dart';
 import '../../widget/article.dart';
 import '../../widget/capsule_ink.dart';
-import '../../widget/custom_bottom_navigation_bar.dart';
 import '../../widget/custom_search_delegate.dart';
 import '../../widget/custom_sliver_child_builder_delegate.dart';
 import '../../widget/gap.dart';
@@ -128,21 +127,13 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        tooltip: S.of(context).search,
-        onPressed: () {
-          AppRouterDelegate.instance.currentBeamState.updateWith(
-            showSearch: true,
-          );
-        },
-        child: const Icon(IconFontIcons.searchEyeLine),
-      ),
       bottomNavigationBar: BottomAppBar(
         child: ValueListenableBuilder<int>(
           valueListenable: _currentIndexNotifier,
-          builder: (BuildContext context, int index, _) =>
-              CustomBottomNavigationBar(
+          builder: (BuildContext context, int index, _) => BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            showSelectedLabels: false,
+            showUnselectedLabels: false,
             currentIndex: index,
             onTap: (int value) {
               /// The [jumpToPage] will trigger [onPageChanged]
@@ -198,9 +189,6 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
         ArticleModel>(
       paddingVertical: EdgeInsets.only(
         top: ScreenUtils.topSafeHeight,
-        bottom:
-            currentTheme.floatingActionButtonTheme.sizeConstraints!.minWidth /
-                2,
       ),
       provider: homeArticleProvider,
       onInitState: (Reader reader) {

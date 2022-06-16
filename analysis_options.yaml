@@ -50,7 +50,6 @@ analyzer:
     - "**.freezed.dart"
       # Ignore i10n generated files
     - "lib/app/l10n/generated/**"
-    - "lib/app/shape/convex_notched_rectangle.dart"
 
 dart_code_metrics:
   anti-patterns:

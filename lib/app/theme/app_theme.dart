@@ -3,8 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 
-import '../shape/convex_notched_rectangle.dart';
-
 part 'app_colors.dart';
 part 'app_text_theme.dart';
 
@@ -88,17 +86,8 @@ class AppTheme {
         fontWeight: AppTextTheme.medium,
       );
 
-  static FloatingActionButtonThemeData get floatingActionButtonTheme =>
-      const FloatingActionButtonThemeData(
-        elevation: 0.0,
-        hoverElevation: 0.0,
-        highlightElevation: 0.0,
-        sizeConstraints: BoxConstraints.tightFor(width: 56.0, height: 56.0),
-      );
-
   static BottomAppBarTheme get bottomAppBarTheme => const BottomAppBarTheme(
         elevation: 0.0,
-        shape: ConvexNotchedRectangle(),
       );
 
   static BottomNavigationBarThemeData get bottomNavigationBarTheme =>
@@ -247,10 +236,6 @@ class AppTheme {
             textStyle: MaterialStateProperty.all(buttonTextStyle),
           ),
         ),
-        floatingActionButtonTheme: floatingActionButtonTheme.copyWith(
-          backgroundColor: AppColors.appBar,
-          foregroundColor: AppColors.text2,
-        ),
         bottomAppBarTheme: bottomAppBarTheme.copyWith(
           color: AppColors.appBar,
         ),
@@ -396,10 +381,6 @@ class AppTheme {
           style: buttonStyle.copyWith(
             textStyle: MaterialStateProperty.all(buttonTextStyle),
           ),
-        ),
-        floatingActionButtonTheme: floatingActionButtonTheme.copyWith(
-          backgroundColor: AppColors.appBarDark,
-          foregroundColor: AppColors.text2Dark,
         ),
         bottomAppBarTheme: bottomAppBarTheme.copyWith(
           color: AppColors.appBarDark,

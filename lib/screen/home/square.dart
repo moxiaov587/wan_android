@@ -27,11 +27,6 @@ class _SquareState extends State<_Square> with AutomaticKeepAliveClientMixin {
               StateNotifierProvider<SquareNotifier,
                   RefreshListViewState<ArticleModel>>,
               ArticleModel>(
-            paddingVertical: EdgeInsets.only(
-              bottom: currentTheme
-                      .floatingActionButtonTheme.sizeConstraints!.minWidth /
-                  2,
-            ),
             provider: squareArticleProvider,
             onInitState: (Reader reader) {
               reader.call(squareArticleProvider.notifier).initData();

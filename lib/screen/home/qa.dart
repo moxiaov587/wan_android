@@ -27,11 +27,6 @@ class _QAState extends State<_QA> with AutomaticKeepAliveClientMixin {
               StateNotifierProvider<QuestionNotifier,
                   RefreshListViewState<ArticleModel>>,
               ArticleModel>(
-            paddingVertical: EdgeInsets.only(
-              bottom: currentTheme
-                      .floatingActionButtonTheme.sizeConstraints!.minWidth /
-                  2,
-            ),
             provider: questionArticleProvider,
             onInitState: (Reader reader) {
               reader.call(questionArticleProvider.notifier).initData();
