@@ -106,7 +106,7 @@ class DialogUtils {
     return SmartDialog.show<T>(
       tag: tag,
       maskColor: _maskBackground,
-      animationType: SmartAnimationType.centerFadeAndOtherScale,
+      animationType: SmartAnimationType.centerFade_otherSlide,
       builder: (BuildContext context) => BaseConfirm(
         title: title,
         content: content,
