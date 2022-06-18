@@ -13,52 +13,43 @@ final StateNotifierProvider<ProjectTypeNotifier,
 class ProjectTypeNotifier extends BaseListViewNotifier<ProjectTypeModel> {
   ProjectTypeNotifier(super.state);
 
-  int _selectedIndex = 0;
-  int get selectedIndex => _selectedIndex;
-
   @override
-  Future<List<ProjectTypeModel>> loadData() async {
-    final List<ProjectTypeModel> data = await WanAndroidAPI.fetchProjectTypes();
-    data.first = data.first.copyWith(isSelected: true);
-
-    return data;
-  }
-
-  void selected(int index) {
-    state.whenOrNull(
-      (List<ProjectTypeModel> value) {
-        if (_selectedIndex != index) {
-          value[_selectedIndex] =
-              value[_selectedIndex].copyWith(isSelected: false);
-
-          value[index] = value[index].copyWith(isSelected: true);
-
-          _selectedIndex = index;
-
-          state = ListViewState<ProjectTypeModel>(list: value);
-        }
-      },
-    );
+  Future<List<ProjectTypeModel>> loadData() {
+    return WanAndroidAPI.fetchProjectTypes();
   }
 }
 
-final StateProvider<ViewState<ProjectTypeModel>> currentProjectTypeProvider =
-    StateProvider<ViewState<ProjectTypeModel>>(
-  (StateProviderRef<ViewState<ProjectTypeModel>> ref) {
-    return ref.watch(projectTypesProvider).when(
-          (List<ProjectTypeModel> value) => ViewStateData<ProjectTypeModel>(
-            value: value[ref.read(projectTypesProvider.notifier).selectedIndex],
+final StateNotifierProvider<CurrentProjectTypeNotifier,
+        ViewState<ProjectTypeModel>> currentProjectTypeProvider =
+    StateNotifierProvider<CurrentProjectTypeNotifier,
+        ViewState<ProjectTypeModel>>(
+  (StateNotifierProviderRef<CurrentProjectTypeNotifier,
+          ViewState<ProjectTypeModel>>
+      ref) {
+    return CurrentProjectTypeNotifier(
+      ref.watch(projectTypesProvider).when(
+            (List<ProjectTypeModel> value) =>
+                ViewState<ProjectTypeModel>(value: value.first),
+            loading: () => const ViewStateLoading<ProjectTypeModel>(),
+            error: (int? statusCode, String? message, String? detail) =>
+                ViewStateError<ProjectTypeModel>(
+              statusCode: statusCode,
+              message: message,
+              detail: detail,
+            ),
           ),
-          loading: () => const ViewStateLoading<ProjectTypeModel>(),
-          error: (int? statusCode, String? message, String? detail) =>
-              ViewStateError<ProjectTypeModel>(
-            statusCode: statusCode,
-            message: message,
-            detail: detail,
-          ),
-        );
+    );
   },
 );
+
+class CurrentProjectTypeNotifier
+    extends StateNotifier<ViewState<ProjectTypeModel>> {
+  CurrentProjectTypeNotifier(super.state);
+
+  void selected(ProjectTypeModel data) {
+    state = ViewState<ProjectTypeModel>(value: data);
+  }
+}
 
 final StateNotifierProvider<ProjectNotifier, RefreshListViewState<ArticleModel>>
     projectArticleProvider =

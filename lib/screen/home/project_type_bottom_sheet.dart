@@ -24,44 +24,37 @@ class ProjectTypeBottomSheet extends StatelessWidget {
                       ListViewState<ProjectTypeModel>>,
                   ProjectTypeModel>(
                 provider: projectTypesProvider,
-                builder: (_, __, List<ProjectTypeModel> list) {
-                  return SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (_, int index) {
-                        return Consumer(
-                          builder: (_, WidgetRef ref, __) {
-                            final bool selected = ref.watch(
-                              projectTypesProvider.select(
-                                (ListViewState<ProjectTypeModel> value) =>
-                                    value.whenOrNull(
-                                      (List<ProjectTypeModel> list) =>
-                                          list[index].isSelected,
-                                    ) ??
-                                    false,
-                              ),
-                            );
+                itemBuilder: (_, __, int index, ProjectTypeModel projectType) {
+                  return Consumer(
+                    builder: (_, WidgetRef ref, __) {
+                      final bool selected = ref.watch(
+                        currentProjectTypeProvider.select(
+                          (ViewState<ProjectTypeModel> value) =>
+                              value.whenOrNull(
+                                (ProjectTypeModel? currentProjectType) =>
+                                    currentProjectType == projectType,
+                              ) ??
+                              false,
+                        ),
+                      );
 
-                            return ListTile(
-                              selected: selected,
-                              title: Text(
-                                HTMLParseUtils.parseArticleTitle(
-                                      title: list[index].name,
-                                    ) ??
-                                    S.of(context).unknown,
-                              ),
-                              onTap: () {
-                                ref
-                                    .read(projectTypesProvider.notifier)
-                                    .selected(index);
+                      return ListTile(
+                        selected: selected,
+                        title: Text(
+                          HTMLParseUtils.parseArticleTitle(
+                                title: projectType.name,
+                              ) ??
+                              S.of(context).unknown,
+                        ),
+                        onTap: () {
+                          ref
+                              .read(currentProjectTypeProvider.notifier)
+                              .selected(projectType);
 
-                                Navigator.of(context).maybePop();
-                              },
-                            );
-                          },
-                        );
-                      },
-                      childCount: list.length,
-                    ),
+                          Navigator.of(context).maybePop();
+                        },
+                      );
+                    },
                   );
                 },
               ),
