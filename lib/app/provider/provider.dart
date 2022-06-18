@@ -41,7 +41,14 @@ class BaseViewStateError {
           // TODO:
           break;
         case DioErrorType.other:
-          // TODO:
+          final dynamic error = e.error;
+          if (error is AppException) {
+            statusCode = error.errorCode;
+            message = error.message;
+          } else {
+            message = e.message;
+            detail = e.error.toString();
+          }
           break;
       }
     } else if (e is AppException) {

@@ -76,11 +76,15 @@ class AppException implements Exception {
 
   AppException.fromResponseData(ResponseData data)
       : errorCode = data.code,
-        detail = data.message;
+        message = data.message;
 
   int? errorCode;
   String? message;
   String? detail;
 
   bool get isUnAuthorized => errorCode == -1001;
+
+  @override
+  String toString() =>
+      '$runtimeType(${errorCode ?? -1}) ${message ?? 'unknown error'} ${detail ?? 'no more info.'}';
 }
