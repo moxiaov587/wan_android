@@ -25,27 +25,16 @@ class __WebsiteState extends State<_Website>
       onInitState: (Reader reader) {
         reader.call(myCollectedWebsiteProvider.notifier).initData();
       },
-      builder: (_, WidgetRef ref, List<CollectedWebsiteModel> list) {
-        return SliverList(
-          delegate: CustomSliverChildBuilderDelegate.separated(
-            itemBuilder: (_, int index) {
-              return ProviderScope(
-                overrides: <Override>[
-                  _currentWebsiteProvider.overrideWithValue(
-                    ref.watch(myCollectedWebsiteProvider).whenOrNull(
-                          (List<CollectedWebsiteModel> list) => list[index],
-                        ),
+      itemBuilder: (_, WidgetRef ref, int index, __) {
+        return ProviderScope(
+          overrides: <Override>[
+            _currentWebsiteProvider.overrideWithValue(
+              ref.watch(myCollectedWebsiteProvider).whenOrNull(
+                    (List<CollectedWebsiteModel> list) => list[index],
                   ),
-                ],
-                child: _CollectedWebsiteTile(
-                  key: ValueKey<String>(
-                    'my_collections_website_${list[index].id}',
-                  ),
-                ),
-              );
-            },
-            itemCount: list.length,
-          ),
+            ),
+          ],
+          child: const _CollectedWebsiteTile(),
         );
       },
     );
@@ -58,7 +47,7 @@ final AutoDisposeProvider<CollectedWebsiteModel?> _currentWebsiteProvider =
 );
 
 class _CollectedWebsiteTile extends ConsumerWidget {
-  const _CollectedWebsiteTile({super.key});
+  const _CollectedWebsiteTile();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -24,28 +24,16 @@ class __ArticleState extends State<_Article>
       onInitState: (Reader reader) {
         reader.call(myCollectedArticleProvider.notifier).initData();
       },
-      builder: (_, WidgetRef ref, List<CollectedArticleModel> list) {
-        return SliverList(
-          delegate: CustomSliverChildBuilderDelegate.separated(
-            itemBuilder: (_, int index) {
-              return ProviderScope(
-                overrides: <Override>[
-                  _currentArticleProvider.overrideWithValue(
-                    ref.watch(myCollectedArticleProvider).whenOrNull(
-                          (_, __, List<CollectedArticleModel> list) =>
-                              list[index],
-                        ),
+      builder: (_, WidgetRef ref, int index, __) {
+        return ProviderScope(
+          overrides: <Override>[
+            _currentArticleProvider.overrideWithValue(
+              ref.watch(myCollectedArticleProvider).whenOrNull(
+                    (_, __, List<CollectedArticleModel> list) => list[index],
                   ),
-                ],
-                child: _CollectedArticleTile(
-                  key: ValueKey<String>(
-                    'my_collections_article_${list[index].id}',
-                  ),
-                ),
-              );
-            },
-            itemCount: list.length,
-          ),
+            ),
+          ],
+          child: const _CollectedArticleTile(),
         );
       },
     );
@@ -58,7 +46,7 @@ final AutoDisposeProvider<CollectedArticleModel?> _currentArticleProvider =
 );
 
 class _CollectedArticleTile extends ConsumerWidget {
-  const _CollectedArticleTile({super.key});
+  const _CollectedArticleTile();
 
   TextSpan get _textSpace => const TextSpan(
         text: '${Unicode.halfWidthSpace}•${Unicode.halfWidthSpace}',

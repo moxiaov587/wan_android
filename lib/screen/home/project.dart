@@ -39,28 +39,19 @@ class _ProjectState extends State<_Project> with AutomaticKeepAliveClientMixin {
                 reader.call(projectArticleProvider.notifier).initData();
               }
             },
-            builder: (_, __, List<ArticleModel> list) {
-              return SliverList(
-                delegate: CustomSliverChildBuilderDelegate.separated(
-                  itemBuilder: (_, int index) {
-                    return ArticleTile(
-                      key: ValueKey<String>(
-                        'project_article_${list[index].id}',
-                      ),
-                      article: list[index],
-                    );
-                  },
-                  itemCount: list.length,
+            builder: (_, __, ___, ArticleModel article) {
+              return ArticleTile(
+                key: ValueKey<String>(
+                  'project_article_${article.id}',
                 ),
+                article: article,
               );
             },
-            slivers: <Widget>[
-              SliverPinnedPersistentHeader(
-                delegate: _ProjectTypeSwitchSliverHeaderDelegate(
-                  extentProtoType: const _ProjectTypeSwitchExtentProtoType(),
-                ),
+            sliverPersistentHeader: SliverPinnedPersistentHeader(
+              delegate: _ProjectTypeSwitchSliverHeaderDelegate(
+                extentProtoType: const _ProjectTypeSwitchExtentProtoType(),
               ),
-            ],
+            ),
           ),
         ),
       ],

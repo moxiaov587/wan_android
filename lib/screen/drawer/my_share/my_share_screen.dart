@@ -14,7 +14,6 @@ import '../../../model/models.dart';
 import '../../../navigator/app_router_delegate.dart';
 import '../../../utils/screen_utils.dart';
 import '../../../widget/article.dart';
-import '../../../widget/custom_sliver_child_builder_delegate.dart';
 import '../../../widget/custom_text_form_field.dart';
 import '../../../widget/dismissible_slidable_action.dart';
 import '../../../widget/gap.dart';
@@ -53,27 +52,16 @@ class MyShareScreen extends StatelessWidget {
           onInitState: (Reader reader) {
             reader.call(myShareArticlesProvider.notifier).initData();
           },
-          builder: (_, WidgetRef ref, List<ArticleModel> list) {
-            return SliverList(
-              delegate: CustomSliverChildBuilderDelegate.separated(
-                itemBuilder: (_, int index) {
-                  return ProviderScope(
-                    overrides: <Override>[
-                      _currentShareArticleProvider.overrideWithValue(
-                        ref.watch(myShareArticlesProvider).whenOrNull(
-                              (_, __, List<ArticleModel> list) => list[index],
-                            ),
+          builder: (_, WidgetRef ref, int index, ArticleModel article) {
+            return ProviderScope(
+              overrides: <Override>[
+                _currentShareArticleProvider.overrideWithValue(
+                  ref.watch(myShareArticlesProvider).whenOrNull(
+                        (_, __, List<ArticleModel> list) => list[index],
                       ),
-                    ],
-                    child: _ShareArticleTile(
-                      key: ValueKey<String>(
-                        'my_share_article_${list[index].id}',
-                      ),
-                    ),
-                  );
-                },
-                itemCount: list.length,
-              ),
+                ),
+              ],
+              child: const _ShareArticleTile(),
             );
           },
         ),
@@ -86,7 +74,7 @@ final AutoDisposeProvider<ArticleModel?> _currentShareArticleProvider =
     Provider.autoDispose<ArticleModel?>((_) => null);
 
 class _ShareArticleTile extends ConsumerWidget {
-  const _ShareArticleTile({super.key});
+  const _ShareArticleTile();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

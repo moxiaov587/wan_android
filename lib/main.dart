@@ -13,7 +13,6 @@ import 'package:flutter_native_splash/flutter_native_splash.dart'
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart' show RefreshLocalizations;
 
 import 'app/http/http.dart';
 import 'app/l10n/generated/l10n.dart';
@@ -119,7 +118,12 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
         backButtonDispatcher: BeamerBackButtonDispatcher(
           delegate: AppRouterDelegate.instance.delegate,
         ),
-        builder: FlutterSmartDialog.init(),
+        builder: FlutterSmartDialog.init(
+          builder: (_, Widget? child) => ScrollConfiguration(
+            behavior: const AppScrollBehavior(),
+            child: child!,
+          ),
+        ),
         themeMode: themeMode,
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
@@ -129,10 +133,17 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
-          RefreshLocalizations.delegate,
         ],
         supportedLocales: S.delegate.supportedLocales,
       );
     });
   }
+}
+
+class AppScrollBehavior extends ScrollBehavior {
+  const AppScrollBehavior();
+
+  @override
+  ScrollPhysics getScrollPhysics(BuildContext context) =>
+      const BouncingScrollPhysics();
 }

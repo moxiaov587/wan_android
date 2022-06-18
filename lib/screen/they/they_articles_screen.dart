@@ -32,20 +32,13 @@ class _TheyArticlesScreenState extends State<TheyArticlesScreen> {
           onInitState: (Reader reader) {
             reader.call(provider.notifier).initData();
           },
-          builder: (_, __, List<ArticleModel> list) {
-            return SliverList(
-              delegate: CustomSliverChildBuilderDelegate.separated(
-                itemBuilder: (_, int index) {
-                  return ArticleTile(
-                    key: ValueKey<String>(
-                      'they_article_${list[index].id}',
-                    ),
-                    authorTextOrShareUserTextCanOnTap: false,
-                    article: list[index],
-                  );
-                },
-                itemCount: list.length,
+          builder: (_, __, ___, ArticleModel article) {
+            return ArticleTile(
+              key: ValueKey<String>(
+                'they_article_${article.id}',
               ),
+              authorTextOrShareUserTextCanOnTap: false,
+              article: article,
             );
           },
         ),

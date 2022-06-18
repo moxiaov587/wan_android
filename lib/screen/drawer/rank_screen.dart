@@ -20,32 +20,22 @@ class RankScreen extends StatelessWidget {
               AutoDisposeStateNotifierProvider<PointsRankNotifier,
                   RefreshListViewState<UserPointsModel>>,
               UserPointsModel>(
-            paddingVertical: EdgeInsets.only(bottom: paddingBottom),
             provider: pointsRankProvider,
             onInitState: (Reader reader) {
               reader.call(pointsRankProvider.notifier).initData();
             },
-            builder: (_, WidgetRef ref, List<UserPointsModel> list) {
-              return SliverList(
-                delegate: CustomSliverChildBuilderDelegate.separated(
-                  itemBuilder: (_, int index) {
-                    final UserPointsModel points = list[index];
-
-                    return Material(
-                      child: Padding(
-                        padding: const EdgeInsets.all(kStyleUint4),
-                        child: _RankTile(
-                          rank: points.rank,
-                          level: points.level,
-                          nickname: points.nickname.strictValue ??
-                              points.username.strictValue ??
-                              '',
-                          totalPoints: points.coinCount,
-                        ),
-                      ),
-                    );
-                  },
-                  itemCount: list.length,
+            builder: (_, __, ___, UserPointsModel points) {
+              return Material(
+                child: Padding(
+                  padding: const EdgeInsets.all(kStyleUint4),
+                  child: _RankTile(
+                    rank: points.rank,
+                    level: points.level,
+                    nickname: points.nickname.strictValue ??
+                        points.username.strictValue ??
+                        '',
+                    totalPoints: points.coinCount,
+                  ),
                 ),
               );
             },

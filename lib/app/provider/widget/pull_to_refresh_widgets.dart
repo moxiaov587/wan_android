@@ -1,287 +1,78 @@
 import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart'
     hide RefreshIndicator, RefreshIndicatorState;
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:nil/nil.dart';
 
 import '../../../contacts/icon_font_icons.dart';
-import '../../../contacts/instances.dart';
+import '../../../widget/gap.dart';
+import '../provider.dart';
 
-class DropDownListHeader extends RefreshIndicator {
-  const DropDownListHeader({
+class LoadingMoreIndicator extends StatelessWidget {
+  const LoadingMoreIndicator({
     super.key,
-    super.refreshStyle,
-    super.completeDuration,
-    double height = 60.0,
-    this.textStyle,
-    this.marginTop,
-    this.releaseText,
-    this.refreshingText,
-    this.canTwoLevelIcon,
-    this.twoLevelView,
-    this.canTwoLevelText,
-    this.completeText,
-    this.failedText,
-    this.idleText,
-    this.refreshingIcon,
-    this.failedIcon = const Icon(IconFontIcons.errorWarningLine),
-    this.completeIcon = const Icon(IconFontIcons.checkLine),
-    this.idleIcon = const Icon(IconFontIcons.arrowDownLine),
-    this.releaseIcon = const Icon(IconFontIcons.refreshLine),
-  }) : super(height: height + (marginTop ?? 0.0));
+    required this.status,
+    required this.onRetry,
+  });
 
-  final String? releaseText,
-      idleText,
-      refreshingText,
-      completeText,
-      failedText,
-      canTwoLevelText;
-  final Widget? releaseIcon,
-      idleIcon,
-      refreshingIcon,
-      completeIcon,
-      failedIcon,
-      canTwoLevelIcon,
-      twoLevelView;
+  final LoadingMoreStatus? status;
 
-  final TextStyle? textStyle;
-
-  final double? marginTop;
+  final Future<void> Function() onRetry;
 
   @override
-  State createState() {
-    return _DropDownListHeaderState();
-  }
-}
+  Widget build(BuildContext context) {
+    if (<LoadingMoreStatus?>[null, LoadingMoreStatus.completed]
+        .contains(status)) {
+      return nil;
+    }
 
-class _DropDownListHeaderState
-    extends RefreshIndicatorState<DropDownListHeader> {
-  Widget _buildText(RefreshStatus? mode) {
-    final RefreshString strings =
-        RefreshLocalizations.of(context)?.currentLocalization ??
-            EnRefreshString();
+    Widget? icon;
 
-    late String text;
+    String? tips;
 
-    switch (mode) {
+    switch (status) {
       case null:
-      case RefreshStatus.twoLevelOpening:
-      case RefreshStatus.twoLeveling:
-      case RefreshStatus.twoLevelClosing:
-        text = '';
+      case LoadingMoreStatus.completed:
         break;
-      case RefreshStatus.canRefresh:
-        text = widget.releaseText ?? strings.canRefreshText!;
+      case LoadingMoreStatus.loading:
+        icon = const SizedBox(
+          width: 25.0,
+          height: 25.0,
+          child: CupertinoActivityIndicator(),
+        );
+        tips = '正在加载';
         break;
-      case RefreshStatus.completed:
-        text = widget.completeText ?? strings.refreshCompleteText!;
+      case LoadingMoreStatus.noData:
+        tips = '没有更多了';
         break;
-      case RefreshStatus.failed:
-        text = widget.failedText ?? strings.refreshFailedText!;
-        break;
-      case RefreshStatus.refreshing:
-        text = widget.refreshingText ?? strings.refreshingText!;
-        break;
-      case RefreshStatus.idle:
-        text = widget.idleText ?? strings.idleRefreshText!;
-        break;
-      case RefreshStatus.canTwoLevel:
-        text = widget.canTwoLevelText ?? strings.canTwoLevelText!;
+      case LoadingMoreStatus.failed:
+        icon = const Icon(IconFontIcons.errorWarningLine);
+        tips = '加载失败，点击重试';
         break;
     }
 
-    return Text(
-      text,
-      style: widget.textStyle ?? currentTheme.textTheme.bodyLarge,
+    final Widget child = Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: 20.0,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          if (icon != null) icon,
+          if (icon != null) Gap(direction: GapDirection.horizontal),
+          if (tips != null) Text(tips),
+        ],
+      ),
     );
-  }
 
-  Widget? _buildIcon(RefreshStatus? mode) {
-    switch (mode) {
-      case null:
-      case RefreshStatus.twoLevelOpening:
-      case RefreshStatus.twoLeveling:
-      case RefreshStatus.twoLevelClosing:
-        return widget.twoLevelView;
-      case RefreshStatus.canRefresh:
-        return widget.releaseIcon;
-      case RefreshStatus.completed:
-        return widget.completeIcon;
-      case RefreshStatus.failed:
-        return widget.failedIcon;
-      case RefreshStatus.refreshing:
-        return widget.refreshingIcon ??
-            const SizedBox(
-              width: 25.0,
-              height: 25.0,
-              child: CupertinoActivityIndicator(),
-            );
-      case RefreshStatus.idle:
-        return widget.idleIcon;
-      case RefreshStatus.canTwoLevel:
-        return widget.canTwoLevelIcon;
-    }
-  }
-
-  @override
-  bool needReverseAll() {
-    return false;
-  }
-
-  @override
-  Widget buildContent(BuildContext context, RefreshStatus? mode) {
-    final Widget textWidget = _buildText(mode);
-    final Widget iconWidget = _buildIcon(mode) ?? const SizedBox.shrink();
-
-    final double? marginTop = widget.marginTop;
-
-    Widget body = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        iconWidget,
-        const SizedBox(
-          width: 15.0,
+    if (status == LoadingMoreStatus.failed) {
+      return Ink(
+        child: InkWell(
+          onTap: onRetry,
+          child: child,
         ),
-        textWidget,
-      ],
-    );
-
-    if (marginTop != null) {
-      body = Padding(
-        padding: EdgeInsets.only(top: marginTop),
-        child: body,
       );
     }
 
-    return SizedBox(
-      height: widget.height,
-      child: body,
-    );
-  }
-}
-
-class LoadMoreListFooter extends LoadIndicator {
-  const LoadMoreListFooter({
-    super.key,
-    super.onClick,
-    super.loadStyle,
-    double height = 60.0,
-    this.textStyle,
-    this.marginBottom,
-    this.loadingText,
-    this.noDataText,
-    this.noMoreIcon,
-    this.idleText,
-    this.failedText,
-    this.canLoadingText,
-    this.failedIcon = const Icon(IconFontIcons.errorWarningLine),
-    this.completeDuration = const Duration(milliseconds: 300),
-    this.loadingIcon,
-    this.canLoadingIcon = const Icon(IconFontIcons.restartLine),
-    this.idleIcon = const Icon(IconFontIcons.arrowUpLine),
-  }) : super(height: height + (marginBottom ?? 0.0));
-
-  final String? idleText, loadingText, noDataText, failedText, canLoadingText;
-
-  final Widget? idleIcon, loadingIcon, noMoreIcon, failedIcon, canLoadingIcon;
-
-  final TextStyle? textStyle;
-
-  final double? marginBottom;
-
-  /// notice that ,this attrs only works for LoadStyle.ShowWhenLoading
-  final Duration completeDuration;
-
-  @override
-  State<StatefulWidget> createState() => _LoadMoreListFooterState();
-}
-
-class _LoadMoreListFooterState extends LoadIndicatorState<LoadMoreListFooter> {
-  Widget _buildText(LoadStatus? mode) {
-    final RefreshString strings =
-        RefreshLocalizations.of(context)?.currentLocalization ??
-            EnRefreshString();
-
-    late String text;
-
-    switch (mode) {
-      case null:
-      case LoadStatus.idle:
-        text = widget.idleText ?? strings.idleLoadingText!;
-        break;
-      case LoadStatus.loading:
-        text = widget.loadingText ?? strings.loadingText!;
-        break;
-      case LoadStatus.noMore:
-        text = widget.noDataText ?? strings.noMoreText!;
-        break;
-      case LoadStatus.failed:
-        text = widget.failedText ?? strings.loadFailedText!;
-        break;
-      case LoadStatus.canLoading:
-        text = widget.canLoadingText ?? strings.canLoadingText!;
-        break;
-    }
-
-    return Text(
-      text,
-      style: widget.textStyle ?? currentTheme.textTheme.bodyLarge,
-    );
-  }
-
-  Widget? _buildIcon(LoadStatus? mode) {
-    switch (mode) {
-      case null:
-      case LoadStatus.idle:
-        return widget.idleIcon;
-      case LoadStatus.loading:
-        return widget.loadingIcon ??
-            const SizedBox(
-              width: 25.0,
-              height: 25.0,
-              child: CupertinoActivityIndicator(),
-            );
-      case LoadStatus.noMore:
-        return widget.noMoreIcon;
-      case LoadStatus.failed:
-        return widget.failedIcon;
-      case LoadStatus.canLoading:
-        return widget.canLoadingIcon;
-    }
-  }
-
-  @override
-  Future<void> endLoading() {
-    return Future<void>.delayed(widget.completeDuration);
-  }
-
-  @override
-  Widget buildContent(BuildContext context, LoadStatus? mode) {
-    final Widget textWidget = _buildText(mode);
-    final Widget iconWidget = _buildIcon(mode) ?? const SizedBox.shrink();
-
-    final double? marginBottom = widget.marginBottom;
-
-    Widget body = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        iconWidget,
-        const SizedBox(
-          width: 15.0,
-        ),
-        textWidget,
-      ],
-    );
-
-    if (marginBottom != null) {
-      body = Padding(
-        padding: EdgeInsets.only(bottom: marginBottom),
-        child: body,
-      );
-    }
-
-    return SizedBox(
-      height: widget.height,
-      child: body,
-    );
+    return child;
   }
 }

@@ -31,19 +31,12 @@ class _SquareState extends State<_Square> with AutomaticKeepAliveClientMixin {
             onInitState: (Reader reader) {
               reader.call(squareArticleProvider.notifier).initData();
             },
-            builder: (_, __, List<ArticleModel> list) {
-              return SliverList(
-                delegate: CustomSliverChildBuilderDelegate.separated(
-                  itemBuilder: (_, int index) {
-                    return ArticleTile(
-                      key: ValueKey<String>(
-                        'square_article_${list[index].id}',
-                      ),
-                      article: list[index],
-                    );
-                  },
-                  itemCount: list.length,
+            builder: (_, __, ___, ArticleModel article) {
+              return ArticleTile(
+                key: ValueKey<String>(
+                  'square_article_${article.id}',
                 ),
+                article: article,
               );
             },
           ),

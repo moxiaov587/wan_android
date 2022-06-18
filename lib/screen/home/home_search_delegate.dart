@@ -62,20 +62,13 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
       onInitState: (Reader reader) {
         reader.call(provider.notifier).initData();
       },
-      builder: (_, __, List<ArticleModel> list) {
-        return SliverList(
-          delegate: CustomSliverChildBuilderDelegate.separated(
-            itemBuilder: (_, int index) {
-              return ArticleTile(
-                key: ValueKey<String>(
-                  'search_article_${list[index].id}',
-                ),
-                article: list[index],
-                query: query,
-              );
-            },
-            itemCount: list.length,
+      builder: (_, __, ___, ArticleModel article) {
+        return ArticleTile(
+          key: ValueKey<String>(
+            'search_article_${article.id}',
           ),
+          article: article,
+          query: query,
         );
       },
     );

@@ -19,7 +19,7 @@ abstract class BaseRefreshListViewNotifier<T>
     await refresh();
   }
 
-  Future<RefreshControllerStatus> refresh() async {
+  Future<bool> refresh() async {
     try {
       final RefreshListViewStateData<T> data = await loadData(
         pageNum: initialPageNum,
@@ -34,13 +34,11 @@ abstract class BaseRefreshListViewNotifier<T>
         list: data.list,
       );
 
-      return data.isLastPage
-          ? RefreshControllerStatus.noData
-          : RefreshControllerStatus.completed;
+      return true;
     } catch (e, s) {
       onError(e, s);
 
-      return RefreshControllerStatus.failed;
+      return false;
     }
   }
 
@@ -51,13 +49,13 @@ abstract class BaseRefreshListViewNotifier<T>
 
   void onCompleted(List<T> data) {}
 
-  Future<RefreshControllerStatus?> loadMore() {
-    return state.whenOrNull<Future<RefreshControllerStatus?>>(
+  Future<LoadingMoreStatus?> loadMore() {
+    return state.whenOrNull<Future<LoadingMoreStatus?>>(
           (int pageNum, bool isLastPage, List<T> list) async {
             try {
               /// Prevent no data state not being set on initialization
               if (isLastPage) {
-                return RefreshControllerStatus.noData;
+                return LoadingMoreStatus.noData;
               }
 
               final RefreshListViewStateData<T> data = await loadData(
@@ -77,14 +75,14 @@ abstract class BaseRefreshListViewNotifier<T>
               );
 
               return data.isLastPage
-                  ? RefreshControllerStatus.noData
-                  : RefreshControllerStatus.completed;
+                  ? LoadingMoreStatus.noData
+                  : LoadingMoreStatus.completed;
             } catch (e) {
-              return RefreshControllerStatus.failed;
+              return LoadingMoreStatus.failed;
             }
           },
         ) ??
-        Future<RefreshControllerStatus?>.value();
+        Future<LoadingMoreStatus?>.value();
   }
 
   @override
@@ -114,8 +112,9 @@ abstract class BaseRefreshListViewNotifier<T>
   }
 }
 
-enum RefreshControllerStatus {
+enum LoadingMoreStatus {
+  loading,
   completed,
-  failed,
   noData,
+  failed,
 }

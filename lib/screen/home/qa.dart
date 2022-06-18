@@ -31,19 +31,12 @@ class _QAState extends State<_QA> with AutomaticKeepAliveClientMixin {
             onInitState: (Reader reader) {
               reader.call(questionArticleProvider.notifier).initData();
             },
-            builder: (_, __, List<ArticleModel> list) {
-              return SliverList(
-                delegate: CustomSliverChildBuilderDelegate.separated(
-                  itemBuilder: (_, int index) {
-                    return ArticleTile(
-                      key: ValueKey<String>(
-                        'qa_article_${list[index].id}',
-                      ),
-                      article: list[index],
-                    );
-                  },
-                  itemCount: list.length,
+            builder: (_, __, ___, ArticleModel article) {
+              return ArticleTile(
+                key: ValueKey<String>(
+                  'qa_article_${article.id}',
                 ),
+                article: article,
               );
             },
           ),

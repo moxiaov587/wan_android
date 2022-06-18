@@ -31,20 +31,13 @@ class _TheyShareScreenState extends State<TheyShareScreen> {
           onInitState: (Reader reader) {
             reader.call(provider.notifier).initData();
           },
-          builder: (_, __, List<ArticleModel> list) {
-            return SliverList(
-              delegate: CustomSliverChildBuilderDelegate.separated(
-                itemBuilder: (_, int index) {
-                  return ArticleTile(
-                    key: ValueKey<String>(
-                      'they_share_article_${list[index].id}',
-                    ),
-                    authorTextOrShareUserTextCanOnTap: false,
-                    article: list[index],
-                  );
-                },
-                itemCount: list.length,
+          builder: (_, __, ___, ArticleModel article) {
+            return ArticleTile(
+              key: ValueKey<String>(
+                'they_share_article_${article.id}',
               ),
+              authorTextOrShareUserTextCanOnTap: false,
+              article: article,
             );
           },
           slivers: <Widget>[

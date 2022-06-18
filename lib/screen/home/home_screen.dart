@@ -28,7 +28,6 @@ import '../../utils/screen_utils.dart';
 import '../../widget/article.dart';
 import '../../widget/capsule_ink.dart';
 import '../../widget/custom_search_delegate.dart';
-import '../../widget/custom_sliver_child_builder_delegate.dart';
 import '../../widget/gap.dart';
 import '../authorized/provider/authorized_provider.dart';
 import '../drawer/home_drawer.dart';
@@ -187,32 +186,20 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
         StateNotifierProvider<ArticleNotifier,
             RefreshListViewState<ArticleModel>>,
         ArticleModel>(
-      paddingVertical: EdgeInsets.only(
-        top: ScreenUtils.topSafeHeight,
-      ),
       provider: homeArticleProvider,
       onInitState: (Reader reader) {
         reader.call(homeBannerProvider.notifier).initData();
         reader.call(homeArticleProvider.notifier).initData();
       },
-      builder: (_, __, List<ArticleModel> list) {
-        return SliverList(
-          delegate: CustomSliverChildBuilderDelegate.separated(
-            itemBuilder: (_, int index) {
-              return ArticleTile(
-                key: ValueKey<String>(
-                  'home_article_${list[index].id}',
-                ),
-                article: list[index],
-              );
-            },
-            itemCount: list.length,
+      builder: (_, __, ___, ArticleModel article) {
+        return ArticleTile(
+          key: ValueKey<String>(
+            'home_article_${article.id}',
           ),
+          article: article,
         );
       },
-      slivers: const <Widget>[
-        _HomeAppBar(),
-      ],
+      sliverPersistentHeader: const _HomeAppBar(),
     );
   }
 }

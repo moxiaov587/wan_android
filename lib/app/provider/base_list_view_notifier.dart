@@ -11,7 +11,7 @@ abstract class BaseListViewNotifier<T> extends StateNotifier<ListViewState<T>> {
     await refresh();
   }
 
-  Future<RefreshControllerStatus?> refresh() async {
+  Future<bool> refresh() async {
     try {
       final List<T> data = await loadData();
 
@@ -21,11 +21,11 @@ abstract class BaseListViewNotifier<T> extends StateNotifier<ListViewState<T>> {
         list: data,
       );
 
-      return RefreshControllerStatus.completed;
+      return true;
     } catch (e, s) {
       onError(e, s);
 
-      return RefreshControllerStatus.failed;
+      return false;
     }
   }
 

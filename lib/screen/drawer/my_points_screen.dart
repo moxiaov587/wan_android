@@ -21,44 +21,33 @@ class MyPointsScreen extends StatelessWidget {
             onInitState: (Reader reader) {
               reader.call(myPointsProvider.notifier).initData();
             },
-            builder: (_, __, List<PointsModel> list) {
-              return SliverList(
-                delegate: CustomSliverChildBuilderDelegate.separated(
-                  itemBuilder: (_, int index) {
-                    final PointsModel points = list[index];
+            builder: (_, __, ___, PointsModel points) {
+              final bool isIncrease = points.coinCount > 0;
 
-                    final bool isIncrease = points.coinCount > 0;
-
-                    return ListTile(
-                      title: Text(
-                        points.desc ?? '',
+              return ListTile(
+                title: Text(
+                  points.desc ?? '',
+                ),
+                trailing: RichText(
+                  text: TextSpan(
+                    style: currentTheme.textTheme.titleMedium!.semiBoldWeight
+                        .copyWith(
+                      color: isIncrease
+                          ? currentTheme.colorScheme.secondary
+                          : currentTheme.errorColor,
+                    ),
+                    text: isIncrease ? '+' : '-',
+                    children: <TextSpan>[
+                      TextSpan(
+                        text: points.coinCount.toString(),
                       ),
-                      trailing: RichText(
-                        text: TextSpan(
-                          style: currentTheme
-                              .textTheme.titleMedium!.semiBoldWeight
-                              .copyWith(
-                            color: isIncrease
-                                ? currentTheme.colorScheme.secondary
-                                : currentTheme.errorColor,
-                          ),
-                          text: isIncrease ? '+' : '-',
-                          children: <TextSpan>[
-                            TextSpan(
-                              text: points.coinCount.toString(),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                  itemCount: list.length,
+                    ],
+                  ),
                 ),
               );
             },
             slivers: <Widget>[
               SliverPadding(
-                key: const ValueKey<String>('total_points_widget'),
                 padding: AppTheme.bodyPadding * 2,
                 sliver: SliverToBoxAdapter(
                   child: ColoredBox(

@@ -1,11 +1,5 @@
 part of 'provider_widget.dart';
 
-typedef ListViewBuilder<T> = Widget Function(
-  BuildContext context,
-  WidgetRef ref,
-  List<T> list,
-);
-
 class ListViewWidget<
     ProviderType extends StateNotifierProvider<BaseListViewNotifier<T>,
         ListViewState<T>>,
@@ -14,19 +8,64 @@ class ListViewWidget<
     super.key,
     required this.provider,
     this.onInitState,
-    required this.builder,
     this.enablePullDown = false,
     this.slivers,
     this.onRetry,
+    required this.itemBuilder,
+    this.separatorBuilder,
+    this.scrollDirection = Axis.vertical,
+    this.reverse = false,
+    this.controller,
+    this.primary,
+    this.shrinkWrap = false,
+    this.cacheExtent,
+    this.semanticChildCount,
+    this.padding = EdgeInsets.zero,
+    this.itemExtent,
+    this.addAutomaticKeepAlives = true,
+    this.addRepaintBoundaries = true,
+    this.addSemanticIndexes = true,
+    this.dragStartBehavior = DragStartBehavior.start,
+    this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
+    this.restorationId,
+    this.clipBehavior = Clip.hardEdge,
+    this.semanticIndexCallback = _kDefaultSemanticIndexCallback,
+    this.semanticIndexOffset = 0,
+    this.lastChildLayoutTypeBuilder,
+    this.collectGarbage,
+    this.viewportBuilder,
+    this.closeToTrailing,
   });
 
   final ProviderType provider;
   final ReaderCallback? onInitState;
-  final ListViewBuilder<T> builder;
   final bool enablePullDown;
-
   final List<Widget>? slivers;
   final ReaderCallback? onRetry;
+  final ListViewItemBuilder<T> itemBuilder;
+  final ListViewSeparatorBuilder? separatorBuilder;
+  final Axis scrollDirection;
+  final bool reverse;
+  final ScrollController? controller;
+  final bool? primary;
+  final bool shrinkWrap;
+  final double? cacheExtent;
+  final int? semanticChildCount;
+  final EdgeInsetsGeometry padding;
+  final double? itemExtent;
+  final bool addAutomaticKeepAlives;
+  final bool addRepaintBoundaries;
+  final bool addSemanticIndexes;
+  final DragStartBehavior dragStartBehavior;
+  final ScrollViewKeyboardDismissBehavior keyboardDismissBehavior;
+  final String? restorationId;
+  final Clip clipBehavior;
+  final SemanticIndexCallback semanticIndexCallback;
+  final int semanticIndexOffset;
+  final LastChildLayoutTypeBuilder? lastChildLayoutTypeBuilder;
+  final CollectGarbage? collectGarbage;
+  final ViewportBuilder? viewportBuilder;
+  final bool? closeToTrailing;
 
   @override
   _ListViewWidgetState<ProviderType, T> createState() =>
@@ -37,147 +76,162 @@ class _ListViewWidgetState<
     ProviderType extends StateNotifierProvider<BaseListViewNotifier<T>,
         ListViewState<T>>,
     T> extends ConsumerState<ListViewWidget<ProviderType, T>> {
-  late final RefreshController _refreshController;
-
-  late final ScrollController _scrollController;
-
   @override
   void initState() {
     super.initState();
-
-    if (widget.enablePullDown) {
-      _refreshController = RefreshController();
-    } else {
-      _scrollController = ScrollController();
-    }
 
     widget.onInitState?.call(ref.read);
   }
 
   @override
-  void dispose() {
-    if (widget.enablePullDown) {
-      _refreshController.dispose();
-    } else {
-      _scrollController.dispose();
-    }
-
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return widget.enablePullDown
-        ? SmartRefresher.builder(
-            controller: _refreshController,
-            onRefresh: () async {
-              final RefreshControllerStatus? status =
-                  await ref.read(widget.provider.notifier).refresh();
-              switch (status) {
-                case RefreshControllerStatus.noData:
-                case null:
-                  // [status] is null
-                  break;
-                case RefreshControllerStatus.completed:
-                  _refreshController.refreshCompleted();
-                  break;
-                case RefreshControllerStatus.failed:
-                  _refreshController.refreshFailed();
-                  break;
-              }
-            },
-            builder: (_, RefreshPhysics physics) {
-              return CustomScrollView(
-                physics: physics,
-                slivers: <Widget>[
-                  /// if [RefreshListViewState] is [RefreshListViewStateLoading]
-                  /// or [RefreshListViewStateError], disabled enablePullDown
-                  ref.watch(
-                    widget.provider.select(
-                      (ListViewState<T> value) =>
-                          value.whenOrNull(
-                            (_) => const DropDownListHeader(),
-                          ) ??
-                          const SliverToBoxAdapter(),
+    if (widget.enablePullDown) {
+      return CustomScrollView(
+        slivers: <Widget>[
+          ref.watch(widget.provider).whenOrNull(
+                    (_) => CupertinoSliverRefreshControl(
+                      onRefresh: ref.watch(widget.provider.notifier).refresh,
                     ),
-                  ),
-                  if (widget.slivers != null && widget.slivers!.isNotEmpty)
-                    ...widget.slivers!,
-                  ref.watch(widget.provider).when(
-                        (List<T> list) => list.isEmpty
-                            ? const SliverFillRemaining(
-                                child: EmptyWidget(),
-                              )
-                            : widget.builder(context, ref, list),
-                        loading: () => const SliverFillRemaining(
-                          child: LoadingWidget(),
-                        ),
-                        error: (
-                          int? statusCode,
-                          String? message,
-                          String? detail,
-                        ) =>
-                            SliverFillRemaining(
-                          child: CustomErrorWidget(
-                            statusCode: statusCode,
-                            message: message,
-                            detail: detail,
-                            onRetry: () {
-                              if (widget.onRetry != null) {
-                                widget.onRetry!.call(ref.read);
-                              } else {
-                                ref.read(widget.provider.notifier).initData();
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                ],
+                  ) ??
+              const SliverToBoxAdapter(child: nil),
+          ref.watch(widget.provider).when(
+            (List<T> list) {
+              if (list.isEmpty) {
+                return const SliverFillRemaining(
+                  child: EmptyWidget(),
+                );
+              }
+
+              return LoadMoreSliverList<T>(
+                list: list,
+                itemBuilder: (BuildContext context, int index) =>
+                    widget.itemBuilder.call(context, ref, index, list[index]),
+                separatorBuilder: widget.separatorBuilder != null
+                    ? (BuildContext context, int index) =>
+                        widget.separatorBuilder!.call(
+                          context,
+                          ref,
+                          index,
+                        )
+                    : null,
+                padding: widget.padding,
+                itemExtent: widget.itemExtent,
+                addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+                addRepaintBoundaries: widget.addRepaintBoundaries,
+                addSemanticIndexes: widget.addSemanticIndexes,
+                semanticIndexCallback: widget.semanticIndexCallback,
+                semanticIndexOffset: widget.semanticIndexOffset,
+                lastChildLayoutTypeBuilder: widget.lastChildLayoutTypeBuilder,
+                collectGarbage: widget.collectGarbage,
+                viewportBuilder: widget.viewportBuilder,
+                closeToTrailing: widget.closeToTrailing,
               );
             },
-          )
-        : CustomScrollView(
-            controller: _scrollController,
-            slivers: <Widget>[
-              if (widget.slivers != null && widget.slivers!.isNotEmpty)
-                ...widget.slivers!
-              else
-                const SliverToBoxAdapter(),
-              Consumer(
-                builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  return ref.watch(widget.provider).when(
-                        (List<T> list) => list.isEmpty
-                            ? const SliverFillRemaining(
-                                child: EmptyWidget(),
-                              )
-                            : widget.builder(context, ref, list),
-                        loading: () => const SliverFillRemaining(
-                          child: LoadingWidget(),
-                        ),
-                        error: (
-                          int? statusCode,
-                          String? message,
-                          String? detail,
-                        ) =>
-                            SliverFillRemaining(
-                          child: CustomErrorWidget(
-                            statusCode: statusCode,
-                            message: message,
-                            detail: detail,
-                            onRetry: () {
-                              if (widget.onRetry != null) {
-                                widget.onRetry!.call(ref.read);
-                              } else {
-                                ref.read(widget.provider.notifier).initData();
-                              }
-                            },
-                          ),
-                        ),
-                      );
+            loading: () => const SliverFillRemaining(
+              child: LoadingWidget(),
+            ),
+            error: (int? statusCode, String? message, String? detail) =>
+                SliverFillRemaining(
+              child: CustomErrorWidget(
+                statusCode: statusCode,
+                message: message,
+                detail: detail,
+                onRetry: () {
+                  if (widget.onRetry != null) {
+                    widget.onRetry!.call(ref.read);
+                  } else {
+                    ref.read(widget.provider.notifier).initData();
+                  }
                 },
               ),
-            ],
+            ),
+          ),
+        ],
+      );
+    }
+
+    return ref.watch(widget.provider).when(
+      (List<T> list) {
+        if (list.isEmpty) {
+          return const EmptyWidget();
+        }
+
+        // ignore: prefer-conditional-expressions
+        if (widget.separatorBuilder != null) {
+          return ExtendedListView.separated(
+            separatorBuilder: (BuildContext context, int index) =>
+                widget.separatorBuilder!.call(
+              context,
+              ref,
+              index,
+            ),
+            itemBuilder: (BuildContext context, int index) =>
+                widget.itemBuilder.call(context, ref, index, list[index]),
+            extendedListDelegate: ExtendedListDelegate(
+              collectGarbage: widget.collectGarbage,
+              viewportBuilder: widget.viewportBuilder,
+              closeToTrailing: widget.closeToTrailing ?? false,
+            ),
+            itemCount: list.length,
+            scrollDirection: widget.scrollDirection,
+            reverse: widget.reverse,
+            controller: widget.controller,
+            primary: widget.primary,
+            shrinkWrap: widget.shrinkWrap,
+            padding: widget.padding,
+            addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+            addRepaintBoundaries: widget.addRepaintBoundaries,
+            addSemanticIndexes: widget.addSemanticIndexes,
+            cacheExtent: widget.cacheExtent,
+            dragStartBehavior: widget.dragStartBehavior,
+            keyboardDismissBehavior: widget.keyboardDismissBehavior,
+            restorationId: widget.restorationId,
+            clipBehavior: widget.clipBehavior,
           );
+        } else {
+          return ExtendedListView.builder(
+            itemBuilder: (BuildContext context, int index) =>
+                widget.itemBuilder.call(context, ref, index, list[index]),
+            extendedListDelegate: ExtendedListDelegate(
+              collectGarbage: widget.collectGarbage,
+              viewportBuilder: widget.viewportBuilder,
+              closeToTrailing: widget.closeToTrailing ?? false,
+            ),
+            itemCount: list.length,
+            scrollDirection: widget.scrollDirection,
+            reverse: widget.reverse,
+            controller: widget.controller,
+            primary: widget.primary,
+            shrinkWrap: widget.shrinkWrap,
+            padding: widget.padding,
+            itemExtent: widget.itemExtent,
+            addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+            addRepaintBoundaries: widget.addRepaintBoundaries,
+            addSemanticIndexes: widget.addSemanticIndexes,
+            cacheExtent: widget.cacheExtent,
+            semanticChildCount: widget.semanticChildCount,
+            dragStartBehavior: widget.dragStartBehavior,
+            keyboardDismissBehavior: widget.keyboardDismissBehavior,
+            restorationId: widget.restorationId,
+            clipBehavior: widget.clipBehavior,
+          );
+        }
+      },
+      loading: () => const LoadingWidget(),
+      error: (int? statusCode, String? message, String? detail) =>
+          CustomErrorWidget(
+        statusCode: statusCode,
+        message: message,
+        detail: detail,
+        onRetry: () {
+          if (widget.onRetry != null) {
+            widget.onRetry!.call(ref.read);
+          } else {
+            ref.read(widget.provider.notifier).initData();
+          }
+        },
+      ),
+    );
   }
 }
 
@@ -189,19 +243,64 @@ class AutoDisposeListViewWidget<
     super.key,
     required this.provider,
     this.onInitState,
-    required this.builder,
     this.enablePullDown = false,
     this.slivers,
     this.onRetry,
+    required this.itemBuilder,
+    this.separatorBuilder,
+    this.scrollDirection = Axis.vertical,
+    this.reverse = false,
+    this.controller,
+    this.primary,
+    this.shrinkWrap = false,
+    this.cacheExtent,
+    this.semanticChildCount,
+    this.padding = EdgeInsets.zero,
+    this.itemExtent,
+    this.addAutomaticKeepAlives = true,
+    this.addRepaintBoundaries = true,
+    this.addSemanticIndexes = true,
+    this.dragStartBehavior = DragStartBehavior.start,
+    this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
+    this.restorationId,
+    this.clipBehavior = Clip.hardEdge,
+    this.semanticIndexCallback = _kDefaultSemanticIndexCallback,
+    this.semanticIndexOffset = 0,
+    this.lastChildLayoutTypeBuilder,
+    this.collectGarbage,
+    this.viewportBuilder,
+    this.closeToTrailing,
   });
 
   final ProviderType provider;
   final ReaderCallback? onInitState;
-  final ListViewBuilder<T> builder;
   final bool enablePullDown;
-
   final List<Widget>? slivers;
   final ReaderCallback? onRetry;
+  final ListViewItemBuilder<T> itemBuilder;
+  final ListViewSeparatorBuilder? separatorBuilder;
+  final Axis scrollDirection;
+  final bool reverse;
+  final ScrollController? controller;
+  final bool? primary;
+  final bool shrinkWrap;
+  final double? cacheExtent;
+  final int? semanticChildCount;
+  final EdgeInsetsGeometry padding;
+  final double? itemExtent;
+  final bool addAutomaticKeepAlives;
+  final bool addRepaintBoundaries;
+  final bool addSemanticIndexes;
+  final DragStartBehavior dragStartBehavior;
+  final ScrollViewKeyboardDismissBehavior keyboardDismissBehavior;
+  final String? restorationId;
+  final Clip clipBehavior;
+  final SemanticIndexCallback semanticIndexCallback;
+  final int semanticIndexOffset;
+  final LastChildLayoutTypeBuilder? lastChildLayoutTypeBuilder;
+  final CollectGarbage? collectGarbage;
+  final ViewportBuilder? viewportBuilder;
+  final bool? closeToTrailing;
 
   @override
   _AutoDisposeListViewWidgetState<ProviderType, T> createState() =>
@@ -212,146 +311,161 @@ class _AutoDisposeListViewWidgetState<
     ProviderType extends AutoDisposeStateNotifierProvider<
         BaseListViewNotifier<T>, ListViewState<T>>,
     T> extends ConsumerState<AutoDisposeListViewWidget<ProviderType, T>> {
-  late final RefreshController _refreshController;
-
-  late final ScrollController _scrollController;
-
   @override
   void initState() {
     super.initState();
-
-    if (widget.enablePullDown) {
-      _refreshController = RefreshController();
-    } else {
-      _scrollController = ScrollController();
-    }
 
     widget.onInitState?.call(ref.read);
   }
 
   @override
-  void dispose() {
-    if (widget.enablePullDown) {
-      _refreshController.dispose();
-    } else {
-      _scrollController.dispose();
-    }
-
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return widget.enablePullDown
-        ? SmartRefresher.builder(
-            controller: _refreshController,
-            onRefresh: () async {
-              final RefreshControllerStatus? status =
-                  await ref.read(widget.provider.notifier).refresh();
-              switch (status) {
-                case null:
-                case RefreshControllerStatus.noData:
-                  // [status] is null
-                  break;
-                case RefreshControllerStatus.completed:
-                  _refreshController.refreshCompleted();
-                  break;
-                case RefreshControllerStatus.failed:
-                  _refreshController.refreshFailed();
-                  break;
-              }
-            },
-            builder: (_, RefreshPhysics physics) {
-              return CustomScrollView(
-                physics: physics,
-                slivers: <Widget>[
-                  /// if [RefreshListViewState] is [RefreshListViewStateLoading]
-                  /// or [RefreshListViewStateError], disabled enablePullDown
-                  ref.watch(
-                    widget.provider.select(
-                      (ListViewState<T> value) =>
-                          value.whenOrNull(
-                            (_) => const DropDownListHeader(),
-                          ) ??
-                          const SliverToBoxAdapter(),
+    if (widget.enablePullDown) {
+      return CustomScrollView(
+        slivers: <Widget>[
+          ref.watch(widget.provider).whenOrNull(
+                    (_) => CupertinoSliverRefreshControl(
+                      onRefresh: ref.watch(widget.provider.notifier).refresh,
                     ),
-                  ),
-                  if (widget.slivers != null && widget.slivers!.isNotEmpty)
-                    ...widget.slivers!,
-                  ref.watch(widget.provider).when(
-                        (List<T> list) => list.isEmpty
-                            ? const SliverFillRemaining(
-                                child: EmptyWidget(),
-                              )
-                            : widget.builder(context, ref, list),
-                        loading: () => const SliverFillRemaining(
-                          child: LoadingWidget(),
-                        ),
-                        error: (
-                          int? statusCode,
-                          String? message,
-                          String? detail,
-                        ) =>
-                            SliverFillRemaining(
-                          child: CustomErrorWidget(
-                            statusCode: statusCode,
-                            message: message,
-                            detail: detail,
-                            onRetry: () {
-                              if (widget.onRetry != null) {
-                                widget.onRetry!.call(ref.read);
-                              } else {
-                                ref.read(widget.provider.notifier).initData();
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                ],
+                  ) ??
+              const SliverToBoxAdapter(child: nil),
+          ref.watch(widget.provider).when(
+            (List<T> list) {
+              if (list.isEmpty) {
+                return const SliverFillRemaining(
+                  child: EmptyWidget(),
+                );
+              }
+
+              return LoadMoreSliverList<T>(
+                list: list,
+                itemBuilder: (BuildContext context, int index) =>
+                    widget.itemBuilder.call(context, ref, index, list[index]),
+                separatorBuilder: widget.separatorBuilder != null
+                    ? (BuildContext context, int index) =>
+                        widget.separatorBuilder!.call(
+                          context,
+                          ref,
+                          index,
+                        )
+                    : null,
+                padding: widget.padding,
+                itemExtent: widget.itemExtent,
+                addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+                addRepaintBoundaries: widget.addRepaintBoundaries,
+                addSemanticIndexes: widget.addSemanticIndexes,
+                semanticIndexCallback: widget.semanticIndexCallback,
+                semanticIndexOffset: widget.semanticIndexOffset,
+                lastChildLayoutTypeBuilder: widget.lastChildLayoutTypeBuilder,
+                collectGarbage: widget.collectGarbage,
+                viewportBuilder: widget.viewportBuilder,
+                closeToTrailing: widget.closeToTrailing,
               );
             },
-          )
-        : CustomScrollView(
-            controller: _scrollController,
-            slivers: <Widget>[
-              if (widget.slivers != null && widget.slivers!.isNotEmpty)
-                ...widget.slivers!
-              else
-                const SliverToBoxAdapter(),
-              Consumer(
-                builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                  return ref.watch(widget.provider).when(
-                        (List<T> list) => list.isEmpty
-                            ? const SliverFillRemaining(
-                                child: EmptyWidget(),
-                              )
-                            : widget.builder(context, ref, list),
-                        loading: () => const SliverFillRemaining(
-                          child: LoadingWidget(),
-                        ),
-                        error: (
-                          int? statusCode,
-                          String? message,
-                          String? detail,
-                        ) =>
-                            SliverFillRemaining(
-                          child: CustomErrorWidget(
-                            statusCode: statusCode,
-                            message: message,
-                            detail: detail,
-                            onRetry: () {
-                              if (widget.onRetry != null) {
-                                widget.onRetry!.call(ref.read);
-                              } else {
-                                ref.read(widget.provider.notifier).initData();
-                              }
-                            },
-                          ),
-                        ),
-                      );
+            loading: () => const SliverFillRemaining(
+              child: LoadingWidget(),
+            ),
+            error: (int? statusCode, String? message, String? detail) =>
+                SliverFillRemaining(
+              child: CustomErrorWidget(
+                statusCode: statusCode,
+                message: message,
+                detail: detail,
+                onRetry: () {
+                  if (widget.onRetry != null) {
+                    widget.onRetry!.call(ref.read);
+                  } else {
+                    ref.read(widget.provider.notifier).initData();
+                  }
                 },
               ),
-            ],
+            ),
+          ),
+        ],
+      );
+    }
+
+    return ref.watch(widget.provider).when(
+      (List<T> list) {
+        if (list.isEmpty) {
+          return const EmptyWidget();
+        }
+
+        // ignore: prefer-conditional-expressions
+        if (widget.separatorBuilder != null) {
+          return ExtendedListView.separated(
+            separatorBuilder: (BuildContext context, int index) =>
+                widget.separatorBuilder!.call(
+              context,
+              ref,
+              index,
+            ),
+            itemBuilder: (BuildContext context, int index) =>
+                widget.itemBuilder.call(context, ref, index, list[index]),
+            extendedListDelegate: ExtendedListDelegate(
+              collectGarbage: widget.collectGarbage,
+              viewportBuilder: widget.viewportBuilder,
+              closeToTrailing: widget.closeToTrailing ?? false,
+            ),
+            itemCount: list.length,
+            scrollDirection: widget.scrollDirection,
+            reverse: widget.reverse,
+            controller: widget.controller,
+            primary: widget.primary,
+            shrinkWrap: widget.shrinkWrap,
+            padding: widget.padding,
+            addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+            addRepaintBoundaries: widget.addRepaintBoundaries,
+            addSemanticIndexes: widget.addSemanticIndexes,
+            cacheExtent: widget.cacheExtent,
+            dragStartBehavior: widget.dragStartBehavior,
+            keyboardDismissBehavior: widget.keyboardDismissBehavior,
+            restorationId: widget.restorationId,
+            clipBehavior: widget.clipBehavior,
           );
+        } else {
+          return ExtendedListView.builder(
+            itemBuilder: (BuildContext context, int index) =>
+                widget.itemBuilder.call(context, ref, index, list[index]),
+            extendedListDelegate: ExtendedListDelegate(
+              collectGarbage: widget.collectGarbage,
+              viewportBuilder: widget.viewportBuilder,
+              closeToTrailing: widget.closeToTrailing ?? false,
+            ),
+            itemCount: list.length,
+            scrollDirection: widget.scrollDirection,
+            reverse: widget.reverse,
+            controller: widget.controller,
+            primary: widget.primary,
+            shrinkWrap: widget.shrinkWrap,
+            padding: widget.padding,
+            itemExtent: widget.itemExtent,
+            addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+            addRepaintBoundaries: widget.addRepaintBoundaries,
+            addSemanticIndexes: widget.addSemanticIndexes,
+            cacheExtent: widget.cacheExtent,
+            semanticChildCount: widget.semanticChildCount,
+            dragStartBehavior: widget.dragStartBehavior,
+            keyboardDismissBehavior: widget.keyboardDismissBehavior,
+            restorationId: widget.restorationId,
+            clipBehavior: widget.clipBehavior,
+          );
+        }
+      },
+      loading: () => const LoadingWidget(),
+      error: (int? statusCode, String? message, String? detail) =>
+          CustomErrorWidget(
+        statusCode: statusCode,
+        message: message,
+        detail: detail,
+        onRetry: () {
+          if (widget.onRetry != null) {
+            widget.onRetry!.call(ref.read);
+          } else {
+            ref.read(widget.provider.notifier).initData();
+          }
+        },
+      ),
+    );
   }
 }

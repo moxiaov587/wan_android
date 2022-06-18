@@ -10,7 +10,6 @@ import '../../contacts/instances.dart';
 import '../../extensions/extensions.dart';
 import '../../model/models.dart';
 import '../../widget/article.dart';
-import '../../widget/custom_sliver_child_builder_delegate.dart';
 import '../../widget/gap.dart';
 import 'provider/they_provider.dart';
 
