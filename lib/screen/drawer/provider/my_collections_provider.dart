@@ -88,7 +88,7 @@ class MyCollectedArticleNotifier
         return false;
       }
     } catch (e, s) {
-      DialogUtils.danger(getError(e, s).message ?? S.current.failed);
+      DialogUtils.danger(getError(e, s).errorMessage(S.current.failed));
 
       return false;
     } finally {
@@ -135,7 +135,7 @@ class MyCollectedArticleNotifier
 
             return true;
           } catch (e, s) {
-            DialogUtils.danger(getError(e, s).message ?? S.current.failed);
+            DialogUtils.danger(getError(e, s).errorMessage(S.current.failed));
 
             return false;
           } finally {
@@ -157,7 +157,7 @@ class MyCollectedArticleNotifier
 
       return true;
     } catch (e, s) {
-      DialogUtils.danger(getError(e, s).message ?? S.current.failed);
+      DialogUtils.danger(getError(e, s).errorMessage(S.current.failed));
 
       return false;
     }
@@ -333,7 +333,7 @@ class MyCollectedWebsiteNotifier
 
       return data;
     } catch (e, s) {
-      DialogUtils.danger(getError(e, s).message ?? S.current.failed);
+      DialogUtils.danger(getError(e, s).errorMessage(S.current.failed));
 
       return null;
     } finally {
@@ -374,7 +374,7 @@ class MyCollectedWebsiteNotifier
 
               return true;
             } catch (e, s) {
-              DialogUtils.danger(getError(e, s).message ?? S.current.failed);
+              DialogUtils.danger(getError(e, s).errorMessage(S.current.failed));
 
               return false;
             } finally {
@@ -395,7 +395,7 @@ class MyCollectedWebsiteNotifier
 
       return true;
     } catch (e, s) {
-      DialogUtils.danger(getError(e, s).message ?? S.current.failed);
+      DialogUtils.danger(getError(e, s).errorMessage(S.current.failed));
 
       return false;
     }

@@ -15,7 +15,8 @@ final StateNotifierProvider<AuthorizedNotifier, UserInfoModel?>
   return AuthorizedNotifier();
 });
 
-class AuthorizedNotifier extends StateNotifier<UserInfoModel?> {
+class AuthorizedNotifier extends StateNotifier<UserInfoModel?>
+    with ViewErrorMixin {
   AuthorizedNotifier() : super(null);
 
   Future<String?> initData() async {
@@ -28,8 +29,6 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?> {
 
       return null;
     } catch (e, s) {
-      final BaseViewStateError error = BaseViewStateError.create(e, s);
-
       await HiveBoxes.userSettingsBox.putAt(
         0,
         (HiveBoxes.uniqueUserSettings ?? UserSettings()).copyWith(
@@ -37,7 +36,7 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?> {
         ),
       );
 
-      return error.statusCode?.toString() ?? '-1';
+      return getError(e, s).statusCode?.toString() ?? '-1';
     }
   }
 
@@ -59,9 +58,7 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?> {
 
       return true;
     } catch (e, s) {
-      final BaseViewStateError error = BaseViewStateError.create(e, s);
-
-      DialogUtils.danger(error.message ?? error.detail ?? '');
+      DialogUtils.danger(getError(e, s).errorMessage(S.current.unknownError));
 
       return false;
     } finally {
@@ -159,10 +156,8 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?> {
 
       return true;
     } catch (e, s) {
-      final BaseViewStateError error = BaseViewStateError.create(e, s);
-
       DialogUtils.danger(
-        error.message ?? error.detail ?? S.current.loginFailed,
+        getError(e, s).errorMessage(S.current.loginFailed),
       );
 
       return false;
@@ -196,10 +191,8 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?> {
 
       return true;
     } catch (e, s) {
-      final BaseViewStateError error = BaseViewStateError.create(e, s);
-
       DialogUtils.danger(
-        error.message ?? error.detail ?? S.current.registerFailed,
+        getError(e, s).errorMessage(S.current.registerFailed),
       );
 
       return false;

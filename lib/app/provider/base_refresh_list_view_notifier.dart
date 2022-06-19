@@ -1,7 +1,7 @@
 part of 'provider.dart';
 
 abstract class BaseRefreshListViewNotifier<T>
-    extends StateNotifier<RefreshListViewState<T>> {
+    extends StateNotifier<RefreshListViewState<T>> with ViewErrorMixin {
   BaseRefreshListViewNotifier(
     super.state, {
     this.initialPageNum = 1,
@@ -87,7 +87,7 @@ abstract class BaseRefreshListViewNotifier<T>
 
   @override
   ErrorListener get onError => (Object e, StackTrace? s) {
-        final BaseViewStateError error = getError(e, s);
+        final ViewError error = getError(e, s);
 
         setError(
           statusCode: error.statusCode,
@@ -95,9 +95,6 @@ abstract class BaseRefreshListViewNotifier<T>
           detail: error.detail,
         );
       };
-
-  BaseViewStateError Function(Object e, StackTrace? s) get getError =>
-      (Object e, StackTrace? s) => BaseViewStateError.create(e, s);
 
   void setError({
     int? statusCode,

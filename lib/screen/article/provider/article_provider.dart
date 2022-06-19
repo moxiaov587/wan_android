@@ -289,7 +289,7 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
             await collectArticle(value: value);
           }
         } catch (e, s) {
-          DialogUtils.danger(getError(e, s).message ?? S.current.failed);
+          DialogUtils.danger(getError(e, s).errorMessage(S.current.failed));
         }
       }
     });

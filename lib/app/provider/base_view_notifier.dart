@@ -1,6 +1,7 @@
 part of 'provider.dart';
 
-abstract class BaseViewNotifier<T> extends StateNotifier<ViewState<T>> {
+abstract class BaseViewNotifier<T> extends StateNotifier<ViewState<T>>
+    with ViewErrorMixin {
   BaseViewNotifier(super.state);
 
   Future<void> initData() async {
@@ -27,7 +28,7 @@ abstract class BaseViewNotifier<T> extends StateNotifier<ViewState<T>> {
 
   @override
   ErrorListener get onError => (Object e, StackTrace? s) {
-        final BaseViewStateError error = getError(e, s);
+        final ViewError error = getError(e, s);
 
         setError(
           statusCode: error.statusCode,
@@ -35,9 +36,6 @@ abstract class BaseViewNotifier<T> extends StateNotifier<ViewState<T>> {
           detail: error.detail,
         );
       };
-
-  BaseViewStateError Function(Object e, StackTrace? s) get getError =>
-      (Object e, StackTrace? s) => BaseViewStateError.create(e, s);
 
   void setError({
     int? statusCode,

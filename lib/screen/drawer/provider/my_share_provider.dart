@@ -62,7 +62,7 @@ class MyShareArticlesNotifier
 
       return true;
     } catch (e, s) {
-      DialogUtils.danger(getError(e, s).message ?? S.current.failed);
+      DialogUtils.danger(getError(e, s).errorMessage(S.current.failed));
 
       return false;
     } finally {
@@ -80,7 +80,7 @@ class MyShareArticlesNotifier
 
       return true;
     } catch (e, s) {
-      DialogUtils.danger(getError(e, s).message ?? S.current.failed);
+      DialogUtils.danger(getError(e, s).errorMessage(S.current.failed));
 
       return false;
     }

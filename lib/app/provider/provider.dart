@@ -8,8 +8,14 @@ part 'base_list_view_notifier.dart';
 part 'base_refresh_list_view_notifier.dart';
 part 'base_view_notifier.dart';
 
-class BaseViewStateError {
-  BaseViewStateError({
+extension ViewErrorExtension on ViewError {
+  String Function(String defaultMessage) get errorMessage =>
+      (String defaultMessage) =>
+          '${message ?? detail ?? defaultMessage}(${statusCode ?? -1})';
+}
+
+class ViewError {
+  ViewError({
     int? statusCode,
     String? message,
     String? detail,
@@ -17,7 +23,7 @@ class BaseViewStateError {
         _message = message,
         _detail = detail;
 
-  factory BaseViewStateError.create(Object e, StackTrace? _) {
+  factory ViewError.create(Object e, StackTrace? _) {
     int? statusCode;
     String? message;
     String? detail;
@@ -59,7 +65,7 @@ class BaseViewStateError {
       detail = e.toString();
     }
 
-    return BaseViewStateError(
+    return ViewError(
       statusCode: statusCode,
       message: message,
       detail: detail,
@@ -74,4 +80,8 @@ class BaseViewStateError {
 
   String? _detail;
   String? get detail => _detail;
+}
+
+class ViewErrorMixin {
+  ViewError getError(Object e, StackTrace? s) => ViewError.create(e, s);
 }
