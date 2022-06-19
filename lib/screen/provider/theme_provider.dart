@@ -8,7 +8,7 @@ final StateNotifierProvider<ThemeNotifier, ThemeMode> themeProvider =
     StateNotifierProvider<ThemeNotifier, ThemeMode>((_) {
   final int? themeMode = HiveBoxes.uniqueUserSettings?.themeMode;
 
-  return ThemeNotifier(ThemeNotifier.themeModes[themeMode ?? 0]!);
+  return ThemeNotifier(ThemeNotifier.themeModes[themeMode] ?? ThemeMode.system);
 });
 
 class ThemeNotifier extends StateNotifier<ThemeMode> {

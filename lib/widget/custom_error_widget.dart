@@ -66,14 +66,6 @@ class CustomErrorWidget extends ConsumerWidget {
             if (onRetry != null) Gap(),
             if (onRetry != null)
               ElevatedButton(
-                style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all(_kRetryButtonSize),
-                  textStyle: MaterialStateProperty.all(
-                    const TextStyle(
-                      fontSize: AppTextTheme.body1,
-                    ),
-                  ),
-                ),
                 onPressed: onRetry,
                 child: Text(S.of(context).retry),
               ),

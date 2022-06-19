@@ -70,17 +70,6 @@ class AppTheme {
         minLeadingWidth: 24.0,
       );
 
-  static ButtonStyle get buttonStyle => ButtonStyle(
-        elevation: MaterialStateProperty.all(0),
-        minimumSize: MaterialStateProperty.all(const Size(64.0, 44.0)),
-        padding: MaterialStateProperty.all(contentPadding),
-        shape: MaterialStateProperty.all(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(adornmentRadius),
-          ),
-        ),
-      );
-
   static TextStyle get buttonTextStyle => const TextStyle(
         fontSize: AppTextTheme.title3,
         fontWeight: AppTextTheme.medium,
@@ -220,20 +209,16 @@ class AppTheme {
           checkColor: MaterialStateProperty.all(AppColors.white),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
-          style: buttonStyle.copyWith(
-            backgroundColor: MaterialStateProperty.all<Color>(
-              AppColors.primary,
-            ),
-            textStyle: MaterialStateProperty.all<TextStyle>(
-              buttonTextStyle.copyWith(
-                color: AppColors.white,
-              ),
-            ),
+          style: ElevatedButton.styleFrom(
+            elevation: 0.0,
+            primary: AppColors.primary,
+            onPrimary: AppColors.white,
+            textStyle: buttonTextStyle,
           ),
         ),
         textButtonTheme: TextButtonThemeData(
-          style: buttonStyle.copyWith(
-            textStyle: MaterialStateProperty.all(buttonTextStyle),
+          style: TextButton.styleFrom(
+            textStyle: buttonTextStyle,
           ),
         ),
         bottomAppBarTheme: bottomAppBarTheme.copyWith(
@@ -366,20 +351,16 @@ class AppTheme {
           checkColor: MaterialStateProperty.all(AppColors.whiteDark),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
-          style: buttonStyle.copyWith(
-            backgroundColor: MaterialStateProperty.all<Color>(
-              AppColors.primaryDark,
-            ),
-            textStyle: MaterialStateProperty.all<TextStyle>(
-              buttonTextStyle.copyWith(
-                color: AppColors.whiteDark,
-              ),
-            ),
+          style: ElevatedButton.styleFrom(
+            elevation: 0.0,
+            primary: AppColors.primaryDark,
+            onPrimary: AppColors.whiteDark,
+            textStyle: buttonTextStyle,
           ),
         ),
         textButtonTheme: TextButtonThemeData(
-          style: buttonStyle.copyWith(
-            textStyle: MaterialStateProperty.all(buttonTextStyle),
+          style: TextButton.styleFrom(
+            textStyle: buttonTextStyle,
           ),
         ),
         bottomAppBarTheme: bottomAppBarTheme.copyWith(
