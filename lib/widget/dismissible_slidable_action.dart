@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
+import '../../extensions/extensions.dart' show BuildContextExtension;
 import '../app/l10n/generated/l10n.dart';
-import '../contacts/instances.dart';
 
 class DismissibleSlidableAction extends StatefulWidget {
   const DismissibleSlidableAction({
@@ -33,7 +33,7 @@ class _DismissibleSlidableActionState extends State<DismissibleSlidableAction> {
       ValueNotifier<ActionLabel>(
     ActionLabel(
       label: widget.label,
-      color: widget.color ?? currentTheme.primaryColor,
+      color: widget.color ?? context.theme.primaryColor,
     ),
   );
 
@@ -56,25 +56,25 @@ class _DismissibleSlidableActionState extends State<DismissibleSlidableAction> {
           slidableAnimationValue < widget.dismissiblePaneThreshold) {
         _actionLabelNotifier.value = ActionLabel(
           label: S.of(context).keepSwipingLeftToDelete,
-          color: currentTheme.colorScheme.tertiary,
+          color: context.theme.colorScheme.tertiary,
         );
       } else if (slidableAnimationValue >= widget.dismissiblePaneThreshold) {
         _actionLabelNotifier.value = ActionLabel(
           label: S.of(context).releaseToDeleteSwipeRightToCancel,
-          color: currentTheme.errorColor,
+          color: context.theme.errorColor,
         );
       }
     } else {
       if (slidableAnimationValue <= widget.slidableExtentRatio) {
         _actionLabelNotifier.value = ActionLabel(
           label: widget.label,
-          color: widget.color ?? currentTheme.primaryColor,
+          color: widget.color ?? context.theme.primaryColor,
         );
       } else if (slidableAnimationValue > widget.slidableExtentRatio &&
           slidableAnimationValue < widget.dismissiblePaneThreshold) {
         _actionLabelNotifier.value = ActionLabel(
           label: S.of(context).keepSwipingLeftToDelete,
-          color: currentTheme.colorScheme.tertiary,
+          color: context.theme.colorScheme.tertiary,
         );
       }
     }
@@ -114,8 +114,8 @@ class _DismissibleSlidableActionState extends State<DismissibleSlidableAction> {
                     child: Text(
                       actionLabel.label,
                       textAlign: TextAlign.center,
-                      style: currentTheme.textTheme.bodyMedium!.copyWith(
-                        color: currentTheme.tooltipTheme.textStyle!.color,
+                      style: context.theme.textTheme.bodyMedium!.copyWith(
+                        color: context.theme.tooltipTheme.textStyle!.color,
                       ),
                     ),
                   ),

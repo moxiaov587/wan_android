@@ -51,7 +51,7 @@ class CustomErrorWidget extends ConsumerWidget {
               isDisconnected
                   ? S.of(context).networkException
                   : message ?? S.of(context).unknownError,
-              style: currentTheme.textTheme.titleSmall,
+              style: context.theme.textTheme.titleSmall,
             ),
             Gap(
               size: GapSize.small,
@@ -61,7 +61,7 @@ class CustomErrorWidget extends ConsumerWidget {
                   ? S.of(context).networkExceptionMsg
                   : detail ?? S.of(context).unknownErrorMsg,
               textAlign: TextAlign.center,
-              style: currentTheme.textTheme.bodyMedium,
+              style: context.theme.textTheme.bodyMedium,
             ),
             if (onRetry != null) Gap(),
             if (onRetry != null)

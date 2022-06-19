@@ -30,7 +30,7 @@ class ArticleTile extends StatelessWidget {
 
     final double titleVerticalGap = contentPadding.vertical / 2;
 
-    final TextStyle titleStyle = currentTheme.textTheme.titleSmall!;
+    final TextStyle titleStyle = context.theme.textTheme.titleSmall!;
 
     return Material(
       child: Ink(
@@ -47,7 +47,7 @@ class ArticleTile extends StatelessWidget {
               children: <Widget>[
                 RichText(
                   text: TextSpan(
-                    style: currentTheme.textTheme.bodyMedium,
+                    style: context.theme.textTheme.bodyMedium,
                     children: <TextSpan>[
                       if (article.author.strictValue != null)
                         TextSpan(
@@ -157,7 +157,8 @@ class _TagTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: currentTheme.dividerColor.withAlpha(currentIsDark ? 220 : 90),
+      color:
+          context.theme.dividerColor.withAlpha(context.isDarkTheme ? 220 : 90),
       borderRadius: AppTheme.adornmentBorderRadius,
       child: Padding(
         padding: const EdgeInsets.symmetric(
@@ -166,7 +167,7 @@ class _TagTile extends StatelessWidget {
         ),
         child: Text(
           text ?? S.of(context).unknown,
-          style: currentTheme.textTheme.bodySmall!.copyWith(
+          style: context.theme.textTheme.bodySmall!.copyWith(
             height: 1.35,
           ),
         ),

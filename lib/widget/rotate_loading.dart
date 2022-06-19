@@ -2,9 +2,9 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../../extensions/extensions.dart' show BuildContextExtension;
 import '../app/l10n/generated/l10n.dart';
 import '../app/theme/app_theme.dart';
-import '../contacts/instances.dart';
 import 'gap.dart';
 
 class RotateLoading extends StatefulWidget {
@@ -51,7 +51,7 @@ class _RotateLoadingState extends State<RotateLoading>
         height: widget.size,
       ),
       child: Material(
-        color: currentTheme.backgroundColor,
+        color: context.theme.backgroundColor,
         borderRadius: AppTheme.borderRadius,
         child: Padding(
           padding: AppTheme.bodyPadding,
@@ -65,6 +65,12 @@ class _RotateLoadingState extends State<RotateLoading>
                   ),
                   painter: RotateLoadingPainter(
                     _animationController,
+                    colors: <Color>[
+                      context.theme.primaryColor,
+                      context.theme.colorScheme.secondary,
+                      context.theme.errorColor,
+                      context.theme.colorScheme.tertiary,
+                    ],
                     width: widget.width,
                     space: widget.space,
                   ),
@@ -73,7 +79,7 @@ class _RotateLoadingState extends State<RotateLoading>
               Gap(),
               Text(
                 S.of(context).loading,
-                style: currentTheme.textTheme.bodyLarge,
+                style: context.theme.textTheme.bodyLarge,
               ),
             ],
           ),
@@ -86,6 +92,7 @@ class _RotateLoadingState extends State<RotateLoading>
 class RotateLoadingPainter extends CustomPainter {
   RotateLoadingPainter(
     this.animation, {
+    required this.colors,
     this.width = 20.0,
     this.space = 5.0,
   })  : length = width / 2.0 + space / 2.0,
@@ -98,12 +105,7 @@ class RotateLoadingPainter extends CustomPainter {
 
   final Animation<double> animation;
 
-  final List<Color> colors = <Color>[
-    currentTheme.primaryColor,
-    currentTheme.colorScheme.secondary,
-    currentTheme.errorColor,
-    currentTheme.colorScheme.tertiary,
-  ];
+  final List<Color> colors;
 
   late final List<Offset> offsets = <Offset>[
     Offset(-length, -length),

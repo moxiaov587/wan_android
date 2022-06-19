@@ -6,6 +6,7 @@ import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
 import '../../database/hive_boxes.dart';
 import '../../database/model/models.dart';
+import '../../extensions/extensions.dart' show BuildContextExtension;
 import '../../navigator/app_router_delegate.dart';
 import '../../screen/authorized/provider/authorized_provider.dart';
 import '../../widget/custom_text_form_field.dart';
@@ -185,7 +186,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                             ),
                             Text(
                               S.of(context).rememberPassword,
-                              style: currentTheme.textTheme.bodyLarge,
+                              style: context.theme.textTheme.bodyLarge,
                             ),
                           ],
                         ),

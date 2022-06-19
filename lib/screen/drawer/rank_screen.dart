@@ -76,7 +76,7 @@ class RankScreen extends StatelessWidget {
                                   ),
                                   boxShadow: <BoxShadow>[
                                     BoxShadow(
-                                      color: currentTheme.backgroundColor,
+                                      color: context.theme.backgroundColor,
                                       blurRadius:
                                           _kCurrentUserRankTileHeight / 2,
                                       blurStyle: BlurStyle.inner,
@@ -128,7 +128,7 @@ class _RankTile extends StatelessWidget {
       children: <Widget>[
         Text(
           rank ?? '',
-          style: currentTheme.textTheme.titleLarge,
+          style: context.theme.textTheme.titleLarge,
         ),
         Gap(
           direction: GapDirection.horizontal,
@@ -139,7 +139,7 @@ class _RankTile extends StatelessWidget {
             children: <Widget>[
               Text(
                 nickname.strictValue ?? '',
-                style: currentTheme.textTheme.titleMedium,
+                style: context.theme.textTheme.titleMedium,
               ),
               Gap(
                 direction: GapDirection.horizontal,
@@ -150,7 +150,7 @@ class _RankTile extends StatelessWidget {
         ),
         Text(
           '$totalPoints',
-          style: currentTheme.textTheme.titleMedium,
+          style: context.theme.textTheme.titleMedium,
         ),
       ],
     );

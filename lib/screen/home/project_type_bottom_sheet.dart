@@ -7,14 +7,14 @@ class ProjectTypeBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Material(
-        color: currentTheme.cardColor,
+        color: context.theme.cardColor,
         child: Column(
           children: <Widget>[
             ListTile(
               title: Text(
                 S.of(context).projectType,
                 textAlign: TextAlign.center,
-                style: currentTheme.textTheme.titleLarge,
+                style: context.theme.textTheme.titleLarge,
               ),
             ),
             const Divider(),

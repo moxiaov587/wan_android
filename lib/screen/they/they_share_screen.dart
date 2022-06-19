@@ -73,12 +73,12 @@ class _TheyShareScreenState extends State<TheyShareScreen> {
                                             userPoints.username.strictValue ??
                                             '',
                                         style:
-                                            currentTheme.textTheme.titleLarge,
+                                            context.theme.textTheme.titleLarge,
                                       ),
                                       RichText(
                                         text: TextSpan(
-                                          style:
-                                              currentTheme.textTheme.titleLarge,
+                                          style: context
+                                              .theme.textTheme.titleLarge,
                                           children: <InlineSpan>[
                                             const TextSpan(
                                               text: 'No.',
@@ -96,15 +96,15 @@ class _TheyShareScreenState extends State<TheyShareScreen> {
                                       alignment: Alignment.bottomRight,
                                       child: Text(
                                         'Lv${userPoints.level}',
-                                        style: currentTheme
-                                            .textTheme.displayLarge!
+                                        style: context
+                                            .theme.textTheme.displayLarge!
                                             .copyWith(
-                                          color: currentTheme.cardColor,
+                                          color: context.theme.cardColor,
                                           fontStyle: FontStyle.italic,
                                           shadows: <Shadow>[
                                             Shadow(
-                                              color: currentTheme
-                                                  .textTheme.labelSmall!.color!,
+                                              color: context.theme.textTheme
+                                                  .labelSmall!.color!,
                                               offset: const Offset(
                                                 5.0,
                                                 5.0,
@@ -121,13 +121,13 @@ class _TheyShareScreenState extends State<TheyShareScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Shimmer.fromColors(
-                                    baseColor: currentTheme.focusColor,
-                                    highlightColor: currentTheme.hoverColor,
+                                    baseColor: context.theme.focusColor,
+                                    highlightColor: context.theme.hoverColor,
                                     child: ClipRRect(
                                       borderRadius:
                                           AppTheme.adornmentBorderRadius,
                                       child: ColoredBox(
-                                        color: currentTheme.focusColor,
+                                        color: context.theme.focusColor,
                                         child: const SizedBox(
                                           width: 210.0,
                                           height: 20.0,
@@ -137,13 +137,13 @@ class _TheyShareScreenState extends State<TheyShareScreen> {
                                   ),
                                   Gap(),
                                   Shimmer.fromColors(
-                                    baseColor: currentTheme.focusColor,
-                                    highlightColor: currentTheme.hoverColor,
+                                    baseColor: context.theme.focusColor,
+                                    highlightColor: context.theme.hoverColor,
                                     child: ClipRRect(
                                       borderRadius:
                                           AppTheme.adornmentBorderRadius,
                                       child: ColoredBox(
-                                        color: currentTheme.focusColor,
+                                        color: context.theme.focusColor,
                                         child: const SizedBox(
                                           width: 140.0,
                                           height: 20.0,
@@ -153,13 +153,13 @@ class _TheyShareScreenState extends State<TheyShareScreen> {
                                   ),
                                   Gap(),
                                   Shimmer.fromColors(
-                                    baseColor: currentTheme.focusColor,
-                                    highlightColor: currentTheme.hoverColor,
+                                    baseColor: context.theme.focusColor,
+                                    highlightColor: context.theme.hoverColor,
                                     child: ClipRRect(
                                       borderRadius:
                                           AppTheme.adornmentBorderRadius,
                                       child: ColoredBox(
-                                        color: currentTheme.focusColor,
+                                        color: context.theme.focusColor,
                                         child: const SizedBox(
                                           width: 70.0,
                                           height: 20.0,

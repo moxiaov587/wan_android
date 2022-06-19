@@ -11,7 +11,7 @@ class AboutScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: ColoredBox(
-          color: currentTheme.backgroundColor,
+          color: context.theme.backgroundColor,
         ),
       ),
     );

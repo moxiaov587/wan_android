@@ -108,7 +108,7 @@ class _CollectedWebsiteTile extends ConsumerWidget {
                       child: Text(
                         HTMLParseUtils.parseArticleTitle(title: website.name) ??
                             S.of(context).unknown,
-                        style: currentTheme.textTheme.titleSmall,
+                        style: context.theme.textTheme.titleSmall,
                       ),
                     ),
                   ),

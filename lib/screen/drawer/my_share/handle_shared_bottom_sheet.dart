@@ -58,7 +58,7 @@ class _HandleSharedBottomSheetState
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: currentTheme.listTileTheme.tileColor,
+      color: context.theme.listTileTheme.tileColor,
       child: SafeArea(
         child: Form(
           key: _formKey,
@@ -71,7 +71,7 @@ class _HandleSharedBottomSheetState
                     TextButton(
                       style: ButtonStyle(
                         textStyle: MaterialStateProperty.all(
-                          currentTheme.textTheme.titleMedium,
+                          context.theme.textTheme.titleMedium,
                         ),
                       ),
                       onPressed: () {
@@ -82,7 +82,7 @@ class _HandleSharedBottomSheetState
                     TextButton(
                       style: ButtonStyle(
                         textStyle: MaterialStateProperty.all(
-                          currentTheme.textTheme.titleMedium!.semiBoldWeight,
+                          context.theme.textTheme.titleMedium!.semiBoldWeight,
                         ),
                       ),
                       onPressed: () {
@@ -100,7 +100,7 @@ class _HandleSharedBottomSheetState
                     <Widget>[
                       Text(
                         S.of(context).addShare,
-                        style: currentTheme.textTheme.titleLarge,
+                        style: context.theme.textTheme.titleLarge,
                         textAlign: TextAlign.center,
                       ),
                       Gap(

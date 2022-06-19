@@ -24,14 +24,14 @@ class EmptyWidget extends StatelessWidget {
           ),
           Text(
             message ?? S.of(context).empty,
-            style: currentTheme.textTheme.titleSmall,
+            style: context.theme.textTheme.titleSmall,
           ),
           Gap(
             size: GapSize.small,
           ),
           Text(
             detail ?? S.of(context).emptyMsg,
-            style: currentTheme.textTheme.bodyMedium,
+            style: context.theme.textTheme.bodyMedium,
           ),
           if (onRetry != null) Gap(),
           if (onRetry != null)

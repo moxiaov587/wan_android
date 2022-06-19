@@ -11,7 +11,7 @@ import '../../app/http/http.dart';
 import '../../app/l10n/generated/l10n.dart';
 import '../../app/provider/view_state.dart';
 import '../../contacts/icon_font_icons.dart';
-import '../../contacts/instances.dart';
+import '../../extensions/extensions.dart' show BuildContextExtension;
 import '../../model/models.dart' show WebViewModel;
 import '../../navigator/app_router_delegate.dart';
 import '../../screen/authorized/provider/authorized_provider.dart';
@@ -199,7 +199,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                             ),
                             android: AndroidInAppWebViewOptions(
                               useHybridComposition: true,
-                              forceDark: currentIsDark
+                              forceDark: context.isDarkTheme
                                   ? AndroidForceDark.FORCE_DARK_ON
                                   : AndroidForceDark.FORCE_DARK_OFF,
                               mixedContentMode: AndroidMixedContentMode
@@ -318,10 +318,10 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                   },
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: currentTheme.backgroundColor,
+                      color: context.theme.backgroundColor,
                       boxShadow: <BoxShadow>[
                         BoxShadow(
-                          color: currentTheme.backgroundColor.withAlpha(100),
+                          color: context.theme.backgroundColor.withAlpha(100),
                           offset: const Offset(0.0, -2.0),
                           blurRadius: 8.0,
                         ),
@@ -339,7 +339,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                             builder: (_, bool canGoBack, __) {
                               return IconButton(
                                 tooltip: S.of(context).back,
-                                disabledColor: currentTheme.iconTheme.color!
+                                disabledColor: context.theme.iconTheme.color!
                                     .withOpacity(0.5),
                                 onPressed: canGoBack
                                     ? () {
@@ -355,7 +355,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                             builder: (_, bool canGoForward, __) {
                               return IconButton(
                                 tooltip: S.of(context).forward,
-                                disabledColor: currentTheme.iconTheme.color!
+                                disabledColor: context.theme.iconTheme.color!
                                     .withOpacity(0.5),
                                 onPressed: canGoForward
                                     ? () {
@@ -384,7 +384,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                                     ? S.of(context).collected
                                     : S.of(context).collect,
                                 color:
-                                    collect ? currentTheme.primaryColor : null,
+                                    collect ? context.theme.primaryColor : null,
                                 onPressed: throttle(() {
                                   if (ref.read(authorizedProvider) == null) {
                                     AppRouterDelegate.instance.currentBeamState
@@ -431,7 +431,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                                   },
                                 ),
                                 color: useDesktop
-                                    ? currentTheme.primaryColor
+                                    ? context.theme.primaryColor
                                     : null,
                                 icon: Icon(
                                   useDesktop

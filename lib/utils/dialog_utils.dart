@@ -4,7 +4,8 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import '../app/l10n/generated/l10n.dart';
 import '../app/theme/app_theme.dart';
 import '../contacts/instances.dart';
-import '../extensions/extensions.dart' show TextStyleExtension;
+import '../extensions/extensions.dart'
+    show BuildContextExtension, TextStyleExtension;
 import '../widget/rotate_loading.dart';
 import 'screen_utils.dart';
 

@@ -3,8 +3,8 @@ import 'package:flutter/services.dart'
     show MaxLengthEnforcement, TextInputFormatter;
 import 'package:nil/nil.dart' show nil;
 
+import '../../extensions/extensions.dart' show BuildContextExtension;
 import '../contacts/icon_font_icons.dart';
-import '../contacts/instances.dart';
 
 class CustomTextFormField extends StatefulWidget {
   const CustomTextFormField({
@@ -136,7 +136,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
             widget.decoration.prefixIcon != null ? EdgeInsets.zero : null,
         suffixIconConstraints: BoxConstraints.tightFor(
           width: 18.0 +
-              currentTheme.inputDecorationTheme.contentPadding!.horizontal / 2,
+              context.theme.inputDecorationTheme.contentPadding!.horizontal / 2,
         ),
         suffixIcon: ValueListenableBuilder<bool>(
           valueListenable: _showCleanNotifier,
@@ -190,8 +190,8 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
       onSaved: widget.onSaved,
       validator: widget.validator,
       inputFormatters: widget.inputFormatters,
-      cursorColor: currentTheme.primaryColor,
-      keyboardAppearance: currentTheme.brightness,
+      cursorColor: context.theme.primaryColor,
+      keyboardAppearance: context.theme.brightness,
       enableInteractiveSelection: widget.enableInteractiveSelection,
       selectionControls: widget.selectionControls,
       buildCounter: widget.buildCounter,

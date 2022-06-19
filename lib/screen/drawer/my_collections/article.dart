@@ -122,7 +122,7 @@ class _CollectedArticleTile extends ConsumerWidget {
                         children: <Widget>[
                           RichText(
                             text: TextSpan(
-                              style: currentTheme.textTheme.bodyMedium,
+                              style: context.theme.textTheme.bodyMedium,
                               children: <TextSpan>[
                                 if (article.author.strictValue != null)
                                   TextSpan(
@@ -150,7 +150,7 @@ class _CollectedArticleTile extends ConsumerWidget {
                                   title: article.title,
                                 ) ??
                                 S.of(context).unknown,
-                            style: currentTheme.textTheme.titleSmall,
+                            style: context.theme.textTheme.titleSmall,
                           ),
                         ],
                       ),

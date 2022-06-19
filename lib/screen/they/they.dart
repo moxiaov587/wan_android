@@ -6,7 +6,6 @@ import '../../app/l10n/generated/l10n.dart';
 import '../../app/provider/view_state.dart';
 import '../../app/provider/widget/provider_widget.dart';
 import '../../app/theme/app_theme.dart';
-import '../../contacts/instances.dart';
 import '../../extensions/extensions.dart';
 import '../../model/models.dart';
 import '../../widget/article.dart';

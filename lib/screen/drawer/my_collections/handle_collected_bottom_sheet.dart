@@ -135,7 +135,7 @@ class _HandleCollectedBottomSheetState
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: currentTheme.listTileTheme.tileColor,
+      color: context.theme.listTileTheme.tileColor,
       child: SafeArea(
         child: ref.watch(provider).when(
               (CollectedCommonModel? collect) => Form(
@@ -149,7 +149,7 @@ class _HandleCollectedBottomSheetState
                           TextButton(
                             style: ButtonStyle(
                               textStyle: MaterialStateProperty.all(
-                                currentTheme.textTheme.titleMedium,
+                                context.theme.textTheme.titleMedium,
                               ),
                             ),
                             onPressed: () {
@@ -159,8 +159,8 @@ class _HandleCollectedBottomSheetState
                           ),
                           TextButton(
                             style: ButtonStyle(
-                              textStyle: MaterialStateProperty.all(currentTheme
-                                  .textTheme.titleMedium!.semiBoldWeight),
+                              textStyle: MaterialStateProperty.all(context
+                                  .theme.textTheme.titleMedium!.semiBoldWeight),
                             ),
                             onPressed: () {
                               onSubmitted(
@@ -188,7 +188,7 @@ class _HandleCollectedBottomSheetState
                                   : S.of(context).addCollected(S
                                       .of(context)
                                       .myCollectionsTabs(widget.type.name)),
-                              style: currentTheme.textTheme.titleLarge,
+                              style: context.theme.textTheme.titleLarge,
                               textAlign: TextAlign.center,
                             ),
                             Gap(

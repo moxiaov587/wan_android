@@ -7,7 +7,6 @@ import '../../app/provider/view_state.dart';
 import '../../app/provider/widget/provider_widget.dart';
 import '../../app/theme/app_theme.dart';
 import '../../contacts/icon_font_icons.dart';
-import '../../contacts/instances.dart';
 import '../../contacts/unicode.dart';
 import '../../database/hive_boxes.dart';
 import '../../extensions/extensions.dart';
@@ -106,18 +105,18 @@ class _HomeDrawerState extends State<HomeDrawer> {
                     children: <Widget>[
                       child!,
                       CircleAvatar(
-                        backgroundColor: currentTheme.dividerColor,
+                        backgroundColor: context.theme.dividerColor,
                         radius: avatarRadius,
                         child: name != null
                             ? Text(
                                 name.substring(0, 1).toUpperCase(),
-                                style: currentTheme.textTheme.titleLarge,
+                                style: context.theme.textTheme.titleLarge,
                               )
                             : Icon(
                                 IconFontIcons.userFill,
                                 size: avatarRadius,
-                                color:
-                                    currentTheme.textTheme.displayMedium!.color,
+                                color: context
+                                    .theme.textTheme.displayMedium!.color,
                               ),
                       ),
                       Gap(),
@@ -126,7 +125,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                         children: <Widget>[
                           Text(
                             name ?? S.of(context).noLogin,
-                            style: currentTheme.textTheme.titleMedium,
+                            style: context.theme.textTheme.titleMedium,
                           ),
                           if (name != null)
                             Gap(
@@ -194,7 +193,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
                         final ThemeMode themeMode = ref.watch(themeProvider);
 
                         final bool isDark = themeMode == ThemeMode.dark ||
-                            themeMode == ThemeMode.system && currentIsDark;
+                            themeMode == ThemeMode.system &&
+                                context.isDarkTheme;
 
                         return IconButton(
                           onPressed: () {
@@ -257,13 +257,13 @@ class _LevelTag extends StatelessWidget {
     late Color color;
 
     if (_level >= 750) {
-      color = currentTheme.errorColor;
+      color = context.theme.errorColor;
     } else if (_level < 750 && _level >= 500) {
-      color = currentTheme.colorScheme.tertiary;
+      color = context.theme.colorScheme.tertiary;
     } else if (_level < 500 && _level >= 250) {
-      color = currentTheme.primaryColor;
+      color = context.theme.primaryColor;
     } else {
-      color = currentTheme.colorScheme.secondary;
+      color = context.theme.colorScheme.secondary;
     }
 
     return Container(
@@ -277,8 +277,8 @@ class _LevelTag extends StatelessWidget {
       ),
       child: Text(
         'Lv${Unicode.halfWidthSpace}$_level',
-        style: currentTheme.textTheme.labelMedium!.copyWith(
-          color: currentTheme.tooltipTheme.textStyle!.color,
+        style: context.theme.textTheme.labelMedium!.copyWith(
+          color: context.theme.tooltipTheme.textStyle!.color,
         ),
       ),
     );

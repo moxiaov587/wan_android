@@ -8,7 +8,6 @@ import '../../../app/provider/view_state.dart';
 import '../../../app/provider/widget/provider_widget.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../contacts/icon_font_icons.dart';
-import '../../../contacts/instances.dart';
 import '../../../contacts/unicode.dart';
 import '../../../extensions/extensions.dart';
 import '../../../model/models.dart';
@@ -89,16 +88,16 @@ class _MyCollectionsScreenState extends State<MyCollectionsScreen>
         child: Column(
           children: <Widget>[
             Material(
-              color: currentTheme.appBarTheme.backgroundColor,
+              color: context.theme.appBarTheme.backgroundColor,
               child: TabBar(
                 controller: _tabController,
                 indicatorSize: TabBarIndicatorSize.label,
                 labelPadding: const EdgeInsets.symmetric(
                   vertical: 12.0,
                 ),
-                labelStyle: currentTheme.textTheme.titleMedium,
-                labelColor: currentTheme.textTheme.titleMedium!.color,
-                unselectedLabelStyle: currentTheme.textTheme.titleMedium,
+                labelStyle: context.theme.textTheme.titleMedium,
+                labelColor: context.theme.textTheme.titleMedium!.color,
+                unselectedLabelStyle: context.theme.textTheme.titleMedium,
                 tabs: CollectionType.values
                     .map((CollectionType e) =>
                         Text(S.of(context).myCollectionsTabs(e.name)))

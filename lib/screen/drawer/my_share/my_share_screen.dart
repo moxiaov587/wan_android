@@ -8,7 +8,6 @@ import '../../../app/provider/view_state.dart';
 import '../../../app/provider/widget/provider_widget.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../contacts/icon_font_icons.dart';
-import '../../../contacts/instances.dart';
 import '../../../extensions/extensions.dart';
 import '../../../model/models.dart';
 import '../../../navigator/app_router_delegate.dart';
@@ -106,7 +105,7 @@ class _ShareArticleTile extends ConsumerWidget {
                   slidableExtentRatio: 0.25,
                   dismissiblePaneThreshold: 0.65,
                   label: '',
-                  color: currentTheme.colorScheme.tertiary,
+                  color: context.theme.colorScheme.tertiary,
                   onTap: () {},
                 ),
               ],

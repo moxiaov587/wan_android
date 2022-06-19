@@ -259,7 +259,7 @@ class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: currentIsDark
+                colors: context.isDarkTheme
                     ? <Color>[
                         AppColors.arcoBlueDark.shade5,
                         AppColors.arcoBlueDark.shade3,
@@ -288,7 +288,7 @@ class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
                   children: <Widget>[
                     Text(
                       S.of(context).appName,
-                      style: currentTheme.textTheme.titleLarge,
+                      style: context.theme.textTheme.titleLarge,
                     ),
                   ],
                 ),
@@ -344,7 +344,7 @@ class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
                                 Icon(
                                   IconFontIcons.refreshLine,
                                   color:
-                                      currentTheme.textTheme.bodySmall!.color,
+                                      context.theme.textTheme.bodySmall!.color,
                                   size: 36.0,
                                 ),
                                 Gap(
@@ -402,13 +402,13 @@ class _HomeAppBarUserInfo extends StatelessWidget {
     late Color color;
 
     if (level >= 750) {
-      color = currentTheme.errorColor;
+      color = context.theme.errorColor;
     } else if (level < 750 && level >= 500) {
-      color = currentTheme.colorScheme.tertiary;
+      color = context.theme.colorScheme.tertiary;
     } else if (level < 500 && level >= 250) {
-      color = currentTheme.primaryColor;
+      color = context.theme.primaryColor;
     } else {
-      color = currentTheme.colorScheme.secondary;
+      color = context.theme.colorScheme.secondary;
     }
 
     return Padding(
@@ -420,10 +420,10 @@ class _HomeAppBarUserInfo extends StatelessWidget {
               Instances.scaffoldStateKey.currentState?.openDrawer();
             },
             child: CircleAvatar(
-              backgroundColor: currentTheme.cardColor,
+              backgroundColor: context.theme.cardColor,
               child: Text(
                 name?.substring(0, 1).toUpperCase() ?? '-',
-                style: currentTheme.textTheme.titleLarge,
+                style: context.theme.textTheme.titleLarge,
               ),
             ),
           ),
@@ -434,11 +434,11 @@ class _HomeAppBarUserInfo extends StatelessWidget {
             children: <Widget>[
               Text(
                 name ?? '',
-                style: currentTheme.textTheme.titleSmall,
+                style: context.theme.textTheme.titleSmall,
               ),
               Text(
                 'Lv${Unicode.halfWidthSpace}$level',
-                style: currentTheme.textTheme.bodySmall!.copyWith(
+                style: context.theme.textTheme.bodySmall!.copyWith(
                   color: color,
                 ),
               ),
@@ -525,9 +525,9 @@ class __BannerCarouselItemState extends State<_BannerCarouselItem> {
                 width: ScreenUtils.width,
                 height: 50.0,
                 color: colors.first?.withOpacity(0.2) ??
-                    currentTheme.backgroundColor.withOpacity(0.2),
+                    context.theme.backgroundColor.withOpacity(0.2),
                 child: DefaultTextStyle(
-                  style: currentTheme.textTheme.titleMedium!.copyWith(
+                  style: context.theme.textTheme.titleMedium!.copyWith(
                     color: colors.last,
                   ),
                   child: child!,

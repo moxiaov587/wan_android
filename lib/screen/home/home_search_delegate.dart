@@ -20,8 +20,8 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
         ),
         child: Text(
           S.of(context).cancel,
-          style: currentTheme.textTheme.titleLarge!.copyWith(
-            color: currentTheme.primaryColor,
+          style: context.theme.textTheme.titleLarge!.copyWith(
+            color: context.theme.primaryColor,
             fontSize: 16.0,
           ),
         ),
@@ -166,7 +166,7 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
                                 children: <Widget>[
                                   Text(
                                     S.of(context).searchHistory,
-                                    style: currentTheme.textTheme.titleSmall,
+                                    style: context.theme.textTheme.titleSmall,
                                   ),
                                   IconButton(
                                     padding: EdgeInsets.zero,
@@ -210,7 +210,7 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
           sliver: SliverToBoxAdapter(
             child: Text(
               S.of(context).popularKeyword,
-              style: currentTheme.textTheme.titleSmall,
+              style: context.theme.textTheme.titleSmall,
             ),
           ),
         ),

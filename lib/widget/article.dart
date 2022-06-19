@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import '../app/l10n/generated/l10n.dart';
 import '../app/theme/app_theme.dart';
-import '../contacts/instances.dart';
 import '../contacts/unicode.dart';
 import '../extensions/extensions.dart';
 import '../model/models.dart';

@@ -3,8 +3,8 @@ import 'dart:math' as math;
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:flutter/material.dart';
 
+import '../../extensions/extensions.dart' show BuildContextExtension;
 import '../app/theme/app_theme.dart';
-import '../contacts/instances.dart';
 import '../widget/gap.dart';
 
 class PopupMenu extends StatefulWidget {
@@ -40,12 +40,12 @@ class _PopupMenuState extends State<PopupMenu> {
     return CustomPopupMenu(
       controller: _controller,
       verticalMargin: 0.0,
-      arrowColor: currentTheme.cardColor,
+      arrowColor: context.theme.cardColor,
       pressType: PressType.singleClick,
       menuBuilder: () => ClipRRect(
         borderRadius: AppTheme.adornmentBorderRadius,
         child: Material(
-          color: currentTheme.cardColor,
+          color: context.theme.cardColor,
           child: IntrinsicWidth(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,7 +122,7 @@ class _PopupMenuItem extends StatelessWidget {
                 child: Text(
                   config.label,
                   style: TextStyle(
-                    color: currentTheme.iconTheme.color,
+                    color: context.theme.iconTheme.color,
                   ),
                 ),
               ),

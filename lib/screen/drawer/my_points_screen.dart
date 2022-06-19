@@ -6,13 +6,13 @@ class MyPointsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: currentTheme.appBarTheme.backgroundColor,
+      backgroundColor: context.theme.appBarTheme.backgroundColor,
       appBar: AppBar(
         title: Text(S.of(context).myPoints),
       ),
       body: SafeArea(
         child: Material(
-          color: currentTheme.scaffoldBackgroundColor,
+          color: context.theme.scaffoldBackgroundColor,
           child: AutoDisposeRefreshListViewWidget<
               AutoDisposeStateNotifierProvider<UserPointsRecordNotifier,
                   RefreshListViewState<PointsModel>>,
@@ -30,11 +30,11 @@ class MyPointsScreen extends StatelessWidget {
                 ),
                 trailing: RichText(
                   text: TextSpan(
-                    style: currentTheme.textTheme.titleMedium!.semiBoldWeight
+                    style: context.theme.textTheme.titleMedium!.semiBoldWeight
                         .copyWith(
                       color: isIncrease
-                          ? currentTheme.colorScheme.secondary
-                          : currentTheme.errorColor,
+                          ? context.theme.colorScheme.secondary
+                          : context.theme.errorColor,
                     ),
                     text: isIncrease ? '+' : '-',
                     children: <TextSpan>[
@@ -51,7 +51,7 @@ class MyPointsScreen extends StatelessWidget {
                 padding: AppTheme.bodyPadding * 2,
                 sliver: SliverToBoxAdapter(
                   child: ColoredBox(
-                    color: currentTheme.scaffoldBackgroundColor,
+                    color: context.theme.scaffoldBackgroundColor,
                     child: Column(
                       children: <Widget>[
                         Consumer(
@@ -67,7 +67,7 @@ class MyPointsScreen extends StatelessWidget {
                         ),
                         Text(
                           S.of(context).totalPoints,
-                          style: currentTheme.textTheme.titleMedium,
+                          style: context.theme.textTheme.titleMedium,
                         ),
                       ],
                     ),

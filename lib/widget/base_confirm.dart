@@ -34,7 +34,7 @@ class BaseConfirm extends StatelessWidget {
       constraints: const BoxConstraints.tightFor(width: _kDialogWidth),
       child: Material(
         borderRadius: AppTheme.borderRadius,
-        color: currentTheme.backgroundColor,
+        color: context.theme.backgroundColor,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -44,7 +44,7 @@ class BaseConfirm extends StatelessWidget {
                 child: Text(
                   title ??
                       (isDanger ? S.of(context).warning : S.of(context).tips),
-                  style: currentTheme.textTheme.titleMedium,
+                  style: context.theme.textTheme.titleMedium,
                 ),
               ),
             ),
@@ -61,7 +61,7 @@ class BaseConfirm extends StatelessWidget {
               child: SingleChildScrollView(
                 padding: AppTheme.bodyPadding,
                 child: DefaultTextStyle(
-                  style: currentTheme.textTheme.titleSmall!,
+                  style: context.theme.textTheme.titleSmall!,
                   child: content,
                 ),
               ),
@@ -89,8 +89,8 @@ class BaseConfirm extends StatelessWidget {
                     child: Align(
                       child: Text(
                         cancelText ?? S.of(context).cancel,
-                        style: currentTheme.textTheme.titleMedium!.copyWith(
-                          color: currentTheme.primaryColor,
+                        style: context.theme.textTheme.titleMedium!.copyWith(
+                          color: context.theme.primaryColor,
                         ),
                       ),
                     ),
@@ -104,7 +104,7 @@ class BaseConfirm extends StatelessWidget {
                     thickness: AppTheme.dividerTheme.thickness,
                     indent: 0.0,
                     endIndent: 0.0,
-                    color: currentTheme.dividerColor,
+                    color: context.theme.dividerColor,
                   ),
                 ),
                 Ink(
@@ -126,11 +126,11 @@ class BaseConfirm extends StatelessWidget {
                             (isDanger
                                 ? S.of(context).delete
                                 : S.of(context).ok),
-                        style: currentTheme.textTheme.titleMedium!.mediumWeight
+                        style: context.theme.textTheme.titleMedium!.mediumWeight
                             .copyWith(
                           color: isDanger
-                              ? currentTheme.errorColor
-                              : currentTheme.primaryColor,
+                              ? context.theme.errorColor
+                              : context.theme.primaryColor,
                         ),
                       ),
                     ),

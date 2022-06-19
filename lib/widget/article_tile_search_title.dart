@@ -23,7 +23,7 @@ class ArticleTileSearchTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color keywordsBackgroundColor =
-        (currentIsDark ? AppColors.yellowDark : AppColors.yellow)
+        (context.isDarkTheme ? AppColors.yellowDark : AppColors.yellow)
             .withOpacity(0.2);
 
     return RichText(
@@ -36,7 +36,7 @@ class ArticleTileSearchTitle extends StatelessWidget {
             text: word,
             style: TextStyle(
               backgroundColor: isKeywords ? keywordsBackgroundColor : null,
-              color: isKeywords ? currentTheme.errorColor : null,
+              color: isKeywords ? context.theme.errorColor : null,
             ),
           );
         }).toList(),

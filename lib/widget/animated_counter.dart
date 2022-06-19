@@ -3,7 +3,7 @@ import 'dart:async' show Timer;
 import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:flutter/material.dart';
 
-import '../contacts/instances.dart';
+import '../../extensions/extensions.dart' show BuildContextExtension;
 
 const Duration _kTimerDuration = Duration(milliseconds: 200);
 
@@ -68,7 +68,7 @@ class _AnimatedCounterState extends State<AnimatedCounter> {
       thousandSeparator: ',',
       duration: _kCountAnimatedDuration,
       value: _count,
-      textStyle: currentTheme.textTheme.displaySmall,
+      textStyle: context.theme.textTheme.displaySmall,
     );
   }
 }

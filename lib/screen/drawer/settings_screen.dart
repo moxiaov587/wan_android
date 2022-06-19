@@ -63,8 +63,8 @@ class SettingsScreen extends StatelessWidget {
                     ref.watch(authorizedProvider) == null
                         ? nil
                         : ListTile(
-                            iconColor: currentTheme.errorColor,
-                            textColor: currentTheme.errorColor,
+                            iconColor: context.theme.errorColor,
+                            textColor: context.theme.errorColor,
                             leading: const Icon(IconFontIcons.shutDownLine),
                             title: title,
                             onTap: () {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../extensions/extensions.dart' show BuildContextExtension;
 import '../app/theme/app_theme.dart';
-import '../contacts/instances.dart';
 
 class CapsuleInk extends StatelessWidget {
   const CapsuleInk({
@@ -19,7 +19,7 @@ class CapsuleInk extends StatelessWidget {
   Widget build(BuildContext context) {
     return Ink(
       decoration: BoxDecoration(
-        color: color ?? currentTheme.dialogBackgroundColor,
+        color: color ?? context.theme.dialogBackgroundColor,
         borderRadius: AppTheme.roundedBorderRadius,
       ),
       child: InkWell(
@@ -28,7 +28,7 @@ class CapsuleInk extends StatelessWidget {
         child: Padding(
           padding: AppTheme.contentPadding,
           child: DefaultTextStyle(
-            style: currentTheme.textTheme.bodyMedium!.copyWith(
+            style: context.theme.textTheme.bodyMedium!.copyWith(
               height: 1.35,
             ),
             child: child,
