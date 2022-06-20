@@ -143,7 +143,12 @@ class _RefreshListViewWidgetState<
             widget.sliverPersistentHeader!,
           ref.watch(widget.provider).whenOrNull(
                     (_, __, ___) => CupertinoSliverRefreshControl(
-                      onRefresh: ref.watch(widget.provider.notifier).refresh,
+                      onRefresh: () {
+                        /// Reset [_loadingMoreStatusNotifier]
+                        _loadingMoreStatusNotifier.value = null;
+
+                        return ref.watch(widget.provider.notifier).refresh();
+                      },
                     ),
                   ) ??
               const SliverToBoxAdapter(child: nil),
@@ -359,7 +364,12 @@ class _AutoDisposeRefreshListViewWidgetState<
             widget.sliverPersistentHeader!,
           ref.watch(widget.provider).whenOrNull(
                     (_, __, ___) => CupertinoSliverRefreshControl(
-                      onRefresh: ref.watch(widget.provider.notifier).refresh,
+                      onRefresh: () {
+                        /// Reset [_loadingMoreStatusNotifier]
+                        _loadingMoreStatusNotifier.value = null;
+
+                        return ref.watch(widget.provider.notifier).refresh();
+                      },
                     ),
                   ) ??
               const SliverToBoxAdapter(child: nil),
