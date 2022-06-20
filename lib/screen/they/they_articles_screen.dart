@@ -41,6 +41,7 @@ class _TheyArticlesScreenState extends State<TheyArticlesScreen> {
               article: article,
             );
           },
+          separatorBuilder: (_, __, ___) => const Divider(),
         ),
       ),
     );

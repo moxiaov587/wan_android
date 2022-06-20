@@ -36,6 +36,7 @@ class __ArticleState extends State<_Article>
           child: const _CollectedArticleTile(),
         );
       },
+      separatorBuilder: (_, __, ___) => const Divider(),
     );
   }
 }

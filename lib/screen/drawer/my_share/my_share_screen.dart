@@ -63,6 +63,7 @@ class MyShareScreen extends StatelessWidget {
               child: const _ShareArticleTile(),
             );
           },
+          separatorBuilder: (_, __, ___) => const Divider(),
         ),
       ),
     );

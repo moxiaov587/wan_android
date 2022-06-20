@@ -46,6 +46,7 @@ class MyPointsScreen extends StatelessWidget {
                 ),
               );
             },
+            separatorBuilder: (_, __, ___) => const Divider(),
             slivers: <Widget>[
               SliverPadding(
                 padding: AppTheme.bodyPadding * 2,

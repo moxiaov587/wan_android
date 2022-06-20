@@ -37,6 +37,7 @@ class __WebsiteState extends State<_Website>
           child: const _CollectedWebsiteTile(),
         );
       },
+      separatorBuilder: (_, __, ___) => const Divider(),
     );
   }
 }

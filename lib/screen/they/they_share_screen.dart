@@ -40,6 +40,7 @@ class _TheyShareScreenState extends State<TheyShareScreen> {
               article: article,
             );
           },
+          separatorBuilder: (_, __, ___) => const Divider(),
           slivers: <Widget>[
             SliverToBoxAdapter(
               child: Card(

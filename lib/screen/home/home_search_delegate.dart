@@ -71,6 +71,7 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
           query: query,
         );
       },
+      separatorBuilder: (_, __, ___) => const Divider(),
     );
   }
 

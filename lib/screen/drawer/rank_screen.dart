@@ -39,6 +39,7 @@ class RankScreen extends StatelessWidget {
                 ),
               );
             },
+            separatorBuilder: (_, __, ___) => const Divider(),
           ),
           Positioned(
             left: 0.0,

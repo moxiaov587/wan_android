@@ -18,8 +18,8 @@ import '../../screen/provider/theme_provider.dart';
 import '../../utils/dialog_utils.dart';
 import '../../utils/screen_utils.dart';
 import '../../widget/animated_counter.dart';
-import '../../widget/custom_sliver_child_builder_delegate.dart';
 import '../../widget/gap.dart';
+import '../../widget/sliver_child_with_separator_builder_delegate.dart';
 import 'provider/drawer_provider.dart';
 
 export 'my_collections/my_collections_screen.dart';
@@ -167,9 +167,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
             ),
           ),
           SliverList(
-            delegate: CustomSliverChildBuilderDelegate.separated(
-              itemCount: configs.length,
-              itemBuilder: (_, int index) {
+            delegate: SliverChildWithSeparatorBuilderDelegate(
+              (_, int index) {
                 final ListTileConfig config = configs[index];
 
                 return ListTile(
@@ -179,6 +178,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   onTap: config.onTap,
                 );
               },
+              childCount: configs.length,
             ),
           ),
           SliverFillRemaining(

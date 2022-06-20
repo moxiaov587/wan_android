@@ -39,6 +39,7 @@ class _SquareState extends State<_Square> with AutomaticKeepAliveClientMixin {
                 article: article,
               );
             },
+            separatorBuilder: (_, __, ___) => const Divider(),
           ),
         ),
       ],

@@ -41,8 +41,8 @@ class SettingsScreen extends StatelessWidget {
           SliverPadding(
             padding: const EdgeInsets.only(top: kStyleUint4),
             sliver: SliverList(
-              delegate: CustomSliverChildBuilderDelegate.separated(
-                itemBuilder: (_, int index) {
+              delegate: SliverChildWithSeparatorBuilderDelegate(
+                (_, int index) {
                   final ListTileConfig config = settings[index];
 
                   return ListTile(
@@ -51,7 +51,7 @@ class SettingsScreen extends StatelessWidget {
                     onTap: config.onTap,
                   );
                 },
-                itemCount: settings.length,
+                childCount: settings.length,
               ),
             ),
           ),

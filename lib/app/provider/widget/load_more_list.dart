@@ -1,8 +1,8 @@
-import 'dart:math' as math;
-
 import 'package:extended_list/extended_list.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart' hide ViewportBuilder;
+
+import '../../../widget/sliver_child_with_separator_builder_delegate.dart';
 
 typedef LoadMoreIndicatorBuilder = Widget Function(BuildContext context);
 
@@ -232,8 +232,6 @@ class LoadMoreSliverList<T> extends StatelessWidget {
       int length = list.length;
 
       if (separatorBuilder != null) {
-        length = length * 2 - 1;
-
         if (canLoadMore) {
           length += 1;
         }
@@ -241,24 +239,16 @@ class LoadMoreSliverList<T> extends StatelessWidget {
         child = ExtendedSliverFixedExtentList(
           itemExtent: itemExtent!,
           extendedListDelegate: extendedListDelegate,
-          delegate: SliverChildBuilderDelegate(
+          delegate: SliverChildWithSeparatorBuilderDelegate(
             (BuildContext context, int index) {
-              final int itemIndex = index ~/ 2;
-              final Widget widget;
-
               if (canLoadMore && index == length - 1) {
                 return loadMoreIndicatorBuilder!.call(context);
               }
-              widget = index.isEven
-                  ? itemBuilder(context, itemIndex)
-                  : separatorBuilder!.call(context, itemIndex);
 
-              return widget;
+              return itemBuilder(context, index);
             },
-            childCount: math.max(
-              0,
-              length,
-            ),
+            separatorBuilder: separatorBuilder,
+            childCount: length,
             addAutomaticKeepAlives: addAutomaticKeepAlives,
             addRepaintBoundaries: addRepaintBoundaries,
             addSemanticIndexes: addSemanticIndexes,
@@ -295,33 +285,22 @@ class LoadMoreSliverList<T> extends StatelessWidget {
       int length = list.length;
 
       if (separatorBuilder != null) {
-        length = length * 2 - 1;
-
         if (canLoadMore) {
           length += 1;
         }
 
         child = ExtendedSliverList(
           extendedListDelegate: extendedListDelegate,
-          delegate: SliverChildBuilderDelegate(
+          delegate: SliverChildWithSeparatorBuilderDelegate(
             (BuildContext context, int index) {
-              final int itemIndex = index ~/ 2;
-              final Widget widget;
-
               if (canLoadMore && index == length - 1) {
                 return loadMoreIndicatorBuilder!.call(context);
               }
 
-              widget = index.isEven
-                  ? itemBuilder(context, itemIndex)
-                  : separatorBuilder!.call(context, itemIndex);
-
-              return widget;
+              return itemBuilder(context, index);
             },
-            childCount: math.max(
-              0,
-              length,
-            ),
+            separatorBuilder: separatorBuilder,
+            childCount: length,
             addAutomaticKeepAlives: addAutomaticKeepAlives,
             addRepaintBoundaries: addRepaintBoundaries,
             addSemanticIndexes: addSemanticIndexes,

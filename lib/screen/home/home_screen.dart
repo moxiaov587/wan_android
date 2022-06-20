@@ -191,6 +191,7 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
         reader.call(homeBannerProvider.notifier).initData();
         reader.call(homeArticleProvider.notifier).initData();
       },
+      sliverPersistentHeader: const _HomeAppBar(),
       builder: (_, __, ___, ArticleModel article) {
         return ArticleTile(
           key: ValueKey<String>(
@@ -199,7 +200,7 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
           article: article,
         );
       },
-      sliverPersistentHeader: const _HomeAppBar(),
+      separatorBuilder: (_, __, ___) => const Divider(),
     );
   }
 }

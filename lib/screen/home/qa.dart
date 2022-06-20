@@ -39,6 +39,7 @@ class _QAState extends State<_QA> with AutomaticKeepAliveClientMixin {
                 article: article,
               );
             },
+            separatorBuilder: (_, __, ___) => const Divider(),
           ),
         ),
       ],

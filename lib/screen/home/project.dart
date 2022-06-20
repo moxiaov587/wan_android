@@ -39,6 +39,11 @@ class _ProjectState extends State<_Project> with AutomaticKeepAliveClientMixin {
                 reader.call(projectArticleProvider.notifier).initData();
               }
             },
+            sliverPersistentHeader: SliverPinnedPersistentHeader(
+              delegate: _ProjectTypeSwitchSliverHeaderDelegate(
+                extentProtoType: const _ProjectTypeSwitchExtentProtoType(),
+              ),
+            ),
             builder: (_, __, ___, ArticleModel article) {
               return ArticleTile(
                 key: ValueKey<String>(
@@ -47,11 +52,7 @@ class _ProjectState extends State<_Project> with AutomaticKeepAliveClientMixin {
                 article: article,
               );
             },
-            sliverPersistentHeader: SliverPinnedPersistentHeader(
-              delegate: _ProjectTypeSwitchSliverHeaderDelegate(
-                extentProtoType: const _ProjectTypeSwitchExtentProtoType(),
-              ),
-            ),
+            separatorBuilder: (_, __, ___) => const Divider(),
           ),
         ),
       ],
