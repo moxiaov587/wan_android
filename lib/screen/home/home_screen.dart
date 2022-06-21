@@ -215,9 +215,21 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
               padding: AppTheme.contentPadding,
               child: CapsuleInk(
                 color: context.theme.bottomNavigationBarTheme.backgroundColor,
-                child: const Text(
-                  '搜点什么吧..',
-                  textAlign: TextAlign.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(right: kStyleUint),
+                      child: Icon(
+                        IconFontIcons.searchEyeLine,
+                        color: context.theme.textTheme.bodyMedium!.color,
+                        size: AppTextTheme.body1,
+                      ),
+                    ),
+                    const Text(
+                      '搜点什么吧..',
+                    ),
+                  ],
                 ),
                 onTap: () {
                   AppRouterDelegate.instance.currentBeamState.updateWith(
