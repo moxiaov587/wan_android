@@ -105,5 +105,9 @@
     "useDataTrafficTips": "当前正在使用数据流量",
 
     "theyArticles": "Ta的文章",
-    "theyShare": "Ta的分享"
+    "theyShare": "Ta的分享",
+
+    "loadingMore": "正在加载更多",
+    "noMore": "没有更多了",
+    "loadMoreFailed": "加载失败了，轻触重试"
 }

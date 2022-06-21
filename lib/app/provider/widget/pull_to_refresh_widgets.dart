@@ -5,6 +5,7 @@ import 'package:nil/nil.dart';
 
 import '../../../contacts/icon_font_icons.dart';
 import '../../../widget/gap.dart';
+import '../../l10n/generated/l10n.dart';
 import '../provider.dart';
 
 class LoadingMoreIndicator extends StatelessWidget {
@@ -39,14 +40,14 @@ class LoadingMoreIndicator extends StatelessWidget {
           height: 25.0,
           child: CupertinoActivityIndicator(),
         );
-        tips = '正在加载';
+        tips = S.of(context).loadingMore;
         break;
       case LoadingMoreStatus.noData:
-        tips = '没有更多了';
+        tips = S.of(context).noMore;
         break;
       case LoadingMoreStatus.failed:
         icon = const Icon(IconFontIcons.errorWarningLine);
-        tips = '加载失败，点击重试';
+        tips = S.of(context).loadMoreFailed;
         break;
     }
 

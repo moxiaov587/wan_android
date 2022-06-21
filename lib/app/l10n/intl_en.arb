@@ -105,5 +105,9 @@
     "useDataTrafficTips": "Currently using data traffic",
 
     "theyArticles": "They Articles",
-    "theyShare": "They Share"
+    "theyShare": "They Share",
+
+    "loadingMore": "Loading more",
+    "noMore": "No more",
+    "loadMoreFailed": "Load failed, tap to retry"
 }
