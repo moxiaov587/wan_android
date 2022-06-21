@@ -82,6 +82,6 @@ class ViewError {
   String? get detail => _detail;
 }
 
-class ViewErrorMixin {
+mixin ViewErrorMixin {
   ViewError getError(Object e, StackTrace? s) => ViewError.create(e, s);
 }
