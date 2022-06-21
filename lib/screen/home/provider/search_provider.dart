@@ -23,12 +23,13 @@ final AutoDisposeStateNotifierProviderFamily<SearchNotifier,
   name: kSearchArticleProvider,
 );
 
-class SearchNotifier extends BaseArticleNotifier {
+class SearchNotifier extends BaseRefreshListViewNotifier<ArticleModel>
+    with ArticleNotifierSwitchCollectMixin {
   SearchNotifier(
     super.state, {
     required this.keyword,
     this.cancelToken,
-  });
+  }) : super(initialPageNum: 0);
 
   final String keyword;
 

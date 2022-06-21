@@ -6,11 +6,13 @@ class ArticleTileSearchTitle extends StatelessWidget {
     required this.query,
     required this.title,
     required this.textStyle,
+    this.prefixesChildren = const <InlineSpan>[],
   });
 
   final String query;
   final String title;
   final TextStyle textStyle;
+  final List<InlineSpan> prefixesChildren;
 
   List<String> get keywords => query
       .split(Unicode.halfWidthSpace)
@@ -29,17 +31,22 @@ class ArticleTileSearchTitle extends StatelessWidget {
     return RichText(
       text: TextSpan(
         style: textStyle,
-        children: words?.map((String word) {
-          final bool isKeywords = keywords.contains(word.toLowerCase());
+        children: <InlineSpan>[
+          ...prefixesChildren,
+          ...words?.map((String word) {
+                final bool isKeywords = keywords.contains(word.toLowerCase());
 
-          return TextSpan(
-            text: word,
-            style: TextStyle(
-              backgroundColor: isKeywords ? keywordsBackgroundColor : null,
-              color: isKeywords ? context.theme.errorColor : null,
-            ),
-          );
-        }).toList(),
+                return TextSpan(
+                  text: word,
+                  style: TextStyle(
+                    backgroundColor:
+                        isKeywords ? keywordsBackgroundColor : null,
+                    color: isKeywords ? context.theme.errorColor : null,
+                  ),
+                );
+              }) ??
+              <InlineSpan>[],
+        ],
       ),
     );
   }

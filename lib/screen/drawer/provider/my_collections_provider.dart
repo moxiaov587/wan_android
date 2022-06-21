@@ -204,7 +204,8 @@ class MyCollectedArticleNotifier
 
     if (article != null) {
       reader
-          .call((provider as StateNotifierProvider<BaseArticleNotifier,
+          .call((provider as StateNotifierProvider<
+                  ArticleNotifierSwitchCollectMixin,
                   RefreshListViewState<ArticleModel>>)
               .notifier)
           .switchCollect(

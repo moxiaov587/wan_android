@@ -21,6 +21,19 @@ class WanAndroidAPI {
         .toList();
   }
 
+  static Future<List<ArticleModel>> fetchHomeTopArticles({
+    CancelToken? cancelToken,
+  }) async {
+    final Response<List<dynamic>> response = await Http.get<List<dynamic>>(
+      API.topArticle,
+      cancelToken: cancelToken,
+    );
+
+    return response.data!
+        .map((dynamic e) => ArticleModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
   static Future<ModelToRefreshListData<ArticleModel>> fetchHomeArticles(
     int pageNum,
     int pageSize, {

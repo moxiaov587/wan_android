@@ -110,13 +110,11 @@ class _HomeScreenState extends State<HomeScreen> {
       body: PageView.builder(
         controller: _pageController,
         itemCount: _pages.length,
-        itemBuilder: (_, int index) => Builder(
-          builder: (BuildContext context) => Material(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            child: SafeArea(
-              top: false,
-              child: _pages[index],
-            ),
+        itemBuilder: (_, int index) => Material(
+          color: context.theme.scaffoldBackgroundColor,
+          child: SafeArea(
+            top: false,
+            child: _pages[index],
           ),
         ),
         onPageChanged: (int value) {
@@ -189,7 +187,15 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
       provider: homeArticleProvider,
       onInitState: (Reader reader) {
         reader.call(homeBannerProvider.notifier).initData();
-        reader.call(homeArticleProvider.notifier).initData();
+        reader.call(homeTopArticleProvider.notifier).initData();
+      },
+      onRetry: (Reader reader) {
+        if (reader.call(homeTopArticleProvider)
+            is ListViewStateError<ArticleModel>) {
+          reader.call(homeTopArticleProvider.notifier).initData();
+        } else {
+          reader.call(homeArticleProvider.notifier).initData();
+        }
       },
       sliverPersistentHeader: const _HomeAppBar(),
       builder: (_, __, ___, ArticleModel article) {
@@ -201,6 +207,28 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
         );
       },
       separatorBuilder: (_, __, ___) => const Divider(),
+      slivers: <Widget>[
+        SliverToBoxAdapter(
+          child: Material(
+            color: context.theme.cardColor,
+            child: Padding(
+              padding: AppTheme.contentPadding,
+              child: CapsuleInk(
+                color: context.theme.bottomNavigationBarTheme.backgroundColor,
+                child: const Text(
+                  '搜点什么吧..',
+                  textAlign: TextAlign.center,
+                ),
+                onTap: () {
+                  AppRouterDelegate.instance.currentBeamState.updateWith(
+                    showSearch: true,
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

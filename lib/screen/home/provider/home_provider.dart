@@ -19,10 +19,8 @@ const String kSearchArticleProvider = 'kSearchArticleProvider';
 const String kQuestionArticleProvider = 'kQuestionArticleProvider';
 const String kProjectArticleProvider = 'kProjectArticleProvider';
 
-abstract class BaseArticleNotifier
-    extends BaseRefreshListViewNotifier<ArticleModel> {
-  BaseArticleNotifier(super.state) : super(initialPageNum: 0);
-
+mixin ArticleNotifierSwitchCollectMixin
+    on BaseRefreshListViewNotifier<ArticleModel> {
   void switchCollect(
     int id, {
     required bool changedValue,
@@ -60,29 +58,80 @@ class BannerNotifier extends BaseListViewNotifier<BannerModel> {
   }
 }
 
+final StateNotifierProvider<TopArticleNotifier, ListViewState<ArticleModel>>
+    homeTopArticleProvider =
+    StateNotifierProvider<TopArticleNotifier, ListViewState<ArticleModel>>((_) {
+  return TopArticleNotifier(
+    const ListViewState<ArticleModel>.loading(),
+  );
+});
+
+class TopArticleNotifier extends BaseListViewNotifier<ArticleModel> {
+  TopArticleNotifier(super.state);
+
+  @override
+  Future<List<ArticleModel>> loadData() {
+    return WanAndroidAPI.fetchHomeTopArticles();
+  }
+}
+
 final StateNotifierProvider<ArticleNotifier, RefreshListViewState<ArticleModel>>
     homeArticleProvider =
     StateNotifierProvider<ArticleNotifier, RefreshListViewState<ArticleModel>>(
-  (_) {
-    return ArticleNotifier(
-      const RefreshListViewState<ArticleModel>.loading(),
-    );
+  (StateNotifierProviderRef<ArticleNotifier, RefreshListViewState<ArticleModel>>
+      ref) {
+    return ref.watch(homeTopArticleProvider).when(
+          (List<ArticleModel> list) => ArticleNotifier(
+            const RefreshListViewState<ArticleModel>.loading(),
+            topArticles: list,
+          )..initData(),
+          loading: () => ArticleNotifier(
+            const RefreshListViewState<ArticleModel>.loading(),
+          ),
+          error: (int? statusCode, String? message, String? detail) =>
+              ArticleNotifier(
+            RefreshListViewState<ArticleModel>.error(
+              statusCode: statusCode,
+              message: message,
+              detail: detail,
+            ),
+          ),
+        );
   },
   name: kHomeArticleProvider,
 );
 
-class ArticleNotifier extends BaseArticleNotifier {
-  ArticleNotifier(super.state);
+class ArticleNotifier extends BaseRefreshListViewNotifier<ArticleModel>
+    with ArticleNotifierSwitchCollectMixin {
+  ArticleNotifier(
+    super.state, {
+    this.topArticles,
+  }) : super(initialPageNum: 0);
+
+  final List<ArticleModel>? topArticles;
 
   @override
   Future<RefreshListViewStateData<ArticleModel>> loadData({
     required int pageNum,
     required int pageSize,
   }) async {
-    return (await WanAndroidAPI.fetchHomeArticles(
+    RefreshListViewStateData<ArticleModel> data =
+        (await WanAndroidAPI.fetchHomeArticles(
       pageNum,
       pageSize,
     ))
-        .toRefreshListViewStateData();
+            .toRefreshListViewStateData();
+
+    if (pageNum == initialPageNum && topArticles != null) {
+      data = data.copyWith(
+        list: <ArticleModel>[
+          ...topArticles!
+              .map((ArticleModel article) => article.copyWith(isTop: true)),
+          ...data.list,
+        ],
+      );
+    }
+
+    return data;
   }
 }

@@ -11,8 +11,9 @@ final StateNotifierProvider<QuestionNotifier,
   name: kQuestionArticleProvider,
 );
 
-class QuestionNotifier extends BaseArticleNotifier {
-  QuestionNotifier(super.state);
+class QuestionNotifier extends BaseRefreshListViewNotifier<ArticleModel>
+    with ArticleNotifierSwitchCollectMixin {
+  QuestionNotifier(super.state) : super(initialPageNum: 0);
 
   @override
   Future<RefreshListViewStateData<ArticleModel>> loadData({

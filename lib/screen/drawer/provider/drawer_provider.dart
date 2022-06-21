@@ -10,11 +10,11 @@ import '../../../model/models.dart';
 import '../../../utils/dialog_utils.dart';
 import '../../home/provider/home_provider.dart'
     show
+        ArticleNotifierSwitchCollectMixin,
         kHomeArticleProvider,
-        kSquareArticleProvider,
-        kQuestionArticleProvider,
         kProjectArticleProvider,
-        BaseArticleNotifier;
+        kQuestionArticleProvider,
+        kSquareArticleProvider;
 import '../my_collections/my_collections_screen.dart' show CollectionType;
 
 part 'my_collections_provider.dart';

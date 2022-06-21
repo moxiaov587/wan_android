@@ -11,8 +11,9 @@ final StateNotifierProvider<SquareNotifier, RefreshListViewState<ArticleModel>>
   name: kSquareArticleProvider,
 );
 
-class SquareNotifier extends BaseArticleNotifier {
-  SquareNotifier(super.state);
+class SquareNotifier extends BaseRefreshListViewNotifier<ArticleModel>
+    with ArticleNotifierSwitchCollectMixin {
+  SquareNotifier(super.state) : super(initialPageNum: 0);
 
   @override
   Future<RefreshListViewStateData<ArticleModel>> loadData({

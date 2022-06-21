@@ -105,15 +105,49 @@ class ArticleTile extends StatelessWidget {
                 ),
                 if (query != null)
                   ArticleTileSearchTitle(
+                    prefixesChildren: <InlineSpan>[
+                      if (article.fresh)
+                        WidgetSpan(
+                          child: _TagTile(
+                            text: '新',
+                            color: context.theme.primaryColor,
+                            marginRight: true,
+                          ),
+                        ),
+                    ],
                     query: query!,
                     title: article.title,
                     textStyle: titleStyle,
                   )
                 else
-                  Text(
-                    HTMLParseUtils.parseArticleTitle(title: article.title) ??
-                        S.of(context).unknown,
-                    style: titleStyle,
+                  RichText(
+                    text: TextSpan(
+                      style: titleStyle,
+                      children: <InlineSpan>[
+                        if (article.isTop)
+                          WidgetSpan(
+                            child: _TagTile(
+                              text: '置顶',
+                              color: context.theme.colorScheme.error,
+                              marginRight: true,
+                            ),
+                          ),
+                        if (article.fresh)
+                          WidgetSpan(
+                            child: _TagTile(
+                              text: '新',
+                              color: context.theme.primaryColor,
+                              marginRight: true,
+                            ),
+                          ),
+                        TextSpan(
+                          text: HTMLParseUtils.parseArticleTitle(
+                                title: article.title,
+                              ) ??
+                              S.of(context).unknown,
+                        ),
+                      ],
+                    ),
                   ),
                 Gap(
                   value: titleVerticalGap,
@@ -150,14 +184,18 @@ class _TagTile extends StatelessWidget {
   const _TagTile({
     super.key,
     required this.text,
+    this.color,
+    this.marginRight = false,
   });
 
   final String? text;
+  final Color? color;
+  final bool marginRight;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color:
+    Widget child = Material(
+      color: color?.withOpacity(0.1) ??
           context.theme.dividerColor.withAlpha(context.isDarkTheme ? 220 : 90),
       borderRadius: AppTheme.adornmentBorderRadius,
       child: Padding(
@@ -168,10 +206,20 @@ class _TagTile extends StatelessWidget {
         child: Text(
           text ?? S.of(context).unknown,
           style: context.theme.textTheme.bodySmall!.copyWith(
+            color: color,
             height: 1.35,
           ),
         ),
       ),
     );
+
+    if (marginRight) {
+      child = Padding(
+        padding: const EdgeInsets.only(right: kStyleUint),
+        child: child,
+      );
+    }
+
+    return child;
   }
 }
