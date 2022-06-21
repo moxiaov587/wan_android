@@ -109,5 +109,9 @@
 
     "loadingMore": "正在加载更多",
     "noMore": "没有更多了",
-    "loadMoreFailed": "加载失败了，轻触重试"
+    "loadMoreFailed": "加载失败了，轻触重试",
+
+    "searchForSomething": "搜点什么吧",
+    "top": "置顶",
+    "fresh": "新"
 }

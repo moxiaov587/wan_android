@@ -226,8 +226,8 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
                         size: AppTextTheme.body1,
                       ),
                     ),
-                    const Text(
-                      '搜点什么吧..',
+                    Text(
+                      S.of(context).searchForSomething,
                     ),
                   ],
                 ),

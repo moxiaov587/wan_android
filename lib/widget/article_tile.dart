@@ -109,7 +109,7 @@ class ArticleTile extends StatelessWidget {
                       if (article.fresh)
                         WidgetSpan(
                           child: _TagTile(
-                            text: '新',
+                            text: S.of(context).fresh,
                             color: context.theme.primaryColor,
                             marginRight: true,
                           ),
@@ -127,7 +127,7 @@ class ArticleTile extends StatelessWidget {
                         if (article.isTop)
                           WidgetSpan(
                             child: _TagTile(
-                              text: '置顶',
+                              text: S.of(context).top,
                               color: context.theme.colorScheme.error,
                               marginRight: true,
                             ),
@@ -135,7 +135,7 @@ class ArticleTile extends StatelessWidget {
                         if (article.fresh)
                           WidgetSpan(
                             child: _TagTile(
-                              text: '新',
+                              text: S.of(context).fresh,
                               color: context.theme.primaryColor,
                               marginRight: true,
                             ),

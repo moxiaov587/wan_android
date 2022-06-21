@@ -109,5 +109,9 @@
 
     "loadingMore": "Loading more",
     "noMore": "No more",
-    "loadMoreFailed": "Load failed, tap to retry"
+    "loadMoreFailed": "Load failed, tap to retry",
+
+    "searchForSomething": "Search for something",
+    "top": "Top",
+    "fresh": "New"
 }
