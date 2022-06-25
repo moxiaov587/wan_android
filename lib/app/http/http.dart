@@ -16,7 +16,7 @@ import 'cache_interceptor.dart';
 import 'error_interceptor.dart';
 import 'logging_interceptor.dart';
 
-const String kDomain = 'www.wanandroid.com';
+const String kDomain = 'wanandroid.com';
 const String kBaseUrl = 'https://$kDomain';
 
 class Http {

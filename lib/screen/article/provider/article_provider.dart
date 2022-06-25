@@ -254,7 +254,7 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
 
     if (webViewModel != null) {
       return webViewModel.copyWith(
-        withCookie: webViewModel.link.contains(kDomain),
+        withCookie: webViewModel.link.startsWith(kBaseUrl),
       );
     } else {
       throw AppException(
