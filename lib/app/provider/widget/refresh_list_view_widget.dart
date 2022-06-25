@@ -118,10 +118,12 @@ class _RefreshListViewWidgetState<
     // reach the pixels to loading more
     if (notification.metrics.axisDirection == AxisDirection.down &&
         notification.metrics.pixels >= notification.metrics.maxScrollExtent) {
-      if (<LoadingMoreStatus?>[
-        LoadingMoreStatus.completed,
-        null,
-      ].contains(_loadingMoreStatusNotifier.value)) {
+      if ((ref.read(widget.provider).whenOrNull((_, __, ___) => true) ??
+              false) &&
+          <LoadingMoreStatus?>[
+            LoadingMoreStatus.completed,
+            null,
+          ].contains(_loadingMoreStatusNotifier.value)) {
         _loadingMoreStatusNotifier.value = LoadingMoreStatus.loading;
         Future<void>.delayed(Duration.zero, () async {
           _loadingMoreStatusNotifier.value =
@@ -348,10 +350,12 @@ class _AutoDisposeRefreshListViewWidgetState<
     // reach the pixels to loading more
     if (notification.metrics.axisDirection == AxisDirection.down &&
         notification.metrics.pixels >= notification.metrics.maxScrollExtent) {
-      if (<LoadingMoreStatus?>[
-        LoadingMoreStatus.completed,
-        null,
-      ].contains(_loadingMoreStatusNotifier.value)) {
+      if ((ref.read(widget.provider).whenOrNull((_, __, ___) => true) ??
+              false) &&
+          <LoadingMoreStatus?>[
+            LoadingMoreStatus.completed,
+            null,
+          ].contains(_loadingMoreStatusNotifier.value)) {
         _loadingMoreStatusNotifier.value = LoadingMoreStatus.loading;
         Future<void>.delayed(Duration.zero, () async {
           _loadingMoreStatusNotifier.value =
