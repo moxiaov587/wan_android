@@ -88,149 +88,161 @@ class _ListViewWidgetState<
     if (widget.enablePullDown) {
       return CustomScrollView(
         slivers: <Widget>[
-          ref.watch(widget.provider).whenOrNull(
-                    (_) => CupertinoSliverRefreshControl(
-                      onRefresh: ref.watch(widget.provider.notifier).refresh,
-                    ),
-                  ) ??
-              const SliverToBoxAdapter(child: nil),
-          ref.watch(widget.provider).when(
-            (List<T> list) {
-              if (list.isEmpty) {
-                return const SliverFillRemaining(
-                  child: EmptyWidget(),
-                );
-              }
+          Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? empty) =>
+                ref.watch(widget.provider).whenOrNull(
+                      (_) => CupertinoSliverRefreshControl(
+                        onRefresh: ref.watch(widget.provider.notifier).refresh,
+                      ),
+                    ) ??
+                empty!,
+            child: const SliverToBoxAdapter(child: nil),
+          ),
+          Consumer(
+            builder: (_, WidgetRef ref, Widget? loading) =>
+                ref.watch(widget.provider).when(
+              (List<T> list) {
+                if (list.isEmpty) {
+                  return const SliverFillRemaining(
+                    child: EmptyWidget(),
+                  );
+                }
 
-              return LoadMoreSliverList<T>(
-                list: list,
-                itemBuilder: (BuildContext context, int index) =>
-                    widget.itemBuilder.call(context, ref, index, list[index]),
-                separatorBuilder: widget.separatorBuilder != null
-                    ? (BuildContext context, int index) =>
-                        widget.separatorBuilder!.call(
-                          context,
-                          ref,
-                          index,
-                        )
-                    : null,
-                padding: widget.padding,
-                itemExtent: widget.itemExtent,
-                addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-                addRepaintBoundaries: widget.addRepaintBoundaries,
-                addSemanticIndexes: widget.addSemanticIndexes,
-                semanticIndexCallback: widget.semanticIndexCallback,
-                semanticIndexOffset: widget.semanticIndexOffset,
-                lastChildLayoutTypeBuilder: widget.lastChildLayoutTypeBuilder,
-                collectGarbage: widget.collectGarbage,
-                viewportBuilder: widget.viewportBuilder,
-                closeToTrailing: widget.closeToTrailing,
-              );
-            },
-            loading: () => const SliverFillRemaining(
-              child: LoadingWidget(),
-            ),
-            error: (int? statusCode, String? message, String? detail) =>
-                SliverFillRemaining(
-              child: CustomErrorWidget(
-                statusCode: statusCode,
-                message: message,
-                detail: detail,
-                onRetry: () {
-                  if (widget.onRetry != null) {
-                    widget.onRetry!.call(ref.read);
-                  } else {
-                    ref.read(widget.provider.notifier).initData();
-                  }
-                },
+                return LoadMoreSliverList<T>(
+                  list: list,
+                  itemBuilder: (BuildContext context, int index) =>
+                      widget.itemBuilder.call(context, ref, index, list[index]),
+                  separatorBuilder: widget.separatorBuilder != null
+                      ? (BuildContext context, int index) =>
+                          widget.separatorBuilder!.call(
+                            context,
+                            ref,
+                            index,
+                          )
+                      : null,
+                  padding: widget.padding,
+                  itemExtent: widget.itemExtent,
+                  addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+                  addRepaintBoundaries: widget.addRepaintBoundaries,
+                  addSemanticIndexes: widget.addSemanticIndexes,
+                  semanticIndexCallback: widget.semanticIndexCallback,
+                  semanticIndexOffset: widget.semanticIndexOffset,
+                  lastChildLayoutTypeBuilder: widget.lastChildLayoutTypeBuilder,
+                  collectGarbage: widget.collectGarbage,
+                  viewportBuilder: widget.viewportBuilder,
+                  closeToTrailing: widget.closeToTrailing,
+                );
+              },
+              loading: () => loading!,
+              error: (int? statusCode, String? message, String? detail) =>
+                  SliverFillRemaining(
+                child: CustomErrorWidget(
+                  statusCode: statusCode,
+                  message: message,
+                  detail: detail,
+                  onRetry: () {
+                    if (widget.onRetry != null) {
+                      widget.onRetry!.call(ref.read);
+                    } else {
+                      ref.read(widget.provider.notifier).initData();
+                    }
+                  },
+                ),
               ),
+            ),
+            child: const SliverFillRemaining(
+              child: LoadingWidget(),
             ),
           ),
         ],
       );
     }
 
-    return ref.watch(widget.provider).when(
-      (List<T> list) {
-        if (list.isEmpty) {
-          return const EmptyWidget();
-        }
+    return Consumer(
+      builder: (_, WidgetRef ref, Widget? loading) =>
+          ref.watch(widget.provider).when(
+        (List<T> list) {
+          if (list.isEmpty) {
+            return const EmptyWidget();
+          }
 
-        // ignore: prefer-conditional-expressions
-        if (widget.separatorBuilder != null) {
-          return ExtendedListView.separated(
-            separatorBuilder: (BuildContext context, int index) =>
-                widget.separatorBuilder!.call(
-              context,
-              ref,
-              index,
-            ),
-            itemBuilder: (BuildContext context, int index) =>
-                widget.itemBuilder.call(context, ref, index, list[index]),
-            extendedListDelegate: ExtendedListDelegate(
-              collectGarbage: widget.collectGarbage,
-              viewportBuilder: widget.viewportBuilder,
-              closeToTrailing: widget.closeToTrailing ?? false,
-            ),
-            itemCount: list.length,
-            scrollDirection: widget.scrollDirection,
-            reverse: widget.reverse,
-            controller: widget.controller,
-            primary: widget.primary,
-            shrinkWrap: widget.shrinkWrap,
-            padding: widget.padding,
-            addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-            addRepaintBoundaries: widget.addRepaintBoundaries,
-            addSemanticIndexes: widget.addSemanticIndexes,
-            cacheExtent: widget.cacheExtent,
-            dragStartBehavior: widget.dragStartBehavior,
-            keyboardDismissBehavior: widget.keyboardDismissBehavior,
-            restorationId: widget.restorationId,
-            clipBehavior: widget.clipBehavior,
-          );
-        } else {
-          return ExtendedListView.builder(
-            itemBuilder: (BuildContext context, int index) =>
-                widget.itemBuilder.call(context, ref, index, list[index]),
-            extendedListDelegate: ExtendedListDelegate(
-              collectGarbage: widget.collectGarbage,
-              viewportBuilder: widget.viewportBuilder,
-              closeToTrailing: widget.closeToTrailing ?? false,
-            ),
-            itemCount: list.length,
-            scrollDirection: widget.scrollDirection,
-            reverse: widget.reverse,
-            controller: widget.controller,
-            primary: widget.primary,
-            shrinkWrap: widget.shrinkWrap,
-            padding: widget.padding,
-            itemExtent: widget.itemExtent,
-            addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-            addRepaintBoundaries: widget.addRepaintBoundaries,
-            addSemanticIndexes: widget.addSemanticIndexes,
-            cacheExtent: widget.cacheExtent,
-            semanticChildCount: widget.semanticChildCount,
-            dragStartBehavior: widget.dragStartBehavior,
-            keyboardDismissBehavior: widget.keyboardDismissBehavior,
-            restorationId: widget.restorationId,
-            clipBehavior: widget.clipBehavior,
-          );
-        }
-      },
-      loading: () => const LoadingWidget(),
-      error: (int? statusCode, String? message, String? detail) =>
-          CustomErrorWidget(
-        statusCode: statusCode,
-        message: message,
-        detail: detail,
-        onRetry: () {
-          if (widget.onRetry != null) {
-            widget.onRetry!.call(ref.read);
+          // ignore: prefer-conditional-expressions
+          if (widget.separatorBuilder != null) {
+            return ExtendedListView.separated(
+              separatorBuilder: (BuildContext context, int index) =>
+                  widget.separatorBuilder!.call(
+                context,
+                ref,
+                index,
+              ),
+              itemBuilder: (BuildContext context, int index) =>
+                  widget.itemBuilder.call(context, ref, index, list[index]),
+              extendedListDelegate: ExtendedListDelegate(
+                collectGarbage: widget.collectGarbage,
+                viewportBuilder: widget.viewportBuilder,
+                closeToTrailing: widget.closeToTrailing ?? false,
+              ),
+              itemCount: list.length,
+              scrollDirection: widget.scrollDirection,
+              reverse: widget.reverse,
+              controller: widget.controller,
+              primary: widget.primary,
+              shrinkWrap: widget.shrinkWrap,
+              padding: widget.padding,
+              addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+              addRepaintBoundaries: widget.addRepaintBoundaries,
+              addSemanticIndexes: widget.addSemanticIndexes,
+              cacheExtent: widget.cacheExtent,
+              dragStartBehavior: widget.dragStartBehavior,
+              keyboardDismissBehavior: widget.keyboardDismissBehavior,
+              restorationId: widget.restorationId,
+              clipBehavior: widget.clipBehavior,
+            );
           } else {
-            ref.read(widget.provider.notifier).initData();
+            return ExtendedListView.builder(
+              itemBuilder: (BuildContext context, int index) =>
+                  widget.itemBuilder.call(context, ref, index, list[index]),
+              extendedListDelegate: ExtendedListDelegate(
+                collectGarbage: widget.collectGarbage,
+                viewportBuilder: widget.viewportBuilder,
+                closeToTrailing: widget.closeToTrailing ?? false,
+              ),
+              itemCount: list.length,
+              scrollDirection: widget.scrollDirection,
+              reverse: widget.reverse,
+              controller: widget.controller,
+              primary: widget.primary,
+              shrinkWrap: widget.shrinkWrap,
+              padding: widget.padding,
+              itemExtent: widget.itemExtent,
+              addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+              addRepaintBoundaries: widget.addRepaintBoundaries,
+              addSemanticIndexes: widget.addSemanticIndexes,
+              cacheExtent: widget.cacheExtent,
+              semanticChildCount: widget.semanticChildCount,
+              dragStartBehavior: widget.dragStartBehavior,
+              keyboardDismissBehavior: widget.keyboardDismissBehavior,
+              restorationId: widget.restorationId,
+              clipBehavior: widget.clipBehavior,
+            );
           }
         },
+        loading: () => loading!,
+        error: (int? statusCode, String? message, String? detail) =>
+            CustomErrorWidget(
+          statusCode: statusCode,
+          message: message,
+          detail: detail,
+          onRetry: () {
+            if (widget.onRetry != null) {
+              widget.onRetry!.call(ref.read);
+            } else {
+              ref.read(widget.provider.notifier).initData();
+            }
+          },
+        ),
       ),
+      child: const LoadingWidget(),
     );
   }
 }
@@ -323,149 +335,161 @@ class _AutoDisposeListViewWidgetState<
     if (widget.enablePullDown) {
       return CustomScrollView(
         slivers: <Widget>[
-          ref.watch(widget.provider).whenOrNull(
-                    (_) => CupertinoSliverRefreshControl(
-                      onRefresh: ref.watch(widget.provider.notifier).refresh,
-                    ),
-                  ) ??
-              const SliverToBoxAdapter(child: nil),
-          ref.watch(widget.provider).when(
-            (List<T> list) {
-              if (list.isEmpty) {
-                return const SliverFillRemaining(
-                  child: EmptyWidget(),
-                );
-              }
+          Consumer(
+            builder: (_, WidgetRef ref, Widget? empty) =>
+                ref.watch(widget.provider).whenOrNull(
+                      (_) => CupertinoSliverRefreshControl(
+                        onRefresh: ref.watch(widget.provider.notifier).refresh,
+                      ),
+                    ) ??
+                empty!,
+            child: const SliverToBoxAdapter(child: nil),
+          ),
+          Consumer(
+            builder: (_, WidgetRef ref, Widget? loading) =>
+                ref.watch(widget.provider).when(
+              (List<T> list) {
+                if (list.isEmpty) {
+                  return const SliverFillRemaining(
+                    child: EmptyWidget(),
+                  );
+                }
 
-              return LoadMoreSliverList<T>(
-                list: list,
-                itemBuilder: (BuildContext context, int index) =>
-                    widget.itemBuilder.call(context, ref, index, list[index]),
-                separatorBuilder: widget.separatorBuilder != null
-                    ? (BuildContext context, int index) =>
-                        widget.separatorBuilder!.call(
-                          context,
-                          ref,
-                          index,
-                        )
-                    : null,
-                padding: widget.padding,
-                itemExtent: widget.itemExtent,
-                addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-                addRepaintBoundaries: widget.addRepaintBoundaries,
-                addSemanticIndexes: widget.addSemanticIndexes,
-                semanticIndexCallback: widget.semanticIndexCallback,
-                semanticIndexOffset: widget.semanticIndexOffset,
-                lastChildLayoutTypeBuilder: widget.lastChildLayoutTypeBuilder,
-                collectGarbage: widget.collectGarbage,
-                viewportBuilder: widget.viewportBuilder,
-                closeToTrailing: widget.closeToTrailing,
-              );
-            },
-            loading: () => const SliverFillRemaining(
-              child: LoadingWidget(),
-            ),
-            error: (int? statusCode, String? message, String? detail) =>
-                SliverFillRemaining(
-              child: CustomErrorWidget(
-                statusCode: statusCode,
-                message: message,
-                detail: detail,
-                onRetry: () {
-                  if (widget.onRetry != null) {
-                    widget.onRetry!.call(ref.read);
-                  } else {
-                    ref.read(widget.provider.notifier).initData();
-                  }
-                },
+                return LoadMoreSliverList<T>(
+                  list: list,
+                  itemBuilder: (BuildContext context, int index) =>
+                      widget.itemBuilder.call(context, ref, index, list[index]),
+                  separatorBuilder: widget.separatorBuilder != null
+                      ? (BuildContext context, int index) =>
+                          widget.separatorBuilder!.call(
+                            context,
+                            ref,
+                            index,
+                          )
+                      : null,
+                  padding: widget.padding,
+                  itemExtent: widget.itemExtent,
+                  addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+                  addRepaintBoundaries: widget.addRepaintBoundaries,
+                  addSemanticIndexes: widget.addSemanticIndexes,
+                  semanticIndexCallback: widget.semanticIndexCallback,
+                  semanticIndexOffset: widget.semanticIndexOffset,
+                  lastChildLayoutTypeBuilder: widget.lastChildLayoutTypeBuilder,
+                  collectGarbage: widget.collectGarbage,
+                  viewportBuilder: widget.viewportBuilder,
+                  closeToTrailing: widget.closeToTrailing,
+                );
+              },
+              loading: () => loading!,
+              error: (int? statusCode, String? message, String? detail) =>
+                  SliverFillRemaining(
+                child: CustomErrorWidget(
+                  statusCode: statusCode,
+                  message: message,
+                  detail: detail,
+                  onRetry: () {
+                    if (widget.onRetry != null) {
+                      widget.onRetry!.call(ref.read);
+                    } else {
+                      ref.read(widget.provider.notifier).initData();
+                    }
+                  },
+                ),
               ),
+            ),
+            child: const SliverFillRemaining(
+              child: LoadingWidget(),
             ),
           ),
         ],
       );
     }
 
-    return ref.watch(widget.provider).when(
-      (List<T> list) {
-        if (list.isEmpty) {
-          return const EmptyWidget();
-        }
+    return Consumer(
+      builder: (_, WidgetRef ref, Widget? loading) =>
+          ref.watch(widget.provider).when(
+        (List<T> list) {
+          if (list.isEmpty) {
+            return const EmptyWidget();
+          }
 
-        // ignore: prefer-conditional-expressions
-        if (widget.separatorBuilder != null) {
-          return ExtendedListView.separated(
-            separatorBuilder: (BuildContext context, int index) =>
-                widget.separatorBuilder!.call(
-              context,
-              ref,
-              index,
-            ),
-            itemBuilder: (BuildContext context, int index) =>
-                widget.itemBuilder.call(context, ref, index, list[index]),
-            extendedListDelegate: ExtendedListDelegate(
-              collectGarbage: widget.collectGarbage,
-              viewportBuilder: widget.viewportBuilder,
-              closeToTrailing: widget.closeToTrailing ?? false,
-            ),
-            itemCount: list.length,
-            scrollDirection: widget.scrollDirection,
-            reverse: widget.reverse,
-            controller: widget.controller,
-            primary: widget.primary,
-            shrinkWrap: widget.shrinkWrap,
-            padding: widget.padding,
-            addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-            addRepaintBoundaries: widget.addRepaintBoundaries,
-            addSemanticIndexes: widget.addSemanticIndexes,
-            cacheExtent: widget.cacheExtent,
-            dragStartBehavior: widget.dragStartBehavior,
-            keyboardDismissBehavior: widget.keyboardDismissBehavior,
-            restorationId: widget.restorationId,
-            clipBehavior: widget.clipBehavior,
-          );
-        } else {
-          return ExtendedListView.builder(
-            itemBuilder: (BuildContext context, int index) =>
-                widget.itemBuilder.call(context, ref, index, list[index]),
-            extendedListDelegate: ExtendedListDelegate(
-              collectGarbage: widget.collectGarbage,
-              viewportBuilder: widget.viewportBuilder,
-              closeToTrailing: widget.closeToTrailing ?? false,
-            ),
-            itemCount: list.length,
-            scrollDirection: widget.scrollDirection,
-            reverse: widget.reverse,
-            controller: widget.controller,
-            primary: widget.primary,
-            shrinkWrap: widget.shrinkWrap,
-            padding: widget.padding,
-            itemExtent: widget.itemExtent,
-            addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-            addRepaintBoundaries: widget.addRepaintBoundaries,
-            addSemanticIndexes: widget.addSemanticIndexes,
-            cacheExtent: widget.cacheExtent,
-            semanticChildCount: widget.semanticChildCount,
-            dragStartBehavior: widget.dragStartBehavior,
-            keyboardDismissBehavior: widget.keyboardDismissBehavior,
-            restorationId: widget.restorationId,
-            clipBehavior: widget.clipBehavior,
-          );
-        }
-      },
-      loading: () => const LoadingWidget(),
-      error: (int? statusCode, String? message, String? detail) =>
-          CustomErrorWidget(
-        statusCode: statusCode,
-        message: message,
-        detail: detail,
-        onRetry: () {
-          if (widget.onRetry != null) {
-            widget.onRetry!.call(ref.read);
+          // ignore: prefer-conditional-expressions
+          if (widget.separatorBuilder != null) {
+            return ExtendedListView.separated(
+              separatorBuilder: (BuildContext context, int index) =>
+                  widget.separatorBuilder!.call(
+                context,
+                ref,
+                index,
+              ),
+              itemBuilder: (BuildContext context, int index) =>
+                  widget.itemBuilder.call(context, ref, index, list[index]),
+              extendedListDelegate: ExtendedListDelegate(
+                collectGarbage: widget.collectGarbage,
+                viewportBuilder: widget.viewportBuilder,
+                closeToTrailing: widget.closeToTrailing ?? false,
+              ),
+              itemCount: list.length,
+              scrollDirection: widget.scrollDirection,
+              reverse: widget.reverse,
+              controller: widget.controller,
+              primary: widget.primary,
+              shrinkWrap: widget.shrinkWrap,
+              padding: widget.padding,
+              addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+              addRepaintBoundaries: widget.addRepaintBoundaries,
+              addSemanticIndexes: widget.addSemanticIndexes,
+              cacheExtent: widget.cacheExtent,
+              dragStartBehavior: widget.dragStartBehavior,
+              keyboardDismissBehavior: widget.keyboardDismissBehavior,
+              restorationId: widget.restorationId,
+              clipBehavior: widget.clipBehavior,
+            );
           } else {
-            ref.read(widget.provider.notifier).initData();
+            return ExtendedListView.builder(
+              itemBuilder: (BuildContext context, int index) =>
+                  widget.itemBuilder.call(context, ref, index, list[index]),
+              extendedListDelegate: ExtendedListDelegate(
+                collectGarbage: widget.collectGarbage,
+                viewportBuilder: widget.viewportBuilder,
+                closeToTrailing: widget.closeToTrailing ?? false,
+              ),
+              itemCount: list.length,
+              scrollDirection: widget.scrollDirection,
+              reverse: widget.reverse,
+              controller: widget.controller,
+              primary: widget.primary,
+              shrinkWrap: widget.shrinkWrap,
+              padding: widget.padding,
+              itemExtent: widget.itemExtent,
+              addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+              addRepaintBoundaries: widget.addRepaintBoundaries,
+              addSemanticIndexes: widget.addSemanticIndexes,
+              cacheExtent: widget.cacheExtent,
+              semanticChildCount: widget.semanticChildCount,
+              dragStartBehavior: widget.dragStartBehavior,
+              keyboardDismissBehavior: widget.keyboardDismissBehavior,
+              restorationId: widget.restorationId,
+              clipBehavior: widget.clipBehavior,
+            );
           }
         },
+        loading: () => loading!,
+        error: (int? statusCode, String? message, String? detail) =>
+            CustomErrorWidget(
+          statusCode: statusCode,
+          message: message,
+          detail: detail,
+          onRetry: () {
+            if (widget.onRetry != null) {
+              widget.onRetry!.call(ref.read);
+            } else {
+              ref.read(widget.provider.notifier).initData();
+            }
+          },
+        ),
       ),
+      child: const LoadingWidget(),
     );
   }
 }

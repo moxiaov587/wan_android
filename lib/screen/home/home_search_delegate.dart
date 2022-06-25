@@ -62,15 +62,13 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
       onInitState: (Reader reader) {
         reader.call(provider.notifier).initData();
       },
-      builder: (_, __, ___, ArticleModel article) {
-        return ArticleTile(
-          key: ValueKey<String>(
-            'search_article_${article.id}',
-          ),
-          article: article,
-          query: query,
-        );
-      },
+      builder: (_, __, ___, ArticleModel article) => ArticleTile(
+        key: ValueKey<String>(
+          'search_article_${article.id}',
+        ),
+        article: article,
+        query: query,
+      ),
       separatorBuilder: (_, __, ___) => const Divider(),
     );
   }
@@ -151,61 +149,67 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
 
     return CustomScrollView(
       slivers: <Widget>[
-        ref.watch(searchHistoryProvider).whenOrNull(
-              (List<SearchHistory> list) {
-                return list.isEmpty
-                    ? searchHistoryEmpty
-                    : SliverPadding(
-                        padding: AppTheme.bodyPaddingOnlyHorizontal,
-                        sliver: SliverToBoxAdapter(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+        Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? empty) =>
+              ref.watch(searchHistoryProvider).whenOrNull(
+                    (List<SearchHistory> list) => list.isEmpty
+                        ? searchHistoryEmpty
+                        : SliverPadding(
+                            padding: AppTheme.bodyPaddingOnlyHorizontal,
+                            sliver: SliverToBoxAdapter(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Text(
-                                    S.of(context).searchHistory,
-                                    style: context.theme.textTheme.titleSmall,
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Text(
+                                        S.of(context).searchHistory,
+                                        style:
+                                            context.theme.textTheme.titleSmall,
+                                      ),
+                                      IconButton(
+                                        padding: EdgeInsets.zero,
+                                        alignment: Alignment.centerRight,
+                                        splashColor: Colors.transparent,
+                                        onPressed: () async {
+                                          await HiveBoxes.searchHistoryBox
+                                              .clear();
+                                          ref
+                                              .read(
+                                                searchHistoryProvider.notifier,
+                                              )
+                                              .initData();
+                                        },
+                                        icon: const Icon(
+                                          IconFontIcons.deleteLine,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  IconButton(
-                                    padding: EdgeInsets.zero,
-                                    alignment: Alignment.centerRight,
-                                    splashColor: Colors.transparent,
-                                    onPressed: () async {
-                                      await HiveBoxes.searchHistoryBox.clear();
-                                      ref
-                                          .read(searchHistoryProvider.notifier)
-                                          .initData();
-                                    },
-                                    icon: const Icon(
-                                      IconFontIcons.deleteLine,
-                                    ),
+                                  Wrap(
+                                    spacing: wrapSpace,
+                                    runSpacing: wrapSpace,
+                                    children: list.reversed
+                                        .map(
+                                          (SearchHistory e) => CapsuleInk(
+                                            child: Text(e.keyword),
+                                            onTap: () {
+                                              widget.onTap.call(e.keyword);
+                                            },
+                                          ),
+                                        )
+                                        .toList(),
                                   ),
                                 ],
                               ),
-                              Wrap(
-                                spacing: wrapSpace,
-                                runSpacing: wrapSpace,
-                                children: list.reversed
-                                    .map(
-                                      (SearchHistory e) => CapsuleInk(
-                                        child: Text(e.keyword),
-                                        onTap: () {
-                                          widget.onTap.call(e.keyword);
-                                        },
-                                      ),
-                                    )
-                                    .toList(),
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
-                      );
-              },
-            ) ??
-            searchHistoryEmpty,
+                  ) ??
+              empty!,
+          child: searchHistoryEmpty,
+        ),
         SliverPadding(
           padding: AppTheme.bodyPadding,
           sliver: SliverToBoxAdapter(
