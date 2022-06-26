@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 
 int _kDefaultSemanticIndexCallback(Widget _, int localIndex) => localIndex;
 
+/// `const Divider()` is used by default when [separatorBuilder] is null
+///
+/// See also:
+///  * [SliverChildBuilderDelegate], no [separatorBuilder]
 class SliverChildWithSeparatorBuilderDelegate extends SliverChildDelegate {
   const SliverChildWithSeparatorBuilderDelegate(
     this.builder, {
@@ -13,11 +17,8 @@ class SliverChildWithSeparatorBuilderDelegate extends SliverChildDelegate {
     this.addSemanticIndexes = true,
     this.semanticIndexCallback = _kDefaultSemanticIndexCallback,
     this.semanticIndexOffset = 0,
-  })  : assert(builder != null),
-        assert(addAutomaticKeepAlives != null),
-        assert(addRepaintBoundaries != null),
-        assert(addSemanticIndexes != null),
-        assert(semanticIndexCallback != null);
+    this.ignoreSeparatorBuilderForPenultimateChild = false,
+  }) : assert(childCount > 1);
 
   final NullableIndexedWidgetBuilder builder;
   final NullableIndexedWidgetBuilder? separatorBuilder;
@@ -28,6 +29,12 @@ class SliverChildWithSeparatorBuilderDelegate extends SliverChildDelegate {
   final int semanticIndexOffset;
   final SemanticIndexCallback semanticIndexCallback;
   final ChildIndexGetter? findChildIndexCallback;
+
+  /// The last child's [separatorBuilder] is ignored by default
+  ///
+  /// [ignoreSeparatorBuilderForPenultimateChild] is used to ignore
+  /// the [separatorBuilder] of the last two child when loading more
+  final bool ignoreSeparatorBuilderForPenultimateChild;
 
   @override
   int? findIndexByKey(Key key) {
@@ -48,8 +55,9 @@ class SliverChildWithSeparatorBuilderDelegate extends SliverChildDelegate {
 
   @override
   Widget? build(BuildContext context, int index) {
-    assert(builder != null);
-    if (index < 0 || (childCount != null && index > estimatedChildCount! - 1)) {
+    final int lastChildIndex = estimatedChildCount! - 1;
+
+    if (index < 0 || index > lastChildIndex) {
       return null;
     }
 
@@ -58,9 +66,12 @@ class SliverChildWithSeparatorBuilderDelegate extends SliverChildDelegate {
     final int itemIndex = index.isEven ? index ~/ 2 : (index - 1) ~/ 2;
 
     try {
-      child = index.isEven
-          ? builder(context, itemIndex)
-          : separatorBuilder?.call(context, itemIndex) ?? const Divider();
+      child = ignoreSeparatorBuilderForPenultimateChild &&
+              index == lastChildIndex // last child
+          ? builder(context, itemIndex + 1)
+          : index.isEven
+              ? builder(context, itemIndex)
+              : separatorBuilder?.call(context, itemIndex) ?? const Divider();
     } catch (exception, stackTrace) {
       child = _createErrorWidget(exception, stackTrace);
     }
@@ -91,7 +102,9 @@ class SliverChildWithSeparatorBuilderDelegate extends SliverChildDelegate {
   }
 
   @override
-  int? get estimatedChildCount => childCount * 2 - 1;
+  int? get estimatedChildCount => ignoreSeparatorBuilderForPenultimateChild
+      ? (childCount - 1) * 2
+      : childCount * 2 - 1;
 
   @override
   bool shouldRebuild(
