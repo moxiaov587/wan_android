@@ -198,7 +198,7 @@ class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
         }
       },
       sliverPersistentHeader: const _HomeAppBar(),
-      builder: (_, __, ___, ArticleModel article) {
+      itemBuilder: (_, __, ___, ArticleModel article) {
         return ArticleTile(
           key: ValueKey<String>(
             'home_article_${article.id}',

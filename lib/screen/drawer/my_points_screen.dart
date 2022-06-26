@@ -21,7 +21,7 @@ class MyPointsScreen extends StatelessWidget {
             onInitState: (Reader reader) {
               reader.call(myPointsProvider.notifier).initData();
             },
-            builder: (_, __, ___, PointsModel points) {
+            itemBuilder: (_, __, ___, PointsModel points) {
               final bool isIncrease = points.coinCount > 0;
 
               return ListTile(

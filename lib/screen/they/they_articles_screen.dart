@@ -32,7 +32,7 @@ class _TheyArticlesScreenState extends State<TheyArticlesScreen> {
           onInitState: (Reader reader) {
             reader.call(provider.notifier).initData();
           },
-          builder: (_, __, ___, ArticleModel article) {
+          itemBuilder: (_, __, ___, ArticleModel article) {
             return ArticleTile(
               key: ValueKey<String>(
                 'they_article_${article.id}',

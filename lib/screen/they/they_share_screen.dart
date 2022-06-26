@@ -31,7 +31,7 @@ class _TheyShareScreenState extends State<TheyShareScreen> {
           onInitState: (Reader reader) {
             reader.call(provider.notifier).initData();
           },
-          builder: (_, __, ___, ArticleModel article) {
+          itemBuilder: (_, __, ___, ArticleModel article) {
             return ArticleTile(
               key: ValueKey<String>(
                 'they_share_article_${article.id}',

@@ -31,7 +31,7 @@ class _SquareState extends State<_Square> with AutomaticKeepAliveClientMixin {
             onInitState: (Reader reader) {
               reader.call(squareArticleProvider.notifier).initData();
             },
-            builder: (_, __, ___, ArticleModel article) {
+            itemBuilder: (_, __, ___, ArticleModel article) {
               return ArticleTile(
                 key: ValueKey<String>(
                   'square_article_${article.id}',

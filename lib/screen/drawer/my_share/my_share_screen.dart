@@ -51,7 +51,7 @@ class MyShareScreen extends StatelessWidget {
           onInitState: (Reader reader) {
             reader.call(myShareArticlesProvider.notifier).initData();
           },
-          builder: (_, WidgetRef ref, int index, ArticleModel article) {
+          itemBuilder: (_, WidgetRef ref, int index, ArticleModel article) {
             return ProviderScope(
               overrides: <Override>[
                 _currentShareArticleProvider.overrideWithValue(

@@ -44,7 +44,7 @@ class _ProjectState extends State<_Project> with AutomaticKeepAliveClientMixin {
                 extentProtoType: const _ProjectTypeSwitchExtentProtoType(),
               ),
             ),
-            builder: (_, __, ___, ArticleModel article) {
+            itemBuilder: (_, __, ___, ArticleModel article) {
               return ArticleTile(
                 key: ValueKey<String>(
                   'project_article_${article.id}',

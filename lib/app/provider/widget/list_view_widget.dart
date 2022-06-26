@@ -9,8 +9,8 @@ class ListViewWidget<
     required this.provider,
     this.onInitState,
     this.enablePullDown = false,
-    this.slivers,
     this.onRetry,
+    this.builder,
     required this.itemBuilder,
     this.separatorBuilder,
     this.scrollDirection = Axis.vertical,
@@ -40,8 +40,8 @@ class ListViewWidget<
   final ProviderType provider;
   final ReaderCallback? onInitState;
   final bool enablePullDown;
-  final List<Widget>? slivers;
   final ReaderCallback? onRetry;
+  final ListViewWidgetBuilder? builder;
   final ListViewItemBuilder<T> itemBuilder;
   final ListViewSeparatorBuilder? separatorBuilder;
   final Axis scrollDirection;
@@ -99,7 +99,7 @@ class _ListViewWidgetState<
             child: const SliverToBoxAdapter(child: nil),
           ),
           Consumer(
-            builder: (_, WidgetRef ref, Widget? loading) =>
+            builder: (BuildContext context, WidgetRef ref, Widget? loading) =>
                 ref.watch(widget.provider).when(
               (List<T> list) {
                 if (list.isEmpty) {
@@ -108,7 +108,7 @@ class _ListViewWidgetState<
                   );
                 }
 
-                return LoadMoreSliverList<T>(
+                Widget child = LoadMoreSliverList<T>(
                   list: list,
                   itemBuilder: (BuildContext context, int index) =>
                       widget.itemBuilder.call(context, ref, index, list[index]),
@@ -132,6 +132,12 @@ class _ListViewWidgetState<
                   viewportBuilder: widget.viewportBuilder,
                   closeToTrailing: widget.closeToTrailing,
                 );
+
+                if (widget.builder != null) {
+                  child = widget.builder!.call(context, child);
+                }
+
+                return child;
               },
               loading: () => loading!,
               error: (int? statusCode, String? message, String? detail) =>
@@ -159,73 +165,76 @@ class _ListViewWidgetState<
     }
 
     return Consumer(
-      builder: (_, WidgetRef ref, Widget? loading) =>
+      builder: (BuildContext context, WidgetRef ref, Widget? loading) =>
           ref.watch(widget.provider).when(
         (List<T> list) {
           if (list.isEmpty) {
             return const EmptyWidget();
           }
 
-          // ignore: prefer-conditional-expressions
-          if (widget.separatorBuilder != null) {
-            return ExtendedListView.separated(
-              separatorBuilder: (BuildContext context, int index) =>
-                  widget.separatorBuilder!.call(
-                context,
-                ref,
-                index,
-              ),
-              itemBuilder: (BuildContext context, int index) =>
-                  widget.itemBuilder.call(context, ref, index, list[index]),
-              extendedListDelegate: ExtendedListDelegate(
-                collectGarbage: widget.collectGarbage,
-                viewportBuilder: widget.viewportBuilder,
-                closeToTrailing: widget.closeToTrailing ?? false,
-              ),
-              itemCount: list.length,
-              scrollDirection: widget.scrollDirection,
-              reverse: widget.reverse,
-              controller: widget.controller,
-              primary: widget.primary,
-              shrinkWrap: widget.shrinkWrap,
-              padding: widget.padding,
-              addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-              addRepaintBoundaries: widget.addRepaintBoundaries,
-              addSemanticIndexes: widget.addSemanticIndexes,
-              cacheExtent: widget.cacheExtent,
-              dragStartBehavior: widget.dragStartBehavior,
-              keyboardDismissBehavior: widget.keyboardDismissBehavior,
-              restorationId: widget.restorationId,
-              clipBehavior: widget.clipBehavior,
-            );
-          } else {
-            return ExtendedListView.builder(
-              itemBuilder: (BuildContext context, int index) =>
-                  widget.itemBuilder.call(context, ref, index, list[index]),
-              extendedListDelegate: ExtendedListDelegate(
-                collectGarbage: widget.collectGarbage,
-                viewportBuilder: widget.viewportBuilder,
-                closeToTrailing: widget.closeToTrailing ?? false,
-              ),
-              itemCount: list.length,
-              scrollDirection: widget.scrollDirection,
-              reverse: widget.reverse,
-              controller: widget.controller,
-              primary: widget.primary,
-              shrinkWrap: widget.shrinkWrap,
-              padding: widget.padding,
-              itemExtent: widget.itemExtent,
-              addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-              addRepaintBoundaries: widget.addRepaintBoundaries,
-              addSemanticIndexes: widget.addSemanticIndexes,
-              cacheExtent: widget.cacheExtent,
-              semanticChildCount: widget.semanticChildCount,
-              dragStartBehavior: widget.dragStartBehavior,
-              keyboardDismissBehavior: widget.keyboardDismissBehavior,
-              restorationId: widget.restorationId,
-              clipBehavior: widget.clipBehavior,
-            );
+          Widget child = widget.separatorBuilder != null
+              ? ExtendedListView.separated(
+                  separatorBuilder: (BuildContext context, int index) =>
+                      widget.separatorBuilder!.call(
+                    context,
+                    ref,
+                    index,
+                  ),
+                  itemBuilder: (BuildContext context, int index) =>
+                      widget.itemBuilder.call(context, ref, index, list[index]),
+                  extendedListDelegate: ExtendedListDelegate(
+                    collectGarbage: widget.collectGarbage,
+                    viewportBuilder: widget.viewportBuilder,
+                    closeToTrailing: widget.closeToTrailing ?? false,
+                  ),
+                  itemCount: list.length,
+                  scrollDirection: widget.scrollDirection,
+                  reverse: widget.reverse,
+                  controller: widget.controller,
+                  primary: widget.primary,
+                  shrinkWrap: widget.shrinkWrap,
+                  padding: widget.padding,
+                  addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+                  addRepaintBoundaries: widget.addRepaintBoundaries,
+                  addSemanticIndexes: widget.addSemanticIndexes,
+                  cacheExtent: widget.cacheExtent,
+                  dragStartBehavior: widget.dragStartBehavior,
+                  keyboardDismissBehavior: widget.keyboardDismissBehavior,
+                  restorationId: widget.restorationId,
+                  clipBehavior: widget.clipBehavior,
+                )
+              : ExtendedListView.builder(
+                  itemBuilder: (BuildContext context, int index) =>
+                      widget.itemBuilder.call(context, ref, index, list[index]),
+                  extendedListDelegate: ExtendedListDelegate(
+                    collectGarbage: widget.collectGarbage,
+                    viewportBuilder: widget.viewportBuilder,
+                    closeToTrailing: widget.closeToTrailing ?? false,
+                  ),
+                  itemCount: list.length,
+                  scrollDirection: widget.scrollDirection,
+                  reverse: widget.reverse,
+                  controller: widget.controller,
+                  primary: widget.primary,
+                  shrinkWrap: widget.shrinkWrap,
+                  padding: widget.padding,
+                  itemExtent: widget.itemExtent,
+                  addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+                  addRepaintBoundaries: widget.addRepaintBoundaries,
+                  addSemanticIndexes: widget.addSemanticIndexes,
+                  cacheExtent: widget.cacheExtent,
+                  semanticChildCount: widget.semanticChildCount,
+                  dragStartBehavior: widget.dragStartBehavior,
+                  keyboardDismissBehavior: widget.keyboardDismissBehavior,
+                  restorationId: widget.restorationId,
+                  clipBehavior: widget.clipBehavior,
+                );
+
+          if (widget.builder != null) {
+            child = widget.builder!.call(context, child);
           }
+
+          return child;
         },
         loading: () => loading!,
         error: (int? statusCode, String? message, String? detail) =>
@@ -256,7 +265,7 @@ class AutoDisposeListViewWidget<
     required this.provider,
     this.onInitState,
     this.enablePullDown = false,
-    this.slivers,
+    this.builder,
     this.onRetry,
     required this.itemBuilder,
     this.separatorBuilder,
@@ -287,7 +296,7 @@ class AutoDisposeListViewWidget<
   final ProviderType provider;
   final ReaderCallback? onInitState;
   final bool enablePullDown;
-  final List<Widget>? slivers;
+  final ListViewWidgetBuilder? builder;
   final ReaderCallback? onRetry;
   final ListViewItemBuilder<T> itemBuilder;
   final ListViewSeparatorBuilder? separatorBuilder;
@@ -346,7 +355,7 @@ class _AutoDisposeListViewWidgetState<
             child: const SliverToBoxAdapter(child: nil),
           ),
           Consumer(
-            builder: (_, WidgetRef ref, Widget? loading) =>
+            builder: (BuildContext context, WidgetRef ref, Widget? loading) =>
                 ref.watch(widget.provider).when(
               (List<T> list) {
                 if (list.isEmpty) {
@@ -355,7 +364,7 @@ class _AutoDisposeListViewWidgetState<
                   );
                 }
 
-                return LoadMoreSliverList<T>(
+                Widget child = LoadMoreSliverList<T>(
                   list: list,
                   itemBuilder: (BuildContext context, int index) =>
                       widget.itemBuilder.call(context, ref, index, list[index]),
@@ -379,6 +388,12 @@ class _AutoDisposeListViewWidgetState<
                   viewportBuilder: widget.viewportBuilder,
                   closeToTrailing: widget.closeToTrailing,
                 );
+
+                if (widget.builder != null) {
+                  child = widget.builder!.call(context, child);
+                }
+
+                return child;
               },
               loading: () => loading!,
               error: (int? statusCode, String? message, String? detail) =>
@@ -406,73 +421,76 @@ class _AutoDisposeListViewWidgetState<
     }
 
     return Consumer(
-      builder: (_, WidgetRef ref, Widget? loading) =>
+      builder: (BuildContext context, WidgetRef ref, Widget? loading) =>
           ref.watch(widget.provider).when(
         (List<T> list) {
           if (list.isEmpty) {
             return const EmptyWidget();
           }
 
-          // ignore: prefer-conditional-expressions
-          if (widget.separatorBuilder != null) {
-            return ExtendedListView.separated(
-              separatorBuilder: (BuildContext context, int index) =>
-                  widget.separatorBuilder!.call(
-                context,
-                ref,
-                index,
-              ),
-              itemBuilder: (BuildContext context, int index) =>
-                  widget.itemBuilder.call(context, ref, index, list[index]),
-              extendedListDelegate: ExtendedListDelegate(
-                collectGarbage: widget.collectGarbage,
-                viewportBuilder: widget.viewportBuilder,
-                closeToTrailing: widget.closeToTrailing ?? false,
-              ),
-              itemCount: list.length,
-              scrollDirection: widget.scrollDirection,
-              reverse: widget.reverse,
-              controller: widget.controller,
-              primary: widget.primary,
-              shrinkWrap: widget.shrinkWrap,
-              padding: widget.padding,
-              addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-              addRepaintBoundaries: widget.addRepaintBoundaries,
-              addSemanticIndexes: widget.addSemanticIndexes,
-              cacheExtent: widget.cacheExtent,
-              dragStartBehavior: widget.dragStartBehavior,
-              keyboardDismissBehavior: widget.keyboardDismissBehavior,
-              restorationId: widget.restorationId,
-              clipBehavior: widget.clipBehavior,
-            );
-          } else {
-            return ExtendedListView.builder(
-              itemBuilder: (BuildContext context, int index) =>
-                  widget.itemBuilder.call(context, ref, index, list[index]),
-              extendedListDelegate: ExtendedListDelegate(
-                collectGarbage: widget.collectGarbage,
-                viewportBuilder: widget.viewportBuilder,
-                closeToTrailing: widget.closeToTrailing ?? false,
-              ),
-              itemCount: list.length,
-              scrollDirection: widget.scrollDirection,
-              reverse: widget.reverse,
-              controller: widget.controller,
-              primary: widget.primary,
-              shrinkWrap: widget.shrinkWrap,
-              padding: widget.padding,
-              itemExtent: widget.itemExtent,
-              addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-              addRepaintBoundaries: widget.addRepaintBoundaries,
-              addSemanticIndexes: widget.addSemanticIndexes,
-              cacheExtent: widget.cacheExtent,
-              semanticChildCount: widget.semanticChildCount,
-              dragStartBehavior: widget.dragStartBehavior,
-              keyboardDismissBehavior: widget.keyboardDismissBehavior,
-              restorationId: widget.restorationId,
-              clipBehavior: widget.clipBehavior,
-            );
+          Widget child = widget.separatorBuilder != null
+              ? ExtendedListView.separated(
+                  separatorBuilder: (BuildContext context, int index) =>
+                      widget.separatorBuilder!.call(
+                    context,
+                    ref,
+                    index,
+                  ),
+                  itemBuilder: (BuildContext context, int index) =>
+                      widget.itemBuilder.call(context, ref, index, list[index]),
+                  extendedListDelegate: ExtendedListDelegate(
+                    collectGarbage: widget.collectGarbage,
+                    viewportBuilder: widget.viewportBuilder,
+                    closeToTrailing: widget.closeToTrailing ?? false,
+                  ),
+                  itemCount: list.length,
+                  scrollDirection: widget.scrollDirection,
+                  reverse: widget.reverse,
+                  controller: widget.controller,
+                  primary: widget.primary,
+                  shrinkWrap: widget.shrinkWrap,
+                  padding: widget.padding,
+                  addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+                  addRepaintBoundaries: widget.addRepaintBoundaries,
+                  addSemanticIndexes: widget.addSemanticIndexes,
+                  cacheExtent: widget.cacheExtent,
+                  dragStartBehavior: widget.dragStartBehavior,
+                  keyboardDismissBehavior: widget.keyboardDismissBehavior,
+                  restorationId: widget.restorationId,
+                  clipBehavior: widget.clipBehavior,
+                )
+              : ExtendedListView.builder(
+                  itemBuilder: (BuildContext context, int index) =>
+                      widget.itemBuilder.call(context, ref, index, list[index]),
+                  extendedListDelegate: ExtendedListDelegate(
+                    collectGarbage: widget.collectGarbage,
+                    viewportBuilder: widget.viewportBuilder,
+                    closeToTrailing: widget.closeToTrailing ?? false,
+                  ),
+                  itemCount: list.length,
+                  scrollDirection: widget.scrollDirection,
+                  reverse: widget.reverse,
+                  controller: widget.controller,
+                  primary: widget.primary,
+                  shrinkWrap: widget.shrinkWrap,
+                  padding: widget.padding,
+                  itemExtent: widget.itemExtent,
+                  addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+                  addRepaintBoundaries: widget.addRepaintBoundaries,
+                  addSemanticIndexes: widget.addSemanticIndexes,
+                  cacheExtent: widget.cacheExtent,
+                  semanticChildCount: widget.semanticChildCount,
+                  dragStartBehavior: widget.dragStartBehavior,
+                  keyboardDismissBehavior: widget.keyboardDismissBehavior,
+                  restorationId: widget.restorationId,
+                  clipBehavior: widget.clipBehavior,
+                );
+
+          if (widget.builder != null) {
+            child = widget.builder!.call(context, child);
           }
+
+          return child;
         },
         loading: () => loading!,
         error: (int? statusCode, String? message, String? detail) =>

@@ -2,6 +2,11 @@ part of 'provider_widget.dart';
 
 typedef ReaderCallback = void Function(Reader reader);
 
+typedef ListViewWidgetBuilder = Widget Function(
+  BuildContext context,
+  Widget child,
+);
+
 typedef ListViewItemBuilder<T> = Widget Function(
   BuildContext context,
   WidgetRef ref,
@@ -25,7 +30,8 @@ class RefreshListViewWidget<
     super.key,
     required this.provider,
     this.onInitState,
-    required this.builder,
+    this.builder,
+    required this.itemBuilder,
     this.separatorBuilder,
     this.sliverPersistentHeader,
     this.slivers = const <Widget>[],
@@ -56,7 +62,8 @@ class RefreshListViewWidget<
 
   final ProviderType provider;
   final ReaderCallback? onInitState;
-  final ListViewItemBuilder<T> builder;
+  final ListViewWidgetBuilder? builder;
+  final ListViewItemBuilder<T> itemBuilder;
   final ListViewSeparatorBuilder? separatorBuilder;
   final Widget? sliverPersistentHeader;
   final List<Widget> slivers;
@@ -160,73 +167,79 @@ class _RefreshListViewWidgetState<
           ),
           ...widget.slivers,
           Consumer(
-            builder: (_, WidgetRef ref, Widget? loading) => ref
-                .watch(widget.provider)
-                .when(
-                  (int nextPageNum, bool isLastPage, List<T> list) => list
-                          .isEmpty
-                      ? const SliverFillRemaining(
-                          child: EmptyWidget(),
-                        )
-                      : LoadMoreSliverList<T>(
-                          list: list,
-                          loadMoreIndicatorBuilder: (_) =>
-                              ValueListenableBuilder<LoadingMoreStatus?>(
-                            valueListenable: _loadingMoreStatusNotifier,
-                            builder: (_, LoadingMoreStatus? status, __) =>
-                                LoadingMoreIndicator(
-                              status: status,
-                              onRetry: () async {
-                                _loadingMoreStatusNotifier.value =
-                                    LoadingMoreStatus.loading;
-                                _loadingMoreStatusNotifier.value = await ref
-                                    .read(widget.provider.notifier)
-                                    .loadMore();
-                              },
-                            ),
-                          ),
-                          itemBuilder: (BuildContext context, int index) {
-                            return widget.builder
-                                .call(context, ref, index, list[index]);
-                          },
-                          separatorBuilder: widget.separatorBuilder != null
-                              ? (BuildContext context, int index) =>
-                                  widget.separatorBuilder!.call(
-                                    context,
-                                    ref,
-                                    index,
-                                  )
-                              : null,
-                          padding: widget.padding,
-                          itemExtent: widget.itemExtent,
-                          addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-                          addRepaintBoundaries: widget.addRepaintBoundaries,
-                          addSemanticIndexes: widget.addSemanticIndexes,
-                          semanticIndexCallback: widget.semanticIndexCallback,
-                          semanticIndexOffset: widget.semanticIndexOffset,
-                          lastChildLayoutTypeBuilder:
-                              widget.lastChildLayoutTypeBuilder,
-                          collectGarbage: widget.collectGarbage,
-                          viewportBuilder: widget.viewportBuilder,
-                          closeToTrailing: widget.closeToTrailing,
-                        ),
-                  loading: () => loading!,
-                  error: (int? statusCode, String? message, String? detail) =>
-                      SliverFillRemaining(
-                    child: CustomErrorWidget(
-                      statusCode: statusCode,
-                      message: message,
-                      detail: detail,
-                      onRetry: () {
-                        if (widget.onRetry != null) {
-                          widget.onRetry!.call(ref.read);
-                        } else {
-                          ref.read(widget.provider.notifier).initData();
-                        }
+            builder: (BuildContext context, WidgetRef ref, Widget? loading) =>
+                ref.watch(widget.provider).when(
+              (int nextPageNum, bool isLastPage, List<T> list) {
+                if (list.isEmpty) {
+                  return const SliverFillRemaining(
+                    child: EmptyWidget(),
+                  );
+                }
+
+                Widget child = LoadMoreSliverList<T>(
+                  list: list,
+                  loadMoreIndicatorBuilder: (_) =>
+                      ValueListenableBuilder<LoadingMoreStatus?>(
+                    valueListenable: _loadingMoreStatusNotifier,
+                    builder: (_, LoadingMoreStatus? status, __) =>
+                        LoadingMoreIndicator(
+                      status: status,
+                      onRetry: () async {
+                        _loadingMoreStatusNotifier.value =
+                            LoadingMoreStatus.loading;
+                        _loadingMoreStatusNotifier.value =
+                            await ref.read(widget.provider.notifier).loadMore();
                       },
                     ),
                   ),
+                  itemBuilder: (BuildContext context, int index) {
+                    return widget.itemBuilder
+                        .call(context, ref, index, list[index]);
+                  },
+                  separatorBuilder: widget.separatorBuilder != null
+                      ? (BuildContext context, int index) =>
+                          widget.separatorBuilder!.call(
+                            context,
+                            ref,
+                            index,
+                          )
+                      : null,
+                  padding: widget.padding,
+                  itemExtent: widget.itemExtent,
+                  addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+                  addRepaintBoundaries: widget.addRepaintBoundaries,
+                  addSemanticIndexes: widget.addSemanticIndexes,
+                  semanticIndexCallback: widget.semanticIndexCallback,
+                  semanticIndexOffset: widget.semanticIndexOffset,
+                  lastChildLayoutTypeBuilder: widget.lastChildLayoutTypeBuilder,
+                  collectGarbage: widget.collectGarbage,
+                  viewportBuilder: widget.viewportBuilder,
+                  closeToTrailing: widget.closeToTrailing,
+                );
+
+                if (widget.builder != null) {
+                  child = widget.builder!.call(context, child);
+                }
+
+                return child;
+              },
+              loading: () => loading!,
+              error: (int? statusCode, String? message, String? detail) =>
+                  SliverFillRemaining(
+                child: CustomErrorWidget(
+                  statusCode: statusCode,
+                  message: message,
+                  detail: detail,
+                  onRetry: () {
+                    if (widget.onRetry != null) {
+                      widget.onRetry!.call(ref.read);
+                    } else {
+                      ref.read(widget.provider.notifier).initData();
+                    }
+                  },
                 ),
+              ),
+            ),
             child: const SliverFillRemaining(
               child: LoadingWidget(),
             ),
@@ -256,7 +269,8 @@ class AutoDisposeRefreshListViewWidget<
     super.key,
     required this.provider,
     this.onInitState,
-    required this.builder,
+    this.builder,
+    required this.itemBuilder,
     this.separatorBuilder,
     this.sliverPersistentHeader,
     this.slivers = const <Widget>[],
@@ -287,7 +301,8 @@ class AutoDisposeRefreshListViewWidget<
 
   final ProviderType provider;
   final ReaderCallback? onInitState;
-  final ListViewItemBuilder<T> builder;
+  final ListViewWidgetBuilder? builder;
+  final ListViewItemBuilder<T> itemBuilder;
   final ListViewSeparatorBuilder? separatorBuilder;
   final Widget? sliverPersistentHeader;
   final List<Widget> slivers;
@@ -392,77 +407,79 @@ class _AutoDisposeRefreshListViewWidgetState<
           ),
           ...widget.slivers,
           Consumer(
-            builder: (_, WidgetRef ref, Widget? loading) => ref
-                .watch(widget.provider)
-                .when(
-                  (int nextPageNum, bool isLastPage, List<T> list) => list
-                          .isEmpty
-                      ? const SliverFillRemaining(
-                          child: EmptyWidget(),
-                        )
-                      : LoadMoreSliverList<T>(
-                          list: list,
-                          loadMoreIndicatorBuilder: (_) =>
-                              ValueListenableBuilder<LoadingMoreStatus?>(
-                            valueListenable: _loadingMoreStatusNotifier,
-                            builder: (
-                              BuildContext context,
-                              LoadingMoreStatus? status,
-                              __,
-                            ) =>
-                                LoadingMoreIndicator(
-                              status: status,
-                              onRetry: () async {
-                                _loadingMoreStatusNotifier.value =
-                                    LoadingMoreStatus.loading;
-                                _loadingMoreStatusNotifier.value = await ref
-                                    .read(widget.provider.notifier)
-                                    .loadMore();
-                              },
-                            ),
-                          ),
-                          itemBuilder: (BuildContext context, int index) {
-                            return widget.builder
-                                .call(context, ref, index, list[index]);
-                          },
-                          separatorBuilder: widget.separatorBuilder != null
-                              ? (BuildContext context, int index) =>
-                                  widget.separatorBuilder!.call(
-                                    context,
-                                    ref,
-                                    index,
-                                  )
-                              : null,
-                          padding: widget.padding,
-                          itemExtent: widget.itemExtent,
-                          addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-                          addRepaintBoundaries: widget.addRepaintBoundaries,
-                          addSemanticIndexes: widget.addSemanticIndexes,
-                          semanticIndexCallback: widget.semanticIndexCallback,
-                          semanticIndexOffset: widget.semanticIndexOffset,
-                          lastChildLayoutTypeBuilder:
-                              widget.lastChildLayoutTypeBuilder,
-                          collectGarbage: widget.collectGarbage,
-                          viewportBuilder: widget.viewportBuilder,
-                          closeToTrailing: widget.closeToTrailing,
-                        ),
-                  loading: () => loading!,
-                  error: (int? statusCode, String? message, String? detail) =>
-                      SliverFillRemaining(
-                    child: CustomErrorWidget(
-                      statusCode: statusCode,
-                      message: message,
-                      detail: detail,
-                      onRetry: () {
-                        if (widget.onRetry != null) {
-                          widget.onRetry!.call(ref.read);
-                        } else {
-                          ref.read(widget.provider.notifier).initData();
-                        }
+            builder: (BuildContext context, WidgetRef ref, Widget? loading) =>
+                ref.watch(widget.provider).when(
+              (int nextPageNum, bool isLastPage, List<T> list) {
+                if (list.isEmpty) {
+                  return const SliverFillRemaining(
+                    child: EmptyWidget(),
+                  );
+                }
+
+                Widget child = LoadMoreSliverList<T>(
+                  list: list,
+                  loadMoreIndicatorBuilder: (_) =>
+                      ValueListenableBuilder<LoadingMoreStatus?>(
+                    valueListenable: _loadingMoreStatusNotifier,
+                    builder: (_, LoadingMoreStatus? status, __) =>
+                        LoadingMoreIndicator(
+                      status: status,
+                      onRetry: () async {
+                        _loadingMoreStatusNotifier.value =
+                            LoadingMoreStatus.loading;
+                        _loadingMoreStatusNotifier.value =
+                            await ref.read(widget.provider.notifier).loadMore();
                       },
                     ),
                   ),
+                  itemBuilder: (BuildContext context, int index) {
+                    return widget.itemBuilder
+                        .call(context, ref, index, list[index]);
+                  },
+                  separatorBuilder: widget.separatorBuilder != null
+                      ? (BuildContext context, int index) =>
+                          widget.separatorBuilder!.call(
+                            context,
+                            ref,
+                            index,
+                          )
+                      : null,
+                  padding: widget.padding,
+                  itemExtent: widget.itemExtent,
+                  addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+                  addRepaintBoundaries: widget.addRepaintBoundaries,
+                  addSemanticIndexes: widget.addSemanticIndexes,
+                  semanticIndexCallback: widget.semanticIndexCallback,
+                  semanticIndexOffset: widget.semanticIndexOffset,
+                  lastChildLayoutTypeBuilder: widget.lastChildLayoutTypeBuilder,
+                  collectGarbage: widget.collectGarbage,
+                  viewportBuilder: widget.viewportBuilder,
+                  closeToTrailing: widget.closeToTrailing,
+                );
+
+                if (widget.builder != null) {
+                  child = widget.builder!.call(context, child);
+                }
+
+                return child;
+              },
+              loading: () => loading!,
+              error: (int? statusCode, String? message, String? detail) =>
+                  SliverFillRemaining(
+                child: CustomErrorWidget(
+                  statusCode: statusCode,
+                  message: message,
+                  detail: detail,
+                  onRetry: () {
+                    if (widget.onRetry != null) {
+                      widget.onRetry!.call(ref.read);
+                    } else {
+                      ref.read(widget.provider.notifier).initData();
+                    }
+                  },
                 ),
+              ),
+            ),
             child: const SliverFillRemaining(
               child: LoadingWidget(),
             ),

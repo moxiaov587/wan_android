@@ -24,7 +24,7 @@ class RankScreen extends StatelessWidget {
             onInitState: (Reader reader) {
               reader.call(pointsRankProvider.notifier).initData();
             },
-            builder: (_, __, ___, UserPointsModel points) {
+            itemBuilder: (_, __, ___, UserPointsModel points) {
               return Material(
                 child: Padding(
                   padding: const EdgeInsets.all(kStyleUint4),

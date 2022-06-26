@@ -62,7 +62,7 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
       onInitState: (Reader reader) {
         reader.call(provider.notifier).initData();
       },
-      builder: (_, __, ___, ArticleModel article) => ArticleTile(
+      itemBuilder: (_, __, ___, ArticleModel article) => ArticleTile(
         key: ValueKey<String>(
           'search_article_${article.id}',
         ),
