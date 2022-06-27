@@ -8,6 +8,7 @@ import '../../../app/provider/view_state.dart';
 import '../../../app/provider/widget/provider_widget.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../contacts/icon_font_icons.dart';
+import '../../../contacts/instances.dart';
 import '../../../contacts/unicode.dart';
 import '../../../extensions/extensions.dart';
 import '../../../model/models.dart';

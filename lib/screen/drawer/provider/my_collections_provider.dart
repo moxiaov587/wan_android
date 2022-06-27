@@ -26,8 +26,6 @@ final AutoDisposeStateNotifierProvider<MyCollectedArticleNotifier,
 
     return MyCollectedArticleNotifier(
       const RefreshListViewState<CollectedArticleModel>.loading(),
-      reader: ref.read,
-      providerContainer: ref.container,
       cancelToken: cancelToken,
     );
   },
@@ -38,15 +36,10 @@ class MyCollectedArticleNotifier
     extends BaseRefreshListViewNotifier<CollectedArticleModel> {
   MyCollectedArticleNotifier(
     super.state, {
-    required this.reader,
-    required this.providerContainer,
     this.cancelToken,
   }) : super(
           initialPageNum: 0,
         );
-
-  final Reader reader;
-  final ProviderContainer providerContainer;
 
   final CancelToken? cancelToken;
 
@@ -163,61 +156,10 @@ class MyCollectedArticleNotifier
     }
   }
 
-  void switchOtherArticleCollect(
-    int id, {
-    required bool changedValue,
-  }) {
-    final Map<String, ProviderBase<dynamic>> providers =
-        providerContainer.getAllProviderElements().fold(
-      <String, ProviderBase<dynamic>>{},
-      (
-        Map<String, ProviderBase<dynamic>> previousValue,
-        ProviderElementBase<dynamic> e,
-      ) {
-        if (articles.contains(e.provider.name)) {
-          return <String, ProviderBase<dynamic>>{
-            ...previousValue,
-            e.provider.name!: e.provider,
-          };
-        }
-
-        return previousValue;
-      },
-    );
-
-    late ProviderBase<dynamic> provider;
-
-    ArticleModel? article;
-
-    for (final String key in providers.keys) {
-      if (articles.contains(key)) {
-        provider = providers[key]!;
-        article = (reader.call(provider) as RefreshListViewState<ArticleModel>)
-            .whenOrNull((_, __, List<ArticleModel> list) => list)
-            ?.firstWhereOrNull((ArticleModel e) => e.id == id);
-
-        if (article != null) {
-          break;
-        }
-      }
-    }
-
-    if (article != null) {
-      reader
-          .call((provider as StateNotifierProvider<
-                  ArticleNotifierSwitchCollectMixin,
-                  RefreshListViewState<ArticleModel>>)
-              .notifier)
-          .switchCollect(
-            id,
-            changedValue: changedValue,
-          );
-    }
-  }
-
   void switchCollect(
     int id, {
     required bool changedValue,
+    bool triggerCompleteCallback = false,
   }) {
     state.whenOrNull(
       (
@@ -225,50 +167,42 @@ class MyCollectedArticleNotifier
         bool isLastPage,
         List<CollectedArticleModel> list,
       ) {
-        /// If it is not null, it means to collect from the article.
-        /// Need to check whether the article exists in the home tabs provider.
-        /// If there is a collection status that needs to be synchronized
-        int? originId;
-        final List<CollectedArticleModel> changedList =
-            list.map((CollectedArticleModel collectedArticle) {
-          if (collectedArticle.id == id) {
-            originId = collectedArticle.originId;
-
-            return collectedArticle.copyWith(
-              collect: changedValue,
-            );
-          }
-
-          return collectedArticle;
-        }).toList();
+        final List<CollectedArticleModel> changedList = list
+            .map(
+              (CollectedArticleModel collectedArticle) =>
+                  collectedArticle.id == id
+                      ? collectedArticle.copyWith(
+                          collect: changedValue,
+                        )
+                      : collectedArticle,
+            )
+            .toList();
         state = RefreshListViewStateData<CollectedArticleModel>(
           pageNum: pageNum,
           isLastPage: isLastPage,
           list: changedList,
         );
 
-        if (changedList.firstWhereOrNull(
-              (CollectedArticleModel collect) => collect.collect,
-            ) ==
-            null) {
+        if (triggerCompleteCallback) {
+          onSwitchCollectComplete();
+        }
+      },
+    );
+  }
+
+  void onSwitchCollectComplete() {
+    state.whenOrNull(
+      (int pageNum, bool isLastPage, List<CollectedArticleModel> list) {
+        if (list.none((CollectedArticleModel collect) => collect.collect)) {
           if (isLastPage) {
-            Future<void>.delayed(Duration.zero, () {
-              state = RefreshListViewStateData<CollectedArticleModel>(
-                pageNum: pageNum,
-                isLastPage: isLastPage,
-                list: <CollectedArticleModel>[],
-              );
-            });
+            state = RefreshListViewStateData<CollectedArticleModel>(
+              pageNum: pageNum,
+              isLastPage: isLastPage,
+              list: <CollectedArticleModel>[],
+            );
           } else {
             initData();
           }
-        }
-
-        if (originId != null) {
-          switchOtherArticleCollect(
-            originId!,
-            changedValue: changedValue,
-          );
         }
       },
     );
@@ -405,6 +339,7 @@ class MyCollectedWebsiteNotifier
   void switchCollect(
     int id, {
     required bool changedValue,
+    bool triggerCompleteCallback = false,
   }) {
     state.whenOrNull((List<CollectedWebsiteModel> list) {
       final List<CollectedWebsiteModel> changedList = list
@@ -419,15 +354,18 @@ class MyCollectedWebsiteNotifier
         list: changedList,
       );
 
-      if (changedList.firstWhereOrNull(
-            (CollectedWebsiteModel collect) => collect.collect,
-          ) ==
-          null) {
-        Future<void>.delayed(Duration.zero, () {
-          state = const ListViewStateData<CollectedWebsiteModel>(
-            list: <CollectedWebsiteModel>[],
-          );
-        });
+      if (triggerCompleteCallback) {
+        onSwitchCollectComplete();
+      }
+    });
+  }
+
+  void onSwitchCollectComplete() {
+    state.whenOrNull((List<CollectedWebsiteModel> list) {
+      if (list.none((CollectedWebsiteModel collect) => collect.collect)) {
+        state = const ListViewStateData<CollectedWebsiteModel>(
+          list: <CollectedWebsiteModel>[],
+        );
       }
     });
   }

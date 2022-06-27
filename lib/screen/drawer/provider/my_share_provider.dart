@@ -88,31 +88,16 @@ class MyShareArticlesNotifier
 
   void destroy(int id) {
     state.whenOrNull((int pageNum, bool isLastPage, List<ArticleModel> list) {
-      final List<ArticleModel> setIsDismissList = list
-          .map((ArticleModel article) => article.id == id
-              ? article.copyWith(
-                  isDestroy: true,
-                )
-              : article)
-          .toList();
+      final List<ArticleModel> filterList =
+          list.where((ArticleModel article) => article.id != id).toList();
       state = RefreshListViewStateData<ArticleModel>(
         pageNum: pageNum,
         isLastPage: isLastPage,
-        list: setIsDismissList,
+        list: filterList,
       );
 
-      if (setIsDismissList
-              .firstWhereOrNull((ArticleModel article) => !article.isDestroy) ==
-          null) {
-        if (isLastPage) {
-          Future<void>.delayed(Duration.zero, () {
-            state = RefreshListViewStateData<ArticleModel>(
-              pageNum: pageNum,
-              isLastPage: isLastPage,
-              list: <ArticleModel>[],
-            );
-          });
-        } else {
+      if (filterList.isEmpty) {
+        if (!isLastPage) {
           initData();
         }
       }

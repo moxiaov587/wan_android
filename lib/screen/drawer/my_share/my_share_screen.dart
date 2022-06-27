@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:nil/nil.dart' show nil;
 
 import '../../../app/l10n/generated/l10n.dart';
 import '../../../app/provider/view_state.dart';
@@ -51,18 +50,13 @@ class MyShareScreen extends StatelessWidget {
           onInitState: (Reader reader) {
             reader.call(myShareArticlesProvider.notifier).initData();
           },
-          itemBuilder: (_, WidgetRef ref, int index, ArticleModel article) {
-            return ProviderScope(
-              overrides: <Override>[
-                _currentShareArticleProvider.overrideWithValue(
-                  ref.watch(myShareArticlesProvider).whenOrNull(
-                        (_, __, List<ArticleModel> list) => list[index],
-                      ),
-                ),
-              ],
-              child: const _ShareArticleTile(),
-            );
-          },
+          builder: (_, Widget child) => SlidableAutoCloseBehavior(child: child),
+          itemBuilder: (_, __, ___, ArticleModel article) => _ShareArticleTile(
+            key: Key(
+              'my_share_article_${article.id}',
+            ),
+            article: article,
+          ),
           separatorBuilder: (_, __, ___) => const Divider(),
         ),
       ),
@@ -70,55 +64,49 @@ class MyShareScreen extends StatelessWidget {
   }
 }
 
-final AutoDisposeProvider<ArticleModel?> _currentShareArticleProvider =
-    Provider.autoDispose<ArticleModel?>((_) => null);
-
 class _ShareArticleTile extends ConsumerWidget {
-  const _ShareArticleTile();
+  const _ShareArticleTile({super.key, required this.article});
+
+  final ArticleModel article;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ArticleModel? article = ref.read(_currentShareArticleProvider);
-
-    return article == null || article.isDestroy
-        ? nil
-        : Slidable(
-            endActionPane: ActionPane(
-              extentRatio: 0.45,
-              motion: const ScrollMotion(),
-              dismissible: DismissiblePane(
-                closeOnCancel: true,
-                dismissThreshold: 0.65,
-                dismissalDuration: const Duration(milliseconds: 500),
-                onDismissed: () {
-                  ref
-                      .read(myShareArticlesProvider.notifier)
-                      .destroy(article.id);
-                },
-                confirmDismiss: () => ref
-                    .read(myShareArticlesProvider.notifier)
-                    .requestDeleteShare(
-                      articleId: article.id,
-                    ),
-              ),
-              children: <Widget>[
-                DismissibleSlidableAction(
-                  slidableExtentRatio: 0.25,
-                  dismissiblePaneThreshold: 0.65,
-                  label: '',
-                  color: context.theme.colorScheme.tertiary,
-                  onTap: () {},
-                ),
-              ],
-            ),
-            child: ConstrainedBox(
-              constraints: BoxConstraints.tightFor(
-                width: ScreenUtils.width,
-              ),
-              child: ArticleTile(
-                article: article,
-              ),
-            ),
-          );
+    return Slidable(
+      key: key,
+      groupTag: 'share_article',
+      endActionPane: ActionPane(
+        extentRatio: 0.45,
+        motion: const ScrollMotion(),
+        dismissible: DismissiblePane(
+          closeOnCancel: true,
+          dismissThreshold: 0.65,
+          dismissalDuration: const Duration(milliseconds: 500),
+          onDismissed: () {
+            ref.read(myShareArticlesProvider.notifier).destroy(article.id);
+          },
+          confirmDismiss: () =>
+              ref.read(myShareArticlesProvider.notifier).requestDeleteShare(
+                    articleId: article.id,
+                  ),
+        ),
+        children: <Widget>[
+          DismissibleSlidableAction(
+            slidableExtentRatio: 0.25,
+            dismissiblePaneThreshold: 0.65,
+            label: '',
+            color: context.theme.colorScheme.tertiary,
+            onTap: () {},
+          ),
+        ],
+      ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints.tightFor(
+          width: ScreenUtils.width,
+        ),
+        child: ArticleTile(
+          article: article,
+        ),
+      ),
+    );
   }
 }

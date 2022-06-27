@@ -10,7 +10,6 @@ import '../../../model/models.dart';
 import '../../../utils/dialog_utils.dart';
 import '../../home/provider/home_provider.dart'
     show
-        ArticleNotifierSwitchCollectMixin,
         kHomeArticleProvider,
         kProjectArticleProvider,
         kQuestionArticleProvider,

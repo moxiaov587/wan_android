@@ -37,7 +37,6 @@ class ArticleModel with _$ArticleModel {
     int? visible,
     @Default(0) int zan,
     @JsonKey(ignore: true) @Default(false) bool isTop,
-    @JsonKey(ignore: true) @Default(false) bool isDestroy,
   }) = _ArticleModel;
 
   factory ArticleModel.fromJson(Map<String, dynamic> json) =>

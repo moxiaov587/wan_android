@@ -1,16 +1,36 @@
 part of 'my_collections_screen.dart';
 
-class _Article extends StatefulWidget {
+class _Article extends ConsumerStatefulWidget {
   const _Article();
 
   @override
   __ArticleState createState() => __ArticleState();
 }
 
-class __ArticleState extends State<_Article>
-    with AutomaticKeepAliveClientMixin {
+class __ArticleState extends ConsumerState<_Article>
+    with AutomaticKeepAliveClientMixin, RouteAware {
   @override
   bool get wantKeepAlive => true;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    Instances.routeObserver.subscribe(this, ModalRoute.of<dynamic>(context)!);
+  }
+
+  @override
+  void didPopNext() {
+    super.didPopNext();
+
+    ref.read(myCollectedArticleProvider.notifier).onSwitchCollectComplete();
+  }
+
+  @override
+  void dispose() {
+    Instances.routeObserver.unsubscribe(this);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,30 +44,25 @@ class __ArticleState extends State<_Article>
       onInitState: (Reader reader) {
         reader.call(myCollectedArticleProvider.notifier).initData();
       },
-      builder: (_, WidgetRef ref, int index, __) {
-        return ProviderScope(
-          overrides: <Override>[
-            _currentArticleProvider.overrideWithValue(
-              ref.watch(myCollectedArticleProvider).whenOrNull(
-                    (_, __, List<CollectedArticleModel> list) => list[index],
+      builder: (_, Widget child) => SlidableAutoCloseBehavior(child: child),
+      itemBuilder: (_, __, ___, CollectedArticleModel article) =>
+          article.collect
+              ? _CollectedArticleTile(
+                  key: Key(
+                    'my_collections_article_${article.id}',
                   ),
-            ),
-          ],
-          child: const _CollectedArticleTile(),
-        );
-      },
+                  article: article,
+                )
+              : nil,
       separatorBuilder: (_, __, ___) => const Divider(),
     );
   }
 }
 
-final AutoDisposeProvider<CollectedArticleModel?> _currentArticleProvider =
-    Provider.autoDispose<CollectedArticleModel?>(
-  (_) => null,
-);
-
 class _CollectedArticleTile extends ConsumerWidget {
-  const _CollectedArticleTile();
+  const _CollectedArticleTile({super.key, required this.article});
+
+  final CollectedArticleModel article;
 
   TextSpan get _textSpace => const TextSpan(
         text: '${Unicode.halfWidthSpace}•${Unicode.halfWidthSpace}',
@@ -62,105 +77,101 @@ class _CollectedArticleTile extends ConsumerWidget {
 
     final double titleVerticalGap = contentPadding.vertical / 2;
 
-    final CollectedArticleModel? article = ref.read(_currentArticleProvider);
-
-    return article != null && article.collect
-        ? Slidable(
-            groupTag: CollectionType.article.name,
-            key: key,
-            endActionPane: ActionPane(
-              extentRatio: 0.25,
-              motion: const ScrollMotion(),
-              dismissible: DismissiblePane(
-                closeOnCancel: true,
-                dismissThreshold: 0.65,
-                dismissalDuration: const Duration(milliseconds: 500),
-                onDismissed: () {
-                  ref.read(myCollectedArticleProvider.notifier).switchCollect(
-                        article.id,
-                        changedValue: false,
-                      );
-                },
-                confirmDismiss: () => ref
-                    .read(myCollectedArticleProvider.notifier)
-                    .requestCancelCollect(
-                      collectId: article.id,
-                      articleId: article.originId,
-                    ),
+    return Slidable(
+      key: key,
+      groupTag: CollectionType.article.name,
+      endActionPane: ActionPane(
+        extentRatio: 0.25,
+        motion: const ScrollMotion(),
+        dismissible: DismissiblePane(
+          closeOnCancel: true,
+          dismissThreshold: 0.65,
+          dismissalDuration: const Duration(milliseconds: 500),
+          onDismissed: () {
+            ref.read(myCollectedArticleProvider.notifier).switchCollect(
+                  article.id,
+                  changedValue: false,
+                  triggerCompleteCallback: true,
+                );
+          },
+          confirmDismiss: () => ref
+              .read(myCollectedArticleProvider.notifier)
+              .requestCancelCollect(
+                collectId: article.id,
+                articleId: article.originId,
               ),
-              children: <Widget>[
-                DismissibleSlidableAction(
-                  slidableExtentRatio: 0.25,
-                  dismissiblePaneThreshold: 0.65,
-                  label: S.of(context).edit,
-                  onTap: () {
-                    AppRouterDelegate.instance.currentBeamState.updateWith(
-                      showHandleCollectedBottomSheet: true,
-                      collectionTypeIndex: CollectionType.article.index,
-                      collectId: article.id,
-                    );
-                  },
-                ),
-              ],
-            ),
-            child: ConstrainedBox(
-              constraints: BoxConstraints.tightFor(
-                width: ScreenUtils.width,
-                height: 94.0,
-              ),
-              child: Material(
-                child: Ink(
-                  child: InkWell(
-                    onTap: () {
-                      AppRouterDelegate.instance.currentBeamState.updateWith(
-                        articleId: article.id,
-                      );
-                    },
-                    child: Padding(
-                      padding: AppTheme.bodyPadding,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          RichText(
-                            text: TextSpan(
-                              style: context.theme.textTheme.bodyMedium,
-                              children: <TextSpan>[
-                                if (article.author.strictValue != null)
-                                  TextSpan(
-                                    text: article.author.strictValue,
-                                  ),
-                                if (article.author.strictValue != null)
-                                  _textSpace,
-                                TextSpan(
-                                  text: article.niceDate,
-                                ),
-                                if (article.chapterName.strictValue != null)
-                                  _textSpace,
-                                if (article.chapterName.strictValue != null)
-                                  TextSpan(
-                                    text: article.chapterName.strictValue,
-                                  ),
-                              ],
+        ),
+        children: <Widget>[
+          DismissibleSlidableAction(
+            slidableExtentRatio: 0.25,
+            dismissiblePaneThreshold: 0.65,
+            label: S.of(context).edit,
+            onTap: () {
+              AppRouterDelegate.instance.currentBeamState.updateWith(
+                showHandleCollectedBottomSheet: true,
+                collectionTypeIndex: CollectionType.article.index,
+                collectId: article.id,
+              );
+            },
+          ),
+        ],
+      ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints.tightFor(
+          width: ScreenUtils.width,
+          height: 94.0,
+        ),
+        child: Material(
+          child: Ink(
+            child: InkWell(
+              onTap: () {
+                AppRouterDelegate.instance.currentBeamState.updateWith(
+                  articleId: article.id,
+                );
+              },
+              child: Padding(
+                padding: AppTheme.bodyPadding,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    RichText(
+                      text: TextSpan(
+                        style: context.theme.textTheme.bodyMedium,
+                        children: <TextSpan>[
+                          if (article.author.strictValue != null)
+                            TextSpan(
+                              text: article.author.strictValue,
                             ),
+                          if (article.author.strictValue != null) _textSpace,
+                          TextSpan(
+                            text: article.niceDate,
                           ),
-                          Gap(
-                            value: titleVerticalGap,
-                          ),
-                          Text(
-                            HTMLParseUtils.parseArticleTitle(
-                                  title: article.title,
-                                ) ??
-                                S.of(context).unknown,
-                            style: context.theme.textTheme.titleSmall,
-                          ),
+                          if (article.chapterName.strictValue != null)
+                            _textSpace,
+                          if (article.chapterName.strictValue != null)
+                            TextSpan(
+                              text: article.chapterName.strictValue,
+                            ),
                         ],
                       ),
                     ),
-                  ),
+                    Gap(
+                      value: titleVerticalGap,
+                    ),
+                    Text(
+                      HTMLParseUtils.parseArticleTitle(
+                            title: article.title,
+                          ) ??
+                          S.of(context).unknown,
+                      style: context.theme.textTheme.titleSmall,
+                    ),
+                  ],
                 ),
               ),
             ),
-          )
-        : nil;
+          ),
+        ),
+      ),
+    );
   }
 }
