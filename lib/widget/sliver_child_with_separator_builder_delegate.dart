@@ -18,7 +18,7 @@ class SliverChildWithSeparatorBuilderDelegate extends SliverChildDelegate {
     this.semanticIndexCallback = _kDefaultSemanticIndexCallback,
     this.semanticIndexOffset = 0,
     this.ignoreSeparatorBuilderForPenultimateChild = false,
-  }) : assert(childCount > 1);
+  }) : assert(childCount >= 1);
 
   final NullableIndexedWidgetBuilder builder;
   final NullableIndexedWidgetBuilder? separatorBuilder;

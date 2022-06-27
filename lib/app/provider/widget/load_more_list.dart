@@ -254,7 +254,7 @@ class LoadMoreSliverList<T> extends StatelessWidget {
             addSemanticIndexes: addSemanticIndexes,
             semanticIndexCallback: semanticIndexCallback,
             semanticIndexOffset: semanticIndexOffset,
-            ignoreSeparatorBuilderForPenultimateChild: true,
+            ignoreSeparatorBuilderForPenultimateChild: canLoadMore,
           ),
         );
       } else {
@@ -307,7 +307,7 @@ class LoadMoreSliverList<T> extends StatelessWidget {
             addSemanticIndexes: addSemanticIndexes,
             semanticIndexCallback: semanticIndexCallback,
             semanticIndexOffset: semanticIndexOffset,
-            ignoreSeparatorBuilderForPenultimateChild: true,
+            ignoreSeparatorBuilderForPenultimateChild: canLoadMore,
           ),
         );
       } else {
