@@ -276,12 +276,14 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                                   Future<void>.delayed(
                                     const Duration(milliseconds: 500),
                                     () async {
-                                      _canGoBackNotifier.value =
-                                          await _inAppWebViewController
-                                              .canGoBack();
-                                      _canGoForwardModeNotifier.value =
-                                          await _inAppWebViewController
-                                              .canGoForward();
+                                      if (mounted) {
+                                        _canGoBackNotifier.value =
+                                            await _inAppWebViewController
+                                                .canGoBack();
+                                        _canGoForwardModeNotifier.value =
+                                            await _inAppWebViewController
+                                                .canGoForward();
+                                      }
                                     },
                                   );
                                 },
