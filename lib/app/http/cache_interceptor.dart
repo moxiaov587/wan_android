@@ -20,16 +20,6 @@ class CacheInterceptor extends Interceptor {
   final LinkedHashMap<String, ResponseCache> _cache =
       LinkedHashMap<String, ResponseCache>();
 
-  bool _needRefresh(RequestOptions options) =>
-      options.extra[CacheOption.needRefresh.name] as bool? ?? false;
-
-  bool _needCache(RequestOptions options) =>
-      (options.extra[CacheOption.needCache.name] as bool? ?? false) &&
-      options.method.toLowerCase() == _kMethodGetLowerCase;
-
-  bool _isDiskCache(RequestOptions options) =>
-      options.extra[CacheOption.isDiskCache.name] as bool? ?? false;
-
   dynamic _diskCacheKey(String uri) => HiveBoxes.responseCacheBox.values
       .firstWhereOrNull((ResponseCache element) => element.uri == uri)
       ?.key;
@@ -51,17 +41,15 @@ class CacheInterceptor extends Interceptor {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    final bool isDiskCache = _isDiskCache(options);
-
     final String uriString = options.uri.toString();
 
-    if (_needRefresh(options)) {
-      _onNeedRefresh(isDiskCache: isDiskCache, uriString: uriString);
+    if (options.needRefresh) {
+      _onNeedRefresh(isDiskCache: options.isDiskCache, uriString: uriString);
 
       handler.next(options);
 
       return;
-    } else if (_needCache(options)) {
+    } else if (options.needCache) {
       final ResponseCache? response = _cache[uriString];
 
       if (response != null) {
@@ -82,7 +70,7 @@ class CacheInterceptor extends Interceptor {
         }
       }
 
-      if (isDiskCache) {
+      if (options.isDiskCache) {
         final dynamic key = _diskCacheKey(uriString);
 
         final ResponseCache? responseCache =
@@ -119,7 +107,7 @@ class CacheInterceptor extends Interceptor {
   ) {
     final RequestOptions options = response.requestOptions;
 
-    if (_needCache(options)) {
+    if (options.needCache) {
       final String uriString = options.uri.toString();
 
       final ResponseCache responseCache = ResponseCache(
@@ -127,7 +115,7 @@ class CacheInterceptor extends Interceptor {
         timeStamp: DateTime.now().millisecondsSinceEpoch,
         data: response.data,
       );
-      if (_isDiskCache(options)) {
+      if (options.isDiskCache) {
         HiveBoxes.responseCacheBox.add(responseCache);
       } else {
         if (_cache.length == _kCacheMaxCount) {
@@ -146,4 +134,14 @@ enum CacheOption {
   needRefresh,
   needCache,
   isDiskCache,
+}
+
+extension RequestOptionsExtension on RequestOptions {
+  bool get needRefresh => extra[CacheOption.needRefresh.name] as bool? ?? false;
+
+  bool get needCache =>
+      method.toLowerCase() == _kMethodGetLowerCase &&
+      (extra[CacheOption.needCache.name] as bool? ?? false);
+
+  bool get isDiskCache => extra[CacheOption.isDiskCache.name] as bool? ?? false;
 }
