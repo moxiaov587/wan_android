@@ -2,13 +2,16 @@ part of 'home_drawer.dart';
 
 const double _kCurrentUserRankTileHeight = 56.0;
 
-class RankScreen extends StatelessWidget {
+class RankScreen extends ConsumerWidget {
   const RankScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final double paddingBottom =
         _kCurrentUserRankTileHeight + ScreenUtils.bottomSafeHeight;
+
+    final UserPointsModel? currentUserPoints =
+        ref.read(authorizedProvider)?.userPoints;
 
     return Scaffold(
       appBar: AppBar(
@@ -24,6 +27,9 @@ class RankScreen extends StatelessWidget {
             onInitState: (Reader reader) {
               reader.call(pointsRankProvider.notifier).initData();
             },
+            padding: currentUserPoints != null
+                ? EdgeInsets.only(bottom: paddingBottom)
+                : EdgeInsets.zero,
             itemBuilder: (_, __, ___, UserPointsModel points) {
               return Material(
                 child: Padding(
@@ -41,68 +47,61 @@ class RankScreen extends StatelessWidget {
             },
             separatorBuilder: (_, __, ___) => const Divider(),
           ),
-          Positioned(
-            left: 0.0,
-            bottom: 0.0,
-            child: Consumer(
-              builder: (BuildContext context, WidgetRef ref, Widget? empty) {
-                final bool showUserRank = ref.watch(
-                  pointsRankProvider.select(
-                    (RefreshListViewState<UserPointsModel> vm) =>
-                        vm.whenOrNull((_, __, ___) => true) ?? false,
-                  ),
-                );
+          if (currentUserPoints != null)
+            Positioned(
+              left: 0.0,
+              bottom: 0.0,
+              child: Consumer(
+                builder: (_, WidgetRef ref, Widget? empty) {
+                  final bool showUserRank = ref.watch(
+                    pointsRankProvider.select(
+                      (RefreshListViewState<UserPointsModel> vm) =>
+                          vm.whenOrNull((_, __, ___) => true) ?? false,
+                    ),
+                  );
 
-                return showUserRank
-                    ? Builder(builder: (_) {
-                        final UserPointsModel? points =
-                            ref.read(authorizedProvider)?.userPoints;
+                  final String? fullName =
+                      ref.read(authorizedProvider)?.user.nickname;
 
-                        final String? fullName =
-                            ref.read(authorizedProvider)?.user.nickname;
-
-                        return points != null
-                            ? Container(
-                                width: ScreenUtils.width,
-                                height: paddingBottom,
-                                padding: EdgeInsets.fromLTRB(
-                                  kStyleUint4,
-                                  kStyleUint4,
-                                  kStyleUint4,
-                                  kStyleUint4 + ScreenUtils.bottomSafeHeight,
-                                ),
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    top: Divider.createBorderSide(context),
-                                  ),
-                                  boxShadow: <BoxShadow>[
-                                    BoxShadow(
-                                      color: context.theme.backgroundColor,
-                                      blurRadius:
-                                          _kCurrentUserRankTileHeight / 2,
-                                      blurStyle: BlurStyle.inner,
-                                    ),
-                                  ],
-                                ),
-                                child: _RankTile(
-                                  key: ValueKey<String>(
-                                    'rank_tile_${points.userId}',
-                                  ),
-                                  rank: points.rank,
-                                  nickname: fullName.strictValue ??
-                                      points.nickname.strictValue ??
-                                      points.username.strictValue,
-                                  level: points.level,
-                                  totalPoints: points.coinCount,
-                                ),
-                              )
-                            : empty!;
-                      })
-                    : const SizedBox.shrink();
-              },
-              child: nil,
+                  return showUserRank
+                      ? Container(
+                          width: ScreenUtils.width,
+                          height: paddingBottom,
+                          padding: EdgeInsets.fromLTRB(
+                            kStyleUint4,
+                            kStyleUint4,
+                            kStyleUint4,
+                            kStyleUint4 + ScreenUtils.bottomSafeHeight,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              top: Divider.createBorderSide(context),
+                            ),
+                            boxShadow: <BoxShadow>[
+                              BoxShadow(
+                                color: context.theme.backgroundColor,
+                                blurRadius: _kCurrentUserRankTileHeight / 2,
+                                blurStyle: BlurStyle.inner,
+                              ),
+                            ],
+                          ),
+                          child: _RankTile(
+                            key: Key(
+                              'rank_tile_${currentUserPoints.userId}',
+                            ),
+                            rank: currentUserPoints.rank,
+                            nickname: fullName.strictValue ??
+                                currentUserPoints.nickname.strictValue ??
+                                currentUserPoints.username.strictValue,
+                            level: currentUserPoints.level,
+                            totalPoints: currentUserPoints.coinCount,
+                          ),
+                        )
+                      : empty!;
+                },
+                child: const SizedBox.shrink(),
+              ),
             ),
-          ),
         ],
       ),
     );
