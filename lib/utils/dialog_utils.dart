@@ -96,7 +96,7 @@ class DialogUtils {
   // ignore: long-parameter-list
   static Future<T?> confirm<T>({
     String? title,
-    required Widget content,
+    required Widget Function(BuildContext context) builder,
     String? confirmText,
     String? cancelText,
     required Future<T?> Function() confirmCallback,
@@ -110,7 +110,7 @@ class DialogUtils {
       animationType: SmartAnimationType.centerFade_otherSlide,
       builder: (BuildContext context) => BaseConfirm(
         title: title,
-        content: content,
+        builder: builder,
         confirmText: confirmText,
         cancelText: cancelText,
         confirmHandle: () async {

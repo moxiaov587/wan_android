@@ -9,7 +9,7 @@ class BaseConfirm extends StatelessWidget {
   const BaseConfirm({
     super.key,
     required this.title,
-    required this.content,
+    required this.builder,
     required this.confirmText,
     required this.cancelText,
     required this.confirmHandle,
@@ -18,7 +18,7 @@ class BaseConfirm extends StatelessWidget {
   });
 
   final String? title;
-  final Widget content;
+  final Widget Function(BuildContext context) builder;
   final String? confirmText;
   final String? cancelText;
   final Function() confirmHandle;
@@ -59,10 +59,10 @@ class BaseConfirm extends StatelessWidget {
                 maxHeight: ScreenUtils.height / 2,
               ),
               child: SingleChildScrollView(
-                padding: AppTheme.bodyPadding,
+                padding: AppTheme.confirmDialogContextPadding,
                 child: DefaultTextStyle(
                   style: context.theme.textTheme.titleSmall!,
-                  child: content,
+                  child: builder.call(context),
                 ),
               ),
             ),
@@ -76,14 +76,14 @@ class BaseConfirm extends StatelessWidget {
                 Ink(
                   width: bottomActionButtonWidth,
                   height: _kDialogBottomActionHeight,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     borderRadius: BorderRadius.only(
                       bottomLeft: AppTheme.radius,
                     ),
                   ),
                   child: InkWell(
                     onTap: cancelHandle,
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                       bottomLeft: AppTheme.radius,
                     ),
                     child: Align(
@@ -110,14 +110,14 @@ class BaseConfirm extends StatelessWidget {
                 Ink(
                   width: bottomActionButtonWidth,
                   height: _kDialogBottomActionHeight,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     borderRadius: BorderRadius.only(
                       bottomRight: AppTheme.radius,
                     ),
                   ),
                   child: InkWell(
                     onTap: confirmHandle,
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                       bottomRight: AppTheme.radius,
                     ),
                     child: Align(
@@ -126,7 +126,8 @@ class BaseConfirm extends StatelessWidget {
                             (isDanger
                                 ? S.of(context).delete
                                 : S.of(context).ok),
-                        style: context.theme.textTheme.titleMedium!.mediumWeight
+                        style: context
+                            .theme.textTheme.titleMedium!.semiBoldWeight
                             .copyWith(
                           color: isDanger
                               ? context.theme.errorColor
