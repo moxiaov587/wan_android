@@ -126,8 +126,7 @@ class BaseConfirm extends StatelessWidget {
                             (isDanger
                                 ? S.of(context).delete
                                 : S.of(context).ok),
-                        style: context
-                            .theme.textTheme.titleMedium!.semiBoldWeight
+                        style: context.theme.textTheme.titleMedium!.semiBold
                             .copyWith(
                           color: isDanger
                               ? context.theme.errorColor

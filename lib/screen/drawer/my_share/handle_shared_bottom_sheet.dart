@@ -82,7 +82,7 @@ class _HandleSharedBottomSheetState
                     TextButton(
                       style: ButtonStyle(
                         textStyle: MaterialStateProperty.all(
-                          context.theme.textTheme.titleMedium!.semiBoldWeight,
+                          context.theme.textTheme.titleMedium!.semiBold,
                         ),
                       ),
                       onPressed: () {

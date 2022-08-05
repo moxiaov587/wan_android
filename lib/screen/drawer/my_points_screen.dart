@@ -30,8 +30,8 @@ class MyPointsScreen extends StatelessWidget {
                 ),
                 trailing: RichText(
                   text: TextSpan(
-                    style: context.theme.textTheme.titleMedium!.semiBoldWeight
-                        .copyWith(
+                    style:
+                        context.theme.textTheme.titleMedium!.semiBold.copyWith(
                       color: isIncrease
                           ? context.theme.colorScheme.secondary
                           : context.theme.errorColor,

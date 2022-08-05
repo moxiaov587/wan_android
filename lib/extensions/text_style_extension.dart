@@ -1,19 +1,19 @@
 part of 'extensions.dart';
 
 extension TextStyleExtension on TextStyle {
-  TextStyle get lightWeight => copyWith(
-        fontWeight: AppTextTheme.light,
+  TextStyle get thin => copyWith(
+        fontWeight: AppTextTheme.thin,
       );
 
-  TextStyle get regularWeight => copyWith(
+  TextStyle get regular => copyWith(
         fontWeight: AppTextTheme.regular,
       );
 
-  TextStyle get mediumWeight => copyWith(
+  TextStyle get medium => copyWith(
         fontWeight: AppTextTheme.medium,
       );
 
-  TextStyle get semiBoldWeight => copyWith(
+  TextStyle get semiBold => copyWith(
         fontWeight: AppTextTheme.semiBold,
       );
 }

@@ -160,7 +160,7 @@ class _HandleCollectedBottomSheetState
                           TextButton(
                             style: ButtonStyle(
                               textStyle: MaterialStateProperty.all(context
-                                  .theme.textTheme.titleMedium!.semiBoldWeight),
+                                  .theme.textTheme.titleMedium!.semiBold),
                             ),
                             onPressed: () {
                               onSubmitted(
