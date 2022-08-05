@@ -121,7 +121,7 @@ class _CollectedWebsiteTile extends ConsumerWidget {
               child: Padding(
                 padding: AppTheme.bodyPadding,
                 child: Text(
-                  HTMLParseUtils.parseArticleTitle(title: website.name) ??
+                  HTMLParseUtils.unescapeHTML(website.name) ??
                       S.of(context).unknown,
                   style: context.theme.textTheme.titleSmall,
                 ),

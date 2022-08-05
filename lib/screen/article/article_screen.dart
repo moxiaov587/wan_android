@@ -112,8 +112,9 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
               ),
             );
 
-            return Text(HTMLParseUtils.parseArticleTitle(title: title) ??
-                S.of(context).unknown);
+            return Text(
+              HTMLParseUtils.unescapeHTML(title) ?? S.of(context).unknown,
+            );
           },
         ),
         actions: <Widget>[

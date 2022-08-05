@@ -26,9 +26,7 @@ class ArticleTile extends StatelessWidget {
 
     final bool hasTags = article.tags != null && article.tags!.isNotEmpty;
 
-    final EdgeInsetsGeometry contentPadding = AppTheme.bodyPadding;
-
-    final double titleVerticalGap = contentPadding.vertical / 2;
+    final double titleVerticalGap = AppTheme.bodyPadding.vertical / 2;
 
     final TextStyle titleStyle = context.theme.textTheme.titleSmall!;
 
@@ -41,7 +39,7 @@ class ArticleTile extends StatelessWidget {
             );
           },
           child: Padding(
-            padding: contentPadding,
+            padding: AppTheme.bodyPadding,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -141,9 +139,7 @@ class ArticleTile extends StatelessWidget {
                             ),
                           ),
                         TextSpan(
-                          text: HTMLParseUtils.parseArticleTitle(
-                                title: article.title,
-                              ) ??
+                          text: HTMLParseUtils.unescapeHTML(article.title) ??
                               S.of(context).unknown,
                         ),
                       ],
@@ -165,7 +161,7 @@ class ArticleTile extends StatelessWidget {
                           .map(
                             (TagModel tag) => _TagTile(
                               key: UniqueKey(),
-                              text: tag.name,
+                              text: HTMLParseUtils.unescapeHTML(tag.name),
                             ),
                           )
                           .toList(),

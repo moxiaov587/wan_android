@@ -35,6 +35,7 @@ dependencies:
   hive: ^2.0.4
   hive_flutter: ^1.1.0
   html: ^0.15.0
+  html_unescape: ^2.0.0
   intl: ^0.17.0
   json_annotation: ^4.5.0
   logging: ^1.0.2

@@ -73,10 +73,6 @@ class _CollectedArticleTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final EdgeInsetsGeometry contentPadding = AppTheme.bodyPadding;
-
-    final double titleVerticalGap = contentPadding.vertical / 2;
-
     return Slidable(
       key: key,
       groupTag: CollectionType.article.name,
@@ -156,12 +152,10 @@ class _CollectedArticleTile extends ConsumerWidget {
                       ),
                     ),
                     Gap(
-                      value: titleVerticalGap,
+                      value: AppTheme.bodyPadding.vertical / 2,
                     ),
                     Text(
-                      HTMLParseUtils.parseArticleTitle(
-                            title: article.title,
-                          ) ??
+                      HTMLParseUtils.unescapeHTML(article.title) ??
                           S.of(context).unknown,
                       style: context.theme.textTheme.titleSmall,
                     ),

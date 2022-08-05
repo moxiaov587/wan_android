@@ -19,8 +19,7 @@ class ArticleTileSearchTitle extends StatelessWidget {
       .map((String keyword) => keyword.toLowerCase())
       .toList();
 
-  List<String>? get words =>
-      HTMLParseUtils.parseSearchResultArticleTile(title: title);
+  List<String>? get words => HTMLParseUtils.parseSearchResultArticleTile(title);
 
   @override
   Widget build(BuildContext context) {
