@@ -21,7 +21,8 @@ class SettingsScreen extends StatelessWidget {
         onTap: () {
           DialogUtils.confirm<void>(
             isDanger: true,
-            content: Text(S.of(context).clearCacheWarning),
+            builder: (BuildContext context) =>
+                Text(S.of(context).clearCacheWarning),
             confirmCallback: () {
               HiveBoxes.clearCache();
 
