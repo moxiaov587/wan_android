@@ -53,8 +53,10 @@ class _TheyShareScreenState extends State<TheyShareScreen> {
                   padding: const EdgeInsets.all(kStyleUint4),
                   child: Consumer(
                     builder: (_, WidgetRef ref, __) {
-                      final UserPointsModel? userPoints =
-                          ref.watch(provider.notifier).userPoints;
+                      final UserPointsModel? userPoints = ref
+                          .watch(provider)
+                          .whenOrNull<UserPointsModel?>((_, __, ___) =>
+                              ref.read(provider.notifier).userPoints);
 
                       return ConstrainedBox(
                         constraints: const BoxConstraints.tightFor(
