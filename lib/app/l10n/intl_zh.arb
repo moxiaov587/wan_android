@@ -113,5 +113,10 @@
 
     "searchForSomething": "搜点什么吧",
     "top": "置顶",
-    "fresh": "新"
+    "fresh": "新",
+
+    "lightMode": "浅色模式",
+    "darkMode": "深色模式",
+    "currentThemeModeTips": "当前系统外观是",
+    "resetThemeModeTips": "是否切换主题模式为跟随系统？"
 }

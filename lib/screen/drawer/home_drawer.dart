@@ -203,6 +203,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
                                 .read(themeProvider.notifier)
                                 .switchThemes(index);
                           },
+                          tooltip: isDark
+                              ? S.of(context).lightMode
+                              : S.of(context).darkMode,
                           icon: Icon(
                             isDark
                                 ? IconFontIcons.sunFill
@@ -217,6 +220,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                           isSettings: true,
                         );
                       },
+                      tooltip: S.of(context).settings,
                       icon: const Icon(IconFontIcons.settingsLine),
                     ),
                   ],

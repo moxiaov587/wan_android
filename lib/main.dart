@@ -1,4 +1,4 @@
-import 'dart:async' show StreamSubscription;
+import 'dart:async' show StreamSubscription, FutureOr;
 
 import 'package:beamer/beamer.dart'
     show Beamer, BeamerParser, BeamerBackButtonDispatcher;
@@ -16,8 +16,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'app/http/http.dart';
 import 'app/l10n/generated/l10n.dart';
-import 'app/theme/app_theme.dart' show AppTheme;
+import 'app/theme/app_theme.dart' show AppTextTheme, AppTheme;
 import 'database/hive_boxes.dart';
+import 'extensions/extensions.dart' show BuildContextExtension;
 import 'navigator/app_router_delegate.dart';
 import 'screen/authorized/provider/authorized_provider.dart';
 import 'screen/provider/connectivity_provider.dart';
@@ -88,8 +89,45 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
 
   @override
   void didChangePlatformBrightness() {
+    requestResetThemeMode();
+  }
+
+  FutureOr<void> requestResetThemeMode() {
     if (mounted) {
-      setState(() {});
+      final Brightness? brightness = ref.read(themeProvider).brightness;
+
+      if (brightness != null &&
+          brightness != WidgetsBinding.instance.window.platformBrightness) {
+        return Future<void>.delayed(const Duration(seconds: 1), () async {
+          final bool? data = await DialogUtils.confirm<bool?>(
+            builder: (BuildContext context) => RichText(
+              textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                style: context.theme.textTheme.titleSmall,
+                text: S.current.currentThemeModeTips,
+                children: <InlineSpan>[
+                  TextSpan(
+                    text:
+                        '${WidgetsBinding.instance.window.platformBrightness == Brightness.dark ? S.of(context).darkMode : S.of(context).lightMode}\n',
+                    style: const TextStyle(
+                      fontWeight: AppTextTheme.semiBold,
+                    ),
+                  ),
+                  TextSpan(
+                    text: S.current.resetThemeModeTips,
+                  ),
+                ],
+              ),
+            ),
+            confirmCallback: () => Future<bool>.value(true),
+          );
+
+          if (data ?? false) {
+            ref.read(themeProvider.notifier).switchThemes(0);
+          }
+        });
+      }
     }
   }
 
@@ -97,6 +135,8 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
     final String? errorCode =
         await ref.read(authorizedProvider.notifier).initData();
     FlutterNativeSplash.remove();
+
+    await requestResetThemeMode();
 
     if (errorCode != null) {
       Future<void>.delayed(const Duration(seconds: 3), () {
@@ -107,36 +147,34 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer(builder: (_, WidgetRef ref, __) {
-      final ThemeMode themeMode = ref.watch(themeProvider);
-      final Locale? locale = ref.watch(localeProvider);
+    final ThemeMode themeMode = ref.watch(themeProvider);
+    final Locale? locale = ref.watch(localeProvider);
 
-      return MaterialApp.router(
-        onGenerateTitle: (BuildContext context) => S.of(context).appName,
-        routeInformationParser: BeamerParser(),
-        routerDelegate: AppRouterDelegate.instance.delegate,
-        backButtonDispatcher: BeamerBackButtonDispatcher(
-          delegate: AppRouterDelegate.instance.delegate,
+    return MaterialApp.router(
+      onGenerateTitle: (BuildContext context) => S.of(context).appName,
+      routeInformationParser: BeamerParser(),
+      routerDelegate: AppRouterDelegate.instance.delegate,
+      backButtonDispatcher: BeamerBackButtonDispatcher(
+        delegate: AppRouterDelegate.instance.delegate,
+      ),
+      builder: FlutterSmartDialog.init(
+        builder: (_, Widget? child) => ScrollConfiguration(
+          behavior: const AppScrollBehavior(),
+          child: child!,
         ),
-        builder: FlutterSmartDialog.init(
-          builder: (_, Widget? child) => ScrollConfiguration(
-            behavior: const AppScrollBehavior(),
-            child: child!,
-          ),
-        ),
-        themeMode: themeMode,
-        theme: AppTheme.light,
-        darkTheme: AppTheme.dark,
-        locale: locale,
-        localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
-          S.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: S.delegate.supportedLocales,
-      );
-    });
+      ),
+      themeMode: themeMode,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      locale: locale,
+      localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+        S.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: S.delegate.supportedLocales,
+    );
   }
 }
 

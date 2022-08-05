@@ -113,5 +113,10 @@
 
     "searchForSomething": "Search for something",
     "top": "Top",
-    "fresh": "New"
+    "fresh": "New",
+
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode",
+    "currentThemeModeTips": "The current system color scheme is ",
+    "resetThemeModeTips": "Do you want to switch the theme mode to follow the system?"
 }
