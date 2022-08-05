@@ -1,7 +1,7 @@
 part of 'app_theme.dart';
 
 class AppTextTheme {
-  AppTextTheme._();
+  const AppTextTheme._();
 
   static const double display1 = 56;
   static const double display2 = 48;
@@ -19,7 +19,7 @@ class AppTextTheme {
   static const double label2 = 11;
   static const double label3 = 10;
 
-  static const FontWeight light = FontWeight.w300;
+  static const FontWeight thin = FontWeight.w300;
   static const FontWeight regular = FontWeight.w400;
   static const FontWeight medium = FontWeight.w500;
   static const FontWeight semiBold = FontWeight.w600;
@@ -87,81 +87,81 @@ class AppTextTheme {
     ),
   );
 
-  static TextTheme get lightTheme => TextTheme(
-        displayLarge: _base.displayLarge!.copyWith(
-          color: AppColors.text1,
-        ),
-        displayMedium: _base.displayMedium!.copyWith(
-          color: AppColors.text1,
-        ),
-        displaySmall: _base.displaySmall!.copyWith(
-          color: AppColors.text1,
-        ),
-        titleLarge: _base.titleLarge!.copyWith(
-          color: AppColors.text2,
-        ),
-        titleMedium: _base.titleMedium!.copyWith(
-          color: AppColors.text2,
-        ),
-        titleSmall: _base.titleSmall!.copyWith(
-          color: AppColors.text2,
-        ),
-        bodyLarge: _base.bodyLarge!.copyWith(
-          color: AppColors.text3,
-        ),
-        bodyMedium: _base.bodyMedium!.copyWith(
-          color: AppColors.text3,
-        ),
-        bodySmall: _base.bodySmall!.copyWith(
-          color: AppColors.text3,
-        ),
-        labelLarge: _base.labelLarge!.copyWith(
-          color: AppColors.text4,
-        ),
-        labelMedium: _base.labelMedium!.copyWith(
-          color: AppColors.text4,
-        ),
-        labelSmall: _base.labelSmall!.copyWith(
-          color: AppColors.text4,
-        ),
-      );
+  static final TextTheme light = TextTheme(
+    displayLarge: _base.displayLarge!.copyWith(
+      color: AppColors.text1,
+    ),
+    displayMedium: _base.displayMedium!.copyWith(
+      color: AppColors.text1,
+    ),
+    displaySmall: _base.displaySmall!.copyWith(
+      color: AppColors.text1,
+    ),
+    titleLarge: _base.titleLarge!.copyWith(
+      color: AppColors.text2,
+    ),
+    titleMedium: _base.titleMedium!.copyWith(
+      color: AppColors.text2,
+    ),
+    titleSmall: _base.titleSmall!.copyWith(
+      color: AppColors.text2,
+    ),
+    bodyLarge: _base.bodyLarge!.copyWith(
+      color: AppColors.text3,
+    ),
+    bodyMedium: _base.bodyMedium!.copyWith(
+      color: AppColors.text3,
+    ),
+    bodySmall: _base.bodySmall!.copyWith(
+      color: AppColors.text3,
+    ),
+    labelLarge: _base.labelLarge!.copyWith(
+      color: AppColors.text4,
+    ),
+    labelMedium: _base.labelMedium!.copyWith(
+      color: AppColors.text4,
+    ),
+    labelSmall: _base.labelSmall!.copyWith(
+      color: AppColors.text4,
+    ),
+  );
 
-  static TextTheme get darkTheme => TextTheme(
-        displayLarge: _base.displayLarge!.copyWith(
-          color: AppColors.text1Dark,
-        ),
-        displayMedium: _base.displayMedium!.copyWith(
-          color: AppColors.text1Dark,
-        ),
-        displaySmall: _base.displaySmall!.copyWith(
-          color: AppColors.text1Dark,
-        ),
-        titleLarge: _base.titleLarge!.copyWith(
-          color: AppColors.text2Dark,
-        ),
-        titleMedium: _base.titleMedium!.copyWith(
-          color: AppColors.text2Dark,
-        ),
-        titleSmall: _base.titleSmall!.copyWith(
-          color: AppColors.text2Dark,
-        ),
-        bodyLarge: _base.bodyLarge!.copyWith(
-          color: AppColors.text3Dark,
-        ),
-        bodyMedium: _base.bodyMedium!.copyWith(
-          color: AppColors.text3Dark,
-        ),
-        bodySmall: _base.bodySmall!.copyWith(
-          color: AppColors.text3Dark,
-        ),
-        labelLarge: _base.labelLarge!.copyWith(
-          color: AppColors.text4Dark,
-        ),
-        labelMedium: _base.labelMedium!.copyWith(
-          color: AppColors.text4Dark,
-        ),
-        labelSmall: _base.labelSmall!.copyWith(
-          color: AppColors.text4Dark,
-        ),
-      );
+  static final TextTheme dark = TextTheme(
+    displayLarge: _base.displayLarge!.copyWith(
+      color: AppColors.text1Dark,
+    ),
+    displayMedium: _base.displayMedium!.copyWith(
+      color: AppColors.text1Dark,
+    ),
+    displaySmall: _base.displaySmall!.copyWith(
+      color: AppColors.text1Dark,
+    ),
+    titleLarge: _base.titleLarge!.copyWith(
+      color: AppColors.text2Dark,
+    ),
+    titleMedium: _base.titleMedium!.copyWith(
+      color: AppColors.text2Dark,
+    ),
+    titleSmall: _base.titleSmall!.copyWith(
+      color: AppColors.text2Dark,
+    ),
+    bodyLarge: _base.bodyLarge!.copyWith(
+      color: AppColors.text3Dark,
+    ),
+    bodyMedium: _base.bodyMedium!.copyWith(
+      color: AppColors.text3Dark,
+    ),
+    bodySmall: _base.bodySmall!.copyWith(
+      color: AppColors.text3Dark,
+    ),
+    labelLarge: _base.labelLarge!.copyWith(
+      color: AppColors.text4Dark,
+    ),
+    labelMedium: _base.labelMedium!.copyWith(
+      color: AppColors.text4Dark,
+    ),
+    labelSmall: _base.labelSmall!.copyWith(
+      color: AppColors.text4Dark,
+    ),
+  );
 }
