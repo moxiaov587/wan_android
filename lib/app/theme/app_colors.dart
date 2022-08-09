@@ -1,7 +1,7 @@
 part of 'app_theme.dart';
 
 class AppColors {
-  AppColors._();
+  const AppColors._();
 
   static const Color white = Color(0xffffffff);
   static final Color whiteDark = white.withOpacity(0.9);

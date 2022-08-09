@@ -7,7 +7,6 @@ import '../../app/provider/view_state.dart';
 import '../../app/provider/widget/provider_widget.dart';
 import '../../app/theme/app_theme.dart';
 import '../../contacts/icon_font_icons.dart';
-import '../../contacts/unicode.dart';
 import '../../database/hive_boxes.dart';
 import '../../extensions/extensions.dart';
 import '../../model/models.dart';
@@ -19,6 +18,7 @@ import '../../utils/dialog_utils.dart';
 import '../../utils/screen_utils.dart';
 import '../../widget/animated_counter.dart';
 import '../../widget/gap.dart';
+import '../../widget/level_tag.dart';
 import '../../widget/sliver_child_with_separator_builder_delegate.dart';
 import 'provider/drawer_provider.dart';
 
@@ -142,7 +142,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                                   ),
                                 );
 
-                                return _LevelTag(
+                                return LevelTag(
                                   level: level,
                                 );
                               },
@@ -247,44 +247,4 @@ class ListTileConfig {
   final IconData iconData;
   final String title;
   final VoidCallback onTap;
-}
-
-class _LevelTag extends StatelessWidget {
-  const _LevelTag({
-    int? level,
-  }) : _level = level ?? 1;
-
-  final int _level;
-
-  @override
-  Widget build(BuildContext context) {
-    late Color color;
-
-    if (_level >= 750) {
-      color = context.theme.errorColor;
-    } else if (_level < 750 && _level >= 500) {
-      color = context.theme.colorScheme.tertiary;
-    } else if (_level < 500 && _level >= 250) {
-      color = context.theme.primaryColor;
-    } else {
-      color = context.theme.colorScheme.secondary;
-    }
-
-    return Container(
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: AppTheme.adornmentBorderRadius,
-      ),
-      padding: const EdgeInsets.symmetric(
-        horizontal: kStyleUint,
-        vertical: kStyleUint / 2,
-      ),
-      child: Text(
-        'Lv${Unicode.halfWidthSpace}$_level',
-        style: context.theme.textTheme.labelMedium!.copyWith(
-          color: context.theme.tooltipTheme.textStyle!.color,
-        ),
-      ),
-    );
-  }
 }

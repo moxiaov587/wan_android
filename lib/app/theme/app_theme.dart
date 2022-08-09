@@ -5,6 +5,7 @@ import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 
 part 'app_colors.dart';
 part 'app_text_theme.dart';
+part 'gradient_colors.dart';
 
 const double _kRadiusValue = 14.0;
 const double _kAdornmentRadiusValue = 4.0;
@@ -144,6 +145,9 @@ class AppTheme {
   );
 
   static final ThemeData light = ThemeData.light().copyWith(
+    extensions: <ThemeExtension<dynamic>>[
+      GradientColors.light(),
+    ],
     useMaterial3: true,
     cupertinoOverrideTheme: const CupertinoThemeData(
       brightness: Brightness.light,
@@ -287,6 +291,9 @@ class AppTheme {
   );
 
   static final ThemeData dark = ThemeData.dark().copyWith(
+    extensions: <ThemeExtension<dynamic>>[
+      GradientColors.dark(),
+    ],
     useMaterial3: true,
     cupertinoOverrideTheme: const CupertinoThemeData(
       brightness: Brightness.dark,

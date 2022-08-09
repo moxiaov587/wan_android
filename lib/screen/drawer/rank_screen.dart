@@ -144,7 +144,9 @@ class _RankTile extends StatelessWidget {
               Gap(
                 direction: GapDirection.horizontal,
               ),
-              _LevelTag(level: level),
+              LevelTag(
+                level: level,
+              ),
             ],
           ),
         ),

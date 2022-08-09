@@ -16,7 +16,6 @@ import '../../app/l10n/generated/l10n.dart';
 import '../../app/theme/app_theme.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
-import '../../contacts/unicode.dart';
 import '../../database/model/models.dart' show SearchHistory;
 import '../../extensions/extensions.dart';
 import '../../model/models.dart';
@@ -29,6 +28,7 @@ import '../../widget/article.dart';
 import '../../widget/capsule_ink.dart';
 import '../../widget/custom_search_delegate.dart';
 import '../../widget/gap.dart';
+import '../../widget/level_tag.dart';
 import '../authorized/provider/authorized_provider.dart';
 import '../drawer/home_drawer.dart';
 import 'provider/home_provider.dart';
@@ -436,22 +436,8 @@ class _HomeAppBarUserInfo extends StatelessWidget {
       userInfo.user.nickname.strictValue ??
       userInfo.user.publicName.strictValue;
 
-  int get level => userInfo.userPoints.level;
-
   @override
   Widget build(BuildContext context) {
-    late Color color;
-
-    if (level >= 750) {
-      color = context.theme.errorColor;
-    } else if (level < 750 && level >= 500) {
-      color = context.theme.colorScheme.tertiary;
-    } else if (level < 500 && level >= 250) {
-      color = context.theme.primaryColor;
-    } else {
-      color = context.theme.colorScheme.secondary;
-    }
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
@@ -477,11 +463,10 @@ class _HomeAppBarUserInfo extends StatelessWidget {
                 name ?? '',
                 style: context.theme.textTheme.titleSmall,
               ),
-              Text(
-                'Lv${Unicode.halfWidthSpace}$level',
-                style: context.theme.textTheme.bodySmall!.copyWith(
-                  color: color,
-                ),
+              LevelTag(
+                level: userInfo.userPoints.level,
+                scaleFactor: 0.9,
+                isOutlined: true,
               ),
             ],
           ),
