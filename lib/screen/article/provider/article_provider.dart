@@ -204,11 +204,14 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
         );
   }
 
-  String formatArticleLink(String link) {
-    const String httpUrl = 'http://$kDomain';
+  String _adjustArticleURL2Https(String link) {
+    final RegExp domainReg = RegExp('http://(www.)?$kDomain');
 
-    if (link.contains(httpUrl)) {
-      return link.replaceFirstMapped(httpUrl, (_) => 'https://$kDomain');
+    if (domainReg.hasMatch(link)) {
+      return link.replaceFirstMapped(
+        domainReg,
+        (_) => 'https://$kDomain',
+      );
     } else if (link.startsWith('/')) {
       return '$kBaseUrl$link';
     }
@@ -223,7 +226,7 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
     if (article != null) {
       return WebViewModel(
         id: article.id,
-        link: formatArticleLink(article.link),
+        link: _adjustArticleURL2Https(article.link),
         title: article.title,
         collect: article.collect,
       );
