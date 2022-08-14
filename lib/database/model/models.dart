@@ -1,8 +1,9 @@
-import 'package:hive/hive.dart';
+import 'package:flutter/material.dart' show Locale, ThemeMode;
+import 'package:isar/isar.dart';
 
-import '../hive_boxes.dart';
+import '../converter/converters.dart';
 
-part 'authorized_cache.dart';
+part 'account_cache.dart';
 part 'response_cache.dart';
 part 'search_history.dart';
 part 'user_settings.dart';

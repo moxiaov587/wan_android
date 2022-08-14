@@ -1,11 +1,11 @@
 part of 'models.dart';
 
-@HiveType(typeId: HiveAdapterTypeIds.searchHistory)
-class SearchHistory extends HiveObject {
-  SearchHistory({
-    required this.keyword,
-  });
+@Collection(accessor: 'searchHistoryCaches')
+class SearchHistory {
+  @Index(unique: true)
+  late Id id = Isar.autoIncrement;
 
-  @HiveField(0)
-  String keyword;
+  late String keyword;
+
+  late DateTime updateTime;
 }

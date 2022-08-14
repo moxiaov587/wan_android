@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart' show Brightness, ThemeMode;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../database/hive_boxes.dart';
-import '../../database/model/models.dart';
+import '../../database/database_manager.dart';
 
 extension ThemeModeExtension on ThemeMode {
   Brightness? get brightness {
@@ -17,42 +16,29 @@ extension ThemeModeExtension on ThemeMode {
   }
 }
 
-final StateNotifierProvider<ThemeNotifier, ThemeMode> themeProvider =
-    StateNotifierProvider<ThemeNotifier, ThemeMode>((_) {
-  final int? themeMode = HiveBoxes.uniqueUserSettings?.themeMode;
+final StateNotifierProvider<ThemeModeNotifier, ThemeMode> themeProvider =
+    StateNotifierProvider<ThemeModeNotifier, ThemeMode>((_) {
+  final ThemeMode? themeMode = DatabaseManager.uniqueUserSettings?.themeMode;
 
-  return ThemeNotifier(ThemeNotifier.themeModes[themeMode] ?? ThemeMode.system);
+  return ThemeModeNotifier(themeMode ?? ThemeMode.system);
 });
 
-class ThemeNotifier extends StateNotifier<ThemeMode> {
-  ThemeNotifier(super.state);
+class ThemeModeNotifier extends StateNotifier<ThemeMode> {
+  ThemeModeNotifier(super.state);
 
-  static const Map<int, ThemeMode> themeModes = <int, ThemeMode>{
-    0: ThemeMode.system,
-    1: ThemeMode.light,
-    2: ThemeMode.dark,
-  };
-
-  void switchThemes(int index) {
-    if (state == themeModes[index]) {
+  void switchThemeMode(ThemeMode themeMode) {
+    if (state == themeMode) {
       return;
     }
 
-    state = themeModes[index]!;
+    state = themeMode;
 
-    if (HiveBoxes.uniqueUserSettings == null) {
-      HiveBoxes.userSettingsBox.add(
-        UserSettings(
-          themeMode: index,
-        ),
-      );
-    } else {
-      HiveBoxes.userSettingsBox.putAt(
-        0,
-        HiveBoxes.uniqueUserSettings!.copyWith(
-          themeMode: index,
-        ),
-      );
-    }
+    final UserSettings userSettings = DatabaseManager.writeUniqueUserSettings(
+      themeMode: themeMode,
+    );
+
+    DatabaseManager.isar.writeTxnSync<int>(
+      () => DatabaseManager.isar.userSettingsCache.putSync(userSettings),
+    );
   }
 }

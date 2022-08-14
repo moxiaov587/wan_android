@@ -68,21 +68,3 @@ class SearchPopularKeywordNotifier
     return WanAndroidAPI.fetchSearchPopularKeywords();
   }
 }
-
-final AutoDisposeStateNotifierProvider<SearchHistoryNotifier,
-        ListViewState<SearchHistory>> searchHistoryProvider =
-    StateNotifierProvider.autoDispose<SearchHistoryNotifier,
-        ListViewState<SearchHistory>>((_) {
-  return SearchHistoryNotifier(
-    const ListViewState<SearchHistory>.loading(),
-  );
-});
-
-class SearchHistoryNotifier extends BaseListViewNotifier<SearchHistory> {
-  SearchHistoryNotifier(super.state);
-
-  @override
-  Future<List<SearchHistory>> loadData() async {
-    return HiveBoxes.searchHistoryBox.values.toList();
-  }
-}

@@ -1,17 +1,13 @@
 part of 'models.dart';
 
-@HiveType(typeId: HiveAdapterTypeIds.responseCache)
-class ResponseCache extends HiveObject {
-  ResponseCache({
-    required this.uri,
-    required this.timeStamp,
-    required this.data,
-  });
+@Collection(accessor: 'responseCaches')
+class ResponseCache {
+  @Index(unique: true)
+  late final Id id = Isar.autoIncrement;
 
-  @HiveField(0)
-  String uri;
-  @HiveField(1)
-  int timeStamp;
-  @HiveField(2)
-  dynamic data;
+  late String uri;
+
+  late DateTime expires;
+
+  late String data;
 }

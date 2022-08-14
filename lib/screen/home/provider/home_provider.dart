@@ -4,8 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/http/wan_android_api.dart';
 import '../../../app/provider/provider.dart';
 import '../../../app/provider/view_state.dart';
-import '../../../database/hive_boxes.dart';
-import '../../../database/model/models.dart' show SearchHistory;
 import '../../../model/models.dart';
 
 part 'project_provider.dart';

@@ -99,6 +99,8 @@ class Http {
     }
   }
 
+  static Future<bool> get isLogin async => (await cookieJar.loadForRequest(Uri.parse(kBaseUrl))).length > 1;
+
   // ignore: long-parameter-list
   static Future<Response<T>> get<T>(
     String url, {

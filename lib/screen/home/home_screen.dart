@@ -1,5 +1,4 @@
 import 'package:beamer/beamer.dart';
-import 'package:collection/collection.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:extended_sliver/extended_sliver.dart';
 import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
@@ -10,13 +9,12 @@ import 'package:palette_generator/palette_generator.dart';
 
 import '../../../app/provider/view_state.dart';
 import '../../../app/provider/widget/provider_widget.dart';
-import '../../../database/hive_boxes.dart';
 import '../../../widget/view_state_widget.dart';
 import '../../app/l10n/generated/l10n.dart';
 import '../../app/theme/app_theme.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
-import '../../database/model/models.dart' show SearchHistory;
+import '../../database/database_manager.dart';
 import '../../extensions/extensions.dart';
 import '../../model/models.dart';
 import '../../navigator/app_router_delegate.dart';

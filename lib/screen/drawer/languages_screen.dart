@@ -3,14 +3,13 @@ part of 'home_drawer.dart';
 class LanguagesScreen extends StatelessWidget {
   const LanguagesScreen({super.key});
 
-  String translate(BuildContext context, {required String value}) {
-    switch (value) {
-      case 'en':
-        return S.of(context).english;
-      case 'zh_CN':
-        return S.of(context).chinese;
-      default:
-        return S.of(context).auto;
+  String translate(BuildContext context, {required Locale? value}) {
+    if (value == const Locale('en')) {
+      return S.of(context).english;
+    } else if (value == const Locale('zh', 'CN')) {
+      return S.of(context).chinese;
+    } else {
+      return S.of(context).auto;
     }
   }
 
@@ -25,19 +24,10 @@ class LanguagesScreen extends StatelessWidget {
           itemBuilder: (_, int index) {
             return Consumer(
               builder: (_, WidgetRef ref, __) {
-                final String value = LocaleNotifier.localeList[index];
+                final Locale? value = LocaleNotifier.locales[index];
 
                 final bool selected = ref.watch(
-                  localeProvider.select((Locale? locale) {
-                    final String languages =
-                        locale != null ? locale.languageCode : '';
-
-                    if (languages.isEmpty) {
-                      return value == languages;
-                    }
-
-                    return value.contains(languages);
-                  }),
+                  localeProvider.select((Locale? locale) => locale == value),
                 );
 
                 return ListTile(
@@ -58,7 +48,7 @@ class LanguagesScreen extends StatelessWidget {
             );
           },
           separatorBuilder: (_, __) => const Divider(),
-          itemCount: LocaleNotifier.localeList.length,
+          itemCount: LocaleNotifier.locales.length,
         ),
       ),
     );

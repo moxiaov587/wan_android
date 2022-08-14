@@ -1,5 +1,7 @@
 part of 'home_screen.dart';
 
+const int _kMaxNumOfSearchHistory = 8;
+
 class HomeSearchDelegate extends CustomSearchDelegate<void> {
   @override
   List<Widget>? buildActions(BuildContext context) {
@@ -73,28 +75,42 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
     );
   }
 
-  Future<void> addSearchHistory() async {
-    final int length = HiveBoxes.searchHistoryBox.length;
+  void addSearchHistory() {
+    final int length = DatabaseManager.searchHistoryCaches.countSync();
 
-    final dynamic key = HiveBoxes.searchHistoryBox.values
-        .firstWhereOrNull((SearchHistory element) => element.keyword == query)
-        ?.key;
-    if (length == 5) {
-      if (key != null) {
-        await HiveBoxes.searchHistoryBox.delete(key);
-        await HiveBoxes.searchHistoryBox.add(SearchHistory(keyword: query));
-      } else {
-        await HiveBoxes.searchHistoryBox.deleteAt(0);
-        await HiveBoxes.searchHistoryBox.add(SearchHistory(keyword: query));
-      }
-    } else {
-      if (key != null) {
-        await HiveBoxes.searchHistoryBox.delete(key);
-        await HiveBoxes.searchHistoryBox.add(SearchHistory(keyword: query));
-      } else {
-        await HiveBoxes.searchHistoryBox.add(SearchHistory(keyword: query));
-      }
+    final SearchHistory? duplicateSearchHistory = DatabaseManager
+        .searchHistoryCaches
+        .filter()
+        .keywordEqualTo(query)
+        .findFirstSync();
+
+    int? id;
+
+    if (length == _kMaxNumOfSearchHistory) {
+      id = DatabaseManager.searchHistoryCaches
+          .where()
+          .sortByUpdateTime()
+          .findFirstSync()
+          ?.id;
     }
+
+    final SearchHistory searchHistory = SearchHistory()
+      ..keyword = query
+      ..updateTime = DateTime.now();
+
+    if (duplicateSearchHistory != null) {
+      searchHistory.id = duplicateSearchHistory.id;
+    }
+
+    DatabaseManager.isar.writeTxnSync<void>(
+      () {
+        if (id != null) {
+          DatabaseManager.searchHistoryCaches.deleteSync(id);
+        }
+
+        DatabaseManager.searchHistoryCaches.putSync(searchHistory);
+      },
+    );
   }
 
   @override
@@ -103,7 +119,6 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
       onNotification: onSuggestionsScrollNotification,
       child: _Suggestions(
         onInitData: (Reader reader) {
-          reader.call(searchHistoryProvider.notifier).initData();
           reader.call(searchPopularKeywordProvider.notifier).initData();
         },
         onTap: (String keyword) {
@@ -141,74 +156,72 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
 
   @override
   Widget build(BuildContext context) {
-    const Widget searchHistoryEmpty = SliverToBoxAdapter(
-      child: nil,
-    );
-
     final double wrapSpace = AppTheme.bodyPaddingOnlyVertical.vertical / 2;
 
     return CustomScrollView(
       slivers: <Widget>[
-        Consumer(
-          builder: (BuildContext context, WidgetRef ref, Widget? empty) =>
-              ref.watch(searchHistoryProvider).whenOrNull(
-                    (List<SearchHistory> list) => list.isEmpty
-                        ? searchHistoryEmpty
-                        : SliverPadding(
-                            padding: AppTheme.bodyPaddingOnlyHorizontal,
-                            sliver: SliverToBoxAdapter(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Text(
-                                        S.of(context).searchHistory,
-                                        style:
-                                            context.theme.textTheme.titleSmall,
-                                      ),
-                                      IconButton(
-                                        padding: EdgeInsets.zero,
-                                        alignment: Alignment.centerRight,
-                                        splashColor: Colors.transparent,
-                                        onPressed: () async {
-                                          await HiveBoxes.searchHistoryBox
-                                              .clear();
-                                          ref
-                                              .read(
-                                                searchHistoryProvider.notifier,
-                                              )
-                                              .initData();
-                                        },
-                                        icon: const Icon(
-                                          IconFontIcons.deleteLine,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Wrap(
-                                    spacing: wrapSpace,
-                                    runSpacing: wrapSpace,
-                                    children: list.reversed
-                                        .map(
-                                          (SearchHistory e) => CapsuleInk(
-                                            child: Text(e.keyword),
-                                            onTap: () {
-                                              widget.onTap.call(e.keyword);
-                                            },
-                                          ),
-                                        )
-                                        .toList(),
-                                  ),
-                                ],
-                              ),
+        StreamBuilder<List<SearchHistory>>(
+          stream: DatabaseManager.searchHistoryCaches
+              .where()
+              .sortByUpdateTimeDesc()
+              .build()
+              .watch(initialReturn: true),
+          builder: (_, AsyncSnapshot<List<SearchHistory>> snapshot) {
+            if (snapshot.data == null || snapshot.data!.isEmpty) {
+              return const SliverToBoxAdapter(
+                child: nil,
+              );
+            }
+
+            return SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Padding(
+                        padding: AppTheme.bodyPaddingOnlyHorizontal,
+                        child: Text(
+                          S.of(context).searchHistory,
+                          style: context.theme.textTheme.titleSmall,
+                        ),
+                      ),
+                      IconButton(
+                        padding: AppTheme.bodyPaddingOnlyHorizontal,
+                        onPressed: () {
+                          DatabaseManager.isar.writeTxnSync(
+                            () =>
+                                DatabaseManager.searchHistoryCaches.clearSync(),
+                          );
+                        },
+                        icon: const Icon(
+                          IconFontIcons.deleteLine,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: AppTheme.bodyPaddingOnlyHorizontal,
+                    child: Wrap(
+                      spacing: wrapSpace,
+                      runSpacing: wrapSpace,
+                      children: snapshot.data!
+                          .map(
+                            (SearchHistory e) => CapsuleInk(
+                              child: Text(e.keyword),
+                              onTap: () {
+                                widget.onTap.call(e.keyword);
+                              },
                             ),
-                          ),
-                  ) ??
-              empty!,
-          child: searchHistoryEmpty,
+                          )
+                          .toList(),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         ),
         SliverPadding(
           padding: AppTheme.bodyPadding,

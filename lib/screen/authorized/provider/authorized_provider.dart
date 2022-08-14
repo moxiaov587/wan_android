@@ -4,8 +4,7 @@ import '../../../app/http/http.dart';
 import '../../../app/http/wan_android_api.dart';
 import '../../../app/l10n/generated/l10n.dart';
 import '../../../app/provider/provider.dart';
-import '../../../database/hive_boxes.dart';
-import '../../../database/model/models.dart';
+import '../../../database/database_manager.dart';
 import '../../../model/models.dart';
 import '../../../utils/dialog_utils.dart' show DialogUtils;
 
@@ -21,20 +20,13 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?>
 
   Future<String?> initData() async {
     try {
-      final bool isLogin = HiveBoxes.uniqueUserSettings?.isLogin ?? false;
-
-      if (isLogin) {
+      if (await Http.isLogin) {
         state = await WanAndroidAPI.fetchUserInfo();
       }
 
       return null;
     } catch (e, s) {
-      await HiveBoxes.userSettingsBox.putAt(
-        0,
-        (HiveBoxes.uniqueUserSettings ?? UserSettings()).copyWith(
-          isLogin: false,
-        ),
-      );
+      Http.cookieJar.deleteAll();
 
       return getError(e, s).statusCode?.toString() ?? '-1';
     }
@@ -49,13 +41,6 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?>
 
       Http.cookieJar.deleteAll();
 
-      await HiveBoxes.userSettingsBox.putAt(
-        0,
-        (HiveBoxes.uniqueUserSettings ?? UserSettings()).copyWith(
-          isLogin: false,
-        ),
-      );
-
       return true;
     } catch (e, s) {
       DialogUtils.danger(getError(e, s).errorMessage(S.current.unknownError));
@@ -66,66 +51,31 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?>
     }
   }
 
-  Future<void> handleCacheByLogin(
+  void _handleCacheByLogin(
     int userId, {
     required String username,
-  }) async {
-    await HiveBoxes.authorizedCacheBox.put(
-      userId,
-      AuthorizedCache(
-        id: userId,
-        username: username,
-      ),
+    required String? password,
+    required bool rememberPassword,
+  }) {
+    final AccountCache accountCache = AccountCache()
+      ..userId = userId
+      ..username = username
+      ..updateTime = DateTime.now();
+
+    if (rememberPassword) {
+      accountCache.password = password;
+    }
+
+    final UserSettings userSettings = DatabaseManager.writeUniqueUserSettings(
+      rememberPassword: rememberPassword,
     );
 
-    if (HiveBoxes.uniqueUserSettings != null &&
-        HiveBoxes.uniqueUserSettings!.rememberPassword) {
-      await HiveBoxes.userSettingsBox.putAt(
-        0,
-        HiveBoxes.uniqueUserSettings!.copyWith(
-          isLogin: true,
-          rememberPassword: false,
-        ),
-      );
-    } else {
-      await HiveBoxes.userSettingsBox.add(
-        UserSettings(
-          isLogin: true,
-        ),
-      );
-    }
-  }
-
-  Future<void> handleCacheByLoginAndRememberPassword(
-    int userId, {
-    required String username,
-    required String password,
-  }) async {
-    await HiveBoxes.authorizedCacheBox.put(
-      userId,
-      AuthorizedCache(
-        id: userId,
-        username: username,
-        password: password,
-      ),
+    DatabaseManager.isar.writeTxnSync<void>(
+      () {
+        DatabaseManager.accountCaches.putSync(accountCache);
+        DatabaseManager.userSettingsCache.putSync(userSettings);
+      },
     );
-
-    if (HiveBoxes.uniqueUserSettings == null) {
-      await HiveBoxes.userSettingsBox.add(
-        UserSettings(
-          isLogin: true,
-          rememberPassword: true,
-        ),
-      );
-    } else {
-      await HiveBoxes.userSettingsBox.putAt(
-        0,
-        HiveBoxes.uniqueUserSettings!.copyWith(
-          isLogin: true,
-          rememberPassword: true,
-        ),
-      );
-    }
   }
 
   Future<bool> login({
@@ -142,15 +92,12 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?>
 
       state = await WanAndroidAPI.fetchUserInfo();
 
-      if (rememberPassword) {
-        await handleCacheByLoginAndRememberPassword(
-          user.id,
-          username: username,
-          password: password,
-        );
-      } else {
-        await handleCacheByLogin(user.id, username: username);
-      }
+      _handleCacheByLogin(
+        user.id,
+        username: username,
+        password: password,
+        rememberPassword: rememberPassword,
+      );
 
       DialogUtils.success(S.current.loginSuccess);
 
@@ -179,11 +126,14 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?>
         repassword: repassword,
       );
 
-      await HiveBoxes.authorizedCacheBox.put(
-        model.id,
-        AuthorizedCache(
-          id: model.id,
-          username: username,
+      final AccountCache accountCache = AccountCache()
+        ..userId = model.id
+        ..username = username
+        ..updateTime = DateTime.now();
+
+      DatabaseManager.isar.writeTxnSync(
+        () => DatabaseManager.accountCaches.putSync(
+          accountCache,
         ),
       );
 

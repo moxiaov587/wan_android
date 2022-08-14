@@ -4,8 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/l10n/generated/l10n.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
-import '../../database/hive_boxes.dart';
-import '../../database/model/models.dart';
+import '../../database/database_manager.dart';
 import '../../extensions/extensions.dart' show BuildContextExtension;
 import '../../navigator/app_router_delegate.dart';
 import '../../screen/authorized/provider/authorized_provider.dart';
@@ -38,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
       ValueNotifier<bool>(rememberPassword);
 
   bool get rememberPassword =>
-      HiveBoxes.uniqueUserSettings?.rememberPassword ?? false;
+      DatabaseManager.uniqueUserSettings?.rememberPassword ?? false;
 
   @override
   void initState() {
@@ -77,13 +76,15 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
 
   void initTextEditingDefaultValue() {
     try {
-      final AuthorizedCache authorizedCache =
-          HiveBoxes.authorizedCacheBox.values.first;
+      final AccountCache? authorizedCache =
+          DatabaseManager.accountCaches.where().findFirstSync();
 
-      _usernameTextEditingController.text = authorizedCache.username;
+      if (authorizedCache != null) {
+        _usernameTextEditingController.text = authorizedCache.username;
 
-      if (rememberPassword) {
-        _passwordTextEditingController.text = authorizedCache.password!;
+        if (rememberPassword) {
+          _passwordTextEditingController.text = authorizedCache.password!;
+        }
       }
     } catch (_) {}
   }

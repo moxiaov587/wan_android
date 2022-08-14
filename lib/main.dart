@@ -12,12 +12,11 @@ import 'package:flutter_native_splash/flutter_native_splash.dart'
     show FlutterNativeSplash;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 import 'app/http/http.dart';
 import 'app/l10n/generated/l10n.dart';
 import 'app/theme/app_theme.dart' show AppTextTheme, AppTheme;
-import 'database/hive_boxes.dart';
+import 'database/database_manager.dart';
 import 'extensions/extensions.dart' show BuildContextExtension;
 import 'navigator/app_router_delegate.dart';
 import 'screen/authorized/provider/authorized_provider.dart';
@@ -31,9 +30,7 @@ Future<void> main() async {
       WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  await Hive.initFlutter();
-
-  await HiveBoxes.openBoxes();
+  await DatabaseManager.openIsar();
 
   await Http.initConfig();
 
@@ -124,7 +121,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
           );
 
           if (data ?? false) {
-            ref.read(themeProvider.notifier).switchThemes(0);
+            ref.read(themeProvider.notifier).switchThemeMode(ThemeMode.system);
           }
         });
       }

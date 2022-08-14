@@ -7,7 +7,6 @@ import '../../app/provider/view_state.dart';
 import '../../app/provider/widget/provider_widget.dart';
 import '../../app/theme/app_theme.dart';
 import '../../contacts/icon_font_icons.dart';
-import '../../database/hive_boxes.dart';
 import '../../extensions/extensions.dart';
 import '../../model/models.dart';
 import '../../navigator/app_router_delegate.dart';
@@ -20,6 +19,7 @@ import '../../widget/animated_counter.dart';
 import '../../widget/gap.dart';
 import '../../widget/level_tag.dart';
 import '../../widget/sliver_child_with_separator_builder_delegate.dart';
+import '../../widget/view_state_widget.dart';
 import 'provider/drawer_provider.dart';
 
 export 'my_collections/my_collections_screen.dart';
@@ -198,10 +198,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
 
                         return IconButton(
                           onPressed: () {
-                            final int index = isDark ? 1 : 2;
-                            ref
-                                .read(themeProvider.notifier)
-                                .switchThemes(index);
+                            ref.read(themeProvider.notifier).switchThemeMode(
+                                  isDark ? ThemeMode.light : ThemeMode.dark,
+                                );
                           },
                           tooltip: isDark
                               ? S.of(context).lightMode
