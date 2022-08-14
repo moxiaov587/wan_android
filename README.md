@@ -9,9 +9,10 @@
 | ![](screenshots/search_result_screen.jpeg) | ![](screenshots/article_screen.jpeg) | ![](screenshots/side_bar.jpeg) |
 | ![](screenshots/my_points_screen.gif) | ![](screenshots/my_collections_screen.gif) |  |
 # 使用
+当前使用的Flutter版本`3.3.0-0.3.pre(Beta channel)`
 ```
 1. flutter pub get
-2. flutter pub run build_runner build
+2. flutter pub run build_runner build --delete-conflicting-outputs
 3. flutter run
 ```
 # 感谢
