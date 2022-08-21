@@ -6,6 +6,10 @@ import 'package:nil/nil.dart' show nil;
 import '../../extensions/extensions.dart' show BuildContextExtension;
 import '../contacts/icon_font_icons.dart';
 
+const double _kClearIconSize = 18.0;
+const double _kContentPaddingLeft =
+    kMinInteractiveDimension * 0.5 - _kClearIconSize * 0.5;
+
 class CustomTextFormField extends StatefulWidget {
   const CustomTextFormField({
     super.key,
@@ -101,28 +105,29 @@ class CustomTextFormField extends StatefulWidget {
 }
 
 class _CustomTextFormFieldState extends State<CustomTextFormField> {
-  late final ValueNotifier<bool> _showCleanNotifier =
+  late final ValueNotifier<bool> _showCleanButtonNotifier =
       ValueNotifier<bool>(widget.controller.text.isNotEmpty);
 
   @override
   void initState() {
     super.initState();
 
-    widget.controller.addListener(_onQueryChanged);
+    widget.controller.addListener(_onInputChanged);
   }
 
   @override
   void dispose() {
-    widget.controller.removeListener(_onQueryChanged);
-    _showCleanNotifier.dispose();
+    widget.controller.removeListener(_onInputChanged);
+    _showCleanButtonNotifier.dispose();
     super.dispose();
   }
 
-  void _onQueryChanged() {
-    if (widget.controller.text.isEmpty && _showCleanNotifier.value) {
-      _showCleanNotifier.value = false;
-    } else if (widget.controller.text.isNotEmpty && !_showCleanNotifier.value) {
-      _showCleanNotifier.value = true;
+  void _onInputChanged() {
+    if (widget.controller.text.isEmpty && _showCleanButtonNotifier.value) {
+      _showCleanButtonNotifier.value = false;
+    } else if (widget.controller.text.isNotEmpty &&
+        !_showCleanButtonNotifier.value) {
+      _showCleanButtonNotifier.value = true;
     }
   }
 
@@ -132,30 +137,27 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
       controller: widget.controller,
       focusNode: widget.focusNode,
       decoration: widget.decoration.copyWith(
-        contentPadding:
-            widget.decoration.prefixIcon != null ? EdgeInsets.zero : null,
-        suffixIconConstraints: BoxConstraints.tightFor(
-          width: 18.0 +
-              context.theme.inputDecorationTheme.contentPadding!.horizontal / 2,
+        contentPadding: widget.decoration.prefixIcon != null
+            ? EdgeInsets.zero
+            : const EdgeInsets.only(left: _kContentPaddingLeft),
+        prefixIconConstraints: const BoxConstraints(
+          minWidth: kMinInteractiveDimension,
+          minHeight: kMinInteractiveDimension,
         ),
         suffixIcon: ValueListenableBuilder<bool>(
-          valueListenable: _showCleanNotifier,
-          builder: (_, bool value, Widget? child) {
+          valueListenable: _showCleanButtonNotifier,
+          builder: (_, bool value, Widget? empty) {
             return value
                 ? IconButton(
-                    alignment: Alignment.centerLeft,
-                    padding: EdgeInsets.zero,
-                    hoverColor: Colors.transparent,
-                    splashColor: Colors.transparent,
                     icon: const Icon(
                       IconFontIcons.closeCircleLine,
-                      size: 18.0,
+                      size: _kClearIconSize,
                     ),
                     onPressed: () {
                       widget.controller.text = '';
                     },
                   )
-                : child!;
+                : empty!;
           },
           child: nil,
         ),

@@ -1,5 +1,8 @@
 part of '../../widget/custom_search_delegate.dart';
 
+const double kToolbarPadding = 8.0;
+const double kSearchTextFieldHeight = kToolbarHeight - kToolbarPadding * 2;
+
 class SearchPageRoute<T> extends PageRoute<T> {
   SearchPageRoute({
     super.settings,
@@ -91,7 +94,8 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
   // the text field.
   FocusNode focusNode = FocusNode();
 
-  final ValueNotifier<bool> _showCleanQuery = ValueNotifier<bool>(false);
+  final ValueNotifier<bool> _showClearButtonNotifier =
+      ValueNotifier<bool>(false);
 
   @override
   void initState() {
@@ -105,7 +109,7 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
 
   @override
   void dispose() {
-    _showCleanQuery.dispose();
+    _showClearButtonNotifier.dispose();
     widget.delegate._queryTextController.removeListener(_onQueryChanged);
     widget.animation.removeStatusListener(_onAnimationStatusChanged);
     widget.delegate._currentBodyNotifier.removeListener(_onSearchBodyChanged);
@@ -146,14 +150,12 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
   }
 
   void _onQueryChanged() {
-    if (widget.delegate.query.isEmpty && _showCleanQuery.value) {
-      _showCleanQuery.value = false;
-    } else if (widget.delegate.query.isNotEmpty && !_showCleanQuery.value) {
-      _showCleanQuery.value = true;
+    if (widget.delegate.query.isEmpty && _showClearButtonNotifier.value) {
+      _showClearButtonNotifier.value = false;
+    } else if (widget.delegate.query.isNotEmpty &&
+        !_showClearButtonNotifier.value) {
+      _showClearButtonNotifier.value = true;
     }
-    // setState(() {
-    //   // rebuild ourselves because query changed.
-    // });
   }
 
   void _onSearchBodyChanged() {
@@ -199,9 +201,6 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
         routeName = searchFieldLabel;
     }
 
-    late final Offset offset;
-    offset = kIsWeb || Platform.isIOS ? const Offset(-12.0, 0) : Offset.zero;
-
     return Semantics(
       explicitChildNodes: true,
       scopesRoute: true,
@@ -211,58 +210,52 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
         data: theme,
         child: Scaffold(
           appBar: AppBar(
-            leading: widget.delegate.buildLeading(context) ?? nil,
+            automaticallyImplyLeading: false,
+            leading: widget.delegate.buildLeading(context),
             leadingWidth:
                 widget.delegate.buildLeading(context) == null ? 0.0 : null,
-            title: Transform.translate(
-              offset: offset,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxHeight: 36.0,
-                ),
-                child: TextField(
-                  controller: widget.delegate._queryTextController,
-                  focusNode: focusNode,
-                  style: theme.textTheme.titleSmall,
-                  textInputAction: widget.delegate.textInputAction,
-                  keyboardType: widget.delegate.keyboardType,
-                  onSubmitted: (String _) {
-                    widget.delegate.showResults(context);
-                  },
-                  decoration: InputDecoration(
-                    hintText: searchFieldLabel,
-                    hintStyle: theme.textTheme.bodyLarge,
-                    contentPadding: EdgeInsets.zero,
-                    prefixIconConstraints: const BoxConstraints.tightFor(
-                      width: 30.0,
-                    ),
-                    prefixIcon: const Icon(
-                      IconFontIcons.searchLine,
-                      size: 20.0,
-                    ),
-                    suffixIconConstraints: const BoxConstraints.tightFor(
-                      width: 30.0,
-                    ),
-                    suffixIcon: ValueListenableBuilder<bool>(
-                      valueListenable: _showCleanQuery,
-                      builder: (_, bool value, Widget? child) {
-                        return value
-                            ? IconButton(
-                                padding: EdgeInsets.zero,
-                                hoverColor: Colors.transparent,
-                                splashColor: Colors.transparent,
-                                icon: const Icon(
-                                  IconFontIcons.closeCircleLine,
-                                  size: 18.0,
-                                ),
-                                onPressed: () {
-                                  widget.delegate.query = '';
-                                },
-                              )
-                            : child!;
-                      },
-                      child: nil,
-                    ),
+            titleSpacing: 0.0,
+            title: Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: TextField(
+                controller: widget.delegate._queryTextController,
+                focusNode: focusNode,
+                style: theme.textTheme.titleSmall,
+                textInputAction: widget.delegate.textInputAction,
+                keyboardType: widget.delegate.keyboardType,
+                onSubmitted: (String _) {
+                  widget.delegate.showResults(context);
+                },
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(
+                    maxHeight: kSearchTextFieldHeight,
+                  ),
+                  hintText: searchFieldLabel,
+                  prefixIconConstraints: const BoxConstraints(
+                    minWidth: 36.0,
+                    minHeight: kSearchTextFieldHeight,
+                  ),
+                  prefixIcon: const Icon(
+                    IconFontIcons.searchLine,
+                    size: 20.0,
+                  ),
+                  suffixIcon: ValueListenableBuilder<bool>(
+                    valueListenable: _showClearButtonNotifier,
+                    builder: (_, bool value, Widget? empty) {
+                      return value
+                          ? IconButton(
+                              icon: const Icon(
+                                IconFontIcons.closeCircleLine,
+                                size: 18.0,
+                              ),
+                              onPressed: () {
+                                widget.delegate.query = '';
+                              },
+                            )
+                          : empty!;
+                    },
+                    child: nil,
                   ),
                 ),
               ),

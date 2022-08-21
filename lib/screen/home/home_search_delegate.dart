@@ -6,30 +6,20 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
   @override
   List<Widget>? buildActions(BuildContext context) {
     return <Widget>[
-      TextButton(
-        style: ButtonStyle(
-          padding: ButtonStyleButton.allOrNull<EdgeInsets>(
-            const EdgeInsets.fromLTRB(
-              0.0,
-              kStyleUint2,
-              kStyleUint3,
-              kStyleUint2,
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: kToolbarPadding),
+        child: TextButton(
+          child: Text(
+            S.of(context).cancel,
+            style: context.theme.textTheme.titleLarge!.copyWith(
+              color: context.theme.primaryColor,
+              fontSize: 16.0,
             ),
           ),
-          overlayColor: ButtonStyleButton.allOrNull<Color>(
-            Colors.transparent,
-          ),
+          onPressed: () {
+            close(context, null);
+          },
         ),
-        child: Text(
-          S.of(context).cancel,
-          style: context.theme.textTheme.titleLarge!.copyWith(
-            color: context.theme.primaryColor,
-            fontSize: 16.0,
-          ),
-        ),
-        onPressed: () {
-          close(context, null);
-        },
       ),
     ];
   }
@@ -156,7 +146,7 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
 
   @override
   Widget build(BuildContext context) {
-    final double wrapSpace = AppTheme.bodyPaddingOnlyVertical.vertical / 2;
+    final double wrapSpace = AppTheme.bodyPadding.top;
 
     return CustomScrollView(
       slivers: <Widget>[
