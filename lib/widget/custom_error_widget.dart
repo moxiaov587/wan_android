@@ -1,6 +1,6 @@
 part of 'view_state_widget.dart';
 
-class CustomErrorWidget extends ConsumerWidget {
+class CustomErrorWidget extends StatelessWidget {
   const CustomErrorWidget({
     super.key,
     this.statusCode,
@@ -14,8 +14,13 @@ class CustomErrorWidget extends ConsumerWidget {
   final String? detail;
   final VoidCallback? onRetry;
 
+  bool get isDisconnected => statusCode == -2;
+
   String get errorImage {
     switch (statusCode) {
+      case -1:
+      case -2:
+        return Assets.ASSETS_IMAGES_TIMEOUT_PNG;
       case 400:
       case 403:
         return Assets.ASSETS_IMAGES_400_PNG;
@@ -30,10 +35,7 @@ class CustomErrorWidget extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final bool isDisconnected =
-        ref.read(connectivityProvider.notifier).isDisconnected;
-
+  Widget build(BuildContext context) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(
@@ -44,7 +46,7 @@ class CustomErrorWidget extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Image.asset(
-              isDisconnected ? Assets.ASSETS_IMAGES_TIMEOUT_PNG : errorImage,
+              errorImage,
               width: 120,
             ),
             Text(
@@ -63,10 +65,20 @@ class CustomErrorWidget extends ConsumerWidget {
               textAlign: TextAlign.center,
               style: context.theme.textTheme.bodyMedium,
             ),
-            if (onRetry != null) Gap(),
+            if (onRetry != null)
+              Gap(
+                size: GapSize.big,
+              ),
             if (onRetry != null)
               ElevatedButton(
                 onPressed: onRetry,
+                style: const ButtonStyle(
+                  padding: MaterialStatePropertyAll<EdgeInsetsGeometry>(
+                    EdgeInsets.symmetric(
+                      horizontal: 32.0,
+                    ),
+                  ),
+                ),
                 child: Text(S.of(context).retry),
               ),
           ],

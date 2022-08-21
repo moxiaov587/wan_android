@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,7 +25,7 @@ class ConnectivityNotifier extends BaseViewNotifier<ConnectivityResult> {
   Stream<ConnectivityResult> get onConnectivityChanged =>
       _connectivity.onConnectivityChanged;
 
-  bool get isDisconnected =>
+  bool get _isDisconnected =>
       state.whenOrNull(
         (ConnectivityResult? result) => result == ConnectivityResult.none,
       ) ??
@@ -38,11 +40,29 @@ class ConnectivityNotifier extends BaseViewNotifier<ConnectivityResult> {
     }
   }
 
-  Future<void> updateData(ConnectivityResult result) async {
+  Future<void> onConnectivityChange(ConnectivityResult result) async {
     state = ViewStateData<ConnectivityResult>(value: result);
 
     if (result == ConnectivityResult.mobile) {
       DialogUtils.tips(S.current.useDataTrafficTips);
     }
+  }
+
+  FutureOr<bool> checkDisconnection() {
+    if (_isDisconnected) {
+      return Future<bool>.delayed(
+        Duration.zero,
+        () async {
+          try {
+            return (await _connectivity.checkConnectivity()) ==
+                ConnectivityResult.none;
+          } catch (_) {
+            return false;
+          }
+        },
+      );
+    }
+
+    return false;
   }
 }

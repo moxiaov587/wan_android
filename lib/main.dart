@@ -32,7 +32,9 @@ Future<void> main() async {
 
   await DatabaseManager.openIsar();
 
-  await Http.initConfig();
+  final ProviderContainer providerContainer = ProviderContainer();
+
+  await Http.initConfig(reader: providerContainer.read);
 
   if (kIsWeb) {
     /// remove the # from URL
@@ -42,8 +44,6 @@ Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
     statusBarColor: Colors.transparent,
   ));
-
-  final ProviderContainer providerContainer = ProviderContainer();
 
   AppRouterDelegate.instance.initDelegate(reader: providerContainer.read);
 
@@ -73,7 +73,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
     _connectivitySubscription = ref
         .read(connectivityProvider.notifier)
         .onConnectivityChanged
-        .listen(ref.read(connectivityProvider.notifier).updateData);
+        .listen(ref.read(connectivityProvider.notifier).onConnectivityChange);
   }
 
   @override

@@ -8,6 +8,7 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart' as web_view
     show CookieManager, HTTPCookieSameSitePolicy;
+import 'package:flutter_riverpod/flutter_riverpod.dart' show Reader;
 import 'package:path_provider/path_provider.dart';
 
 import '../../utils/log_utils.dart';
@@ -15,6 +16,7 @@ import '../../utils/log_utils.dart';
 import 'cache_interceptor.dart';
 import 'error_interceptor.dart';
 import 'logging_interceptor.dart';
+import 'network_interceptor.dart';
 
 const String kDomain = 'wanandroid.com';
 const String kBaseUrl = 'https://$kDomain';
@@ -36,7 +38,7 @@ class Http {
   static final web_view.CookieManager webViewCookieManager =
       web_view.CookieManager.instance();
 
-  static Future<void> initConfig() async {
+  static Future<void> initConfig({required Reader reader}) async {
     if (!kIsWeb) {
       await initCookieManagement();
 
@@ -53,7 +55,8 @@ class Http {
 
     dio.interceptors
       ..add(ErrorInterceptor())
-      ..add(CacheInterceptor());
+      ..add(CacheInterceptor())
+      ..add(NetWorkInterceptor(reader: reader));
 
     if (kDebugMode && shouldLogRequest) {
       dio.interceptors.add(LoggingInterceptor());
@@ -99,7 +102,8 @@ class Http {
     }
   }
 
-  static Future<bool> get isLogin async => (await cookieJar.loadForRequest(Uri.parse(kBaseUrl))).length > 1;
+  static Future<bool> get isLogin async =>
+      (await cookieJar.loadForRequest(Uri.parse(kBaseUrl))).length > 1;
 
   // ignore: long-parameter-list
   static Future<Response<T>> get<T>(
