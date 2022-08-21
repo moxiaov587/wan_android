@@ -33,28 +33,33 @@ class AppTheme {
   static final BorderRadius adornmentBorderRadius =
       BorderRadius.circular(_kAdornmentRadiusValue);
 
-  static const EdgeInsetsGeometry confirmDialogContextPadding =
-      EdgeInsets.symmetric(
+  static const EdgeInsets confirmDialogContextPadding = EdgeInsets.symmetric(
     horizontal: kStyleUint4,
     vertical: kStyleUint3 * 2,
   );
 
-  static const EdgeInsetsGeometry bodyPaddingOnlyHorizontal =
-      EdgeInsets.symmetric(
+  static const EdgeInsets bodyPaddingOnlyHorizontal = EdgeInsets.symmetric(
     horizontal: kStyleUint4,
   );
 
-  static const EdgeInsetsGeometry bodyPaddingOnlyVertical =
-      EdgeInsets.symmetric(
+  static const EdgeInsets bodyPaddingOnlyVertical = EdgeInsets.symmetric(
     vertical: kStyleUint3,
   );
 
-  static const EdgeInsetsGeometry bodyPadding = EdgeInsets.symmetric(
+  static const EdgeInsets bodyPadding = EdgeInsets.symmetric(
     horizontal: kStyleUint4,
     vertical: kStyleUint3,
   );
 
-  static const EdgeInsetsGeometry contentPadding = EdgeInsets.symmetric(
+  static const EdgeInsets contentPaddingOnlyHorizontal = EdgeInsets.symmetric(
+    horizontal: kStyleUint3,
+  );
+
+  static const EdgeInsets contentPaddingOnlyVertical = EdgeInsets.symmetric(
+    vertical: kStyleUint2,
+  );
+
+  static const EdgeInsets contentPadding = EdgeInsets.symmetric(
     horizontal: kStyleUint3,
     vertical: kStyleUint2,
   );
@@ -77,10 +82,8 @@ class AppTheme {
     minLeadingWidth: 24.0,
   );
 
-  static const Size buttonSize = Size(64.0, 44.0);
-
   static const TextStyle buttonTextStyle = TextStyle(
-    fontSize: AppTextTheme.title2,
+    fontSize: AppTextTheme.title3,
     fontWeight: AppTextTheme.medium,
   );
 
@@ -131,16 +134,9 @@ class AppTheme {
     return AppColors.text1Dark;
   });
 
-  static final InputDecorationTheme inputDecorationTheme = InputDecorationTheme(
-    contentPadding: contentPadding,
-    floatingLabelStyle: const TextStyle(
-      fontSize: 24.0,
-    ),
-    hintStyle: AppTextTheme.light.bodyLarge,
-    filled: true,
-    enabledBorder: OutlineInputBorder(
-      borderRadius: adornmentBorderRadius,
-      borderSide: BorderSide.none,
+  static const InputDecorationTheme inputDecorationTheme = InputDecorationTheme(
+    floatingLabelStyle: TextStyle(
+      fontSize: AppTextTheme.headline3,
     ),
   );
 
@@ -220,7 +216,6 @@ class AppTheme {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        minimumSize: buttonSize,
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
         textStyle: buttonTextStyle,
@@ -238,11 +233,19 @@ class AppTheme {
     ),
     bottomNavigationBarTheme: bottomNavigationBarTheme.copyWith(
       backgroundColor: AppColors.appBar,
+      selectedItemColor: AppColors.primary,
     ),
     inputDecorationTheme: inputDecorationTheme.copyWith(
       prefixIconColor: stateColorLight,
       suffixIconColor: stateColorLight,
-      fillColor: AppColors.gray.shade1,
+      hintStyle: AppTextTheme.light.bodyLarge,
+      enabledBorder: OutlineInputBorder(
+        borderRadius: adornmentBorderRadius,
+        borderSide: BorderSide(
+          color: AppColors.gray.shade4,
+          width: dividerTheme.thickness!,
+        ),
+      ),
       focusedBorder: OutlineInputBorder(
         borderRadius: adornmentBorderRadius,
         borderSide: BorderSide(
@@ -365,7 +368,6 @@ class AppTheme {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        minimumSize: buttonSize,
         backgroundColor: AppColors.primaryDark,
         foregroundColor: AppColors.whiteDark,
         textStyle: buttonTextStyle,
@@ -383,11 +385,19 @@ class AppTheme {
     ),
     bottomNavigationBarTheme: bottomNavigationBarTheme.copyWith(
       backgroundColor: AppColors.appBarDark,
+      selectedItemColor: AppColors.primaryDark,
     ),
     inputDecorationTheme: inputDecorationTheme.copyWith(
       prefixIconColor: stateColorDark,
       suffixIconColor: stateColorDark,
-      fillColor: AppColors.grayDark.shade1,
+      hintStyle: AppTextTheme.dark.bodyLarge,
+      enabledBorder: OutlineInputBorder(
+        borderRadius: adornmentBorderRadius,
+        borderSide: BorderSide(
+          color: AppColors.grayDark.shade5,
+          width: dividerTheme.thickness!,
+        ),
+      ),
       focusedBorder: OutlineInputBorder(
         borderRadius: adornmentBorderRadius,
         borderSide: BorderSide(

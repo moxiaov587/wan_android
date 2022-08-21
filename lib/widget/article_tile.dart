@@ -26,7 +26,7 @@ class ArticleTile extends StatelessWidget {
 
     final bool hasTags = article.tags != null && article.tags!.isNotEmpty;
 
-    final double titleVerticalGap = AppTheme.bodyPadding.vertical / 2;
+    final double titleVerticalGap = AppTheme.bodyPadding.top;
 
     final TextStyle titleStyle = context.theme.textTheme.titleSmall!;
 
