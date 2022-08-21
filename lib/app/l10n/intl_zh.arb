@@ -35,6 +35,7 @@
     "logout": "退出登录",
     "register": "注册",
     "username": "用户名",
+    "lastLogin": "上次登录",
     "password": "密码",
     "repassword": "确认密码",
     "rememberPassword": "记住密码",

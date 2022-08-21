@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/l10n/generated/l10n.dart';
+import '../../app/theme/app_theme.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
 import '../../database/database_manager.dart';
@@ -32,6 +34,8 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
   final TextEditingController _passwordTextEditingController =
       TextEditingController();
   final FocusNode _passwordFocusNode = FocusNode();
+
+  AccountCache? _lastLoginAccountCache;
 
   late final ValueNotifier<bool> _rememberPasswordNotifier =
       ValueNotifier<bool>(rememberPassword);
@@ -75,18 +79,18 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
   }
 
   void initTextEditingDefaultValue() {
-    try {
-      final AccountCache? authorizedCache =
-          DatabaseManager.accountCaches.where().findFirstSync();
+    _lastLoginAccountCache = DatabaseManager.accountCaches
+        .where()
+        .sortByUpdateTimeDesc()
+        .findFirstSync();
 
-      if (authorizedCache != null) {
-        _usernameTextEditingController.text = authorizedCache.username;
+    if (_lastLoginAccountCache != null) {
+      _usernameTextEditingController.text = _lastLoginAccountCache!.username;
 
-        if (rememberPassword) {
-          _passwordTextEditingController.text = authorizedCache.password!;
-        }
+      if (rememberPassword && _lastLoginAccountCache!.password != null) {
+        _passwordTextEditingController.text = _lastLoginAccountCache!.password!;
       }
-    } catch (_) {}
+    }
   }
 
   Future<void> onSubmitted({
@@ -121,25 +125,59 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                 child: SliverList(
                   delegate: SliverChildListDelegate(
                     <Widget>[
-                      CustomTextFormField(
-                        controller: _usernameTextEditingController,
+                      RawAutocomplete<AccountCache>(
+                        textEditingController: _usernameTextEditingController,
                         focusNode: _usernameFocusNode,
-                        textInputAction: TextInputAction.next,
-                        validator: (String? value) {
-                          if (value == null || value.isEmpty) {
-                            return S.of(context).usernameEmptyTips;
+                        displayStringForOption: (AccountCache option) =>
+                            option.username,
+                        onSelected: (AccountCache option) {
+                          if (option.password != null) {
+                            _passwordTextEditingController.text =
+                                option.password!;
                           }
-
-                          return null;
                         },
-                        decoration: InputDecoration(
-                          prefixIcon:
-                              const Icon(IconFontIcons.accountCircleLine),
-                          hintText: S.of(context).username,
+                        optionsBuilder: (TextEditingValue textEditingValue) =>
+                            DatabaseManager.accountCaches
+                                .filter()
+                                .usernameStartsWith(textEditingValue.text)
+                                .sortByUpdateTimeDesc()
+                                .findAll(),
+                        optionsViewBuilder: (
+                          BuildContext context,
+                          void Function(AccountCache) onSelected,
+                          Iterable<AccountCache> options,
+                        ) =>
+                            _AccountOptionsView(
+                          onSelected: onSelected,
+                          options: options,
+                          lastLoginAccount: _lastLoginAccountCache,
                         ),
-                        onEditingComplete: () {
-                          _passwordFocusNode.requestFocus();
-                        },
+                        fieldViewBuilder: (
+                          _,
+                          TextEditingController textEditingController,
+                          FocusNode focusNode,
+                          __,
+                        ) =>
+                            CustomTextFormField(
+                          controller: textEditingController,
+                          focusNode: focusNode,
+                          textInputAction: TextInputAction.next,
+                          validator: (String? value) {
+                            if (value == null || value.isEmpty) {
+                              return S.of(context).usernameEmptyTips;
+                            }
+
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            prefixIcon:
+                                const Icon(IconFontIcons.accountCircleLine),
+                            hintText: S.of(context).username,
+                          ),
+                          onEditingComplete: () {
+                            _passwordFocusNode.requestFocus();
+                          },
+                        ),
                       ),
                       Gap(
                         value: _kBodyPadding.top,
@@ -228,6 +266,128 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AccountOptionsView extends StatelessWidget {
+  const _AccountOptionsView({
+    required this.onSelected,
+    required this.options,
+    required this.lastLoginAccount,
+  });
+
+  final void Function(AccountCache) onSelected;
+  final Iterable<AccountCache> options;
+  final AccountCache? lastLoginAccount;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.topLeft,
+      child: Padding(
+        padding: EdgeInsets.only(
+          top: kStyleUint,
+          right: _kBodyPadding.horizontal,
+        ),
+        child: Material(
+          shape: RoundedRectangleBorder(
+            borderRadius: AppTheme.adornmentBorderRadius,
+          ),
+          color: context.theme.dialogBackgroundColor,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxHeight: 200,
+            ),
+            child: ListView.separated(
+              padding: EdgeInsets.zero,
+              shrinkWrap: true,
+              itemCount: options.length,
+              itemBuilder: (_, int index) {
+                final AccountCache option = options.elementAt(index);
+
+                final Widget child = Padding(
+                  padding: AppTheme.bodyPadding,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Expanded(
+                        child: Text(
+                          option.username,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (lastLoginAccount?.username != null &&
+                          option.username == lastLoginAccount!.username)
+                        Padding(
+                          padding: EdgeInsets.only(
+                            left: AppTheme.bodyPadding.left,
+                          ),
+                          child: Text(
+                            S.of(context).lastLogin,
+                            style: context.theme.textTheme.labelMedium,
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+
+                switch (context.theme.platform) {
+                  case TargetPlatform.android:
+                  case TargetPlatform.iOS:
+                    return InkWell(
+                      onTap: () {
+                        onSelected(option);
+                      },
+                      child: DefaultTextStyle(
+                        style: context.theme.textTheme.titleSmall!,
+                        child: child,
+                      ),
+                    );
+                  case TargetPlatform.fuchsia:
+                  case TargetPlatform.linux:
+                  case TargetPlatform.macOS:
+                  case TargetPlatform.windows:
+                    return InkWell(
+                      onTap: () {
+                        onSelected(option);
+                      },
+                      child: Builder(
+                        builder: (BuildContext context) {
+                          final bool highlight =
+                              AutocompleteHighlightedOption.of(
+                                    context,
+                                  ) ==
+                                  index;
+                          if (highlight) {
+                            SchedulerBinding.instance.addPostFrameCallback(
+                              (Duration timeStamp) {
+                                Scrollable.ensureVisible(
+                                  context,
+                                  alignment: 0.5,
+                                );
+                              },
+                            );
+                          }
+
+                          return DefaultTextStyle(
+                            style: context.theme.textTheme.titleSmall!.copyWith(
+                              color:
+                                  highlight ? context.theme.primaryColor : null,
+                            ),
+                            child: child,
+                          );
+                        },
+                      ),
+                    );
+                }
+              },
+              separatorBuilder: (_, __) => const Divider(),
+            ),
+          ),
         ),
       ),
     );

@@ -35,6 +35,7 @@
     "logout": "Logout",
     "register": "Register",
     "username": "Username",
+    "lastLogin": "Last login",
     "password": "Password",
     "repassword": "RePassword",
     "rememberPassword": "Remember Password",
