@@ -14,6 +14,8 @@ class WanAndroidAPI {
     final Response<List<dynamic>> response = await Http.get(
       API.banner,
       cancelToken: cancelToken,
+      needCache: true,
+      isDiskCache: true,
     );
 
     return response.data!
@@ -116,6 +118,8 @@ class WanAndroidAPI {
     final Response<List<dynamic>> response = await Http.get<List<dynamic>>(
       API.projectType,
       cancelToken: cancelToken,
+      needCache: true,
+      isDiskCache: true,
     );
 
     return response.data!
@@ -176,6 +180,7 @@ class WanAndroidAPI {
       API.searchPopularKeywords,
       cancelToken: cancelToken,
       needCache: true,
+      isDiskCache: true,
     );
 
     return response.data!
@@ -248,6 +253,8 @@ class WanAndroidAPI {
         pageNum: pageNum,
       ),
       cancelToken: cancelToken,
+      needCache: true,
+      isDiskCache: true,
     );
 
     return ModelToRefreshListData<UserPointsModel>.fromJson(

@@ -10,7 +10,7 @@ import 'package:dio/dio.dart'
 
 import '../../database/database_manager.dart';
 
-const Duration _kMaxAgeOfCache = Duration(minutes: 10);
+const Duration _kMaxAgeOfCache = Duration(hours: 12);
 const int _kMaxNumOfCacheForMemory = 10;
 
 const String _kGetMethodLowerCase = 'get';
