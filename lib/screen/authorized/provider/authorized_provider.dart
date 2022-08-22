@@ -18,7 +18,7 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?>
     with ViewErrorMixin {
   AuthorizedNotifier() : super(null);
 
-  Future<String?> initData() async {
+  Future<int?> initData() async {
     try {
       if (await Http.isLogin) {
         state = await WanAndroidAPI.fetchUserInfo();
@@ -28,7 +28,7 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?>
     } catch (e, s) {
       Http.cookieJar.deleteAll();
 
-      return getError(e, s).statusCode?.toString() ?? '-1';
+      return getError(e, s).statusCode ?? -1;
     }
   }
 

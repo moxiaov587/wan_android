@@ -64,33 +64,36 @@ class _HandleSharedBottomSheetState
           key: _formKey,
           child: CustomScrollView(
             slivers: <Widget>[
-              SliverToBoxAdapter(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    TextButton(
-                      style: ButtonStyle(
-                        textStyle: MaterialStateProperty.all(
-                          context.theme.textTheme.titleMedium,
+              SliverPadding(
+                padding: AppTheme.contentPadding.copyWith(bottom: 0),
+                sliver: SliverToBoxAdapter(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      TextButton(
+                        style: ButtonStyle(
+                          textStyle: MaterialStateProperty.all(
+                            context.theme.textTheme.titleMedium,
+                          ),
                         ),
+                        onPressed: () {
+                          Navigator.of(context).maybePop();
+                        },
+                        child: Text(S.of(context).cancel),
                       ),
-                      onPressed: () {
-                        Navigator.of(context).maybePop();
-                      },
-                      child: Text(S.of(context).cancel),
-                    ),
-                    TextButton(
-                      style: ButtonStyle(
-                        textStyle: MaterialStateProperty.all(
-                          context.theme.textTheme.titleMedium!.semiBold,
+                      TextButton(
+                        style: ButtonStyle(
+                          textStyle: MaterialStateProperty.all(
+                            context.theme.textTheme.titleMedium!.semiBold,
+                          ),
                         ),
+                        onPressed: () {
+                          onSubmitted();
+                        },
+                        child: Text(S.of(context).add),
                       ),
-                      onPressed: () {
-                        onSubmitted();
-                      },
-                      child: Text(S.of(context).add),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               SliverPadding(

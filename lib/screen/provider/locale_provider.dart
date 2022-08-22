@@ -16,7 +16,7 @@ class LocaleNotifier extends StateNotifier<Locale?> {
   static const List<Locale?> locales = <Locale?>[
     null,
     Locale('en'),
-    Locale('zh', 'CN'),
+    Locale('zh'),
   ];
 
   void switchLocale(Locale? languages) {

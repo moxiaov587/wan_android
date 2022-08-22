@@ -1,103 +1,44 @@
 {
+    "@@locale": "en",
+
     "appName": "Wan Android",
-    "home": "Home",
-    "square": "Square",
-    "question": "Q&A",
-    "project": "Project",
-    "projectType": "Project Type",
-    "search": "Search",
-    "searchHistory": "Search History",
-    "popularKeyword": "Popular Keyword",
-    "keywordEmptyTips": "Please enter keywords",
-    "cancel": "Cancel",
-    "empty": "Empty",
-    "emptyMsg": "There's nothing here.",
-    "unknownError": "Unknown Error",
-    "unknownErrorMsg": "An error has occurred, but don't worry,\nit's not because of you.",
-    "retry": "Retry",
-    "noLogin": "No login",
-    "myPoints": "My Points",
-    "totalPoints": "Total Points",
-    "pointsRank": "Points Rank",
-    "myCollections": "My Collections",
-    "myShare": "My Share",
-    "about": "About",
-    "settings": "Settings",
-    "clearCache": "Clear Cache",
-    "clearCacheWarning": "Are you sure you want to clear the cache?",
-    "loading": "Loading",
+
     "ok": "OK",
+    "cancel": "Cancel",
+    
+    "add": "Add",
     "delete": "Delete",
+    "edit": "Edit",
+    "save": "Save",
+
     "tips": "Tips",
     "warning": "Warning",
 
-    "login": "Login",
-    "logout": "Logout",
-    "register": "Register",
-    "username": "Username",
-    "lastLogin": "Last login",
-    "password": "Password",
-    "repassword": "RePassword",
-    "rememberPassword": "Remember Password",
-    "usernameEmptyTips": "Please enter username",
-    "passwordEmptyTips": "Please enter password",
-    "repasswordEmptyTips": "Please enter repassword",
-    "passwordAndRepasswordNotTheSameTips": "Password is not the same as repassword",
-    "loginInfoInvalidTips": "Login information is invalid, error code {errorCode}",
-    "loginSuccess": "Login Successful",
-    "loginFailed": "Login Failed",
-    "registerSuccess": "Register Successful",
-    "registerFailed": "Register Failed",
-
-    "share": "Share",
-    "original": "Original",
-
-    "languages": "Language",
-    "chinese": "Chinese",
-    "english": "English",
-    "auto": "Auto",
-
-    "copyLink": "Copy Link",
-    "copiedToClipboard": "Copied to clipboard",
-    "browser": "Browser",
-    "unableToOpenLink": "Unable to open link: {link}",
     "back": "Back",
     "forward": "Forward",
-    "collected": "Collected",
-    "collect": "Collect",
+
+    "loading": "Loading",
     "refresh": "Refresh",
-    "desktop": "Desktop",
-    "recommend": "Recommend",
-    
-    "unknown": "Unknown",
+    "retry": "Retry",
+
+    "empty": "Empty",
+    "emptyMsg": "There's nothing here.",
+
     "loadFailed": "Load Failed",
-    "articleNotFound": "Article not found",
-    "articleNotFoundMsg": "Can't find the article",
+
+    "unknown": "Unknown",
+    "unknownError": "Unknown Error",
+    "unknownErrorMsg": "An error has occurred, but don't worry,\nit's not because of you.",
 
     "networkException": "Network Exception",
-    "networkExceptionMsg": "Please check your current internet connection",
+    "networkExceptionMsg": "Please check your current internet connection.",
 
-    "myCollectionsTabs": "{name, select, article{Article} website{Website}}",
+    "loadingMore": "Loading more",
+    "noMore": "No more",
+    "loadMoreFailed": "Load failed, tap to retry",
 
-    "article": "Article",
-    "website": "Website",
-
-    "edit": "Edit",
     "keepSwipingLeftToDelete": "Keep swiping\nto delete",
     "releaseToDeleteSwipeRightToCancel": "Release to delete\nSwipe right to cancel",
-
-    "addCollected": "Add Collected {name}",
-    "add": "Add",
-    "editCollected": "Edit Collected {name}",
-    "save": "Save",
-    "title": "Title",
-    "titleEmptyTips": "Please enter title",
-    "author": "Author",
-    "authorEmptyTips": "Please enter author",
-    "link": "Link",
-    "linkEmptyTips": "Please enter link",
-    "linkFormatTips": "Please check the link format",
-    "addShare": "Add Share",
 
     "success": "Success",
     "failed": "Failed",
@@ -105,19 +46,154 @@
 
     "useDataTrafficTips": "Currently using data traffic",
 
-    "theyArticles": "They Articles",
-    "theyShare": "They Share",
+    "home": "Home",
 
-    "loadingMore": "Loading more",
-    "noMore": "No more",
-    "loadMoreFailed": "Load failed, tap to retry",
-
-    "searchForSomething": "Search for something",
     "top": "Top",
     "fresh": "New",
+    "share": "Share",
+    "original": "Original",
 
-    "lightMode": "Light Mode",
-    "darkMode": "Dark Mode",
+    "square": "Square",
+
+    "question": "Q&A",
+
+    "project": "Project",
+    "projectType": "Project Type",
+
+    "searchForSomething": "Search for something",
+    "search": "Search",
+    "searchHistory": "Search History",
+    "popularKeyword": "Popular Keyword",
+    "keywordEmptyTips": "Please enter keywords",
+
+    "pointsRank": "Points Rank",
+
+    "myPoints": "My Points",
+    "totalPoints": "Total Points",
+
+    "myCollections": "My Collections",
+    "collectionType": "{type, select, article {Article} website {Website}}",
+    "@collectionType": {
+        "placeholders": {
+            "type": {
+                "type": "String",
+                "example": "article",
+                "description": "CollectionType(Enum).xx.name"
+            }
+        }
+    },
+    "addCollected": "Add Collected {name}",
+    "@addCollected": {
+        "placeholders": {
+            "name": {
+                "type": "String",
+                "example": "Article",
+                "description": "collectionType translate value"
+            }
+        }
+    },
+    "editCollected": "Edit Collected {name}",
+    "@editCollected": {
+        "placeholders": {
+            "name": {
+                "type": "String",
+                "example": "Article",
+                "description": "collectionType translate value"
+            }
+        }
+    },
+
+    "myShare": "My Share",
+    "addShare": "Add Share",
+
+    "title": "Title",
+    "titleEmptyTips": "Please enter title",
+    "author": "Author",
+    "authorEmptyTips": "Please enter author",
+    "link": "Link",
+    "linkEmptyTips": "Please enter link",
+    "linkFormatTips": "Please check the link format",
+
+    "about": "About",
+
+    "settings": "Settings",
+    "clearCache": "Clear Cache",
+    "clearCacheWarning": "Are you sure you want to clear the cache?",
+
+    "themeMode": "{mode, select, light{Light Mode} dark{Dark Mode} other{Auto}}",
+    "@themeMode": {
+        "placeholders": {
+            "mode": {
+                "type": "String",
+                "example": "light",
+                "description": "ThemeMode(Enum).xx.name"
+            }
+        }
+    },
     "currentThemeModeTips": "The current system color scheme is ",
-    "resetThemeModeTips": "Do you want to switch the theme mode to follow the system?"
+    "resetThemeModeTips": "Do you want to switch the theme mode to follow the system?",
+
+    "languages": "Language",
+    "locale": "{locale, select, en{English} zh{Chinese} other{Auto}}",
+    "@locale": {
+        "placeholders": {
+            "locale": {
+                "type": "String",
+                "example": "en",
+                "description": "Locale(class).toString()"
+            }
+        }
+    },
+
+    "login": "Login",
+    "lastLogin": "Last login",
+    "noLogin": "No login",
+    "logout": "Logout",
+    "register": "Register",
+    "username": "Username",
+    "password": "Password",
+    "repassword": "RePassword",
+    "rememberPassword": "Remember Password",
+    "usernameEmptyTips": "Please enter username",
+    "passwordEmptyTips": "Please enter password",
+    "repasswordEmptyTips": "Please enter repassword",
+    "passwordAndRepasswordNotTheSameTips": "Password is not the same as repassword",
+    "loginSuccess": "Login Successful",
+    "loginFailed": "Login Failed",
+    "registerSuccess": "Register Successful",
+    "registerFailed": "Register Failed",
+    "loginInfoInvalidTips": "Login information is invalid, error code {errorCode}",
+    "@loginInfoInvalidTips": {
+        "placeholders": {
+            "errorCode": {
+                "type": "int",
+                "example": "-1",
+                "description": "Error Code"
+            }
+        }
+    },
+
+    "copyLink": "Copy Link",
+    "copiedToClipboard": "Copied to clipboard",
+    "browser": "Browser",
+    "unableToOpenLink": "Unable to open link: {link}",
+    "@unableToOpenLink": {
+        "placeholders": {
+            "link": {
+                "type": "String",
+                "example": "https://wanandroid.com",
+                "description": "Link"
+            }
+        }
+    },
+    "collected": "Collected",
+    "collect": "Collect",
+    "recommend": "Recommend",
+    "desktop": "Desktop",
+    
+    "articleNotFound": "Article not found",
+    "articleNotFoundMsg": "Can't find the article",
+
+    "theyArticles": "They Articles",
+    "theyShare": "They Share"
 }

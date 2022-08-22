@@ -1,103 +1,44 @@
 {
+    "@@locale": "zh",
+
     "appName": "玩安卓",
-    "home": "首页",
-    "square": "广场",
-    "question": "问答",
-    "project": "项目",
-    "projectType": "项目类型",
-    "search": "搜索",
-    "searchHistory": "搜索历史",
-    "popularKeyword": "搜索热词",
-    "keywordEmptyTips": "没有关键字的搜索就像一盘沙，不用请求，前端就给拦了",
-    "cancel": "取消",
-    "empty": "无数据",
-    "emptyMsg": "这儿啥也没有",
-    "unknownError": "未知错误",
-    "unknownErrorMsg": "发生了错误，但别担心\n不是因为你",
-    "retry": "重试",
-    "noLogin": "未登录",
-    "myPoints": "我的积分",
-    "totalPoints": "总积分",
-    "pointsRank": "积分排行榜",
-    "myCollections": "我的收藏",
-    "myShare": "我的分享",
-    "about": "关于",
-    "settings": "设置",
-    "clearCache": "清除缓存",
-    "clearCacheWarning": "确定要清空缓存吗？",
-    "loading": "请稍候",
+
     "ok": "好",
+    "cancel": "取消",
+    
+    "add": "新增",
     "delete": "删除",
+    "edit": "编辑",
+    "save": "保存",
+
     "tips": "提示",
     "warning": "警告",
 
-    "login": "登录",
-    "logout": "退出登录",
-    "register": "注册",
-    "username": "用户名",
-    "lastLogin": "上次登录",
-    "password": "密码",
-    "repassword": "确认密码",
-    "rememberPassword": "记住密码",
-    "usernameEmptyTips": "请输入用户名",
-    "passwordEmptyTips": "请输入密码",
-    "repasswordEmptyTips": "请输入确认密码",
-    "passwordAndRepasswordNotTheSameTips": "密码和确认密码不一致",
-    "loginInfoInvalidTips": "登录信息已过期, 错误码 {errorCode}",
-    "loginSuccess": "登录成功",
-    "loginFailed": "登录失败",
-    "registerSuccess": "注册成功",
-    "registerFailed": "注册失败",
-
-    "share": "分享",
-    "original": "原创",
-
-    "languages": "多语言",
-    "chinese": "中文",
-    "english": "英文",
-    "auto": "跟随系统",
-
-    "copyLink": "复制链接",
-    "copiedToClipboard": "已复制到剪贴板",
-    "browser": "浏览器",
-    "unableToOpenLink": "无法打开链接: {link}",
     "back": "返回",
     "forward": "前进",
-    "collected": "已收藏",
-    "collect": "收藏",
+
+    "loading": "请稍候",
     "refresh": "刷新",
-    "desktop": "桌面",
-    "recommend": "推荐",
+    "retry": "重试",
+
+    "empty": "无数据",
+    "emptyMsg": "这儿啥也没有",
+
+    "loadFailed": "加载失败了",
 
     "unknown": "未知",
-    "loadFailed": "加载失败了",
-    "articleNotFound": "文章不存在",
-    "articleNotFoundMsg": "啊咧咧，文章找不到啦",
+    "unknownError": "未知错误",
+    "unknownErrorMsg": "发生了错误，但别担心\n不是因为你",
 
     "networkException": "网络异常",
     "networkExceptionMsg": "请检查您当前的网络连接",
 
-    "myCollectionsTabs": "{name, select, article{文章} website{网站}}",
+    "loadingMore": "正在加载更多",
+    "noMore": "没有更多了",
+    "loadMoreFailed": "加载失败了，轻触重试",
 
-    "article": "文章",
-    "website": "网站",
-
-    "edit": "编辑",
     "keepSwipingLeftToDelete": "继续左滑以删除",
     "releaseToDeleteSwipeRightToCancel": "松开以删除\n右滑取消",
-
-    "addCollected": "新增收集的{name}",
-    "add": "新增",
-    "editCollected": "编辑收集的{name}",
-    "save": "保存",
-    "title": "标题",
-    "titleEmptyTips": "请输入标题",
-    "author": "作者",
-    "authorEmptyTips": "请输入作者",
-    "link": "链接",
-    "linkEmptyTips": "请输入链接",
-    "linkFormatTips": "请检查链接的格式",
-    "addShare": "新增分享",
 
     "success": "成功",
     "failed": "失败",
@@ -105,19 +46,91 @@
 
     "useDataTrafficTips": "当前正在使用数据流量",
 
-    "theyArticles": "Ta的文章",
-    "theyShare": "Ta的分享",
+    "home": "首页",
 
-    "loadingMore": "正在加载更多",
-    "noMore": "没有更多了",
-    "loadMoreFailed": "加载失败了，轻触重试",
-
-    "searchForSomething": "搜点什么吧",
     "top": "置顶",
     "fresh": "新",
+    "share": "分享",
+    "original": "原创",
 
-    "lightMode": "浅色模式",
-    "darkMode": "深色模式",
+    "square": "广场",
+
+    "question": "问答",
+
+    "project": "项目",
+    "projectType": "项目类型",
+
+    "searchForSomething": "搜点什么吧",
+    "search": "搜索",
+    "searchHistory": "搜索历史",
+    "popularKeyword": "搜索热词",
+    "keywordEmptyTips": "没有关键字的搜索就像一盘沙，不用请求，前端就给拦了",
+
+    "pointsRank": "积分排行榜",
+
+    "myPoints": "我的积分",
+    "totalPoints": "总积分",
+
+    "myCollections": "我的收藏",
+    "collectionType": "{type, select, article{文章} website{网站}}",
+    "addCollected": "新增收集的{name}",
+    "editCollected": "编辑收集的{name}",
+
+    "myShare": "我的分享",
+    "addShare": "新增分享",
+
+    "title": "标题",
+    "titleEmptyTips": "请输入标题",
+    "author": "作者",
+    "authorEmptyTips": "请输入作者",
+    "link": "链接",
+    "linkEmptyTips": "请输入链接",
+    "linkFormatTips": "请检查链接的格式",
+
+    "about": "关于",
+
+    "settings": "设置",
+    "clearCache": "清除缓存",
+    "clearCacheWarning": "确定要清空缓存吗？",
+
+    "themeMode": "{mode, select, light{浅色模式} dark{深色模式} other{跟随系统}}",
     "currentThemeModeTips": "当前系统外观是",
-    "resetThemeModeTips": "是否切换主题模式为跟随系统？"
+    "resetThemeModeTips": "是否切换主题模式为跟随系统？",
+
+    "languages": "多语言",
+    "locale": "{locale, select, en{英文} zh{中文} other{跟随系统}}",
+
+    "login": "登录",
+    "lastLogin": "上次登录",
+    "noLogin": "未登录",
+    "logout": "退出登录",
+    "register": "注册",
+    "username": "用户名",
+    "password": "密码",
+    "repassword": "确认密码",
+    "rememberPassword": "记住密码",
+    "usernameEmptyTips": "请输入用户名",
+    "passwordEmptyTips": "请输入密码",
+    "repasswordEmptyTips": "请输入确认密码",
+    "passwordAndRepasswordNotTheSameTips": "密码和确认密码不一致",
+    "loginSuccess": "登录成功",
+    "loginFailed": "登录失败",
+    "registerSuccess": "注册成功",
+    "registerFailed": "注册失败",
+    "loginInfoInvalidTips": "登录信息已过期, 错误码 {errorCode}",
+
+    "copyLink": "复制链接",
+    "copiedToClipboard": "已复制到剪贴板",
+    "browser": "浏览器",
+    "unableToOpenLink": "无法打开链接: {link}",
+    "collected": "已收藏",
+    "collect": "收藏",
+    "desktop": "桌面",
+    "recommend": "推荐",
+
+    "articleNotFound": "文章不存在",
+    "articleNotFoundMsg": "啊咧咧，文章找不到啦",
+
+    "theyArticles": "Ta的文章",
+    "theyShare": "Ta的分享"
 }

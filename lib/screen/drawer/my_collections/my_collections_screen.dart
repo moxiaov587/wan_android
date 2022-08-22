@@ -93,15 +93,16 @@ class _MyCollectionsScreenState extends State<MyCollectionsScreen>
               child: TabBar(
                 controller: _tabController,
                 indicatorSize: TabBarIndicatorSize.label,
-                labelPadding: const EdgeInsets.symmetric(
-                  vertical: 12.0,
-                ),
+                labelPadding: AppTheme.bodyPaddingOnlyVertical,
                 labelStyle: context.theme.textTheme.titleMedium,
                 labelColor: context.theme.textTheme.titleMedium!.color,
                 unselectedLabelStyle: context.theme.textTheme.titleMedium,
                 tabs: CollectionType.values
-                    .map((CollectionType e) =>
-                        Text(S.of(context).myCollectionsTabs(e.name)))
+                    .map(
+                      (CollectionType type) => Text(
+                        S.of(context).collectionType(type.name),
+                      ),
+                    )
                     .toList(),
                 onTap: (int index) {
                   AppRouterDelegate.instance.currentBeamState.updateWith(

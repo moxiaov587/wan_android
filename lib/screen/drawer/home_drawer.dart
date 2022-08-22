@@ -190,21 +190,21 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   children: <Widget>[
                     Consumer(
                       builder: (_, WidgetRef ref, __) {
-                        final ThemeMode themeMode = ref.watch(themeProvider);
+                        final ThemeMode current = ref.watch(themeProvider);
 
-                        final bool isDark = themeMode == ThemeMode.dark ||
-                            themeMode == ThemeMode.system &&
-                                context.isDarkTheme;
+                        final bool isDark = current == ThemeMode.dark ||
+                            current == ThemeMode.system && context.isDarkTheme;
+
+                        final ThemeMode reverse =
+                            isDark ? ThemeMode.light : ThemeMode.dark;
 
                         return IconButton(
                           onPressed: () {
                             ref.read(themeProvider.notifier).switchThemeMode(
-                                  isDark ? ThemeMode.light : ThemeMode.dark,
+                                  reverse,
                                 );
                           },
-                          tooltip: isDark
-                              ? S.of(context).lightMode
-                              : S.of(context).darkMode,
+                          tooltip: S.of(context).themeMode(reverse.name),
                           icon: Icon(
                             isDark
                                 ? IconFontIcons.sunFill

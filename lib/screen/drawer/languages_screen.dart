@@ -3,16 +3,6 @@ part of 'home_drawer.dart';
 class LanguagesScreen extends StatelessWidget {
   const LanguagesScreen({super.key});
 
-  String translate(BuildContext context, {required Locale? value}) {
-    if (value == const Locale('en')) {
-      return S.of(context).english;
-    } else if (value == const Locale('zh', 'CN')) {
-      return S.of(context).chinese;
-    } else {
-      return S.of(context).auto;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,10 +23,7 @@ class LanguagesScreen extends StatelessWidget {
                 return ListTile(
                   selected: selected,
                   title: Text(
-                    translate(
-                      context,
-                      value: value,
-                    ),
+                    S.of(context).locale(value?.toString() ?? ''),
                   ),
                   trailing:
                       selected ? const Icon(IconFontIcons.checkLine) : null,

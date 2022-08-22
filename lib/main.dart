@@ -102,17 +102,19 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
               textAlign: TextAlign.center,
               text: TextSpan(
                 style: context.theme.textTheme.titleSmall,
-                text: S.current.currentThemeModeTips,
+                text: S.of(context).currentThemeModeTips,
                 children: <InlineSpan>[
                   TextSpan(
-                    text:
-                        '${WidgetsBinding.instance.window.platformBrightness == Brightness.dark ? S.of(context).darkMode : S.of(context).lightMode}\n',
+                    text: '${S.of(context).themeMode(
+                          WidgetsBinding
+                              .instance.window.platformBrightness.name,
+                        )}\n',
                     style: const TextStyle(
                       fontWeight: AppTextTheme.semiBold,
                     ),
                   ),
                   TextSpan(
-                    text: S.current.resetThemeModeTips,
+                    text: S.of(context).resetThemeModeTips,
                   ),
                 ],
               ),
@@ -129,7 +131,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
   }
 
   Future<void> closeSplash() async {
-    final String? errorCode =
+    final int? errorCode =
         await ref.read(authorizedProvider.notifier).initData();
     FlutterNativeSplash.remove();
 

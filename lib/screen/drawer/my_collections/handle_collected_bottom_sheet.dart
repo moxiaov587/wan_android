@@ -142,37 +142,40 @@ class _HandleCollectedBottomSheetState
                 key: _formKey,
                 child: CustomScrollView(
                   slivers: <Widget>[
-                    SliverToBoxAdapter(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          TextButton(
-                            style: ButtonStyle(
-                              textStyle: MaterialStateProperty.all(
-                                context.theme.textTheme.titleMedium,
+                    SliverPadding(
+                      padding: AppTheme.contentPadding.copyWith(bottom: 0),
+                      sliver: SliverToBoxAdapter(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            TextButton(
+                              style: ButtonStyle(
+                                textStyle: MaterialStateProperty.all(
+                                  context.theme.textTheme.titleMedium,
+                                ),
                               ),
+                              onPressed: () {
+                                Navigator.of(context).maybePop();
+                              },
+                              child: Text(S.of(context).cancel),
                             ),
-                            onPressed: () {
-                              Navigator.of(context).maybePop();
-                            },
-                            child: Text(S.of(context).cancel),
-                          ),
-                          TextButton(
-                            style: ButtonStyle(
-                              textStyle: MaterialStateProperty.all(context
-                                  .theme.textTheme.titleMedium!.semiBold),
+                            TextButton(
+                              style: ButtonStyle(
+                                textStyle: MaterialStateProperty.all(context
+                                    .theme.textTheme.titleMedium!.semiBold),
+                              ),
+                              onPressed: () {
+                                onSubmitted(
+                                  isEdit: collect != null,
+                                  collectId: collect?.id,
+                                );
+                              },
+                              child: Text(collect != null
+                                  ? S.of(context).save
+                                  : S.of(context).add),
                             ),
-                            onPressed: () {
-                              onSubmitted(
-                                isEdit: collect != null,
-                                collectId: collect?.id,
-                              );
-                            },
-                            child: Text(collect != null
-                                ? S.of(context).save
-                                : S.of(context).add),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     SliverPadding(
@@ -184,10 +187,10 @@ class _HandleCollectedBottomSheetState
                               collect != null
                                   ? S.of(context).editCollected(S
                                       .of(context)
-                                      .myCollectionsTabs(widget.type.name))
+                                      .collectionType(widget.type.name))
                                   : S.of(context).addCollected(S
                                       .of(context)
-                                      .myCollectionsTabs(widget.type.name)),
+                                      .collectionType(widget.type.name)),
                               style: context.theme.textTheme.titleLarge,
                               textAlign: TextAlign.center,
                             ),

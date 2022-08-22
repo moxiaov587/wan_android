@@ -157,7 +157,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                               );
                             } else {
                               DialogUtils.danger(
-                                S.of(context).unableToOpenLink(uri),
+                                S.of(context).unableToOpenLink(uri.toString()),
                               );
                             }
                           },
