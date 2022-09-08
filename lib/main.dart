@@ -147,7 +147,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final ThemeMode themeMode = ref.watch(themeProvider);
-    final Locale? locale = ref.watch(localeProvider);
+    final Locale? locale = ref.watch(localeProvider)?.value;
 
     return MaterialApp.router(
       onGenerateTitle: (BuildContext context) => S.of(context).appName,

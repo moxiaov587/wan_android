@@ -102,6 +102,8 @@ dart_code_metrics:
           - ok
           - qa
           - i
+          - en
+          - zh
     - prefer-correct-type-name:
         excluded: [ '_QA' ]
         max-length: 44

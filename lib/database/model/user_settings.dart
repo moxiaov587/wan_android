@@ -7,9 +7,9 @@ class UserSettings {
 
   bool? rememberPassword;
 
-  @ThemeModeConverter()
+  @Enumerated(EnumType.name)
   ThemeMode? themeMode;
 
-  @LocaleConverter()
-  Locale? languages;
+  @Enumerated(EnumType.name)
+  Language? language;
 }

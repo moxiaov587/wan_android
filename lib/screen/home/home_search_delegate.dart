@@ -155,7 +155,7 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
               .where()
               .sortByUpdateTimeDesc()
               .build()
-              .watch(initialReturn: true),
+              .watch(fireImmediately: true),
           builder: (_, AsyncSnapshot<List<SearchHistory>> snapshot) {
             if (snapshot.data == null || snapshot.data!.isEmpty) {
               return const SliverToBoxAdapter(

@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart' show Locale, ThemeMode;
+import 'package:flutter/material.dart' show ThemeMode;
 import 'package:isar/isar.dart';
 
-import '../converter/converters.dart';
+import '../../screen/provider/locale_provider.dart' show Language;
 
 part 'account_cache.dart';
 part 'response_cache.dart';

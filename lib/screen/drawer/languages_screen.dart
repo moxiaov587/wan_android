@@ -14,16 +14,17 @@ class LanguagesScreen extends StatelessWidget {
           itemBuilder: (_, int index) {
             return Consumer(
               builder: (_, WidgetRef ref, __) {
-                final Locale? value = LocaleNotifier.locales[index];
+                final Language? value = LocaleNotifier.languages[index];
 
                 final bool selected = ref.watch(
-                  localeProvider.select((Locale? locale) => locale == value),
+                  localeProvider
+                      .select((Language? language) => language == value),
                 );
 
                 return ListTile(
                   selected: selected,
                   title: Text(
-                    S.of(context).locale(value?.toString() ?? ''),
+                    S.of(context).locale(value?.name ?? ''),
                   ),
                   trailing:
                       selected ? const Icon(IconFontIcons.checkLine) : null,
@@ -35,7 +36,7 @@ class LanguagesScreen extends StatelessWidget {
             );
           },
           separatorBuilder: (_, __) => const Divider(),
-          itemCount: LocaleNotifier.locales.length,
+          itemCount: LocaleNotifier.languages.length,
         ),
       ),
     );

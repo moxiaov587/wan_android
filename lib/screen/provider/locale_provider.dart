@@ -3,32 +3,45 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../database/database_manager.dart';
 
-final StateNotifierProvider<LocaleNotifier, Locale?> localeProvider =
-    StateNotifierProvider<LocaleNotifier, Locale?>((_) {
-  final Locale? languages = DatabaseManager.uniqueUserSettings?.languages;
+final StateNotifierProvider<LocaleNotifier, Language?> localeProvider =
+    StateNotifierProvider<LocaleNotifier, Language?>((_) {
+  final Language? language = DatabaseManager.uniqueUserSettings?.language;
 
-  return LocaleNotifier(languages);
+  return LocaleNotifier(language);
 });
 
-class LocaleNotifier extends StateNotifier<Locale?> {
+enum Language {
+  en,
+  zh;
+
+  Locale get value {
+    switch (this) {
+      case Language.en:
+        return const Locale('en');
+      case Language.zh:
+        return const Locale('zh');
+    }
+  }
+}
+
+class LocaleNotifier extends StateNotifier<Language?> {
   LocaleNotifier(super.state);
 
-  static const List<Locale?> locales = <Locale?>[
+  static const List<Language?> languages = <Language?>[
     null,
-    Locale('en'),
-    Locale('zh'),
+    ...Language.values,
   ];
 
-  void switchLocale(Locale? languages) {
-    if (!locales.contains(languages)) {
+  void switchLocale(Language? language) {
+    if (!languages.contains(language)) {
       return;
     }
 
-    state = languages;
+    state = language;
 
     final UserSettings userSettings = DatabaseManager.writeUniqueUserSettings(
-      languages: languages,
-      enforceWriteLanguages: true,
+      language: language,
+      enforceWriteLanguage: true,
     );
 
     DatabaseManager.isar.writeTxnSync<int>(

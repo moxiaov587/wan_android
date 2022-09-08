@@ -1,9 +1,10 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart' show Locale, ThemeMode;
+import 'package:flutter/material.dart' show ThemeMode;
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../screen/provider/locale_provider.dart' show Language;
 import 'model/models.dart';
 
 export 'package:isar/isar.dart';
@@ -28,8 +29,8 @@ class DatabaseManager {
   static UserSettings writeUniqueUserSettings({
     bool? rememberPassword,
     ThemeMode? themeMode,
-    Locale? languages,
-    bool enforceWriteLanguages = false,
+    Language? language,
+    bool enforceWriteLanguage = false,
   }) {
     final UserSettings? uniqueUserSettings =
         DatabaseManager.userSettingsCache.where().findFirstSync();
@@ -42,9 +43,9 @@ class DatabaseManager {
         ..rememberPassword =
             rememberPassword ?? uniqueUserSettings.rememberPassword
         ..themeMode = themeMode ?? uniqueUserSettings.themeMode
-        ..languages = enforceWriteLanguages
-            ? languages
-            : languages ?? uniqueUserSettings.languages;
+        ..language = enforceWriteLanguage
+            ? language
+            : language ?? uniqueUserSettings.language;
     } else {
       if (rememberPassword != null) {
         userSettings.rememberPassword = rememberPassword;
@@ -54,8 +55,8 @@ class DatabaseManager {
         userSettings.themeMode = themeMode;
       }
 
-      if (languages != null || enforceWriteLanguages) {
-        userSettings.languages = languages;
+      if (language != null || enforceWriteLanguage) {
+        userSettings.language = language;
       }
     }
 

@@ -9,7 +9,8 @@
 | ![](screenshots/search_result_screen.jpeg) | ![](screenshots/article_screen.jpeg) | ![](screenshots/side_bar.jpeg) |
 | ![](screenshots/my_points_screen.gif) | ![](screenshots/my_collections_screen.gif) |  |
 # 使用
-当前使用的Flutter版本`3.3.0-0.3.pre(Beta channel)`
+当前使用的Flutter版本`3.3.0-0.5.pre(Beta channel)`
+> 国际化方案使用了[intl](https://pub.flutter-io.cn/packages/intl)，请确保在编辑器中已经安装Flutter Intl插件，笔者使用的是VSCode[插件下载地址](https://marketplace.visualstudio.com/items?itemName=localizely.flutter-intl)，其他IDE搜索`Flutter Intl`下载
 ```
 1. flutter pub get
 2. flutter pub run build_runner build --delete-conflicting-outputs
