@@ -8,9 +8,10 @@ import 'package:nil/nil.dart' show nil;
 import 'package:palette_generator/palette_generator.dart';
 
 import '../../../app/provider/view_state.dart';
-import '../../../app/provider/widget/provider_widget.dart';
 import '../../../widget/view_state_widget.dart';
 import '../../app/l10n/generated/l10n.dart';
+import '../../app/provider/mixin/list_view_state_mixin.dart';
+import '../../app/provider/mixin/refresh_list_view_state_mixin.dart';
 import '../../app/theme/app_theme.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
@@ -26,6 +27,7 @@ import '../../widget/article.dart';
 import '../../widget/capsule_ink.dart';
 import '../../widget/custom_search_delegate.dart';
 import '../../widget/gap.dart';
+import '../../widget/indent_divider.dart';
 import '../../widget/level_tag.dart';
 import '../authorized/provider/authorized_provider.dart';
 import '../drawer/home_drawer.dart';
@@ -163,84 +165,121 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class _Home extends StatefulWidget {
+class _Home extends ConsumerStatefulWidget {
   const _Home();
 
   @override
-  State<_Home> createState() => _HomeState();
+  ConsumerState<_Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<_Home> with AutomaticKeepAliveClientMixin {
+class _HomeState extends ConsumerState<_Home>
+    with
+        AutomaticKeepAliveClientMixin,
+        RefreshListViewStateMixin<
+            StateNotifierProvider<ArticleNotifier,
+                RefreshListViewState<ArticleModel>>,
+            ArticleModel,
+            _Home> {
   @override
-  bool get wantKeepAlive => true;
+  final bool autoInitData = false;
+
+  @override
+  void onRetry() {
+    if (ref.read(homeTopArticleProvider) is ListViewStateError<ArticleModel>) {
+      ref.read(homeTopArticleProvider.notifier).initData();
+    } else {
+      super.onRetry();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    ref.read(homeBannerProvider.notifier).initData();
+    ref.read(homeTopArticleProvider.notifier).initData();
+  }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
-    return RefreshListViewWidget<
-        StateNotifierProvider<ArticleNotifier,
-            RefreshListViewState<ArticleModel>>,
-        ArticleModel>(
-      provider: homeArticleProvider,
-      onInitState: (Reader reader) {
-        reader.call(homeBannerProvider.notifier).initData();
-        reader.call(homeTopArticleProvider.notifier).initData();
-      },
-      onRetry: (Reader reader) {
-        if (reader.call(homeTopArticleProvider)
-            is ListViewStateError<ArticleModel>) {
-          reader.call(homeTopArticleProvider.notifier).initData();
-        } else {
-          reader.call(homeArticleProvider.notifier).initData();
-        }
-      },
-      sliverPersistentHeader: const _HomeAppBar(),
-      itemBuilder: (_, __, ___, ArticleModel article) {
-        return ArticleTile(
-          key: ValueKey<String>(
-            'home_article_${article.id}',
-          ),
-          article: article,
-        );
-      },
-      separatorBuilder: (_, __, ___) => const Divider(),
-      slivers: <Widget>[
-        SliverToBoxAdapter(
-          child: Material(
-            color: context.theme.cardColor,
-            child: Padding(
-              padding: AppTheme.contentPadding,
-              child: CapsuleInk(
-                color: context.theme.bottomNavigationBarTheme.backgroundColor,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(right: kStyleUint),
-                      child: Icon(
-                        IconFontIcons.searchEyeLine,
-                        color: context.theme.textTheme.bodyMedium!.color,
-                        size: AppTextTheme.body1,
+    return NotificationListener<ScrollNotification>(
+      onNotification: onScrollNotification,
+      child: CustomScrollView(
+        slivers: <Widget>[
+          const _HomeAppBar(),
+          pullDownIndicator,
+          SliverToBoxAdapter(
+            child: Material(
+              color: context.theme.cardColor,
+              child: Padding(
+                padding: AppTheme.contentPadding,
+                child: CapsuleInk(
+                  color: context.theme.bottomNavigationBarTheme.backgroundColor,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(right: kStyleUint),
+                        child: Icon(
+                          IconFontIcons.searchEyeLine,
+                          color: context.theme.textTheme.bodyMedium!.color,
+                          size: AppTextTheme.body1,
+                        ),
                       ),
-                    ),
-                    Text(
-                      S.of(context).searchForSomething,
-                    ),
-                  ],
+                      Text(
+                        S.of(context).searchForSomething,
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    AppRouterDelegate.instance.currentBeamState.updateWith(
+                      showSearch: true,
+                    );
+                  },
                 ),
-                onTap: () {
-                  AppRouterDelegate.instance.currentBeamState.updateWith(
-                    showSearch: true,
-                  );
-                },
               ),
             ),
           ),
-        ),
-      ],
+          Consumer(
+            builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
+              (int nextPageNum, bool isLastPage, List<ArticleModel> list) {
+                if (list.isEmpty) {
+                  return const SliverFillRemaining(
+                    child: EmptyWidget(),
+                  );
+                }
+
+                return LoadMoreSliverList.separator(
+                  loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
+                  itemBuilder: (_, int index) {
+                    final ArticleModel article = list[index];
+
+                    return ArticleTile(
+                      key: Key('home_article_${article.id}'),
+                      article: article,
+                    );
+                  },
+                  separatorBuilder: (_, __) => const IndentDivider(),
+                  itemCount: list.length,
+                );
+              },
+              loading: loadingIndicatorBuilder,
+              error: errorIndicatorBuilder,
+            ),
+          ),
+        ],
+      ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  StateNotifierProvider<ArticleNotifier, RefreshListViewState<ArticleModel>>
+      get provider => homeArticleProvider;
 }
 
 class _HomeAppBar extends StatefulWidget {
