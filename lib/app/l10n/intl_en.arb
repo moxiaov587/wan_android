@@ -53,6 +53,57 @@
     "share": "Share",
     "original": "Original",
 
+    "yearsAgo": "{many, plural, one{1 year} other{{many} years}} ago",
+    "@yearsAgo": {
+        "placeholders": {
+            "many": {
+                "type": "int",
+                "example": "1",
+                "description": "years ago"
+            }
+        }
+    },
+    "monthsAgo": "{many, plural, one{1 month} other{{many} months}} ago",
+    "@monthsAgo": {
+        "placeholders": {
+            "many": {
+                "type": "int",
+                "example": "1",
+                "description": "months ago"
+            }
+        }
+    },
+    "daysAgo": "{many, plural, one{1 day} other{{many} days}} ago",
+    "@daysAgo": {
+        "placeholders": {
+            "many": {
+                "type": "int",
+                "example": "1",
+                "description": "days ago"
+            }
+        }
+    },
+    "hoursAgo": "{many, plural, one{1 hour} other{{many} hours}} ago",
+    "@hoursAgo": {
+        "placeholders": {
+            "many": {
+                "type": "int",
+                "example": "1",
+                "description": "hours ago"
+            }
+        }
+    },
+    "minutesAgo": "{many, plural, zero{Just now} one{1 minute ago} other{{many} minutes ago}}",
+    "@minutesAgo": {
+        "placeholders": {
+            "many": {
+                "type": "int",
+                "example": "1",
+                "description": "minutes ago"
+            }
+        }
+    },
+
     "square": "Square",
 
     "question": "Q&A",

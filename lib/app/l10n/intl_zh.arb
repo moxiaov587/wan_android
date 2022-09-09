@@ -53,6 +53,12 @@
     "share": "分享",
     "original": "原创",
 
+    "yearsAgo": "{many, plural, other{{many}年前}}",
+    "monthsAgo": "{many, plural, other{{many}个月前}}",
+    "daysAgo": "{many, plural, other{{many}天前}}",
+    "hoursAgo": "{many, plural, other{{many}小时前}}",
+    "minutesAgo": "{many, plural, zero{刚刚} other{{many}分钟前}}",
+
     "square": "广场",
 
     "question": "问答",

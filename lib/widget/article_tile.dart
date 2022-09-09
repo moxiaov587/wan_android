@@ -87,13 +87,13 @@ class ArticleTile extends StatelessWidget {
                           article.shareUser.strictValue == null)
                         _textSpace,
                       TextSpan(
-                        text: article.niceDate,
+                        text: article.publishTime
+                                .toDateTimeTranslation(context) ??
+                            '',
                       ),
                       _textSpace,
                       TextSpan(
-                        text:
-                            '${article.superChapterName.mustNotEmpty ? '${article.superChapterName}/' : ''}'
-                            '${article.chapterName}',
+                        text: '${article.chapterName}',
                       ),
                     ],
                   ),
