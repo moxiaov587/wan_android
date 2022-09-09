@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 
+import '../../utils/screen_utils.dart';
+
 part 'app_colors.dart';
 part 'app_text_theme.dart';
 part 'gradient_colors.dart';
@@ -71,9 +73,9 @@ class AppTheme {
     centerTitle: true,
   );
 
-  static const DividerThemeData dividerTheme = DividerThemeData(
-    space: 0,
-    thickness: 0.7,
+  static final DividerThemeData dividerTheme = DividerThemeData(
+    space: double.parse((1 / ScreenUtils.scale).toStringAsFixed(2)),
+    thickness: double.parse((1 / ScreenUtils.scale).toStringAsFixed(2)),
     indent: kStyleUint4,
     endIndent: kStyleUint4,
   );
@@ -150,7 +152,9 @@ class AppTheme {
       primaryColor: AppColors.primary,
     ),
     appBarTheme: appBarTheme.copyWith(
-      systemOverlayStyle: SystemUiOverlayStyle.dark,
+      systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(
+        statusBarColor: Colors.transparent,
+      ),
       backgroundColor: AppColors.appBar,
       foregroundColor: AppColors.text1,
     ),
@@ -303,7 +307,9 @@ class AppTheme {
       primaryColor: AppColors.primaryDark,
     ),
     appBarTheme: appBarTheme.copyWith(
-      systemOverlayStyle: SystemUiOverlayStyle.light,
+      systemOverlayStyle: SystemUiOverlayStyle.light.copyWith(
+        statusBarColor: Colors.transparent,
+      ),
       backgroundColor: AppColors.appBarDark,
       foregroundColor: AppColors.text1Dark,
     ),
