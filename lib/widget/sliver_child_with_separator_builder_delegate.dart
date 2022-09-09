@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'indent_divider.dart';
+
 int _kDefaultSemanticIndexCallback(Widget _, int localIndex) => localIndex;
 
 /// `const Divider()` is used by default when [separatorBuilder] is null
@@ -71,7 +73,8 @@ class SliverChildWithSeparatorBuilderDelegate extends SliverChildDelegate {
           ? builder(context, itemIndex + 1)
           : index.isEven
               ? builder(context, itemIndex)
-              : separatorBuilder?.call(context, itemIndex) ?? const Divider();
+              : separatorBuilder?.call(context, itemIndex) ??
+                  const IndentDivider();
     } catch (exception, stackTrace) {
       child = _createErrorWidget(exception, stackTrace);
     }
@@ -88,12 +91,14 @@ class SliverChildWithSeparatorBuilderDelegate extends SliverChildDelegate {
 
     if (index.isEven && addSemanticIndexes) {
       final int? semanticIndex = semanticIndexCallback(child, itemIndex);
+
       if (semanticIndex != null)
         child = IndexedSemantics(
           index: semanticIndex + semanticIndexOffset,
           child: child,
         );
     }
+
     if (addAutomaticKeepAlives) {
       child = AutomaticKeepAlive(child: child);
     }

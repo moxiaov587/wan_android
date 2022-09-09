@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nil/nil.dart' show nil;
 
 import '../../app/l10n/generated/l10n.dart';
+import '../../app/provider/mixin/refresh_list_view_state_mixin.dart';
 import '../../app/provider/view_state.dart';
-import '../../app/provider/widget/provider_widget.dart';
 import '../../app/theme/app_theme.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../extensions/extensions.dart';
@@ -17,6 +17,7 @@ import '../../utils/dialog_utils.dart';
 import '../../utils/screen_utils.dart';
 import '../../widget/animated_counter.dart';
 import '../../widget/gap.dart';
+import '../../widget/indent_divider.dart';
 import '../../widget/level_tag.dart';
 import '../../widget/sliver_child_with_separator_builder_delegate.dart';
 import '../../widget/view_state_widget.dart';
@@ -178,6 +179,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   onTap: config.onTap,
                 );
               },
+              separatorBuilder: (_, __) => const IndentDivider.listTile(),
               childCount: configs.length,
             ),
           ),

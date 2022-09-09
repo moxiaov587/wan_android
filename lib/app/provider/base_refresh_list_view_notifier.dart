@@ -12,11 +12,12 @@ abstract class BaseRefreshListViewNotifier<T>
 
   final int pageSize;
 
-  Future<void> initData() async {
+  Future<bool> initData() {
     if (state != RefreshListViewState<T>.loading()) {
       state = RefreshListViewState<T>.loading();
     }
-    await refresh();
+
+    return refresh();
   }
 
   Future<bool> refresh() async {
@@ -58,8 +59,12 @@ abstract class BaseRefreshListViewNotifier<T>
                 return LoadingMoreStatus.noData;
               }
 
+              if (initialPageNum != 0) {
+                pageNum += 1;
+              }
+
               final RefreshListViewStateData<T> data = await loadData(
-                pageNum: pageNum + 1,
+                pageNum: pageNum,
                 pageSize: pageSize,
               );
 

@@ -1,15 +1,39 @@
 part of 'home_screen.dart';
 
-class _Project extends StatefulWidget {
+class _Project extends ConsumerStatefulWidget {
   const _Project();
 
   @override
-  State<_Project> createState() => _ProjectState();
+  ConsumerState<_Project> createState() => _ProjectState();
 }
 
-class _ProjectState extends State<_Project> with AutomaticKeepAliveClientMixin {
+class _ProjectState extends ConsumerState<_Project>
+    with
+        AutomaticKeepAliveClientMixin,
+        RefreshListViewStateMixin<
+            StateNotifierProvider<ProjectNotifier,
+                RefreshListViewState<ArticleModel>>,
+            ArticleModel,
+            _Project> {
   @override
-  bool get wantKeepAlive => true;
+  final bool autoInitData = false;
+
+  @override
+  void onRetry() {
+    if (ref.read(projectTypesProvider)
+        is ListViewStateError<ProjectTypeModel>) {
+      ref.read(projectTypesProvider.notifier).initData();
+    } else {
+      super.onRetry();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    ref.read(projectTypesProvider.notifier).initData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,41 +47,67 @@ class _ProjectState extends State<_Project> with AutomaticKeepAliveClientMixin {
           title: Text(S.of(context).project),
         ),
         Expanded(
-          child: RefreshListViewWidget<
-              StateNotifierProvider<ProjectNotifier,
-                  RefreshListViewState<ArticleModel>>,
-              ArticleModel>(
-            provider: projectArticleProvider,
-            onInitState: (Reader reader) {
-              reader.call(projectTypesProvider.notifier).initData();
-            },
-            onRetry: (Reader reader) {
-              if (reader.call(projectTypesProvider)
-                  is ListViewStateError<ProjectTypeModel>) {
-                reader.call(projectTypesProvider.notifier).initData();
-              } else {
-                reader.call(projectArticleProvider.notifier).initData();
-              }
-            },
-            sliverPersistentHeader: SliverPinnedPersistentHeader(
-              delegate: _ProjectTypeSwitchSliverHeaderDelegate(
-                extentProtoType: const _ProjectTypeSwitchExtentProtoType(),
-              ),
-            ),
-            itemBuilder: (_, __, ___, ArticleModel article) {
-              return ArticleTile(
-                key: ValueKey<String>(
-                  'project_article_${article.id}',
+          child: Consumer(
+            builder: (_, WidgetRef ref, __) {
+              return NotificationListener<ScrollNotification>(
+                onNotification: onScrollNotification,
+                child: CustomScrollView(
+                  slivers: <Widget>[
+                    pullDownIndicator,
+                    SliverPinnedPersistentHeader(
+                      delegate: _ProjectTypeSwitchSliverHeaderDelegate(
+                        extentProtoType:
+                            const _ProjectTypeSwitchExtentProtoType(),
+                      ),
+                    ),
+                    Consumer(
+                      builder: (_, WidgetRef ref, __) =>
+                          ref.watch(provider).when(
+                        (
+                          int nextPageNum,
+                          bool isLastPage,
+                          List<ArticleModel> list,
+                        ) {
+                          if (list.isEmpty) {
+                            return const SliverFillRemaining(
+                              child: EmptyWidget(),
+                            );
+                          }
+
+                          return LoadMoreSliverList.separator(
+                            loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
+                            itemBuilder: (_, int index) {
+                              final ArticleModel article = list[index];
+
+                              return ArticleTile(
+                                key: Key('project_article_${article.id}'),
+                                article: article,
+                              );
+                            },
+                            separatorBuilder: (_, __) => const IndentDivider(),
+                            itemCount: list.length,
+                          );
+                        },
+                        loading: loadingIndicatorBuilder,
+                        error: errorIndicatorBuilder,
+                      ),
+                    ),
+                  ],
                 ),
-                article: article,
               );
             },
-            separatorBuilder: (_, __, ___) => const Divider(),
           ),
         ),
       ],
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  StateNotifierProvider<ProjectNotifier, RefreshListViewState<ArticleModel>>
+      get provider => projectArticleProvider;
 }
 
 class _ProjectTypeSwitchExtentProtoType extends ConsumerWidget {

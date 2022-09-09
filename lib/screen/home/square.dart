@@ -1,16 +1,20 @@
 part of 'home_screen.dart';
 
-class _Square extends StatefulWidget {
+class _Square extends ConsumerStatefulWidget {
   const _Square();
 
   @override
-  State<_Square> createState() => _SquareState();
+  ConsumerState<_Square> createState() => _SquareState();
 }
 
-class _SquareState extends State<_Square> with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
-
+class _SquareState extends ConsumerState<_Square>
+    with
+        AutomaticKeepAliveClientMixin,
+        RefreshListViewStateMixin<
+            StateNotifierProvider<SquareNotifier,
+                RefreshListViewState<ArticleModel>>,
+            ArticleModel,
+            _Square> {
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -23,26 +27,59 @@ class _SquareState extends State<_Square> with AutomaticKeepAliveClientMixin {
           title: Text(S.of(context).square),
         ),
         Expanded(
-          child: RefreshListViewWidget<
-              StateNotifierProvider<SquareNotifier,
-                  RefreshListViewState<ArticleModel>>,
-              ArticleModel>(
-            provider: squareArticleProvider,
-            onInitState: (Reader reader) {
-              reader.call(squareArticleProvider.notifier).initData();
-            },
-            itemBuilder: (_, __, ___, ArticleModel article) {
-              return ArticleTile(
-                key: ValueKey<String>(
-                  'square_article_${article.id}',
+          child: Consumer(
+            builder: (_, WidgetRef ref, __) {
+              return NotificationListener<ScrollNotification>(
+                onNotification: onScrollNotification,
+                child: CustomScrollView(
+                  slivers: <Widget>[
+                    pullDownIndicator,
+                    Consumer(
+                      builder: (_, WidgetRef ref, __) =>
+                          ref.watch(provider).when(
+                        (
+                          int nextPageNum,
+                          bool isLastPage,
+                          List<ArticleModel> list,
+                        ) {
+                          if (list.isEmpty) {
+                            return const SliverFillRemaining(
+                              child: EmptyWidget(),
+                            );
+                          }
+
+                          return LoadMoreSliverList.separator(
+                            loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
+                            itemBuilder: (_, int index) {
+                              final ArticleModel article = list[index];
+
+                              return ArticleTile(
+                                key: Key('square_article_${article.id}'),
+                                article: article,
+                              );
+                            },
+                            separatorBuilder: (_, __) => const IndentDivider(),
+                            itemCount: list.length,
+                          );
+                        },
+                        loading: loadingIndicatorBuilder,
+                        error: errorIndicatorBuilder,
+                      ),
+                    ),
+                  ],
                 ),
-                article: article,
               );
             },
-            separatorBuilder: (_, __, ___) => const Divider(),
           ),
         ),
       ],
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  StateNotifierProvider<SquareNotifier, RefreshListViewState<ArticleModel>>
+      get provider => squareArticleProvider;
 }

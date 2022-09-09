@@ -1,7 +1,22 @@
 part of 'home_screen.dart';
 
-class ProjectTypeBottomSheet extends StatelessWidget {
+class ProjectTypeBottomSheet extends ConsumerStatefulWidget {
   const ProjectTypeBottomSheet({super.key});
+
+  @override
+  ConsumerState<ProjectTypeBottomSheet> createState() =>
+      _ProjectTypeBottomSheetState();
+}
+
+class _ProjectTypeBottomSheetState extends ConsumerState<ProjectTypeBottomSheet>
+    with
+        ListViewStateMixin<
+            StateNotifierProvider<ProjectTypeNotifier,
+                ListViewState<ProjectTypeModel>>,
+            ProjectTypeModel,
+            ProjectTypeBottomSheet> {
+  @override
+  final bool autoInitData = false;
 
   @override
   Widget build(BuildContext context) {
@@ -19,41 +34,53 @@ class ProjectTypeBottomSheet extends StatelessWidget {
             ),
             const Divider(),
             Expanded(
-              child: ListViewWidget<
-                  StateNotifierProvider<ProjectTypeNotifier,
-                      ListViewState<ProjectTypeModel>>,
-                  ProjectTypeModel>(
-                provider: projectTypesProvider,
-                itemBuilder: (_, __, int index, ProjectTypeModel projectType) {
-                  return Consumer(
-                    builder: (_, WidgetRef ref, __) {
-                      final bool selected = ref.watch(
-                        currentProjectTypeProvider.select(
-                          (ViewState<ProjectTypeModel> value) =>
-                              value.whenOrNull(
-                                (ProjectTypeModel? currentProjectType) =>
-                                    currentProjectType == projectType,
-                              ) ??
-                              false,
-                        ),
-                      );
+              child: Consumer(
+                builder: (_, WidgetRef ref, __) {
+                  return ref.watch(provider).when(
+                        (List<ProjectTypeModel> list) => ListView.builder(
+                          prototypeItem: const ListTile(),
+                          itemBuilder: (_, int index) {
+                            final ProjectTypeModel projectType = list[index];
 
-                      return ListTile(
-                        selected: selected,
-                        title: Text(
-                          HTMLParseUtils.unescapeHTML(projectType.name) ??
-                              S.of(context).unknown,
-                        ),
-                        onTap: () {
-                          ref
-                              .read(currentProjectTypeProvider.notifier)
-                              .selected(projectType);
+                            return Consumer(
+                              builder: (_, WidgetRef ref, Widget? title) {
+                                final bool selected = ref.watch(
+                                  currentProjectTypeProvider.select(
+                                    (ViewState<ProjectTypeModel> value) =>
+                                        value.whenOrNull(
+                                          (ProjectTypeModel?
+                                                  currentProjectType) =>
+                                              currentProjectType == projectType,
+                                        ) ??
+                                        false,
+                                  ),
+                                );
 
-                          Navigator.of(context).maybePop();
-                        },
+                                return ListTile(
+                                  selected: selected,
+                                  title: title,
+                                  onTap: () {
+                                    ref
+                                        .read(
+                                          currentProjectTypeProvider.notifier,
+                                        )
+                                        .selected(projectType);
+
+                                    Navigator.of(context).maybePop();
+                                  },
+                                );
+                              },
+                              child: Text(
+                                HTMLParseUtils.unescapeHTML(projectType.name) ??
+                                    S.of(context).unknown,
+                              ),
+                            );
+                          },
+                          itemCount: list.length,
+                        ),
+                        loading: loadingIndicatorBuilder,
+                        error: errorIndicatorBuilder,
                       );
-                    },
-                  );
                 },
               ),
             ),
@@ -62,4 +89,8 @@ class ProjectTypeBottomSheet extends StatelessWidget {
       ),
     );
   }
+
+  @override
+  StateNotifierProvider<ProjectTypeNotifier, ListViewState<ProjectTypeModel>>
+      get provider => projectTypesProvider;
 }

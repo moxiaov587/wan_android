@@ -2,11 +2,22 @@ part of 'home_drawer.dart';
 
 const double _kCurrentUserRankTileHeight = 56.0;
 
-class RankScreen extends ConsumerWidget {
+class RankScreen extends ConsumerStatefulWidget {
   const RankScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<RankScreen> createState() => _RankScreenState();
+}
+
+class _RankScreenState extends ConsumerState<RankScreen>
+    with
+        AutoDisposeRefreshListViewStateMixin<
+            AutoDisposeStateNotifierProvider<PointsRankNotifier,
+                RefreshListViewState<UserPointsModel>>,
+            UserPointsModel,
+            RankScreen> {
+  @override
+  Widget build(BuildContext context) {
     final double paddingBottom =
         _kCurrentUserRankTileHeight + ScreenUtils.bottomSafeHeight;
 
@@ -19,33 +30,66 @@ class RankScreen extends ConsumerWidget {
       ),
       body: Stack(
         children: <Widget>[
-          AutoDisposeRefreshListViewWidget<
-              AutoDisposeStateNotifierProvider<PointsRankNotifier,
-                  RefreshListViewState<UserPointsModel>>,
-              UserPointsModel>(
-            provider: pointsRankProvider,
-            onInitState: (Reader reader) {
-              reader.call(pointsRankProvider.notifier).initData();
-            },
-            padding: currentUserPoints != null
-                ? EdgeInsets.only(bottom: paddingBottom)
-                : EdgeInsets.zero,
-            itemBuilder: (_, __, ___, UserPointsModel points) {
-              return Material(
-                child: Padding(
-                  padding: const EdgeInsets.all(kStyleUint4),
-                  child: _RankTile(
-                    rank: points.rank,
-                    level: points.level,
-                    nickname: points.nickname.strictValue ??
-                        points.username.strictValue ??
-                        '',
-                    totalPoints: points.coinCount,
-                  ),
+          Consumer(
+            builder: (_, WidgetRef ref, __) {
+              return NotificationListener<ScrollNotification>(
+                onNotification: onScrollNotification,
+                child: CustomScrollView(
+                  slivers: <Widget>[
+                    pullDownIndicator,
+                    Consumer(
+                      builder: (_, WidgetRef ref, __) =>
+                          ref.watch(provider).when(
+                        (
+                          int nextPageNum,
+                          bool isLastPage,
+                          List<UserPointsModel> list,
+                        ) {
+                          if (list.isEmpty) {
+                            return const SliverFillRemaining(
+                              child: EmptyWidget(),
+                            );
+                          }
+
+                          return SliverPadding(
+                            padding: currentUserPoints != null
+                                ? EdgeInsets.only(bottom: paddingBottom)
+                                : EdgeInsets.zero,
+                            sliver: LoadMoreSliverList.separator(
+                              loadMoreIndicatorBuilder:
+                                  loadMoreIndicatorBuilder,
+                              itemBuilder: (_, int index) {
+                                final UserPointsModel points = list[index];
+
+                                return Material(
+                                  key: Key('rank_${points.userId}'),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(kStyleUint4),
+                                    child: _RankTile(
+                                      rank: points.rank,
+                                      level: points.level,
+                                      nickname: points.nickname.strictValue ??
+                                          points.username.strictValue ??
+                                          '',
+                                      totalPoints: points.coinCount,
+                                    ),
+                                  ),
+                                );
+                              },
+                              separatorBuilder: (_, __) =>
+                                  const IndentDivider(),
+                              itemCount: list.length,
+                            ),
+                          );
+                        },
+                        loading: loadingIndicatorBuilder,
+                        error: errorIndicatorBuilder,
+                      ),
+                    ),
+                  ],
                 ),
               );
             },
-            separatorBuilder: (_, __, ___) => const Divider(),
           ),
           if (currentUserPoints != null)
             Positioned(
@@ -106,6 +150,10 @@ class RankScreen extends ConsumerWidget {
       ),
     );
   }
+
+  @override
+  AutoDisposeStateNotifierProvider<PointsRankNotifier,
+      RefreshListViewState<UserPointsModel>> get provider => pointsRankProvider;
 }
 
 class _RankTile extends StatelessWidget {
@@ -137,9 +185,13 @@ class _RankTile extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Text(
-                nickname.strictValue ?? '',
-                style: context.theme.textTheme.titleMedium,
+              Flexible(
+                child: Text(
+                  nickname.strictValue ?? '',
+                  style: context.theme.textTheme.titleMedium,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
               Gap(
                 direction: GapDirection.horizontal,
@@ -149,6 +201,9 @@ class _RankTile extends StatelessWidget {
               ),
             ],
           ),
+        ),
+        Gap(
+          direction: GapDirection.horizontal,
         ),
         Text(
           '$totalPoints',

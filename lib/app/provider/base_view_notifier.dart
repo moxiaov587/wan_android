@@ -4,11 +4,15 @@ abstract class BaseViewNotifier<T> extends StateNotifier<ViewState<T>>
     with ViewErrorMixin {
   BaseViewNotifier(super.state);
 
-  Future<void> initData() async {
-    await refresh();
+  Future<bool> initData() async {
+    if (state != ViewState<T>.loading()) {
+      state = ViewState<T>.loading();
+    }
+
+    return refresh();
   }
 
-  Future<void> refresh() async {
+  Future<bool> refresh() async {
     try {
       final T? data = await loadData();
 
@@ -17,8 +21,12 @@ abstract class BaseViewNotifier<T> extends StateNotifier<ViewState<T>>
       state = ViewState<T>(
         value: data,
       );
+
+      return true;
     } catch (e, s) {
       onError(e, s);
+
+      return false;
     }
   }
 

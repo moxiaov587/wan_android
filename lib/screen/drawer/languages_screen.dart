@@ -35,7 +35,7 @@ class LanguagesScreen extends StatelessWidget {
               },
             );
           },
-          separatorBuilder: (_, __) => const Divider(),
+          separatorBuilder: (_, __) => const IndentDivider(),
           itemCount: LocaleNotifier.languages.length,
         ),
       ),

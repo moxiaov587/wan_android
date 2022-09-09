@@ -1,8 +1,19 @@
 part of 'home_drawer.dart';
 
-class MyPointsScreen extends StatelessWidget {
+class MyPointsScreen extends ConsumerStatefulWidget {
   const MyPointsScreen({super.key});
 
+  @override
+  ConsumerState<MyPointsScreen> createState() => _MyPointsScreenState();
+}
+
+class _MyPointsScreenState extends ConsumerState<MyPointsScreen>
+    with
+        AutoDisposeRefreshListViewStateMixin<
+            AutoDisposeStateNotifierProvider<UserPointsRecordNotifier,
+                RefreshListViewState<PointsModel>>,
+            PointsModel,
+            MyPointsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,72 +24,99 @@ class MyPointsScreen extends StatelessWidget {
       body: SafeArea(
         child: Material(
           color: context.theme.scaffoldBackgroundColor,
-          child: AutoDisposeRefreshListViewWidget<
-              AutoDisposeStateNotifierProvider<UserPointsRecordNotifier,
-                  RefreshListViewState<PointsModel>>,
-              PointsModel>(
-            provider: myPointsProvider,
-            onInitState: (Reader reader) {
-              reader.call(myPointsProvider.notifier).initData();
-            },
-            itemBuilder: (_, __, ___, PointsModel points) {
-              final bool isIncrease = points.coinCount > 0;
-
-              return ListTile(
-                title: Text(
-                  points.desc ?? '',
-                ),
-                trailing: RichText(
-                  text: TextSpan(
-                    style:
-                        context.theme.textTheme.titleMedium!.semiBold.copyWith(
-                      color: isIncrease
-                          ? context.theme.colorScheme.secondary
-                          : context.theme.errorColor,
-                    ),
-                    text: isIncrease ? '+' : '-',
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: points.coinCount.toString(),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-            separatorBuilder: (_, __, ___) => const Divider(),
-            slivers: <Widget>[
-              SliverPadding(
-                padding: AppTheme.bodyPadding * 2,
-                sliver: SliverToBoxAdapter(
-                  child: ColoredBox(
-                    color: context.theme.scaffoldBackgroundColor,
-                    child: Column(
-                      children: <Widget>[
-                        Consumer(
-                          builder: (_, WidgetRef ref, __) => AnimatedCounter(
-                            count: ref
-                                .read(authorizedProvider)!
-                                .userPoints
-                                .coinCount,
+          child: NotificationListener<ScrollNotification>(
+            onNotification: onScrollNotification,
+            child: CustomScrollView(
+              slivers: <Widget>[
+                pullDownIndicator,
+                SliverPadding(
+                  padding: AppTheme.bodyPadding * 2,
+                  sliver: SliverToBoxAdapter(
+                    child: ColoredBox(
+                      color: context.theme.scaffoldBackgroundColor,
+                      child: Column(
+                        children: <Widget>[
+                          Consumer(
+                            builder: (_, WidgetRef ref, __) => AnimatedCounter(
+                              count: ref
+                                  .read(authorizedProvider)!
+                                  .userPoints
+                                  .coinCount,
+                            ),
                           ),
-                        ),
-                        Gap(
-                          size: GapSize.big,
-                        ),
-                        Text(
-                          S.of(context).totalPoints,
-                          style: context.theme.textTheme.titleMedium,
-                        ),
-                      ],
+                          Gap(
+                            size: GapSize.big,
+                          ),
+                          Text(
+                            S.of(context).totalPoints,
+                            style: context.theme.textTheme.titleMedium,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+                Consumer(
+                  builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
+                    (
+                      int nextPageNum,
+                      bool isLastPage,
+                      List<PointsModel> list,
+                    ) {
+                      if (list.isEmpty) {
+                        return const SliverFillRemaining(
+                          child: EmptyWidget(),
+                        );
+                      }
+
+                      return LoadMoreSliverList.separator(
+                        loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
+                        itemBuilder: (_, int index) {
+                          final PointsModel points = list[index];
+
+                          final bool isIncrease = points.coinCount > 0;
+
+                          return ListTile(
+                            key: Key('my_points_record_${points.id}'),
+                            title: Text(
+                              points.desc ?? '',
+                            ),
+                            trailing: RichText(
+                              text: TextSpan(
+                                style: context
+                                    .theme.textTheme.titleMedium!.semiBold
+                                    .copyWith(
+                                  color: isIncrease
+                                      ? context.theme.colorScheme.secondary
+                                      : context.theme.errorColor,
+                                ),
+                                text: isIncrease ? '+' : '-',
+                                children: <TextSpan>[
+                                  TextSpan(
+                                    text: points.coinCount.toString(),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                        separatorBuilder: (_, __) => const IndentDivider(),
+                        itemCount: list.length,
+                      );
+                    },
+                    loading: loadingIndicatorBuilder,
+                    error: errorIndicatorBuilder,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+
+  @override
+  AutoDisposeStateNotifierProvider<UserPointsRecordNotifier,
+      RefreshListViewState<PointsModel>> get provider => myPointsProvider;
 }

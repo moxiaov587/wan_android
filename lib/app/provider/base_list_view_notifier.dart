@@ -4,12 +4,12 @@ abstract class BaseListViewNotifier<T> extends StateNotifier<ListViewState<T>>
     with ViewErrorMixin {
   BaseListViewNotifier(super.state);
 
-  Future<void> initData() async {
+  Future<bool> initData() async {
     if (state != ListViewState<T>.loading()) {
       state = ListViewState<T>.loading();
     }
 
-    await refresh();
+    return refresh();
   }
 
   Future<bool> refresh() async {

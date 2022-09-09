@@ -15,7 +15,7 @@ class LoadingMoreIndicator extends StatelessWidget {
     required this.onRetry,
   });
 
-  final LoadingMoreStatus? status;
+  final LoadingMoreStatus status;
 
   final Future<void> Function() onRetry;
 
@@ -31,7 +31,6 @@ class LoadingMoreIndicator extends StatelessWidget {
     String? tips;
 
     switch (status) {
-      case null:
       case LoadingMoreStatus.completed:
         break;
       case LoadingMoreStatus.loading:
