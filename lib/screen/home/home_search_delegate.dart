@@ -40,29 +40,41 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
 
   @override
   Widget buildResults(BuildContext context) {
-    addSearchHistory();
+    return _Results(query: query);
+  }
 
-    final AutoDisposeStateNotifierProvider<SearchNotifier,
-            RefreshListViewState<ArticleModel>> provider =
-        searchArticlesProvider(query);
-
-    return AutoDisposeRefreshListViewWidget<
-        AutoDisposeStateNotifierProvider<SearchNotifier,
-            RefreshListViewState<ArticleModel>>,
-        ArticleModel>(
-      provider: provider,
-      onInitState: (Reader reader) {
-        reader.call(provider.notifier).initData();
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    return _Suggestions(
+      onTap: (String keyword) {
+        query = keyword;
+        showResults(context);
       },
-      itemBuilder: (_, __, ___, ArticleModel article) => ArticleTile(
-        key: ValueKey<String>(
-          'search_article_${article.id}',
-        ),
-        article: article,
-        query: query,
-      ),
-      separatorBuilder: (_, __, ___) => const Divider(),
     );
+  }
+}
+
+class _Results extends ConsumerStatefulWidget {
+  const _Results({required this.query});
+
+  final String query;
+
+  @override
+  ConsumerState<_Results> createState() => __ResultsState();
+}
+
+class __ResultsState extends ConsumerState<_Results>
+    with
+        AutoDisposeRefreshListViewStateMixin<
+            AutoDisposeStateNotifierProvider<SearchNotifier,
+                RefreshListViewState<ArticleModel>>,
+            ArticleModel,
+            _Results> {
+  @override
+  void initState() {
+    super.initState();
+
+    addSearchHistory();
   }
 
   void addSearchHistory() {
@@ -71,7 +83,7 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
     final SearchHistory? duplicateSearchHistory = DatabaseManager
         .searchHistoryCaches
         .filter()
-        .keywordEqualTo(query)
+        .keywordEqualTo(widget.query)
         .findFirstSync();
 
     int? id;
@@ -85,7 +97,7 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
     }
 
     final SearchHistory searchHistory = SearchHistory()
-      ..keyword = query
+      ..keyword = widget.query
       ..updateTime = DateTime.now();
 
     if (duplicateSearchHistory != null) {
@@ -104,33 +116,61 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
   }
 
   @override
-  Widget buildSuggestions(BuildContext context) {
+  Widget build(BuildContext context) {
     return NotificationListener<ScrollNotification>(
-      onNotification: onSuggestionsScrollNotification,
-      child: _Suggestions(
-        onInitData: (Reader reader) {
-          reader.call(searchPopularKeywordProvider.notifier).initData();
-        },
-        onTap: (String keyword) {
-          query = keyword;
-          showResults(context);
-        },
+      onNotification: onScrollNotification,
+      child: CustomScrollView(
+        slivers: <Widget>[
+          pullDownIndicator,
+          Consumer(
+            builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
+              (
+                int nextPageNum,
+                bool isLastPage,
+                List<ArticleModel> list,
+              ) {
+                if (list.isEmpty) {
+                  return const SliverFillRemaining(
+                    child: EmptyWidget(),
+                  );
+                }
+
+                return LoadMoreSliverList.separator(
+                  loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
+                  itemBuilder: (_, int index) {
+                    final ArticleModel article = list[index];
+
+                    return ArticleTile(
+                      key: Key('search_article_${article.id}'),
+                      article: article,
+                      query: widget.query,
+                    );
+                  },
+                  separatorBuilder: (_, __) => const IndentDivider(),
+                  itemCount: list.length,
+                );
+              },
+              loading: loadingIndicatorBuilder,
+              error: errorIndicatorBuilder,
+            ),
+          ),
+        ],
       ),
     );
   }
+
+  @override
+  late final AutoDisposeStateNotifierProvider<SearchNotifier,
+          RefreshListViewState<ArticleModel>> provider =
+      searchArticlesProvider(widget.query);
 }
 
 typedef SearchHistoryCallback = Function(String keyword);
 
 class _Suggestions extends ConsumerStatefulWidget {
-  const _Suggestions({
-    required this.onTap,
-    this.onInitData,
-  });
+  const _Suggestions({required this.onTap});
 
   final SearchHistoryCallback onTap;
-
-  final ReaderCallback? onInitData;
 
   @override
   __SuggestionsState createState() => __SuggestionsState();
@@ -141,7 +181,7 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
   void initState() {
     super.initState();
 
-    widget.onInitData?.call(ref.read);
+    ref.read(searchPopularKeywordProvider.notifier).initData();
   }
 
   @override
@@ -267,6 +307,7 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
           ),
         ),
       ],
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
     );
   }
 }
