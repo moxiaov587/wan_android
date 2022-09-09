@@ -8,6 +8,17 @@ import '../../../database/database_manager.dart';
 import '../../../model/models.dart';
 import '../../../utils/dialog_utils.dart' show DialogUtils;
 
+const Map<int, int> _kEncryptOffset = <int, int>{
+  2: 7,
+  3: 6,
+  1: 5,
+  5: 4,
+  6: 3,
+  7: 2,
+  0: 1,
+  4: 0,
+};
+
 final StateNotifierProvider<AuthorizedNotifier, UserInfoModel?>
     authorizedProvider =
     StateNotifierProvider<AuthorizedNotifier, UserInfoModel?>((_) {
@@ -63,7 +74,7 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?>
       ..updateTime = DateTime.now();
 
     if (rememberPassword) {
-      accountCache.password = password;
+      accountCache.password = _encryptString(password!);
     }
 
     final UserSettings userSettings = DatabaseManager.writeUniqueUserSettings(
@@ -76,6 +87,34 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?>
         DatabaseManager.userSettingsCache.putSync(userSettings);
       },
     );
+  }
+
+  /// by https://github.com/fluttercandies/flutter_juejin/blob/main/lib/extensions/string_extension.dart
+  String _encryptString(String text) {
+    return text.split('').map((String w) {
+      final int ascii = w.codeUnitAt(0);
+      final int remainder = ascii % 8;
+      final int offset = _kEncryptOffset[remainder]!;
+
+      return (ascii + offset - remainder).toRadixString(16);
+    }).join();
+  }
+
+  String decryptString(String text) {
+    final Map<int, int> decryptOffset =
+        _kEncryptOffset.map((int k, int v) => MapEntry<int, int>(v, k));
+
+    return List<String>.generate(
+      text.length ~/ 2,
+      (int index) => text.substring(index * 2, index * 2 + 2),
+    ).map((String w) {
+      final int sum = int.parse(w, radix: 16);
+      final int offset = sum % 8;
+      final int remainder = decryptOffset[offset]!;
+      final int ascii = sum - offset + remainder;
+
+      return String.fromCharCode(ascii);
+    }).join();
   }
 
   Future<bool> login({

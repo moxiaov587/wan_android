@@ -17,14 +17,14 @@ part 'register_screen.dart';
 
 const EdgeInsets _kBodyPadding = EdgeInsets.fromLTRB(32.0, 40.0, 32.0, 0.0);
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with RouteAware {
+class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final TextEditingController _usernameTextEditingController =
@@ -88,7 +88,9 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
       _usernameTextEditingController.text = _lastLoginAccountCache!.username;
 
       if (rememberPassword && _lastLoginAccountCache!.password != null) {
-        _passwordTextEditingController.text = _lastLoginAccountCache!.password!;
+        _passwordTextEditingController.text = ref
+            .read(authorizedProvider.notifier)
+            .decryptString(_lastLoginAccountCache!.password!);
       }
     }
   }
@@ -132,8 +134,9 @@ class _LoginScreenState extends State<LoginScreen> with RouteAware {
                             option.username,
                         onSelected: (AccountCache option) {
                           if (option.password != null) {
-                            _passwordTextEditingController.text =
-                                option.password!;
+                            _passwordTextEditingController.text = ref
+                                .read(authorizedProvider.notifier)
+                                .decryptString(option.password!);
                           }
                         },
                         optionsBuilder: (TextEditingValue textEditingValue) =>
