@@ -8,10 +8,14 @@ class _Article extends ConsumerStatefulWidget {
 }
 
 class __ArticleState extends ConsumerState<_Article>
-    with AutomaticKeepAliveClientMixin, RouteAware {
-  @override
-  bool get wantKeepAlive => true;
-
+    with
+        AutomaticKeepAliveClientMixin,
+        RouteAware,
+        AutoDisposeRefreshListViewStateMixin<
+            AutoDisposeStateNotifierProvider<MyCollectedArticleNotifier,
+                RefreshListViewState<CollectedArticleModel>>,
+            CollectedArticleModel,
+            _Article> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -29,6 +33,7 @@ class __ArticleState extends ConsumerState<_Article>
   @override
   void dispose() {
     Instances.routeObserver.unsubscribe(this);
+
     super.dispose();
   }
 
@@ -36,27 +41,72 @@ class __ArticleState extends ConsumerState<_Article>
   Widget build(BuildContext context) {
     super.build(context);
 
-    return AutoDisposeRefreshListViewWidget<
-        AutoDisposeStateNotifierProvider<MyCollectedArticleNotifier,
-            RefreshListViewState<CollectedArticleModel>>,
-        CollectedArticleModel>(
-      provider: myCollectedArticleProvider,
-      onInitState: (Reader reader) {
-        reader.call(myCollectedArticleProvider.notifier).initData();
-      },
-      builder: (_, Widget child) => SlidableAutoCloseBehavior(child: child),
-      itemBuilder: (_, __, ___, CollectedArticleModel article) =>
-          article.collect
-              ? _CollectedArticleTile(
-                  key: Key(
-                    'my_collections_article_${article.id}',
+    return NotificationListener<ScrollNotification>(
+      onNotification: onScrollNotification,
+      child: CustomScrollView(
+        slivers: <Widget>[
+          pullDownIndicator,
+          Consumer(
+            builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
+              (
+                int nextPageNum,
+                bool isLastPage,
+                List<CollectedArticleModel> list,
+              ) {
+                list = list
+                    .where((CollectedArticleModel article) => article.collect)
+                    .toList();
+
+                if (list.isEmpty) {
+                  return const SliverFillRemaining(
+                    child: EmptyWidget(),
+                  );
+                }
+
+                return SlidableAutoCloseBehavior(
+                  child: LoadMoreSliverList.separator(
+                    loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
+                    itemBuilder: (_, int index) {
+                      final CollectedArticleModel article = list[index];
+
+                      return _CollectedArticleTile(
+                        key: Key('my_collections_article_${article.id}'),
+                        article: article,
+                      );
+                    },
+                    findChildIndexCallback: (Key key) {
+                      final int index = list.indexWhere(
+                        (CollectedArticleModel article) =>
+                            key == Key('my_collections_article_${article.id}'),
+                      );
+
+                      if (index == -1) {
+                        return null;
+                      }
+
+                      return index;
+                    },
+                    separatorBuilder: (_, __) => const IndentDivider(),
+                    itemCount: list.length,
                   ),
-                  article: article,
-                )
-              : nil,
-      separatorBuilder: (_, __, ___) => const Divider(),
+                );
+              },
+              loading: loadingIndicatorBuilder,
+              error: errorIndicatorBuilder,
+            ),
+          ),
+        ],
+      ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  AutoDisposeStateNotifierProvider<MyCollectedArticleNotifier,
+          RefreshListViewState<CollectedArticleModel>>
+      get provider => myCollectedArticleProvider;
 }
 
 class _CollectedArticleTile extends ConsumerWidget {
@@ -76,9 +126,10 @@ class _CollectedArticleTile extends ConsumerWidget {
     return Slidable(
       key: key,
       groupTag: CollectionType.article.name,
+      dragStartBehavior: DragStartBehavior.start,
       endActionPane: ActionPane(
         extentRatio: 0.25,
-        motion: const ScrollMotion(),
+        motion: const StretchMotion(),
         dismissible: DismissiblePane(
           closeOnCancel: true,
           dismissThreshold: 0.65,
@@ -152,7 +203,7 @@ class _CollectedArticleTile extends ConsumerWidget {
                       ),
                     ),
                     Gap(
-                      value: AppTheme.bodyPadding.vertical / 2,
+                      value: AppTheme.bodyPadding.top,
                     ),
                     Text(
                       HTMLParseUtils.unescapeHTML(article.title) ??

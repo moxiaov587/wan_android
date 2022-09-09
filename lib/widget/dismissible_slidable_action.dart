@@ -27,6 +27,7 @@ class DismissibleSlidableAction extends StatefulWidget {
 
 class _DismissibleSlidableActionState extends State<DismissibleSlidableAction> {
   late final SlidableController slidable = Slidable.of(context)!;
+
   Animation<double> get slidableAnimation => slidable.animation;
 
   late final ValueNotifier<ActionLabel> _actionLabelNotifier =
@@ -44,6 +45,7 @@ class _DismissibleSlidableActionState extends State<DismissibleSlidableAction> {
   @override
   void initState() {
     super.initState();
+
     slidableAnimation.addListener(handleValueChanged);
     slidableAnimation.addStatusListener(handleStatusChanged);
   }
@@ -129,6 +131,7 @@ class _DismissibleSlidableActionState extends State<DismissibleSlidableAction> {
   }
 }
 
+@immutable
 class ActionLabel {
   const ActionLabel({
     required this.label,
@@ -137,4 +140,11 @@ class ActionLabel {
 
   final String label;
   final Color color;
+
+  @override
+  bool operator ==(Object other) =>
+      other is ActionLabel && label == other.label && color == other.color;
+
+  @override
+  int get hashCode => Object.hash(label, color);
 }

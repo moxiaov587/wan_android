@@ -8,10 +8,14 @@ class _Website extends ConsumerStatefulWidget {
 }
 
 class __WebsiteState extends ConsumerState<_Website>
-    with AutomaticKeepAliveClientMixin, RouteAware {
-  @override
-  bool get wantKeepAlive => true;
-
+    with
+        AutomaticKeepAliveClientMixin,
+        RouteAware,
+        AutoDisposeListViewStateMixin<
+            AutoDisposeStateNotifierProvider<MyCollectedWebsiteNotifier,
+                ListViewState<CollectedWebsiteModel>>,
+            CollectedWebsiteModel,
+            _Website> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -23,12 +27,13 @@ class __WebsiteState extends ConsumerState<_Website>
   void didPopNext() {
     super.didPopNext();
 
-    ref.read(myCollectedWebsiteProvider.notifier).onSwitchCollectComplete();
+    ref.read(provider.notifier).onSwitchCollectComplete();
   }
 
   @override
   void dispose() {
     Instances.routeObserver.unsubscribe(this);
+
     super.dispose();
   }
 
@@ -36,28 +41,65 @@ class __WebsiteState extends ConsumerState<_Website>
   Widget build(BuildContext context) {
     super.build(context);
 
-    return AutoDisposeListViewWidget<
-        AutoDisposeStateNotifierProvider<MyCollectedWebsiteNotifier,
-            ListViewState<CollectedWebsiteModel>>,
-        CollectedWebsiteModel>(
-      provider: myCollectedWebsiteProvider,
-      enablePullDown: true,
-      onInitState: (Reader reader) {
-        reader.call(myCollectedWebsiteProvider.notifier).initData();
-      },
-      builder: (_, Widget child) => SlidableAutoCloseBehavior(child: child),
-      itemBuilder: (_, __, ___, CollectedWebsiteModel website) =>
-          website.collect
-              ? _CollectedWebsiteTile(
-                  key: Key(
-                    'my_collections_website_${website.id}',
+    return CustomScrollView(
+      slivers: <Widget>[
+        pullDownIndicator,
+        Consumer(
+          builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
+            (List<CollectedWebsiteModel> list) {
+              list = list
+                  .where((CollectedWebsiteModel article) => article.collect)
+                  .toList();
+
+              if (list.isEmpty) {
+                return const SliverFillRemaining(
+                  child: EmptyWidget(),
+                );
+              }
+
+              return SlidableAutoCloseBehavior(
+                child: SliverList(
+                  delegate: SliverChildWithSeparatorBuilderDelegate(
+                    (_, int index) {
+                      final CollectedWebsiteModel website = list[index];
+
+                      return _CollectedWebsiteTile(
+                        key: Key('my_collections_website_${website.id}'),
+                        website: website,
+                      );
+                    },
+                    findChildIndexCallback: (Key key) {
+                      final int index = list.indexWhere(
+                        (CollectedWebsiteModel website) =>
+                            key == Key('my_collections_website_${website.id}'),
+                      );
+
+                      if (index == -1) {
+                        return null;
+                      }
+
+                      return index;
+                    },
+                    childCount: list.length,
                   ),
-                  website: website,
-                )
-              : nil,
-      separatorBuilder: (_, __, ___) => const Divider(),
+                ),
+              );
+            },
+            loading: loadingIndicatorBuilder,
+            error: errorIndicatorBuilder,
+          ),
+        ),
+      ],
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  AutoDisposeStateNotifierProvider<MyCollectedWebsiteNotifier,
+          ListViewState<CollectedWebsiteModel>>
+      get provider => myCollectedWebsiteProvider;
 }
 
 class _CollectedWebsiteTile extends ConsumerWidget {
@@ -70,9 +112,10 @@ class _CollectedWebsiteTile extends ConsumerWidget {
     return Slidable(
       key: key,
       groupTag: CollectionType.website.name,
+      dragStartBehavior: DragStartBehavior.start,
       endActionPane: ActionPane(
         extentRatio: 0.25,
-        motion: const ScrollMotion(),
+        motion: const StretchMotion(),
         dismissible: DismissiblePane(
           closeOnCancel: true,
           dismissThreshold: 0.65,

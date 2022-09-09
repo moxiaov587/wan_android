@@ -1,11 +1,12 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:nil/nil.dart' show nil;
 
 import '../../../app/l10n/generated/l10n.dart';
+import '../../../app/provider/mixin/list_view_state_mixin.dart';
+import '../../../app/provider/mixin/refresh_list_view_state_mixin.dart';
 import '../../../app/provider/view_state.dart';
-import '../../../app/provider/widget/provider_widget.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../contacts/icon_font_icons.dart';
 import '../../../contacts/instances.dart';
@@ -18,6 +19,8 @@ import '../../../utils/screen_utils.dart';
 import '../../../widget/custom_text_form_field.dart';
 import '../../../widget/dismissible_slidable_action.dart';
 import '../../../widget/gap.dart';
+import '../../../widget/indent_divider.dart';
+import '../../../widget/sliver_child_with_separator_builder_delegate.dart';
 import '../../../widget/view_state_widget.dart';
 import '../provider/drawer_provider.dart';
 

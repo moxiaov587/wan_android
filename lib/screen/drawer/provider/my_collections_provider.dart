@@ -177,6 +177,7 @@ class MyCollectedArticleNotifier
                       : collectedArticle,
             )
             .toList();
+
         state = RefreshListViewStateData<CollectedArticleModel>(
           pageNum: pageNum,
           isLastPage: isLastPage,
