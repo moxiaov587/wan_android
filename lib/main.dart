@@ -6,7 +6,7 @@ import 'package:connectivity_plus/connectivity_plus.dart'
     show ConnectivityResult;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show SystemChrome, SystemUiOverlayStyle;
+import 'package:flutter/services.dart' show SystemChrome;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart'
     show FlutterNativeSplash;
@@ -30,20 +30,25 @@ Future<void> main() async {
       WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  await DatabaseManager.openIsar();
-
   final ProviderContainer providerContainer = ProviderContainer();
 
-  await Http.initConfig(reader: providerContainer.read);
+  await Future.wait(<Future<void>>[
+    DatabaseManager.openIsar(),
+    Http.initConfig(reader: providerContainer.read),
+  ]);
 
   if (kIsWeb) {
     /// remove the # from URL
     Beamer.setPathUrlStrategy();
   }
 
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
-    statusBarColor: Colors.transparent,
-  ));
+  SystemChrome.setSystemUIOverlayStyle(
+    (DatabaseManager.uniqueUserSettings?.themeMode?.brightness ??
+                widgetsBinding.window.platformBrightness) ==
+            ThemeMode.dark
+        ? AppTheme.dark.appBarTheme.systemOverlayStyle!
+        : AppTheme.light.appBarTheme.systemOverlayStyle!,
+  );
 
   AppRouterDelegate.instance.initDelegate(reader: providerContainer.read);
 
@@ -133,6 +138,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
   Future<void> closeSplash() async {
     final int? errorCode =
         await ref.read(authorizedProvider.notifier).initData();
+
     FlutterNativeSplash.remove();
 
     await requestResetThemeMode();
