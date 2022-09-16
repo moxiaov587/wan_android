@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nil/nil.dart' show nil;
-import 'package:palette_generator/palette_generator.dart';
 
 import '../../../app/provider/view_state.dart';
 import '../../../widget/view_state_widget.dart';
@@ -40,8 +39,6 @@ part 'qa.dart';
 part 'square.dart';
 
 const String kSearchOriginParams = 'origin';
-
-const double _kExpandedHeight = 200.0;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -210,38 +207,6 @@ class _HomeState extends ConsumerState<_Home>
         slivers: <Widget>[
           const _HomeAppBar(),
           pullDownIndicator,
-          SliverToBoxAdapter(
-            child: Material(
-              color: context.theme.cardColor,
-              child: Padding(
-                padding: AppTheme.contentPadding,
-                child: CapsuleInk(
-                  color: context.theme.bottomNavigationBarTheme.backgroundColor,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(right: kStyleUint),
-                        child: Icon(
-                          IconFontIcons.searchEyeLine,
-                          color: context.theme.textTheme.bodyMedium!.color,
-                          size: AppTextTheme.body1,
-                        ),
-                      ),
-                      Text(
-                        S.of(context).searchForSomething,
-                      ),
-                    ],
-                  ),
-                  onTap: () {
-                    AppRouterDelegate.instance.currentBeamState.updateWith(
-                      showSearch: true,
-                    );
-                  },
-                ),
-              ),
-            ),
-          ),
           Consumer(
             builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
               (int nextPageNum, bool isLastPage, List<ArticleModel> list) {
@@ -297,8 +262,8 @@ class __HomeAppBarState extends State<_HomeAppBar>
       pinned: true,
       delegate: _HomeAppBarDelegate(
         this,
-        minHeight: 56.0,
-        maxHeight: 200.0,
+        minHeight: kToolbarHeight,
+        maxHeight: kToolbarHeight + 200.0,
       ),
     );
   }
@@ -382,64 +347,152 @@ class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
           child: Opacity(
             opacity: reversedProgress,
             child: Consumer(
-              builder: (_, WidgetRef ref, __) {
-                return ref.watch(homeBannerProvider).when(
-                      (List<BannerModel> list) => PageView.builder(
-                        itemBuilder: (BuildContext context, int index) {
-                          return _BannerCarouselItem(
-                            key: ValueKey<String>(
-                              'home_banner_${list[index].id}',
-                            ),
-                            image: ExtendedImage.network(
-                              list[index].imagePath,
-                              fit: BoxFit.fill,
-                              height: _kExpandedHeight,
-                            ),
-                            title: list[index].title,
-                          );
-                        },
-                        itemCount: list.length,
+              builder: (_, WidgetRef ref, Widget? child) {
+                final Color color = ref.watch(currentBannerColorProvider) ??
+                    context.theme.primaryColor;
+
+                return DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: <Color>[
+                        color,
+                        color.withOpacity(0.0),
+                      ],
+                      stops: const <double>[
+                        0.0,
+                        0.8,
+                      ],
+                    ),
+                  ),
+                  child: Padding(
+                    padding: AppTheme.contentPaddingOnlyHorizontal.copyWith(
+                      top: ScreenUtils.topSafeHeight,
+                      bottom: (ScreenUtils.topSafeHeight ~/ 2).toDouble(),
+                    ),
+                    child: child,
+                  ),
+                );
+              },
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                    child: ClipRRect(
+                      clipBehavior: Clip.antiAliasWithSaveLayer,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: AppTheme.radius,
+                        topRight: AppTheme.radius,
                       ),
-                      loading: () => const SizedBox(
-                        height: _kExpandedHeight,
-                        child: LoadingWidget(),
-                      ),
-                      error: (
-                        int? statusCode,
-                        String? message,
-                        String? detail,
-                      ) =>
-                          SizedBox(
-                        height: _kExpandedHeight,
-                        child: Ink(
-                          child: InkWell(
-                            onTap: () {
-                              ref.read(homeBannerProvider.notifier).initData();
-                            },
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Icon(
-                                  IconFontIcons.refreshLine,
-                                  color:
-                                      context.theme.textTheme.bodySmall!.color,
-                                  size: 36.0,
-                                ),
-                                Gap(
-                                  size: GapSize.big,
-                                ),
-                                Text(
-                                  '${message ?? detail ?? S.of(context).unknownError}(${statusCode ?? -1})',
-                                ),
-                                Gap(),
-                                Text(S.of(context).tapToRetry),
-                              ],
-                            ),
-                          ),
+                      child: ColoredBox(
+                        color: context.theme.cardColor,
+                        child: Consumer(
+                          builder: (_, WidgetRef ref, __) {
+                            return ref.watch(homeBannerProvider).when(
+                                  (List<HomeBannerModel> list) =>
+                                      PageView.builder(
+                                    onPageChanged: ref
+                                        .read(
+                                          currentBannerColorProvider.notifier,
+                                        )
+                                        .onPageChanged,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return _BannerCarouselItem(
+                                        key: Key(
+                                          'home_banner_${list[index].id}',
+                                        ),
+                                        homeBanner: list[index],
+                                      );
+                                    },
+                                    itemCount: list.length,
+                                  ),
+                                  loading: () => const LoadingWidget(),
+                                  error: (
+                                    int? statusCode,
+                                    String? message,
+                                    String? detail,
+                                  ) =>
+                                      Ink(
+                                    child: InkWell(
+                                      onTap: () {
+                                        ref
+                                            .read(
+                                              homeBannerProvider.notifier,
+                                            )
+                                            .initData();
+                                      },
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          Icon(
+                                            IconFontIcons.refreshLine,
+                                            color: context.theme.textTheme
+                                                .bodySmall!.color,
+                                            size: 36.0,
+                                          ),
+                                          Gap(
+                                            size: GapSize.big,
+                                          ),
+                                          Text(
+                                            '${message ?? detail ?? S.of(context).unknownError}(${statusCode ?? -1})',
+                                            maxLines: 3,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          Gap(),
+                                          Text(S.of(context).tapToRetry),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                          },
                         ),
                       ),
-                    );
-              },
+                    ),
+                  ),
+                  Material(
+                    color: context.theme.cardColor,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: AppTheme.radius,
+                        bottomRight: AppTheme.radius,
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(kStyleUint2),
+                      child: CapsuleInk(
+                        color: context
+                            .theme.bottomNavigationBarTheme.backgroundColor,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(right: kStyleUint),
+                              child: Icon(
+                                IconFontIcons.searchEyeLine,
+                                color:
+                                    context.theme.textTheme.bodyMedium!.color,
+                                size: AppTextTheme.body1,
+                              ),
+                            ),
+                            Text(
+                              S.of(context).searchForSomething,
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          AppRouterDelegate.instance.currentBeamState
+                              .updateWith(
+                            showSearch: true,
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -513,91 +566,39 @@ class _HomeAppBarUserInfo extends StatelessWidget {
   }
 }
 
-class _BannerCarouselItem extends StatefulWidget {
-  const _BannerCarouselItem({
-    super.key,
-    required this.image,
-    required this.title,
-  });
+class _BannerCarouselItem extends StatelessWidget {
+  const _BannerCarouselItem({super.key, required this.homeBanner});
 
-  final ExtendedImage image;
-
-  final String title;
-
-  @override
-  __BannerCarouselItemState createState() => __BannerCarouselItemState();
-}
-
-class __BannerCarouselItemState extends State<_BannerCarouselItem> {
-  final ValueNotifier<List<Color?>> colorsNotifier =
-      ValueNotifier<List<Color?>>(<Color?>[null, null]);
-
-  @override
-  void initState() {
-    super.initState();
-
-    initCarouselItemTitleColor();
-  }
-
-  Future<void> initCarouselItemTitleColor() async {
-    try {
-      final PaletteGenerator paletteGenerator =
-          await PaletteGenerator.fromImageProvider(
-        widget.image.image,
-        maximumColorCount: 20,
-      );
-
-      final Color? color = paletteGenerator.vibrantColor?.color;
-
-      colorsNotifier.value = <Color?>[
-        color,
-        if ((color?.computeLuminance() ?? 0) > 0.179)
-          AppColors.white
-        else
-          AppColors.whiteDark,
-      ];
-    } catch (_) {}
-  }
-
-  @override
-  void didUpdateWidget(covariant _BannerCarouselItem oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (oldWidget.title != widget.title) {
-      initCarouselItemTitleColor();
-    }
-  }
+  final HomeBannerModel homeBanner;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
-        widget.image,
+        ExtendedImage.memory(
+          homeBanner.bytes,
+          fit: BoxFit.fill,
+        ),
         Positioned(
           left: 0.0,
+          right: 0.0,
           bottom: 0.0,
-          child: ValueListenableBuilder<List<Color?>>(
-            valueListenable: colorsNotifier,
-            builder: (_, List<Color?> colors, Widget? child) {
-              return Container(
-                padding: const EdgeInsets.only(
-                  right: 16.0,
-                ),
-                alignment: Alignment.centerRight,
-                width: ScreenUtils.width,
-                height: 50.0,
-                color: colors.first?.withOpacity(0.2) ??
-                    context.theme.backgroundColor.withOpacity(0.2),
-                child: DefaultTextStyle(
-                  style: context.theme.textTheme.titleMedium!.copyWith(
-                    color: colors.last,
-                  ),
-                  child: child!,
-                ),
-              );
-            },
-            child: Text(widget.title),
+          child: Container(
+            padding: EdgeInsets.only(
+              right: AppTheme.contentPadding.right,
+            ),
+            alignment: Alignment.centerRight,
+            width: ScreenUtils.width,
+            height: 50.0,
+            color: (homeBanner.primaryColor ?? context.theme.backgroundColor)
+                .withOpacity(0.2),
+            child: DefaultTextStyle(
+              style: context.theme.textTheme.titleMedium!.copyWith(
+                color: homeBanner.textColor,
+              ),
+              child: Text(homeBanner.title),
+            ),
           ),
         ),
       ],

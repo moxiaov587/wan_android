@@ -1,6 +1,13 @@
-import 'package:dio/dio.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:ui' as ui show Image;
 
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart' show decodeImageFromList;
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:palette_generator/palette_generator.dart';
+
+import '../../../app/http/http.dart' show kBaseUrl;
 import '../../../app/http/wan_android_api.dart';
 import '../../../app/provider/provider.dart';
 import '../../../app/provider/view_state.dart';
@@ -39,20 +46,121 @@ mixin ArticleNotifierSwitchCollectMixin
   }
 }
 
-final StateNotifierProvider<BannerNotifier, ListViewState<BannerModel>>
+@immutable
+class HomeBannerModel {
+  const HomeBannerModel({
+    required this.id,
+    required this.title,
+    required this.bytes,
+    this.primaryColor,
+    this.textColor,
+  });
+
+  final int id;
+  final String title;
+  final Uint8List bytes;
+  final Color? primaryColor;
+  final Color? textColor;
+
+  @override
+  bool operator ==(Object other) =>
+      other is HomeBannerModel &&
+      id == other.id &&
+      bytes == other.bytes &&
+      title == other.title &&
+      primaryColor == other.primaryColor &&
+      textColor == other.textColor;
+
+  @override
+  int get hashCode => Object.hash(id, bytes, title, primaryColor, textColor);
+}
+
+final StateNotifierProvider<BannerNotifier, ListViewState<HomeBannerModel>>
     homeBannerProvider =
-    StateNotifierProvider<BannerNotifier, ListViewState<BannerModel>>((_) {
+    StateNotifierProvider<BannerNotifier, ListViewState<HomeBannerModel>>((_) {
   return BannerNotifier(
-    const ListViewState<BannerModel>.loading(),
+    const ListViewState<HomeBannerModel>.loading(),
   );
 });
 
-class BannerNotifier extends BaseListViewNotifier<BannerModel> {
+class BannerNotifier extends BaseListViewNotifier<HomeBannerModel> {
   BannerNotifier(super.state);
 
+  final NetworkAssetBundle _networkAssetBundle =
+      NetworkAssetBundle(Uri.parse(kBaseUrl));
+
   @override
-  Future<List<BannerModel>> loadData() {
-    return WanAndroidAPI.fetchHomeBanners();
+  Future<List<HomeBannerModel>> loadData() async {
+    final List<BannerModel> homeBanners =
+        await WanAndroidAPI.fetchHomeBanners();
+
+    final Iterable<Future<HomeBannerModel>> futures =
+        homeBanners.map((BannerModel banner) async {
+      final ByteData byteData =
+          await _networkAssetBundle.load(banner.imagePath);
+
+      final Uint8List uint8List = byteData.buffer.asUint8List();
+
+      final ui.Image decodeImage = await decodeImageFromList(uint8List);
+
+      final ByteData? decodeByteData = await decodeImage.toByteData();
+
+      if (decodeByteData == null) {
+        return HomeBannerModel(
+          id: banner.id,
+          title: banner.title,
+          bytes: uint8List,
+        );
+      }
+
+      final PaletteGenerator paletteGenerator =
+          await PaletteGenerator.fromByteData(EncodedImage(
+        decodeByteData,
+        width: decodeImage.width,
+        height: decodeImage.height,
+      ));
+
+      final PaletteColor? paletteColor =
+          paletteGenerator.vibrantColor ?? paletteGenerator.dominantColor;
+
+      return HomeBannerModel(
+        id: banner.id,
+        title: banner.title,
+        bytes: uint8List,
+        primaryColor: paletteColor?.color,
+        textColor: paletteColor?.bodyTextColor,
+      );
+    });
+
+    return Future.wait(futures);
+  }
+}
+
+final StateNotifierProvider<CurrentBannerColorNotifier, Color?>
+    currentBannerColorProvider =
+    StateNotifierProvider<CurrentBannerColorNotifier, Color?>(
+  (StateNotifierProviderRef<CurrentBannerColorNotifier, Color?> ref) {
+    return ref.watch(homeBannerProvider).whenOrNull(
+              (List<HomeBannerModel> list) => CurrentBannerColorNotifier(
+                list.first.primaryColor,
+                colors:
+                    list.map((HomeBannerModel banner) => banner.primaryColor),
+              ),
+            ) ??
+        CurrentBannerColorNotifier(null);
+  },
+);
+
+class CurrentBannerColorNotifier extends StateNotifier<Color?> {
+  CurrentBannerColorNotifier(
+    super.state, {
+    this.colors,
+  });
+
+  final Iterable<Color?>? colors;
+
+  void onPageChanged(int index) {
+    state = colors?.elementAt(index);
   }
 }
 
