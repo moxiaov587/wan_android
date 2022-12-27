@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart';
+import 'package:diox/diox.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderContainer;
 
 import '../../screen/provider/connectivity_provider.dart';

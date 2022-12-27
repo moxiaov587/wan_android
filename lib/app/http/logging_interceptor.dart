@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart';
+import 'package:diox/diox.dart';
 import '../../utils/log_utils.dart';
 
 class LoggingInterceptor extends Interceptor {

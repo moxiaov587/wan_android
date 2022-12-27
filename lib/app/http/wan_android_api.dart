@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart';
+import 'package:diox/diox.dart';
 
 import '../../app/provider/view_state.dart' show ModelToRefreshListData;
 import '../../model/models.dart';

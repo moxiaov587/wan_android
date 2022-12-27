@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart' show DioError, DioErrorType, Response;
+import 'package:diox/diox.dart' show DioError, DioErrorType, Response;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../http/error_interceptor.dart' show AppException;
@@ -30,13 +30,15 @@ class ViewError {
 
     if (e is DioError) {
       switch (e.type) {
-        case DioErrorType.connectTimeout:
+        case DioErrorType.connectionTimeout:
         case DioErrorType.sendTimeout:
         case DioErrorType.receiveTimeout:
           // timeout
           statusCode = -1;
           break;
-        case DioErrorType.response:
+        case DioErrorType.badCertificate:
+        case DioErrorType.badResponse:
+        case DioErrorType.connectionError:
           // incorrect status, such as 404, 503...
           final Response<dynamic>? response = e.response;
           if (response != null) {
@@ -46,7 +48,7 @@ class ViewError {
         case DioErrorType.cancel:
           // TODO:
           break;
-        case DioErrorType.other:
+        case DioErrorType.unknown:
           final dynamic error = e.error;
           if (error is AppException) {
             statusCode = error.errorCode;

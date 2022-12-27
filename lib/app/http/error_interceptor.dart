@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
+import 'package:diox/diox.dart';
 import '../../utils/log_utils.dart';
 
 class ErrorInterceptor extends Interceptor {
