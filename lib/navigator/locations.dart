@@ -11,7 +11,6 @@ import '../screen/unknown_screen.dart';
 import '../utils/log_utils.dart';
 import '../utils/screen_utils.dart';
 import '../widget/custom_search_delegate.dart' show SearchPageRoute;
-import 'route/modal_bottom_sheet_route.dart';
 import 'route_name.dart';
 
 part 'home/home_location.dart';

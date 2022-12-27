@@ -1,6 +1,6 @@
 import 'dart:ui' as ui show Image;
 
-import 'package:dio/dio.dart';
+import 'package:diox/diox.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart' show decodeImageFromList;
 import 'package:flutter/services.dart';

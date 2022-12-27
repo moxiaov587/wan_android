@@ -34,7 +34,7 @@ class BaseConfirm extends StatelessWidget {
       constraints: const BoxConstraints.tightFor(width: _kDialogWidth),
       child: Material(
         borderRadius: AppTheme.borderRadius,
-        color: context.theme.backgroundColor,
+        color: context.theme.colorScheme.background,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -129,7 +129,7 @@ class BaseConfirm extends StatelessWidget {
                         style: context.theme.textTheme.titleMedium!.semiBold
                             .copyWith(
                           color: isDanger
-                              ? context.theme.errorColor
+                              ? context.theme.colorScheme.error
                               : context.theme.primaryColor,
                         ),
                       ),

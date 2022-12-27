@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
-import 'package:dio/dio.dart';
+import 'package:diox/diox.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/http/wan_android_api.dart';

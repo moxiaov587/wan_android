@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart' show CancelToken;
+import 'package:diox/diox.dart' show CancelToken;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/http/wan_android_api.dart';

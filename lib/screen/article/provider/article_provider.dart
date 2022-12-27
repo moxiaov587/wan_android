@@ -39,7 +39,7 @@ final AutoDisposeStateNotifierProviderFamily<ArticleNotifier,
   int articleId,
 ) {
   return ArticleNotifier(
-    reader: ref.read,
+    reader: ref,
     providerContainer: ref.container,
     id: articleId,
   );
@@ -52,7 +52,7 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
     required this.id,
   }) : super(const ViewState<WebViewModel>.loading());
 
-  final Reader reader;
+  final Ref reader;
   final ProviderContainer providerContainer;
   final int id;
 
@@ -87,10 +87,11 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
     from = kMyCollectedArticleProvider;
     provider = providers[kMyCollectedArticleProvider]!;
 
-    final CollectedArticleModel? collectedArticle =
-        (reader.call(provider) as RefreshListViewState<CollectedArticleModel>)
-            .whenOrNull((_, __, List<CollectedArticleModel> list) => list)
-            ?.firstWhereOrNull((CollectedArticleModel e) => e.id == id);
+    final CollectedArticleModel? collectedArticle = reader
+        .read(provider
+            as ProviderBase<RefreshListViewState<CollectedArticleModel>>)
+        .whenOrNull((_, __, List<CollectedArticleModel> list) => list)
+        ?.firstWhereOrNull((CollectedArticleModel e) => e.id == id);
 
     if (collectedArticle != null) {
       return WebViewModel(
@@ -120,12 +121,12 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
         articleId: id,
       );
     } else {
-      reader.call(realProvider.notifier).requestCancelCollect(
+      reader.read(realProvider.notifier).requestCancelCollect(
             collectId: id,
             articleId: webView.originId,
           );
     }
-    reader.call(realProvider.notifier).switchCollect(
+    reader.read(realProvider.notifier).switchCollect(
           id,
           changedValue: value,
         );
@@ -145,10 +146,10 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
     from = kMyCollectedWebsiteProvider;
     provider = providers[kMyCollectedWebsiteProvider]!;
 
-    final CollectedWebsiteModel? collectedWebsite =
-        (reader.call(provider) as ListViewState<CollectedWebsiteModel>)
-            .whenOrNull((List<CollectedWebsiteModel> list) => list)
-            ?.firstWhereOrNull((CollectedWebsiteModel e) => e.id == id);
+    final CollectedWebsiteModel? collectedWebsite = reader
+        .read(provider as ProviderBase<ListViewState<CollectedWebsiteModel>>)
+        .whenOrNull((List<CollectedWebsiteModel> list) => list)
+        ?.firstWhereOrNull((CollectedWebsiteModel e) => e.id == id);
 
     if (collectedWebsite != null) {
       return WebViewModel(
@@ -178,7 +179,7 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
             ListViewState<CollectedWebsiteModel>>;
     if (value) {
       final CollectedWebsiteModel? newCollectedWebsite =
-          await reader.call(realProvider.notifier).add(
+          await reader.read(realProvider.notifier).add(
                 title: webView.title ?? '',
                 link: webView.link,
                 needLoading: false,
@@ -194,11 +195,11 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
       }
     } else {
       await reader
-          .call(realProvider.notifier)
+          .read(realProvider.notifier)
           .requestCancelCollect(collectId: webView.id);
     }
 
-    reader.call(realProvider.notifier).switchCollect(
+    reader.read(realProvider.notifier).switchCollect(
           id,
           changedValue: value,
         );

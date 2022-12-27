@@ -96,10 +96,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
   }
 
   Future<void> onSubmitted({
-    required Reader reader,
+    required WidgetRef ref,
   }) async {
     if (_formKey.currentState!.validate()) {
-      final bool result = await reader.call(authorizedProvider.notifier).login(
+      final bool result = await ref.read(authorizedProvider.notifier).login(
             username: _usernameTextEditingController.text,
             password: _passwordTextEditingController.text,
             rememberPassword: _rememberPasswordNotifier.value,
@@ -240,7 +240,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
                         builder: (_, WidgetRef ref, Widget? text) =>
                             ElevatedButton(
                           onPressed: () async {
-                            onSubmitted(reader: ref.read);
+                            onSubmitted(ref: ref);
                           },
                           child: text,
                         ),

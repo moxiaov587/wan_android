@@ -395,7 +395,7 @@ final AutoDisposeStateNotifierProviderFamily<CollectedNotifier,
 ) {
   return CollectedNotifier(
     const ViewState<CollectedCommonModel>.loading(),
-    reader: ref.read,
+    ref: ref,
     typeModel: typeModel,
   );
 });
@@ -403,11 +403,12 @@ final AutoDisposeStateNotifierProviderFamily<CollectedNotifier,
 class CollectedNotifier extends BaseViewNotifier<CollectedCommonModel> {
   CollectedNotifier(
     super.state, {
-    required this.reader,
+    required this.ref,
     required this.typeModel,
   });
 
-  final Reader reader;
+  final AutoDisposeStateNotifierProviderRef<CollectedNotifier,
+      ViewState<CollectedCommonModel>> ref;
   final CollectionTypeModel typeModel;
 
   @override
@@ -420,8 +421,8 @@ class CollectedNotifier extends BaseViewNotifier<CollectedCommonModel> {
 
     switch (typeModel.type) {
       case CollectionType.article:
-        final CollectedArticleModel? articleModel = reader
-            .call(myCollectedArticleProvider)
+        final CollectedArticleModel? articleModel = ref
+            .read(myCollectedArticleProvider)
             .whenOrNull<CollectedArticleModel?>(
               (_, __, List<CollectedArticleModel> list) =>
                   list.firstWhereOrNull((CollectedArticleModel article) =>
@@ -438,8 +439,8 @@ class CollectedNotifier extends BaseViewNotifier<CollectedCommonModel> {
         }
         break;
       case CollectionType.website:
-        final CollectedWebsiteModel? websiteModel = reader
-            .call(myCollectedWebsiteProvider)
+        final CollectedWebsiteModel? websiteModel = ref
+            .read(myCollectedWebsiteProvider)
             .whenOrNull<CollectedWebsiteModel?>(
               (List<CollectedWebsiteModel> list) => list.firstWhereOrNull(
                 (CollectedWebsiteModel website) => website.id == typeModel.id,

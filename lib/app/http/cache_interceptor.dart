@@ -1,6 +1,6 @@
 import 'dart:collection' show LinkedHashMap;
 import 'dart:convert' show jsonEncode, jsonDecode;
-import 'package:dio/dio.dart'
+import 'package:diox/diox.dart'
     show
         Interceptor,
         RequestOptions,

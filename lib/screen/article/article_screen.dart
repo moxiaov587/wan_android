@@ -336,10 +336,10 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
           ),
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: context.theme.backgroundColor,
+              color: context.theme.colorScheme.background,
               boxShadow: <BoxShadow>[
                 BoxShadow(
-                  color: context.theme.backgroundColor.withAlpha(100),
+                  color: context.theme.colorScheme.background.withAlpha(100),
                   offset: const Offset(0.0, -2.0),
                   blurRadius: 8.0,
                 ),

@@ -164,23 +164,18 @@ class AppTheme {
     canvasColor: AppColors.background1,
     shadowColor: AppColors.black,
     scaffoldBackgroundColor: AppColors.scaffoldBackground,
-    bottomAppBarColor: AppColors.background1,
     cardColor: AppColors.background1,
     dividerColor: AppColors.border,
     focusColor: AppColors.fill3,
     hoverColor: AppColors.fill1,
     highlightColor: Colors.transparent,
     splashColor: AppColors.splash,
-    selectedRowColor: AppColors.fill1,
     unselectedWidgetColor: AppColors.fill4,
     disabledColor: AppColors.secondaryDisabled,
     secondaryHeaderColor: AppColors.primaryLight2,
-    backgroundColor: AppColors.background1,
     dialogBackgroundColor: AppColors.menuBackground,
     indicatorColor: AppColors.primary,
     hintColor: AppColors.text4,
-    errorColor: AppColors.error,
-    toggleableActiveColor: AppColors.primary,
     textTheme: AppTextTheme.light,
     iconTheme: IconThemeData(
       color: AppColors.text1,
@@ -194,9 +189,10 @@ class AppTheme {
       decoration: BoxDecoration(
         color: AppColors.tooltipBackground,
       ),
-      textStyle:
-          (kIsWeb ? AppTextTheme.light.overline : AppTextTheme.light.bodyText2)!
-              .copyWith(
+      textStyle: (kIsWeb
+              ? AppTextTheme.light.labelSmall
+              : AppTextTheme.light.bodyMedium)!
+          .copyWith(
         color: AppColors.white,
       ),
     ),
@@ -291,8 +287,8 @@ class AppTheme {
       errorContainer: AppColors.error.shade2,
       onErrorContainer: AppColors.error.shade9,
       outline: AppColors.text4,
-      background: AppColors.backgroundWhite,
-      onBackground: AppColors.scaffoldBackground,
+      background: AppColors.background1,
+      onBackground: AppColors.backgroundWhite,
       shadow: AppColors.black,
     ),
   );
@@ -325,16 +321,12 @@ class AppTheme {
     hoverColor: AppColors.fill1Dark,
     highlightColor: Colors.transparent,
     splashColor: AppColors.splashDark,
-    selectedRowColor: AppColors.fill1Dark,
     unselectedWidgetColor: AppColors.fill4Dark,
     disabledColor: AppColors.secondaryDisabledDark,
     secondaryHeaderColor: AppColors.primaryLight2Dark,
-    backgroundColor: AppColors.background1Dark,
     dialogBackgroundColor: AppColors.menuBackgroundDark,
     indicatorColor: AppColors.primaryDark,
     hintColor: AppColors.text4Dark,
-    errorColor: AppColors.errorDark,
-    toggleableActiveColor: AppColors.primaryDark,
     textTheme: AppTextTheme.dark,
     iconTheme: IconThemeData(
       color: AppColors.text1Dark,
@@ -348,9 +340,10 @@ class AppTheme {
       decoration: const BoxDecoration(
         color: AppColors.tooltipBackgroundDark,
       ),
-      textStyle:
-          (kIsWeb ? AppTextTheme.dark.overline : AppTextTheme.dark.bodyText2)!
-              .copyWith(
+      textStyle: (kIsWeb
+              ? AppTextTheme.dark.labelSmall
+              : AppTextTheme.dark.bodyMedium)!
+          .copyWith(
         color: AppColors.whiteDark,
       ),
     ),
@@ -446,8 +439,8 @@ class AppTheme {
       errorContainer: AppColors.errorDark.shade2,
       onErrorContainer: AppColors.errorDark.shade9,
       outline: AppColors.text4Dark,
-      background: AppColors.backgroundWhiteDark,
-      onBackground: AppColors.scaffoldBackgroundDark,
+      background: AppColors.background1Dark,
+      onBackground: AppColors.backgroundWhiteDark,
       shadow: AppColors.blackDark,
     ),
   );

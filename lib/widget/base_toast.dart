@@ -23,7 +23,7 @@ class BaseToast extends StatelessWidget {
         background = context.theme.colorScheme.secondary;
         break;
       case ToastType.danger:
-        background = context.theme.errorColor;
+        background = context.theme.colorScheme.error;
         break;
       case ToastType.waring:
         background = context.theme.colorScheme.tertiary;

@@ -1,6 +1,6 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/widgets.dart' show NavigatorObserver;
-import 'package:flutter_riverpod/flutter_riverpod.dart' show Reader;
+import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderContainer;
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 
 import '../contacts/instances.dart';
@@ -26,12 +26,13 @@ class AppRouterDelegate {
       _delegate.currentBeamLocation.state as HomeState;
 
   void initDelegate({
-    required Reader reader,
+    required ProviderContainer providerContainer,
   }) {
-    _delegate = _crateDelegate(reader);
+    _delegate = _crateDelegate(providerContainer);
   }
 
-  BeamerDelegate _crateDelegate(Reader reader) => BeamerDelegate(
+  BeamerDelegate _crateDelegate(ProviderContainer providerContainer) =>
+      BeamerDelegate(
         initialPath: RouterName.home.location,
         notFoundRedirectNamed: RouterName.unknown.location,
         navigatorObservers: <NavigatorObserver>[
@@ -48,7 +49,8 @@ class AppRouterDelegate {
             pathPatterns: <Pattern>[
               ...RouterName.homeDrawerPath,
             ],
-            check: (_, __) => reader.call(authorizedProvider) != null,
+            check: (_, __) =>
+                providerContainer.read(authorizedProvider) != null,
             beamTo: (
               _,
               __,

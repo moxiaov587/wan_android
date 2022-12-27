@@ -34,7 +34,7 @@ Future<void> main() async {
 
   await Future.wait(<Future<void>>[
     DatabaseManager.openIsar(),
-    Http.initConfig(reader: providerContainer.read),
+    Http.initConfig(providerContainer: providerContainer),
   ]);
 
   if (kIsWeb) {
@@ -50,7 +50,7 @@ Future<void> main() async {
         : AppTheme.light.appBarTheme.systemOverlayStyle!,
   );
 
-  AppRouterDelegate.instance.initDelegate(reader: providerContainer.read);
+  AppRouterDelegate.instance.initDelegate(providerContainer: providerContainer);
 
   runApp(UncontrolledProviderScope(
     container: providerContainer,

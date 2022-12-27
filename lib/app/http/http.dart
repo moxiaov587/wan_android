@@ -2,14 +2,14 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cookie_jar/cookie_jar.dart';
-import 'package:dio/adapter.dart';
-import 'package:dio/dio.dart';
-import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:diox/diox.dart';
+import 'package:diox_cookie_manager/diox_cookie_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart' as web_view
     show CookieManager, HTTPCookieSameSitePolicy;
-import 'package:flutter_riverpod/flutter_riverpod.dart' show Reader;
+import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderContainer;
 import 'package:path_provider/path_provider.dart';
+import 'package:native_diox_adapter/native_diox_adapter.dart';
 
 import '../../utils/log_utils.dart';
 
@@ -38,25 +38,26 @@ class Http {
   static final web_view.CookieManager webViewCookieManager =
       web_view.CookieManager.instance();
 
-  static Future<void> initConfig({required Reader reader}) async {
+  static Future<void> initConfig({
+    required ProviderContainer providerContainer,
+  }) async {
     if (!kIsWeb) {
       await initCookieManagement();
 
-      (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
-          _clientCreate;
+      if (Platform.isIOS || Platform.isMacOS || Platform.isAndroid) {
+        dio.httpClientAdapter = NativeAdapter();
+      }
 
       dio.interceptors.add(cookieManager);
-
-      (tokenDio.httpClientAdapter as DefaultHttpClientAdapter)
-          .onHttpClientCreate = _clientCreate;
     }
 
     dio.options.baseUrl = kBaseUrl;
 
-    dio.interceptors
-      ..add(ErrorInterceptor())
-      ..add(CacheInterceptor())
-      ..add(NetWorkInterceptor(reader: reader));
+    dio.interceptors.addAll(<Interceptor>[
+      NetWorkInterceptor(providerContainer: providerContainer),
+      ErrorInterceptor(),
+      CacheInterceptor(),
+    ]);
 
     if (kDebugMode && shouldLogRequest) {
       dio.interceptors.add(LoggingInterceptor());
@@ -173,9 +174,9 @@ class Http {
 
   static BaseOptions get _options {
     return BaseOptions(
-      connectTimeout: 60000,
-      sendTimeout: 60000,
-      receiveTimeout: 60000,
+      connectTimeout: const Duration(seconds: 60),
+      sendTimeout: const Duration(seconds: 60),
+      receiveTimeout: const Duration(seconds: 60),
     );
   }
 
@@ -190,14 +191,4 @@ class Http {
       CacheOption.isDiskCache.name: isDiskCache,
     };
   }
-
-  static HttpClient? Function(HttpClient client) get _clientCreate =>
-      (HttpClient client) {
-        if (_isProxyEnabled) {
-          client.findProxy = (_) => _proxyDestination;
-        }
-        client.badCertificateCallback = (_, __, ___) => true;
-
-        return client;
-      };
 }
