@@ -96,8 +96,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               child: ref.watch(authorizedProvider) == null
                   ? nil
                   : ListTile(
-                      iconColor: context.theme.errorColor,
-                      textColor: context.theme.errorColor,
+                      iconColor: context.theme.colorScheme.error,
+                      textColor: context.theme.colorScheme.error,
                       leading: const Icon(IconFontIcons.shutDownLine),
                       title: Text(S.of(context).logout),
                       onTap: () {

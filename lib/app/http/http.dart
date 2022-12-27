@@ -8,7 +8,7 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart' as web_view
     show CookieManager, HTTPCookieSameSitePolicy;
-import 'package:flutter_riverpod/flutter_riverpod.dart' show Reader;
+import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderContainer;
 import 'package:path_provider/path_provider.dart';
 
 import '../../utils/log_utils.dart';
@@ -38,7 +38,9 @@ class Http {
   static final web_view.CookieManager webViewCookieManager =
       web_view.CookieManager.instance();
 
-  static Future<void> initConfig({required Reader reader}) async {
+  static Future<void> initConfig({
+    required ProviderContainer providerContainer,
+  }) async {
     if (!kIsWeb) {
       await initCookieManagement();
 
@@ -56,7 +58,7 @@ class Http {
     dio.interceptors
       ..add(ErrorInterceptor())
       ..add(CacheInterceptor())
-      ..add(NetWorkInterceptor(reader: reader));
+      ..add(NetWorkInterceptor(providerContainer: providerContainer));
 
     if (kDebugMode && shouldLogRequest) {
       dio.interceptors.add(LoggingInterceptor());

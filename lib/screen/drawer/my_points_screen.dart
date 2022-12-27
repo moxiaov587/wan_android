@@ -88,7 +88,7 @@ class _MyPointsScreenState extends ConsumerState<MyPointsScreen>
                                     .copyWith(
                                   color: isIncrease
                                       ? context.theme.colorScheme.secondary
-                                      : context.theme.errorColor,
+                                      : context.theme.colorScheme.error,
                                 ),
                                 text: isIncrease ? '+' : '-',
                                 children: <TextSpan>[
@@ -100,7 +100,8 @@ class _MyPointsScreenState extends ConsumerState<MyPointsScreen>
                             ),
                           );
                         },
-                        separatorBuilder: (_, __) => const IndentDivider(),
+                        separatorBuilder: (_, __) =>
+                            const IndentDivider.listTile(),
                         itemCount: list.length,
                       );
                     },

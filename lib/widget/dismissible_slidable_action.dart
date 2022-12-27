@@ -63,7 +63,7 @@ class _DismissibleSlidableActionState extends State<DismissibleSlidableAction> {
       } else if (slidableAnimationValue >= widget.dismissiblePaneThreshold) {
         _actionLabelNotifier.value = ActionLabel(
           label: S.of(context).releaseToDeleteSwipeRightToCancel,
-          color: context.theme.errorColor,
+          color: context.theme.colorScheme.error,
         );
       }
     } else {

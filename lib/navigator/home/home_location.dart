@@ -101,6 +101,7 @@ class HomeLocation extends BeamLocation<HomeState> {
             const Radius radius = Radius.circular(20);
 
             return ModalBottomSheetRoute<void>(
+              isScrollControlled: false,
               clipBehavior: Clip.antiAlias,
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(

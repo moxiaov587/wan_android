@@ -123,7 +123,7 @@ class _RankScreenState extends ConsumerState<RankScreen>
                             ),
                             boxShadow: <BoxShadow>[
                               BoxShadow(
-                                color: context.theme.backgroundColor,
+                                color: context.theme.colorScheme.background,
                                 blurRadius: _kCurrentUserRankTileHeight / 2,
                                 blurStyle: BlurStyle.inner,
                               ),

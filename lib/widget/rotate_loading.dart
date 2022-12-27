@@ -51,7 +51,7 @@ class _RotateLoadingState extends State<RotateLoading>
         height: widget.size,
       ),
       child: Material(
-        color: context.theme.backgroundColor,
+        color: context.theme.colorScheme.background,
         borderRadius: AppTheme.borderRadius,
         child: Padding(
           padding: AppTheme.bodyPadding,
@@ -68,7 +68,7 @@ class _RotateLoadingState extends State<RotateLoading>
                     colors: <Color>[
                       context.theme.primaryColor,
                       context.theme.colorScheme.secondary,
-                      context.theme.errorColor,
+                      context.theme.colorScheme.error,
                       context.theme.colorScheme.tertiary,
                     ],
                     width: widget.width,

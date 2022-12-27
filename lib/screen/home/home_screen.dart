@@ -121,41 +121,39 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-      bottomNavigationBar: BottomAppBar(
-        child: ValueListenableBuilder<int>(
-          valueListenable: _currentIndexNotifier,
-          builder: (BuildContext context, int index, _) => BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            showSelectedLabels: false,
-            showUnselectedLabels: false,
-            currentIndex: index,
-            onTap: (int value) {
-              /// The [jumpToPage] will trigger [onPageChanged]
-              _pageController.jumpToPage(value);
-            },
-            items: <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                label: S.of(context).home,
-                icon: const Icon(IconFontIcons.homeLine),
-                activeIcon: const Icon(IconFontIcons.homeFill),
-              ),
-              BottomNavigationBarItem(
-                label: S.of(context).square,
-                icon: const Icon(IconFontIcons.seedlingLine),
-                activeIcon: const Icon(IconFontIcons.seedlingFill),
-              ),
-              BottomNavigationBarItem(
-                label: S.of(context).question,
-                icon: const Icon(IconFontIcons.questionnaireLine),
-                activeIcon: const Icon(IconFontIcons.questionnaireFill),
-              ),
-              BottomNavigationBarItem(
-                label: S.of(context).project,
-                icon: const Icon(IconFontIcons.androidLine),
-                activeIcon: const Icon(IconFontIcons.androidFill),
-              ),
-            ],
-          ),
+      bottomNavigationBar: ValueListenableBuilder<int>(
+        valueListenable: _currentIndexNotifier,
+        builder: (BuildContext context, int index, _) => BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          currentIndex: index,
+          onTap: (int value) {
+            /// The [jumpToPage] will trigger [onPageChanged]
+            _pageController.jumpToPage(value);
+          },
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              label: S.of(context).home,
+              icon: const Icon(IconFontIcons.homeLine),
+              activeIcon: const Icon(IconFontIcons.homeFill),
+            ),
+            BottomNavigationBarItem(
+              label: S.of(context).square,
+              icon: const Icon(IconFontIcons.seedlingLine),
+              activeIcon: const Icon(IconFontIcons.seedlingFill),
+            ),
+            BottomNavigationBarItem(
+              label: S.of(context).question,
+              icon: const Icon(IconFontIcons.questionnaireLine),
+              activeIcon: const Icon(IconFontIcons.questionnaireFill),
+            ),
+            BottomNavigationBarItem(
+              label: S.of(context).project,
+              icon: const Icon(IconFontIcons.androidLine),
+              activeIcon: const Icon(IconFontIcons.androidFill),
+            ),
+          ],
         ),
       ),
     );
@@ -591,7 +589,8 @@ class _BannerCarouselItem extends StatelessWidget {
             alignment: Alignment.centerRight,
             width: ScreenUtils.width,
             height: 50.0,
-            color: (homeBanner.primaryColor ?? context.theme.backgroundColor)
+            color: (homeBanner.primaryColor ??
+                    context.theme.colorScheme.background)
                 .withOpacity(0.2),
             child: DefaultTextStyle(
               style: context.theme.textTheme.titleMedium!.copyWith(

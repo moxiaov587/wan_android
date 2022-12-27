@@ -26,7 +26,6 @@ class CustomTextFormField extends StatefulWidget {
     this.textAlignVertical,
     this.autofocus = false,
     this.readOnly = false,
-    this.toolbarOptions,
     this.showCursor,
     this.obscuringCharacter = '•',
     this.obscureText = false,
@@ -55,6 +54,7 @@ class CustomTextFormField extends StatefulWidget {
     this.scrollController,
     this.restorationId,
     this.enableIMEPersonalizedLearning = true,
+    this.contextMenuBuilder = _defaultContextMenuBuilder,
   });
 
   final TextEditingController controller;
@@ -70,7 +70,6 @@ class CustomTextFormField extends StatefulWidget {
   final TextAlignVertical? textAlignVertical;
   final bool autofocus;
   final bool readOnly;
-  final ToolbarOptions? toolbarOptions;
   final bool? showCursor;
   final String obscuringCharacter;
   final bool obscureText;
@@ -99,6 +98,16 @@ class CustomTextFormField extends StatefulWidget {
   final ScrollController? scrollController;
   final String? restorationId;
   final bool enableIMEPersonalizedLearning;
+  final EditableTextContextMenuBuilder? contextMenuBuilder;
+
+  static Widget _defaultContextMenuBuilder(
+    BuildContext _,
+    EditableTextState editableTextState,
+  ) {
+    return AdaptiveTextSelectionToolbar.editableText(
+      editableTextState: editableTextState,
+    );
+  }
 
   @override
   _CustomTextFormFieldState createState() => _CustomTextFormFieldState();
@@ -172,7 +181,6 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
       textAlignVertical: widget.textAlignVertical,
       autofocus: widget.autofocus,
       readOnly: widget.readOnly,
-      toolbarOptions: widget.toolbarOptions,
       showCursor: widget.showCursor,
       obscuringCharacter: widget.obscuringCharacter,
       obscureText: widget.obscureText,
@@ -203,6 +211,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
       scrollController: widget.scrollController,
       restorationId: widget.restorationId,
       enableIMEPersonalizedLearning: widget.enableIMEPersonalizedLearning,
+      contextMenuBuilder: widget.contextMenuBuilder,
     );
   }
 }

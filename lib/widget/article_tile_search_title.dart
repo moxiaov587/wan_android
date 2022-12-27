@@ -40,7 +40,7 @@ class ArticleTileSearchTitle extends StatelessWidget {
                   style: TextStyle(
                     backgroundColor:
                         isKeywords ? keywordsBackgroundColor : null,
-                    color: isKeywords ? context.theme.errorColor : null,
+                    color: isKeywords ? context.theme.colorScheme.error : null,
                   ),
                 );
               }) ??
