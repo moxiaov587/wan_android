@@ -8,11 +8,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart' as web_view
     show CookieManager, HTTPCookieSameSitePolicy;
 import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderContainer;
-import 'package:path_provider/path_provider.dart';
 import 'package:native_diox_adapter/native_diox_adapter.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../utils/log_utils.dart';
-
 import 'cache_interceptor.dart';
 import 'error_interceptor.dart';
 import 'logging_interceptor.dart';
@@ -23,9 +22,6 @@ const String kBaseUrl = 'https://$kDomain';
 
 class Http {
   const Http._();
-
-  static const bool _isProxyEnabled = false;
-  static const String _proxyDestination = '';
 
   static const bool shouldLogRequest = false;
 
