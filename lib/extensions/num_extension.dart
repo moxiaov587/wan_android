@@ -50,6 +50,6 @@ extension IntExtension on int? {
       return S.of(context).hoursAgo(hour);
     }
 
-    return S.of(context).minutesAgo(difference.inMinutes);
+    return S.of(context).minutesAgo(difference.inMinutes.moreThanZero);
   }
 }
