@@ -387,7 +387,7 @@ class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
                         child: Consumer(
                           builder: (_, WidgetRef ref, __) {
                             return ref.watch(homeBannerProvider).when(
-                                  (List<HomeBannerModel> list) =>
+                                  (List<HomeBannerCache> list) =>
                                       PageView.builder(
                                     onPageChanged: ref
                                         .read(
@@ -567,17 +567,14 @@ class _HomeAppBarUserInfo extends StatelessWidget {
 class _BannerCarouselItem extends StatelessWidget {
   const _BannerCarouselItem({super.key, required this.homeBanner});
 
-  final HomeBannerModel homeBanner;
+  final HomeBannerCache homeBanner;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
-        ExtendedImage.memory(
-          homeBanner.bytes,
-          fit: BoxFit.fill,
-        ),
+        ExtendedImage.network(homeBanner.imageUrl, fit: BoxFit.fill),
         Positioned(
           left: 0.0,
           right: 0.0,
@@ -589,12 +586,12 @@ class _BannerCarouselItem extends StatelessWidget {
             alignment: Alignment.centerRight,
             width: ScreenUtils.width,
             height: 50.0,
-            color: (homeBanner.primaryColor ??
+            color: (homeBanner.primaryColorValue.toColor ??
                     context.theme.colorScheme.background)
                 .withOpacity(0.2),
             child: DefaultTextStyle(
               style: context.theme.textTheme.titleMedium!.copyWith(
-                color: homeBanner.textColor,
+                color: homeBanner.textColorValue.toColor,
               ),
               child: Text(homeBanner.title),
             ),

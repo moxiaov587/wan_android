@@ -39,6 +39,7 @@ class ApplicationCacheSizeNotifier extends BaseViewNotifier<int> {
   @override
   Future<int> loadData() async {
     return (await Future.wait<int>(<Future<int>>[
+      DatabaseManager.homeBannerCaches.getSize(),
       DatabaseManager.responseCaches.getSize(),
       DatabaseManager.searchHistoryCaches.getSize(),
     ]))
@@ -49,6 +50,7 @@ class ApplicationCacheSizeNotifier extends BaseViewNotifier<int> {
     await DatabaseManager.isar.writeTxn(
       () => Future.wait<void>(
         <Future<void>>[
+          DatabaseManager.homeBannerCaches.clear(),
           DatabaseManager.responseCaches.clear(),
           DatabaseManager.searchHistoryCaches.clear(),
         ],

@@ -1,7 +1,6 @@
 import 'dart:ui' as ui show Image;
 
 import 'package:diox/diox.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart' show decodeImageFromList;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +10,7 @@ import '../../../app/http/http.dart' show kBaseUrl;
 import '../../../app/http/wan_android_api.dart';
 import '../../../app/provider/provider.dart';
 import '../../../app/provider/view_state.dart';
+import '../../../database/database_manager.dart';
 import '../../../model/models.dart';
 
 part 'project_provider.dart';
@@ -46,94 +46,93 @@ mixin ArticleNotifierSwitchCollectMixin
   }
 }
 
-@immutable
-class HomeBannerModel {
-  const HomeBannerModel({
-    required this.id,
-    required this.title,
-    required this.bytes,
-    this.primaryColor,
-    this.textColor,
-  });
-
-  final int id;
-  final String title;
-  final Uint8List bytes;
-  final Color? primaryColor;
-  final Color? textColor;
-
-  @override
-  bool operator ==(Object other) =>
-      other is HomeBannerModel &&
-      id == other.id &&
-      bytes == other.bytes &&
-      title == other.title &&
-      primaryColor == other.primaryColor &&
-      textColor == other.textColor;
-
-  @override
-  int get hashCode => Object.hash(id, bytes, title, primaryColor, textColor);
-}
-
-final StateNotifierProvider<BannerNotifier, ListViewState<HomeBannerModel>>
+final StateNotifierProvider<BannerNotifier, ListViewState<HomeBannerCache>>
     homeBannerProvider =
-    StateNotifierProvider<BannerNotifier, ListViewState<HomeBannerModel>>((_) {
+    StateNotifierProvider<BannerNotifier, ListViewState<HomeBannerCache>>((_) {
   return BannerNotifier(
-    const ListViewState<HomeBannerModel>.loading(),
+    const ListViewState<HomeBannerCache>.loading(),
   );
 });
 
-class BannerNotifier extends BaseListViewNotifier<HomeBannerModel> {
+class BannerNotifier extends BaseListViewNotifier<HomeBannerCache> {
   BannerNotifier(super.state);
 
   final NetworkAssetBundle _networkAssetBundle =
       NetworkAssetBundle(Uri.parse(kBaseUrl));
 
   @override
-  Future<List<HomeBannerModel>> loadData() async {
+  Future<List<HomeBannerCache>> loadData() async {
     final List<BannerModel> homeBanners =
         await WanAndroidAPI.fetchHomeBanners();
 
-    final Iterable<Future<HomeBannerModel>> futures =
-        homeBanners.map((BannerModel banner) async {
-      final ByteData byteData =
-          await _networkAssetBundle.load(banner.imagePath);
+    final List<HomeBannerCache> homeBannersFromCache = DatabaseManager
+        .homeBannerCaches
+        .where()
+        .sortByOrderDesc()
+        .findAllSync();
 
-      final Uint8List uint8List = byteData.buffer.asUint8List();
+    if (_compareRequestAndCache(homeBanners, homeBannersFromCache)) {
+      final Iterable<Future<HomeBannerCache>> futures =
+          homeBanners.map((BannerModel banner) async {
+        final ByteData byteData =
+            await _networkAssetBundle.load(banner.imagePath);
 
-      final ui.Image decodeImage = await decodeImageFromList(uint8List);
+        final Uint8List uint8List = byteData.buffer.asUint8List();
 
-      final ByteData? decodeByteData = await decodeImage.toByteData();
+        final ui.Image decodeImage = await decodeImageFromList(uint8List);
 
-      if (decodeByteData == null) {
-        return HomeBannerModel(
-          id: banner.id,
-          title: banner.title,
-          bytes: uint8List,
-        );
-      }
+        final PaletteGenerator paletteGenerator =
+            await PaletteGenerator.fromImage(decodeImage);
 
-      final PaletteGenerator paletteGenerator =
-          await PaletteGenerator.fromByteData(EncodedImage(
-        decodeByteData,
-        width: decodeImage.width,
-        height: decodeImage.height,
-      ));
+        final PaletteColor? paletteColor =
+            paletteGenerator.vibrantColor ?? paletteGenerator.dominantColor;
 
-      final PaletteColor? paletteColor =
-          paletteGenerator.vibrantColor ?? paletteGenerator.dominantColor;
+        return HomeBannerCache()
+          ..id = banner.id
+          ..isVisible = banner.isVisible
+          ..order = banner.order
+          ..type = banner.type
+          ..title = banner.title
+          ..desc = banner.desc
+          ..url = banner.url
+          ..imageUrl = banner.imagePath
+          ..primaryColorValue = paletteColor?.color.value
+          ..textColorValue = paletteColor?.bodyTextColor.value;
+      });
 
-      return HomeBannerModel(
-        id: banner.id,
-        title: banner.title,
-        bytes: uint8List,
-        primaryColor: paletteColor?.color,
-        textColor: paletteColor?.bodyTextColor,
-      );
-    });
+      final List<HomeBannerCache> banners = await Future.wait(futures);
 
-    return Future.wait(futures);
+      DatabaseManager.isar.writeTxn<void>(() async {
+        await DatabaseManager.homeBannerCaches.clear();
+        DatabaseManager.homeBannerCaches.putAll(banners);
+      });
+
+      return banners;
+    }
+
+    return homeBannersFromCache;
   }
+
+  bool _compareRequestAndCache(
+    List<BannerModel> data,
+    List<HomeBannerCache> cache,
+  ) {
+    if (data.length != cache.length) {
+      return true;
+    }
+
+    for (int i = 0; i < data.length; i++) {
+      if (data[i].id != cache[i].id) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+}
+
+extension Int2ColorExtension on int? {
+  Color? get toColor => this == null ? null : Color(this!);
 }
 
 final StateNotifierProvider<CurrentBannerColorNotifier, Color?>
@@ -141,10 +140,10 @@ final StateNotifierProvider<CurrentBannerColorNotifier, Color?>
     StateNotifierProvider<CurrentBannerColorNotifier, Color?>(
   (StateNotifierProviderRef<CurrentBannerColorNotifier, Color?> ref) {
     return ref.watch(homeBannerProvider).whenOrNull(
-              (List<HomeBannerModel> list) => CurrentBannerColorNotifier(
-                list.first.primaryColor,
-                colors:
-                    list.map((HomeBannerModel banner) => banner.primaryColor),
+              (List<HomeBannerCache> list) => CurrentBannerColorNotifier(
+                list.first.primaryColorValue.toColor,
+                colors: list.map((HomeBannerCache banner) =>
+                    banner.primaryColorValue.toColor),
               ),
             ) ??
         CurrentBannerColorNotifier(null);

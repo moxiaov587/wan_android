@@ -16,6 +16,8 @@ class DatabaseManager {
   static late final Isar isar;
 
   static IsarCollection<AccountCache> get accountCaches => isar.accountCaches;
+  static IsarCollection<HomeBannerCache> get homeBannerCaches =>
+      isar.homeBannerCaches;
   static IsarCollection<ResponseCache> get responseCaches =>
       isar.responseCaches;
   static IsarCollection<SearchHistory> get searchHistoryCaches =>
@@ -69,6 +71,7 @@ class DatabaseManager {
     isar = await Isar.open(
       <CollectionSchema<dynamic>>[
         AccountCacheSchema,
+        HomeBannerCacheSchema,
         ResponseCacheSchema,
         SearchHistorySchema,
         UserSettingsSchema,
