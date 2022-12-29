@@ -52,5 +52,5 @@
 		<false/>
 		<key>CADisableMinimumFrameDurationOnPhone</key>
 		<true/>
-</dict>
+	</dict>
 </plist>
