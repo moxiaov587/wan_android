@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../screen/drawer/home_drawer.dart';
 import '../contacts/instances.dart';
+import '../extensions/extensions.dart' show BuildContextExtension;
 import '../screen/authorized/provider/authorized_provider.dart';
 import '../screen/home/home_screen.dart';
 import '../screen/unknown_screen.dart';

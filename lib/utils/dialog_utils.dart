@@ -17,8 +17,7 @@ class DialogUtils {
 
   static const AlignmentGeometry _defaultAlignment = Alignment.bottomCenter;
 
-  static Color get _maskBackground =>
-      currentIsDark ? AppColors.maskBackgroundDark : AppColors.maskBackground;
+  static Color get _maskBackground => currentTheme.colorScheme.scrim;
 
   static void loading() {
     SmartDialog.showLoading<void>(

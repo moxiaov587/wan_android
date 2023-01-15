@@ -67,7 +67,6 @@ class AppModalBottomSheetPage<T> extends Page<T> {
     this.shape,
     this.clipBehavior,
     this.constraints,
-    this.modalBarrierColor,
     this.isDismissible = true,
     this.enableDrag = true,
     this.isScrollControlled = false,
@@ -83,7 +82,6 @@ class AppModalBottomSheetPage<T> extends Page<T> {
   final ShapeBorder? shape;
   final Clip? clipBehavior;
   final BoxConstraints? constraints;
-  final Color? modalBarrierColor;
   final bool isDismissible;
   final bool enableDrag;
   final bool isScrollControlled;
@@ -115,7 +113,7 @@ class AppModalBottomSheetPage<T> extends Page<T> {
       ),
       clipBehavior: Clip.antiAlias,
       constraints: constraints,
-      modalBarrierColor: modalBarrierColor,
+      modalBarrierColor: context.theme.colorScheme.scrim,
       isDismissible: isDismissible,
       enableDrag: enableDrag,
       isScrollControlled: isScrollControlled,

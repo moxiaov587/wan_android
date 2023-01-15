@@ -290,6 +290,7 @@ class AppTheme {
       background: AppColors.background1,
       onBackground: AppColors.backgroundWhite,
       shadow: AppColors.black,
+      scrim: AppColors.maskBackground,
     ),
   );
 
@@ -442,6 +443,7 @@ class AppTheme {
       background: AppColors.background1Dark,
       onBackground: AppColors.backgroundWhiteDark,
       shadow: AppColors.blackDark,
+      scrim: AppColors.maskBackgroundDark,
     ),
   );
 }

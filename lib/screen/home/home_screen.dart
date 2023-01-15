@@ -72,6 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       key: Instances.scaffoldStateKey,
       drawer: const HomeDrawer(),
+      drawerScrimColor: context.theme.colorScheme.scrim,
       body: PageView.builder(
         controller: _pageController,
         itemCount: _pages.length,
