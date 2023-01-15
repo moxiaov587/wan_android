@@ -1,7 +1,9 @@
 part of 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+  const RegisterScreen({super.key, required this.fromLogin});
+
+  final bool fromLogin;
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -35,13 +37,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void toLogin() {
-    if (!AppRouterDelegate.instance.currentBeamState.isLogin) {
-      AppRouterDelegate.instance.currentBeamState.updateWith(
-        isLogin: true,
-      );
+    if (widget.fromLogin) {
+      GoRouter.of(context).pop();
+    } else {
+      GoRouter.of(context).pushReplacement(const LoginRoute().location);
     }
-
-    Navigator.of(context).maybePop();
   }
 
   Future<void> onSubmitted({

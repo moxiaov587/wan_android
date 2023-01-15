@@ -129,9 +129,10 @@ class _ProjectTypeSwitchExtentProtoType extends ConsumerWidget {
                 color: theme.cardColor,
                 onTap: ref.watch(currentProjectTypeProvider).when(
                       (ProjectTypeModel? value) => () {
-                        AppRouterDelegate.instance.currentBeamState.updateWith(
-                          showProjectTypeBottomSheet: true,
-                        );
+                        // AppRouterDelegate.instance.currentBeamState.updateWith(
+                        //   showProjectTypeBottomSheet: true,
+                        // );
+                        const ProjectTypeRoute().push(context);
                       },
                       loading: () => null,
                       error: (_, __, ___) => () {

@@ -13,7 +13,7 @@ import '../../app/provider/view_state.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../extensions/extensions.dart' show BuildContextExtension;
 import '../../model/models.dart' show WebViewModel;
-import '../../navigator/app_router_delegate.dart';
+import '../../router/data/app_routes.dart';
 import '../../screen/authorized/provider/authorized_provider.dart';
 import '../../utils/debounce_throttle.dart';
 import '../../utils/dialog_utils.dart';
@@ -399,10 +399,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                         color: collect ? context.theme.primaryColor : null,
                         onPressed: throttle(() {
                           if (ref.read(authorizedProvider) == null) {
-                            AppRouterDelegate.instance.currentBeamState
-                                .updateWith(
-                              isLogin: true,
-                            );
+                            const LoginRoute().push(context);
                           } else {
                             ref.read(provider.notifier).collect(!collect);
                           }

@@ -1,4 +1,3 @@
-import 'package:beamer/beamer.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:extended_sliver/extended_sliver.dart';
 import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
@@ -17,8 +16,7 @@ import '../../contacts/instances.dart';
 import '../../database/database_manager.dart';
 import '../../extensions/extensions.dart';
 import '../../model/models.dart';
-import '../../navigator/app_router_delegate.dart';
-import '../../navigator/route_name.dart';
+import '../../router/data/app_routes.dart';
 import '../../utils/dialog_utils.dart';
 import '../../utils/html_parse_utils.dart';
 import '../../utils/screen_utils.dart';
@@ -38,15 +36,10 @@ part 'project_type_bottom_sheet.dart';
 part 'qa.dart';
 part 'square.dart';
 
-const String kSearchOriginParams = 'origin';
-
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({
-    super.key,
-    required this.initialPath,
-  });
+  const HomeScreen({super.key, required this.initialPath});
 
-  final String initialPath;
+  final HomePath initialPath;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -61,36 +54,11 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   late final ValueNotifier<int> _currentIndexNotifier =
-      ValueNotifier<int>(initialPathToIndex(widget.initialPath));
+      ValueNotifier<int>(widget.initialPath.index);
 
   late final PageController _pageController = PageController(
     initialPage: _currentIndexNotifier.value,
   );
-
-  int initialPathToIndex(String path) {
-    final int index = RouterName.homeTabsPath.indexOf(path);
-
-    if (index != -1) {
-      return index;
-    } else if (RouterName.projectType.location == path) {
-      return 3;
-    }
-
-    return 0;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    Future<void>.delayed(Duration.zero, () {
-      if (RouterName.homeDrawerPath.contains(
-        context.currentBeamLocation.state.routeInformation.location,
-      )) {
-        Instances.scaffoldStateKey.currentState?.openDrawer();
-      }
-    });
-  }
 
   @override
   void dispose() {
@@ -114,11 +82,8 @@ class _HomeScreenState extends State<HomeScreen> {
             child: _pages[index],
           ),
         ),
-        onPageChanged: (int value) {
-          _currentIndexNotifier.value = value;
-          AppRouterDelegate.instance.currentBeamState.updateWith(
-            initialPath: RouterName.homeTabsPath[value],
-          );
+        onPageChanged: (int index) {
+          _currentIndexNotifier.value = index;
         },
       ),
       bottomNavigationBar: ValueListenableBuilder<int>(
@@ -158,6 +123,13 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+enum HomePath {
+  home,
+  square,
+  qa,
+  project,
 }
 
 class _Home extends ConsumerStatefulWidget {
@@ -481,10 +453,7 @@ class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
                           ],
                         ),
                         onTap: () {
-                          AppRouterDelegate.instance.currentBeamState
-                              .updateWith(
-                            showSearch: true,
-                          );
+                          const SearchRoute().push(context);
                         },
                       ),
                     ),

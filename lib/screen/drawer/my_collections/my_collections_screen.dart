@@ -13,7 +13,7 @@ import '../../../contacts/instances.dart';
 import '../../../contacts/unicode.dart';
 import '../../../extensions/extensions.dart';
 import '../../../model/models.dart';
-import '../../../navigator/app_router_delegate.dart';
+import '../../../router/data/app_routes.dart';
 import '../../../utils/html_parse_utils.dart';
 import '../../../utils/screen_utils.dart';
 import '../../../widget/custom_text_form_field.dart';
@@ -49,22 +49,7 @@ class _MyCollectionsScreenState extends State<MyCollectionsScreen>
   );
 
   @override
-  void initState() {
-    super.initState();
-
-    _tabController.addListener(_onTabControllerScroll);
-  }
-
-  void _onTabControllerScroll() {
-    AppRouterDelegate.instance.currentBeamState.updateWith(
-      collectionTypeIndex: _tabController.index,
-      rebuild: false,
-    );
-  }
-
-  @override
   void dispose() {
-    _tabController.removeListener(_onTabControllerScroll);
     _tabController.dispose();
     super.dispose();
   }
@@ -77,9 +62,9 @@ class _MyCollectionsScreenState extends State<MyCollectionsScreen>
         actions: <Widget>[
           IconButton(
             onPressed: () {
-              AppRouterDelegate.instance.currentBeamState.updateWith(
-                showHandleCollectedBottomSheet: true,
-              );
+              AddCollectedArticleOrWebsiteRoute(
+                type: CollectionType.values[_tabController.index],
+              ).push(context);
             },
             icon: const Icon(
               IconFontIcons.addLine,
@@ -108,10 +93,7 @@ class _MyCollectionsScreenState extends State<MyCollectionsScreen>
                     )
                     .toList(),
                 onTap: (int index) {
-                  AppRouterDelegate.instance.currentBeamState.updateWith(
-                    collectionTypeIndex: index,
-                    rebuild: false,
-                  );
+                  _tabController.animateTo(index);
                 },
               ),
             ),

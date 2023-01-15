@@ -3,7 +3,7 @@ import 'package:nil/nil.dart' show nil;
 
 import '../contacts/icon_font_icons.dart';
 
-part '../navigator/route/search_page_route.dart';
+part '../router/route/search_page_route.dart';
 
 abstract class CustomSearchDelegate<T> {
   CustomSearchDelegate({

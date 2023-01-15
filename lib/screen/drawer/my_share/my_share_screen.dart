@@ -10,7 +10,7 @@ import '../../../app/theme/app_theme.dart';
 import '../../../contacts/icon_font_icons.dart';
 import '../../../extensions/extensions.dart';
 import '../../../model/models.dart';
-import '../../../navigator/app_router_delegate.dart';
+import '../../../router/data/app_routes.dart';
 import '../../../utils/screen_utils.dart';
 import '../../../widget/article.dart';
 import '../../../widget/custom_text_form_field.dart';
@@ -44,9 +44,7 @@ class _MyShareScreenState extends ConsumerState<MyShareScreen>
         actions: <Widget>[
           IconButton(
             onPressed: () {
-              AppRouterDelegate.instance.currentBeamState.updateWith(
-                showHandleSharedBottomSheet: true,
-              );
+              const HandleSharedBottomSheetRoute().push(context);
             },
             icon: const Icon(
               IconFontIcons.addLine,
