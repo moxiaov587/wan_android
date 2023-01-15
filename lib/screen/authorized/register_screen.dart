@@ -45,15 +45,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> onSubmitted({
-    required WidgetRef reader,
+    required WidgetRef ref,
   }) async {
     if (_formKey.currentState!.validate()) {
-      final bool result =
-          await reader.read(authorizedProvider.notifier).register(
-                username: _usernameTextEditingController.text,
-                password: _passwordTextEditingController.text,
-                repassword: _repasswordTextEditingController.text,
-              );
+      final bool result = await ref.read(authorizedProvider.notifier).register(
+            username: _usernameTextEditingController.text,
+            password: _passwordTextEditingController.text,
+            repassword: _repasswordTextEditingController.text,
+          );
 
       if (result) {
         toLogin();
@@ -157,7 +156,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         builder: (_, WidgetRef ref, Widget? text) =>
                             ElevatedButton(
                           onPressed: () {
-                            onSubmitted(reader: ref);
+                            onSubmitted(ref: ref);
                           },
                           child: text,
                         ),
