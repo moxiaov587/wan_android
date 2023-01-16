@@ -9,7 +9,7 @@ import '../../app/theme/app_theme.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../extensions/extensions.dart';
 import '../../model/models.dart';
-import '../../navigator/app_router_delegate.dart';
+import '../../router/data/app_routes.dart';
 import '../../screen/authorized/provider/authorized_provider.dart';
 import '../../screen/provider/locale_provider.dart';
 import '../../screen/provider/theme_provider.dart';
@@ -21,6 +21,7 @@ import '../../widget/indent_divider.dart';
 import '../../widget/level_tag.dart';
 import '../../widget/sliver_child_with_separator_builder_delegate.dart';
 import '../../widget/view_state_widget.dart';
+import 'my_collections/my_collections_screen.dart';
 import 'provider/drawer_provider.dart';
 
 export 'my_collections/my_collections_screen.dart';
@@ -47,36 +48,28 @@ class _HomeDrawerState extends State<HomeDrawer> {
         iconData: IconFontIcons.coinLine,
         title: S.of(context).myPoints,
         onTap: () {
-          AppRouterDelegate.instance.currentBeamState.updateWith(
-            isMyPoints: true,
-          );
+          const MyPointsRoute().push(context);
         },
       ),
       ListTileConfig(
         iconData: IconFontIcons.starLine,
         title: S.of(context).myCollections,
         onTap: () {
-          AppRouterDelegate.instance.currentBeamState.updateWith(
-            isMyCollections: true,
-          );
+          const MyCollectionsRoute(type: CollectionType.article).push(context);
         },
       ),
       ListTileConfig(
         iconData: IconFontIcons.shareCircleLine,
         title: S.of(context).myShare,
         onTap: () {
-          AppRouterDelegate.instance.currentBeamState.updateWith(
-            isMyShare: true,
-          );
+          const MyShareRoute().push(context);
         },
       ),
       ListTileConfig(
         iconData: IconFontIcons.informationLine,
         title: S.of(context).about,
         onTap: () {
-          AppRouterDelegate.instance.currentBeamState.updateWith(
-            isAbout: true,
-          );
+          const AboutRoute().push(context);
         },
       ),
     ];
@@ -157,9 +150,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   alignment: Alignment.topRight,
                   child: IconButton(
                     onPressed: () {
-                      AppRouterDelegate.instance.currentBeamState.updateWith(
-                        isRank: true,
-                      );
+                      const RankRoute().push(context);
                     },
                     icon: const Icon(IconFontIcons.honourLine),
                   ),
@@ -217,9 +208,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                     ),
                     IconButton(
                       onPressed: () {
-                        AppRouterDelegate.instance.currentBeamState.updateWith(
-                          isSettings: true,
-                        );
+                        const SettingsRoute().push(context);
                       },
                       tooltip: S.of(context).settings,
                       icon: const Icon(IconFontIcons.settingsLine),

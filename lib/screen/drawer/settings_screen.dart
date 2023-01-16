@@ -32,9 +32,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     leading: const Icon(IconFontIcons.globalLine),
                     title: Text(S.of(context).languages),
                     onTap: () {
-                      AppRouterDelegate.instance.currentBeamState.updateWith(
-                        isLanguages: true,
-                      );
+                      const LanguagesRoute().push(context);
                     },
                   ),
                   ListTile(

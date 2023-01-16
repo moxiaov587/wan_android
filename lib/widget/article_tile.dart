@@ -34,9 +34,7 @@ class ArticleTile extends StatelessWidget {
       child: Ink(
         child: InkWell(
           onTap: () {
-            AppRouterDelegate.instance.currentBeamState.updateWith(
-              articleId: article.id,
-            );
+            ArticleRoute(id: article.id).push(context);
           },
           child: Padding(
             padding: AppTheme.bodyPadding,
@@ -58,10 +56,8 @@ class ArticleTile extends StatelessWidget {
                           recognizer: authorTextOrShareUserTextCanOnTap
                               ? (TapGestureRecognizer()
                                 ..onTap = () {
-                                  AppRouterDelegate.instance.currentBeamState
-                                      .updateWith(
-                                    author: article.author,
-                                  );
+                                  TheyArticlesRoute(author: article.author!)
+                                      .push(context);
                                 })
                               : null,
                         )
@@ -76,10 +72,8 @@ class ArticleTile extends StatelessWidget {
                           recognizer: authorTextOrShareUserTextCanOnTap
                               ? (TapGestureRecognizer()
                                 ..onTap = () {
-                                  AppRouterDelegate.instance.currentBeamState
-                                      .updateWith(
-                                    userId: article.userId,
-                                  );
+                                  TheyShareRoute(id: article.userId!)
+                                      .push(context);
                                 })
                               : null,
                         ),

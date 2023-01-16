@@ -6,7 +6,7 @@ import '../app/theme/app_theme.dart';
 import '../contacts/unicode.dart';
 import '../extensions/extensions.dart';
 import '../model/models.dart';
-import '../navigator/app_router_delegate.dart';
+import '../router/data/app_routes.dart';
 import '../utils/html_parse_utils.dart';
 import '../widget/gap.dart';
 

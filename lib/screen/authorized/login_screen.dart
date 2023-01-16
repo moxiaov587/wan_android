@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../app/l10n/generated/l10n.dart';
 import '../../app/theme/app_theme.dart';
@@ -8,7 +9,7 @@ import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
 import '../../database/database_manager.dart';
 import '../../extensions/extensions.dart' show BuildContextExtension;
-import '../../navigator/app_router_delegate.dart';
+import '../../router/data/app_routes.dart';
 import '../../screen/authorized/provider/authorized_provider.dart';
 import '../../widget/custom_text_form_field.dart';
 import '../../widget/gap.dart';
@@ -106,7 +107,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
           );
 
       if (result) {
-        AppRouterDelegate.instance.currentBeamState.updateWith(isLogin: false);
+        GoRouter.of(context).pop();
       }
     }
   }
@@ -253,10 +254,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           onPressed: () {
-                            AppRouterDelegate.instance.currentBeamState
-                                .updateWith(
-                              isRegister: true,
-                            );
+                            const RegisterRoute(fromLogin: true).push(context);
                           },
                           child: Text(
                             S.of(context).register,

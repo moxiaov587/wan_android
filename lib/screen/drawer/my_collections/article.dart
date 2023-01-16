@@ -154,11 +154,10 @@ class _CollectedArticleTile extends ConsumerWidget {
             dismissiblePaneThreshold: 0.65,
             label: S.of(context).edit,
             onTap: () {
-              AppRouterDelegate.instance.currentBeamState.updateWith(
-                showHandleCollectedBottomSheet: true,
-                collectionTypeIndex: CollectionType.article.index,
-                collectId: article.id,
-              );
+              EditCollectedArticleOrWebsiteRoute(
+                type: CollectionType.article,
+                id: article.id,
+              ).push(context);
             },
           ),
         ],
@@ -172,9 +171,7 @@ class _CollectedArticleTile extends ConsumerWidget {
           child: Ink(
             child: InkWell(
               onTap: () {
-                AppRouterDelegate.instance.currentBeamState.updateWith(
-                  articleId: article.id,
-                );
+                ArticleRoute(id: article.id).push(context);
               },
               child: Padding(
                 padding: AppTheme.bodyPadding,
