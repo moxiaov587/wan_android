@@ -19,7 +19,6 @@ import '../../widget/animated_counter.dart';
 import '../../widget/gap.dart';
 import '../../widget/indent_divider.dart';
 import '../../widget/level_tag.dart';
-import '../../widget/sliver_child_with_separator_builder_delegate.dart';
 import '../../widget/view_state_widget.dart';
 import 'my_collections/my_collections_screen.dart';
 import 'provider/drawer_provider.dart';
@@ -43,37 +42,6 @@ class HomeDrawer extends StatefulWidget {
 class _HomeDrawerState extends State<HomeDrawer> {
   @override
   Widget build(BuildContext context) {
-    final List<ListTileConfig> configs = <ListTileConfig>[
-      ListTileConfig(
-        iconData: IconFontIcons.coinLine,
-        title: S.of(context).myPoints,
-        onTap: () {
-          const MyPointsRoute().push(context);
-        },
-      ),
-      ListTileConfig(
-        iconData: IconFontIcons.starLine,
-        title: S.of(context).myCollections,
-        onTap: () {
-          const MyCollectionsRoute(type: CollectionType.article).push(context);
-        },
-      ),
-      ListTileConfig(
-        iconData: IconFontIcons.shareCircleLine,
-        title: S.of(context).myShare,
-        onTap: () {
-          const MyShareRoute().push(context);
-        },
-      ),
-      ListTileConfig(
-        iconData: IconFontIcons.informationLine,
-        title: S.of(context).about,
-        onTap: () {
-          const AboutRoute().push(context);
-        },
-      ),
-    ];
-
     const double avatarRadius = 30.0;
 
     return Drawer(
@@ -159,19 +127,43 @@ class _HomeDrawerState extends State<HomeDrawer> {
             ),
           ),
           SliverList(
-            delegate: SliverChildWithSeparatorBuilderDelegate(
-              (_, int index) {
-                final ListTileConfig config = configs[index];
-
-                return ListTile(
+            delegate: SliverChildListDelegate(
+              <Widget>[
+                ListTile(
                   minLeadingWidth: 24.0,
-                  leading: Icon(config.iconData),
-                  title: Text(config.title),
-                  onTap: config.onTap,
-                );
-              },
-              separatorBuilder: (_, __) => const IndentDivider.listTile(),
-              childCount: configs.length,
+                  leading: const Icon(IconFontIcons.coinLine),
+                  title: Text(S.of(context).myPoints),
+                  onTap: () {
+                    const MyPointsRoute().push(context);
+                  },
+                ),
+                ListTile(
+                  minLeadingWidth: 24.0,
+                  leading: const Icon(IconFontIcons.starLine),
+                  title: Text(S.of(context).myCollections),
+                  onTap: () {
+                    const MyCollectionsRoute(
+                      type: CollectionType.article,
+                    ).push(context);
+                  },
+                ),
+                ListTile(
+                  minLeadingWidth: 24.0,
+                  leading: const Icon(IconFontIcons.shareCircleLine),
+                  title: Text(S.of(context).myShare),
+                  onTap: () {
+                    const MyShareRoute().push(context);
+                  },
+                ),
+                ListTile(
+                  minLeadingWidth: 24.0,
+                  leading: const Icon(IconFontIcons.informationLine),
+                  title: Text(S.of(context).about),
+                  onTap: () {
+                    const AboutRoute().push(context);
+                  },
+                ),
+              ],
             ),
           ),
           SliverFillRemaining(
@@ -225,16 +217,4 @@ class _HomeDrawerState extends State<HomeDrawer> {
       ),
     );
   }
-}
-
-class ListTileConfig {
-  ListTileConfig({
-    required this.iconData,
-    required this.title,
-    required this.onTap,
-  });
-
-  final IconData iconData;
-  final String title;
-  final VoidCallback onTap;
 }
