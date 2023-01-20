@@ -118,156 +118,154 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
       appBar: AppBar(
         title: Text(S.of(context).login),
       ),
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: <Widget>[
-            SliverPadding(
-              padding: _kBodyPadding,
-              sliver: Form(
-                key: _formKey,
-                child: SliverList(
-                  delegate: SliverChildListDelegate(
-                    <Widget>[
-                      RawAutocomplete<AccountCache>(
-                        textEditingController: _usernameTextEditingController,
-                        focusNode: _usernameFocusNode,
-                        displayStringForOption: (AccountCache option) =>
-                            option.username,
-                        onSelected: (AccountCache option) {
-                          if (option.password != null) {
-                            _passwordTextEditingController.text = ref
-                                .read(authorizedProvider.notifier)
-                                .decryptString(option.password!);
+      body: CustomScrollView(
+        slivers: <Widget>[
+          SliverPadding(
+            padding: _kBodyPadding,
+            sliver: Form(
+              key: _formKey,
+              child: SliverList(
+                delegate: SliverChildListDelegate(
+                  <Widget>[
+                    RawAutocomplete<AccountCache>(
+                      textEditingController: _usernameTextEditingController,
+                      focusNode: _usernameFocusNode,
+                      displayStringForOption: (AccountCache option) =>
+                          option.username,
+                      onSelected: (AccountCache option) {
+                        if (option.password != null) {
+                          _passwordTextEditingController.text = ref
+                              .read(authorizedProvider.notifier)
+                              .decryptString(option.password!);
+                        }
+                      },
+                      optionsBuilder: (TextEditingValue textEditingValue) =>
+                          DatabaseManager.accountCaches
+                              .filter()
+                              .usernameStartsWith(textEditingValue.text)
+                              .sortByUpdateTimeDesc()
+                              .findAll(),
+                      optionsViewBuilder: (
+                        BuildContext context,
+                        void Function(AccountCache) onSelected,
+                        Iterable<AccountCache> options,
+                      ) =>
+                          _AccountOptionsView(
+                        onSelected: onSelected,
+                        options: options,
+                        lastLoginAccount: _lastLoginAccountCache,
+                      ),
+                      fieldViewBuilder: (
+                        _,
+                        TextEditingController textEditingController,
+                        FocusNode focusNode,
+                        __,
+                      ) =>
+                          CustomTextFormField(
+                        controller: textEditingController,
+                        focusNode: focusNode,
+                        textInputAction: TextInputAction.next,
+                        validator: (String? value) {
+                          if (value == null || value.isEmpty) {
+                            return S.of(context).usernameEmptyTips;
                           }
+
+                          return null;
                         },
-                        optionsBuilder: (TextEditingValue textEditingValue) =>
-                            DatabaseManager.accountCaches
-                                .filter()
-                                .usernameStartsWith(textEditingValue.text)
-                                .sortByUpdateTimeDesc()
-                                .findAll(),
-                        optionsViewBuilder: (
-                          BuildContext context,
-                          void Function(AccountCache) onSelected,
-                          Iterable<AccountCache> options,
-                        ) =>
-                            _AccountOptionsView(
-                          onSelected: onSelected,
-                          options: options,
-                          lastLoginAccount: _lastLoginAccountCache,
+                        decoration: InputDecoration(
+                          prefixIcon:
+                              const Icon(IconFontIcons.accountCircleLine),
+                          hintText: S.of(context).username,
                         ),
-                        fieldViewBuilder: (
-                          _,
-                          TextEditingController textEditingController,
-                          FocusNode focusNode,
-                          __,
-                        ) =>
-                            CustomTextFormField(
-                          controller: textEditingController,
-                          focusNode: focusNode,
-                          textInputAction: TextInputAction.next,
-                          validator: (String? value) {
-                            if (value == null || value.isEmpty) {
-                              return S.of(context).usernameEmptyTips;
-                            }
+                        onEditingComplete: () {
+                          _passwordFocusNode.requestFocus();
+                        },
+                      ),
+                    ),
+                    Gap(
+                      value: _kBodyPadding.top,
+                    ),
+                    Consumer(
+                      builder: (_, WidgetRef ref, __) => CustomTextFormField(
+                        controller: _passwordTextEditingController,
+                        focusNode: _passwordFocusNode,
+                        obscureText: true,
+                        textInputAction: TextInputAction.done,
+                        validator: (String? value) {
+                          if (value == null || value.isEmpty) {
+                            return S.of(context).passwordEmptyTips;
+                          }
 
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                            prefixIcon:
-                                const Icon(IconFontIcons.accountCircleLine),
-                            hintText: S.of(context).username,
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(IconFontIcons.lockLine),
+                          hintText: S.of(context).password,
+                        ),
+                        onEditingComplete: () {
+                          _passwordFocusNode.unfocus();
+                        },
+                      ),
+                    ),
+                    Gap(
+                      value: _kBodyPadding.top / 4,
+                    ),
+                    Transform.translate(
+                      offset: const Offset(-10.0, 0.0),
+                      child: Row(
+                        children: <Widget>[
+                          ValueListenableBuilder<bool>(
+                            valueListenable: _rememberPasswordNotifier,
+                            builder: (_, bool value, __) {
+                              return Checkbox(
+                                value: value,
+                                onChanged: (bool? value) {
+                                  _rememberPasswordNotifier.value =
+                                      value ?? false;
+                                },
+                              );
+                            },
                           ),
-                          onEditingComplete: () {
-                            _passwordFocusNode.requestFocus();
-                          },
-                        ),
-                      ),
-                      Gap(
-                        value: _kBodyPadding.top,
-                      ),
-                      Consumer(
-                        builder: (_, WidgetRef ref, __) => CustomTextFormField(
-                          controller: _passwordTextEditingController,
-                          focusNode: _passwordFocusNode,
-                          obscureText: true,
-                          textInputAction: TextInputAction.done,
-                          validator: (String? value) {
-                            if (value == null || value.isEmpty) {
-                              return S.of(context).passwordEmptyTips;
-                            }
-
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(IconFontIcons.lockLine),
-                            hintText: S.of(context).password,
+                          Text(
+                            S.of(context).rememberPassword,
+                            style: context.theme.textTheme.bodyLarge,
                           ),
-                          onEditingComplete: () {
-                            _passwordFocusNode.unfocus();
-                          },
+                        ],
+                      ),
+                    ),
+                    Gap(
+                      value: _kBodyPadding.top / 4,
+                    ),
+                    Consumer(
+                      builder: (_, WidgetRef ref, Widget? text) =>
+                          ElevatedButton(
+                        onPressed: () async {
+                          onSubmitted(ref: ref);
+                        },
+                        child: text,
+                      ),
+                      child: Text(S.of(context).login),
+                    ),
+                    Gap(
+                      value: _kBodyPadding.top / 4,
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () {
+                          const RegisterRoute(fromLogin: true).push(context);
+                        },
+                        child: Text(
+                          S.of(context).register,
                         ),
                       ),
-                      Gap(
-                        value: _kBodyPadding.top / 4,
-                      ),
-                      Transform.translate(
-                        offset: const Offset(-10.0, 0.0),
-                        child: Row(
-                          children: <Widget>[
-                            ValueListenableBuilder<bool>(
-                              valueListenable: _rememberPasswordNotifier,
-                              builder: (_, bool value, __) {
-                                return Checkbox(
-                                  value: value,
-                                  onChanged: (bool? value) {
-                                    _rememberPasswordNotifier.value =
-                                        value ?? false;
-                                  },
-                                );
-                              },
-                            ),
-                            Text(
-                              S.of(context).rememberPassword,
-                              style: context.theme.textTheme.bodyLarge,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Gap(
-                        value: _kBodyPadding.top / 4,
-                      ),
-                      Consumer(
-                        builder: (_, WidgetRef ref, Widget? text) =>
-                            ElevatedButton(
-                          onPressed: () async {
-                            onSubmitted(ref: ref);
-                          },
-                          child: text,
-                        ),
-                        child: Text(S.of(context).login),
-                      ),
-                      Gap(
-                        value: _kBodyPadding.top / 4,
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {
-                            const RegisterRoute(fromLogin: true).push(context);
-                          },
-                          child: Text(
-                            S.of(context).register,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

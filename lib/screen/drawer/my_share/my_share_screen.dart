@@ -53,30 +53,33 @@ class _MyShareScreenState extends ConsumerState<MyShareScreen>
           ),
         ],
       ),
-      body: SafeArea(
-        child: NotificationListener<ScrollNotification>(
-          onNotification: onScrollNotification,
-          child: CustomScrollView(
-            slivers: <Widget>[
-              pullDownIndicator,
-              Consumer(
-                builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-                  (
-                    int nextPageNum,
-                    bool isLastPage,
-                    List<ArticleModel> list,
-                  ) {
-                    list = list
-                        .where((ArticleModel article) => article.collect)
-                        .toList();
+      body: NotificationListener<ScrollNotification>(
+        onNotification: onScrollNotification,
+        child: CustomScrollView(
+          slivers: <Widget>[
+            pullDownIndicator,
+            Consumer(
+              builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
+                (
+                  int nextPageNum,
+                  bool isLastPage,
+                  List<ArticleModel> list,
+                ) {
+                  list = list
+                      .where((ArticleModel article) => article.collect)
+                      .toList();
 
-                    if (list.isEmpty) {
-                      return const SliverFillRemaining(
-                        child: EmptyWidget(),
-                      );
-                    }
+                  if (list.isEmpty) {
+                    return const SliverFillRemaining(
+                      child: EmptyWidget(),
+                    );
+                  }
 
-                    return SlidableAutoCloseBehavior(
+                  return SliverPadding(
+                    padding: EdgeInsets.only(
+                      bottom: ScreenUtils.bottomSafeHeight,
+                    ),
+                    sliver: SlidableAutoCloseBehavior(
                       child: LoadMoreSliverList.separator(
                         loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
                         itemBuilder: (_, int index) {
@@ -102,14 +105,14 @@ class _MyShareScreenState extends ConsumerState<MyShareScreen>
                         separatorBuilder: (_, __) => const IndentDivider(),
                         itemCount: list.length,
                       ),
-                    );
-                  },
-                  loading: loadingIndicatorBuilder,
-                  error: errorIndicatorBuilder,
-                ),
+                    ),
+                  );
+                },
+                loading: loadingIndicatorBuilder,
+                error: errorIndicatorBuilder,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

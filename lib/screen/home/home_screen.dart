@@ -78,10 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
         itemCount: _pages.length,
         itemBuilder: (_, int index) => Material(
           color: context.theme.scaffoldBackgroundColor,
-          child: SafeArea(
-            top: false,
-            child: _pages[index],
-          ),
+          child: _pages[index],
         ),
         onPageChanged: (int index) {
           _currentIndexNotifier.value = index;

@@ -136,153 +136,151 @@ class _HandleCollectedBottomSheetState
   Widget build(BuildContext context) {
     return Material(
       color: context.theme.listTileTheme.tileColor,
-      child: SafeArea(
-        child: ref.watch(provider).when(
-              (CollectedCommonModel? collect) => Form(
-                key: _formKey,
-                child: CustomScrollView(
-                  slivers: <Widget>[
-                    SliverPadding(
-                      padding: AppTheme.contentPadding.copyWith(bottom: 0),
-                      sliver: SliverToBoxAdapter(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            TextButton(
-                              style: ButtonStyle(
-                                textStyle: MaterialStateProperty.all(
-                                  context.theme.textTheme.titleMedium,
-                                ),
+      child: ref.watch(provider).when(
+            (CollectedCommonModel? collect) => Form(
+              key: _formKey,
+              child: CustomScrollView(
+                slivers: <Widget>[
+                  SliverPadding(
+                    padding: AppTheme.contentPadding.copyWith(bottom: 0),
+                    sliver: SliverToBoxAdapter(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          TextButton(
+                            style: ButtonStyle(
+                              textStyle: MaterialStateProperty.all(
+                                context.theme.textTheme.titleMedium,
                               ),
-                              onPressed: () {
-                                Navigator.of(context).maybePop();
-                              },
-                              child: Text(S.of(context).cancel),
                             ),
-                            TextButton(
-                              style: ButtonStyle(
-                                textStyle: MaterialStateProperty.all(context
-                                    .theme.textTheme.titleMedium!.semiBold),
-                              ),
-                              onPressed: () {
-                                onSubmitted(
-                                  isEdit: collect != null,
-                                  collectId: collect?.id,
-                                );
-                              },
-                              child: Text(collect != null
-                                  ? S.of(context).save
-                                  : S.of(context).add),
+                            onPressed: () {
+                              Navigator.of(context).maybePop();
+                            },
+                            child: Text(S.of(context).cancel),
+                          ),
+                          TextButton(
+                            style: ButtonStyle(
+                              textStyle: MaterialStateProperty.all(context
+                                  .theme.textTheme.titleMedium!.semiBold),
                             ),
-                          ],
-                        ),
+                            onPressed: () {
+                              onSubmitted(
+                                isEdit: collect != null,
+                                collectId: collect?.id,
+                              );
+                            },
+                            child: Text(collect != null
+                                ? S.of(context).save
+                                : S.of(context).add),
+                          ),
+                        ],
                       ),
                     ),
-                    SliverPadding(
-                      padding: AppTheme.bodyPadding,
-                      sliver: SliverList(
-                        delegate: SliverChildListDelegate(
-                          <Widget>[
-                            Text(
-                              collect != null
-                                  ? S.of(context).editCollected(S
-                                      .of(context)
-                                      .collectionType(widget.type.name))
-                                  : S.of(context).addCollected(S
-                                      .of(context)
-                                      .collectionType(widget.type.name)),
-                              style: context.theme.textTheme.titleLarge,
-                              textAlign: TextAlign.center,
+                  ),
+                  SliverPadding(
+                    padding: AppTheme.bodyPadding,
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate(
+                        <Widget>[
+                          Text(
+                            collect != null
+                                ? S.of(context).editCollected(S
+                                    .of(context)
+                                    .collectionType(widget.type.name))
+                                : S.of(context).addCollected(S
+                                    .of(context)
+                                    .collectionType(widget.type.name)),
+                            style: context.theme.textTheme.titleLarge,
+                            textAlign: TextAlign.center,
+                          ),
+                          Gap(
+                            value: 24.0,
+                          ),
+                          CustomTextFormField(
+                            controller: _titleTextEditingController,
+                            focusNode: _titleFocusNode,
+                            textInputAction: TextInputAction.next,
+                            decoration: InputDecoration(
+                              labelText: S.of(context).title,
                             ),
-                            Gap(
-                              value: 24.0,
-                            ),
+                            validator: (String? value) {
+                              if (value == null || value.isEmpty) {
+                                return S.of(context).titleEmptyTips;
+                              }
+
+                              return null;
+                            },
+                            onEditingComplete: () {
+                              if (widget.isArticles) {
+                                _authorFocusNode.requestFocus();
+                              } else {
+                                _linkFocusNode.requestFocus();
+                              }
+                            },
+                          ),
+                          Gap(
+                            size: GapSize.big,
+                          ),
+                          if (widget.isArticles)
                             CustomTextFormField(
-                              controller: _titleTextEditingController,
-                              focusNode: _titleFocusNode,
+                              controller: _authorTextEditingController,
+                              focusNode: _authorFocusNode,
                               textInputAction: TextInputAction.next,
                               decoration: InputDecoration(
-                                labelText: S.of(context).title,
+                                labelText: S.of(context).author,
                               ),
                               validator: (String? value) {
                                 if (value == null || value.isEmpty) {
-                                  return S.of(context).titleEmptyTips;
+                                  return S.of(context).authorEmptyTips;
                                 }
 
                                 return null;
                               },
                               onEditingComplete: () {
-                                if (widget.isArticles) {
-                                  _authorFocusNode.requestFocus();
-                                } else {
-                                  _linkFocusNode.requestFocus();
-                                }
+                                _linkFocusNode.requestFocus();
                               },
                             ),
+                          if (widget.isArticles)
                             Gap(
                               size: GapSize.big,
                             ),
-                            if (widget.isArticles)
-                              CustomTextFormField(
-                                controller: _authorTextEditingController,
-                                focusNode: _authorFocusNode,
-                                textInputAction: TextInputAction.next,
-                                decoration: InputDecoration(
-                                  labelText: S.of(context).author,
-                                ),
-                                validator: (String? value) {
-                                  if (value == null || value.isEmpty) {
-                                    return S.of(context).authorEmptyTips;
-                                  }
-
-                                  return null;
-                                },
-                                onEditingComplete: () {
-                                  _linkFocusNode.requestFocus();
-                                },
-                              ),
-                            if (widget.isArticles)
-                              Gap(
-                                size: GapSize.big,
-                              ),
-                            CustomTextFormField(
-                              controller: _linkTextEditingController,
-                              focusNode: _linkFocusNode,
-                              textInputAction: TextInputAction.done,
-                              decoration: InputDecoration(
-                                labelText: S.of(context).link,
-                              ),
-                              validator: (String? value) {
-                                if (value.strictValue == null) {
-                                  return S.of(context).linkEmptyTips;
-                                }
-
-                                return RegExp(
-                                  r'^(((ht|f)tps?):\/\/)?[\w-]+(\.[\w-]+)+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$',
-                                ).hasMatch(value!)
-                                    ? null
-                                    : S.of(context).linkFormatTips;
-                              },
-                              onEditingComplete: () {
-                                _linkFocusNode.unfocus();
-                              },
+                          CustomTextFormField(
+                            controller: _linkTextEditingController,
+                            focusNode: _linkFocusNode,
+                            textInputAction: TextInputAction.done,
+                            decoration: InputDecoration(
+                              labelText: S.of(context).link,
                             ),
-                          ],
-                        ),
+                            validator: (String? value) {
+                              if (value.strictValue == null) {
+                                return S.of(context).linkEmptyTips;
+                              }
+
+                              return RegExp(
+                                r'^(((ht|f)tps?):\/\/)?[\w-]+(\.[\w-]+)+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$',
+                              ).hasMatch(value!)
+                                  ? null
+                                  : S.of(context).linkFormatTips;
+                            },
+                            onEditingComplete: () {
+                              _linkFocusNode.unfocus();
+                            },
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-              loading: () => const LoadingWidget(),
-              error: (int? statusCode, String? message, String? detail) =>
-                  CustomErrorWidget(
-                statusCode: statusCode,
-                message: message,
-                detail: detail,
+                  ),
+                ],
               ),
             ),
-      ),
+            loading: () => const LoadingWidget(),
+            error: (int? statusCode, String? message, String? detail) =>
+                CustomErrorWidget(
+              statusCode: statusCode,
+              message: message,
+              detail: detail,
+            ),
+          ),
     );
   }
 }

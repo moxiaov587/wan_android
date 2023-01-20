@@ -9,10 +9,8 @@ class AboutScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(S.of(context).about),
       ),
-      body: SafeArea(
-        child: ColoredBox(
-          color: context.theme.colorScheme.background,
-        ),
+      body: ColoredBox(
+        color: context.theme.colorScheme.background,
       ),
     );
   }

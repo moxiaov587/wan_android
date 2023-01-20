@@ -59,105 +59,103 @@ class _HandleSharedBottomSheetState
   Widget build(BuildContext context) {
     return Material(
       color: context.theme.listTileTheme.tileColor,
-      child: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: CustomScrollView(
-            slivers: <Widget>[
-              SliverPadding(
-                padding: AppTheme.contentPadding.copyWith(bottom: 0),
-                sliver: SliverToBoxAdapter(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      TextButton(
-                        style: ButtonStyle(
-                          textStyle: MaterialStateProperty.all(
-                            context.theme.textTheme.titleMedium,
-                          ),
+      child: Form(
+        key: _formKey,
+        child: CustomScrollView(
+          slivers: <Widget>[
+            SliverPadding(
+              padding: AppTheme.contentPadding.copyWith(bottom: 0),
+              sliver: SliverToBoxAdapter(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    TextButton(
+                      style: ButtonStyle(
+                        textStyle: MaterialStateProperty.all(
+                          context.theme.textTheme.titleMedium,
                         ),
-                        onPressed: () {
-                          Navigator.of(context).maybePop();
-                        },
-                        child: Text(S.of(context).cancel),
                       ),
-                      TextButton(
-                        style: ButtonStyle(
-                          textStyle: MaterialStateProperty.all(
-                            context.theme.textTheme.titleMedium!.semiBold,
-                          ),
+                      onPressed: () {
+                        Navigator.of(context).maybePop();
+                      },
+                      child: Text(S.of(context).cancel),
+                    ),
+                    TextButton(
+                      style: ButtonStyle(
+                        textStyle: MaterialStateProperty.all(
+                          context.theme.textTheme.titleMedium!.semiBold,
                         ),
-                        onPressed: () {
-                          onSubmitted();
-                        },
-                        child: Text(S.of(context).add),
                       ),
-                    ],
-                  ),
+                      onPressed: () {
+                        onSubmitted();
+                      },
+                      child: Text(S.of(context).add),
+                    ),
+                  ],
                 ),
               ),
-              SliverPadding(
-                padding: AppTheme.bodyPadding,
-                sliver: SliverList(
-                  delegate: SliverChildListDelegate(
-                    <Widget>[
-                      Text(
-                        S.of(context).addShare,
-                        style: context.theme.textTheme.titleLarge,
-                        textAlign: TextAlign.center,
+            ),
+            SliverPadding(
+              padding: AppTheme.bodyPadding,
+              sliver: SliverList(
+                delegate: SliverChildListDelegate(
+                  <Widget>[
+                    Text(
+                      S.of(context).addShare,
+                      style: context.theme.textTheme.titleLarge,
+                      textAlign: TextAlign.center,
+                    ),
+                    Gap(
+                      value: 24.0,
+                    ),
+                    CustomTextFormField(
+                      controller: _titleTextEditingController,
+                      focusNode: _titleFocusNode,
+                      textInputAction: TextInputAction.next,
+                      decoration: InputDecoration(
+                        labelText: S.of(context).title,
                       ),
-                      Gap(
-                        value: 24.0,
-                      ),
-                      CustomTextFormField(
-                        controller: _titleTextEditingController,
-                        focusNode: _titleFocusNode,
-                        textInputAction: TextInputAction.next,
-                        decoration: InputDecoration(
-                          labelText: S.of(context).title,
-                        ),
-                        validator: (String? value) {
-                          if (value == null || value.isEmpty) {
-                            return S.of(context).titleEmptyTips;
-                          }
+                      validator: (String? value) {
+                        if (value == null || value.isEmpty) {
+                          return S.of(context).titleEmptyTips;
+                        }
 
-                          return null;
-                        },
-                        onEditingComplete: () {
-                          _linkFocusNode.requestFocus();
-                        },
+                        return null;
+                      },
+                      onEditingComplete: () {
+                        _linkFocusNode.requestFocus();
+                      },
+                    ),
+                    Gap(
+                      size: GapSize.big,
+                    ),
+                    CustomTextFormField(
+                      controller: _linkTextEditingController,
+                      focusNode: _linkFocusNode,
+                      textInputAction: TextInputAction.done,
+                      decoration: InputDecoration(
+                        labelText: S.of(context).link,
                       ),
-                      Gap(
-                        size: GapSize.big,
-                      ),
-                      CustomTextFormField(
-                        controller: _linkTextEditingController,
-                        focusNode: _linkFocusNode,
-                        textInputAction: TextInputAction.done,
-                        decoration: InputDecoration(
-                          labelText: S.of(context).link,
-                        ),
-                        validator: (String? value) {
-                          if (value.strictValue == null) {
-                            return S.of(context).linkEmptyTips;
-                          }
+                      validator: (String? value) {
+                        if (value.strictValue == null) {
+                          return S.of(context).linkEmptyTips;
+                        }
 
-                          return RegExp(
-                            r'^(((ht|f)tps?):\/\/)?[\w-]+(\.[\w-]+)+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$',
-                          ).hasMatch(value!)
-                              ? null
-                              : S.of(context).linkFormatTips;
-                        },
-                        onEditingComplete: () {
-                          _linkFocusNode.unfocus();
-                        },
-                      ),
-                    ],
-                  ),
+                        return RegExp(
+                          r'^(((ht|f)tps?):\/\/)?[\w-]+(\.[\w-]+)+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$',
+                        ).hasMatch(value!)
+                            ? null
+                            : S.of(context).linkFormatTips;
+                      },
+                      onEditingComplete: () {
+                        _linkFocusNode.unfocus();
+                      },
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

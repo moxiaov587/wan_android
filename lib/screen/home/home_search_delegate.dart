@@ -135,19 +135,24 @@ class __ResultsState extends ConsumerState<_Results>
                   );
                 }
 
-                return LoadMoreSliverList.separator(
-                  loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
-                  itemBuilder: (_, int index) {
-                    final ArticleModel article = list[index];
+                return SliverPadding(
+                  padding: EdgeInsets.only(
+                    bottom: ScreenUtils.bottomSafeHeight,
+                  ),
+                  sliver: LoadMoreSliverList.separator(
+                    loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
+                    itemBuilder: (_, int index) {
+                      final ArticleModel article = list[index];
 
-                    return ArticleTile(
-                      key: Key('search_article_${article.id}'),
-                      article: article,
-                      query: widget.query,
-                    );
-                  },
-                  separatorBuilder: (_, __) => const IndentDivider(),
-                  itemCount: list.length,
+                      return ArticleTile(
+                        key: Key('search_article_${article.id}'),
+                        article: article,
+                        query: widget.query,
+                      );
+                    },
+                    separatorBuilder: (_, __) => const IndentDivider(),
+                    itemCount: list.length,
+                  ),
                 );
               },
               loading: loadingIndicatorBuilder,

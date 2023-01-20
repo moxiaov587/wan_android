@@ -52,9 +52,11 @@ class _RankScreenState extends ConsumerState<RankScreen>
                           }
 
                           return SliverPadding(
-                            padding: currentUserPoints != null
-                                ? EdgeInsets.only(bottom: paddingBottom)
-                                : EdgeInsets.zero,
+                            padding: EdgeInsets.only(
+                              bottom: currentUserPoints != null
+                                  ? paddingBottom
+                                  : ScreenUtils.bottomSafeHeight,
+                            ),
                             sliver: LoadMoreSliverList.separator(
                               loadMoreIndicatorBuilder:
                                   loadMoreIndicatorBuilder,

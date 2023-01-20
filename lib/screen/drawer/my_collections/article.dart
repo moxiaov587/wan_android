@@ -63,31 +63,37 @@ class __ArticleState extends ConsumerState<_Article>
                   );
                 }
 
-                return SlidableAutoCloseBehavior(
-                  child: LoadMoreSliverList.separator(
-                    loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
-                    itemBuilder: (_, int index) {
-                      final CollectedArticleModel article = list[index];
+                return SliverPadding(
+                  padding: EdgeInsets.only(
+                    bottom: ScreenUtils.bottomSafeHeight,
+                  ),
+                  sliver: SlidableAutoCloseBehavior(
+                    child: LoadMoreSliverList.separator(
+                      loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
+                      itemBuilder: (_, int index) {
+                        final CollectedArticleModel article = list[index];
 
-                      return _CollectedArticleTile(
-                        key: Key('my_collections_article_${article.id}'),
-                        article: article,
-                      );
-                    },
-                    findChildIndexCallback: (Key key) {
-                      final int index = list.indexWhere(
-                        (CollectedArticleModel article) =>
-                            key == Key('my_collections_article_${article.id}'),
-                      );
+                        return _CollectedArticleTile(
+                          key: Key('my_collections_article_${article.id}'),
+                          article: article,
+                        );
+                      },
+                      findChildIndexCallback: (Key key) {
+                        final int index = list.indexWhere(
+                          (CollectedArticleModel article) =>
+                              key ==
+                              Key('my_collections_article_${article.id}'),
+                        );
 
-                      if (index == -1) {
-                        return null;
-                      }
+                        if (index == -1) {
+                          return null;
+                        }
 
-                      return index;
-                    },
-                    separatorBuilder: (_, __) => const IndentDivider(),
-                    itemCount: list.length,
+                        return index;
+                      },
+                      separatorBuilder: (_, __) => const IndentDivider(),
+                      itemCount: list.length,
+                    ),
                   ),
                 );
               },

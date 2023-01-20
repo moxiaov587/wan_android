@@ -8,6 +8,7 @@ import '../../app/provider/view_state.dart';
 import '../../app/theme/app_theme.dart';
 import '../../extensions/extensions.dart';
 import '../../model/models.dart';
+import '../../utils/screen_utils.dart';
 import '../../widget/article.dart';
 import '../../widget/gap.dart';
 import '../../widget/indent_divider.dart';

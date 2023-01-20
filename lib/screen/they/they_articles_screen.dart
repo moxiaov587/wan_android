@@ -25,28 +25,31 @@ class _TheyArticlesScreenState extends ConsumerState<TheyArticlesScreen>
       appBar: AppBar(
         title: Text(S.of(context).theyArticles),
       ),
-      body: SafeArea(
-        child: Consumer(
-          builder: (_, WidgetRef ref, __) {
-            return NotificationListener<ScrollNotification>(
-              onNotification: onScrollNotification,
-              child: CustomScrollView(
-                slivers: <Widget>[
-                  pullDownIndicator,
-                  Consumer(
-                    builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-                      (
-                        int nextPageNum,
-                        bool isLastPage,
-                        List<ArticleModel> list,
-                      ) {
-                        if (list.isEmpty) {
-                          return const SliverFillRemaining(
-                            child: EmptyWidget(),
-                          );
-                        }
+      body: Consumer(
+        builder: (_, WidgetRef ref, __) {
+          return NotificationListener<ScrollNotification>(
+            onNotification: onScrollNotification,
+            child: CustomScrollView(
+              slivers: <Widget>[
+                pullDownIndicator,
+                Consumer(
+                  builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
+                    (
+                      int nextPageNum,
+                      bool isLastPage,
+                      List<ArticleModel> list,
+                    ) {
+                      if (list.isEmpty) {
+                        return const SliverFillRemaining(
+                          child: EmptyWidget(),
+                        );
+                      }
 
-                        return LoadMoreSliverList.separator(
+                      return SliverPadding(
+                        padding: EdgeInsets.only(
+                          bottom: ScreenUtils.bottomSafeHeight,
+                        ),
+                        sliver: LoadMoreSliverList.separator(
                           loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
                           itemBuilder: (_, int index) {
                             final ArticleModel article = list[index];
@@ -59,17 +62,17 @@ class _TheyArticlesScreenState extends ConsumerState<TheyArticlesScreen>
                           },
                           separatorBuilder: (_, __) => const IndentDivider(),
                           itemCount: list.length,
-                        );
-                      },
-                      loading: loadingIndicatorBuilder,
-                      error: errorIndicatorBuilder,
-                    ),
+                        ),
+                      );
+                    },
+                    loading: loadingIndicatorBuilder,
+                    error: errorIndicatorBuilder,
                   ),
-                ],
-              ),
-            );
-          },
-        ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

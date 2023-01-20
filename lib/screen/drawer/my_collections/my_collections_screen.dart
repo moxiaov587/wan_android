@@ -73,41 +73,39 @@ class _MyCollectionsScreenState extends State<MyCollectionsScreen>
           ),
         ],
       ),
-      body: SafeArea(
-        child: Column(
-          children: <Widget>[
-            Material(
-              color: context.theme.appBarTheme.backgroundColor,
-              child: TabBar(
-                controller: _tabController,
-                indicatorSize: TabBarIndicatorSize.label,
-                labelPadding: AppTheme.bodyPaddingOnlyVertical,
-                labelStyle: context.theme.textTheme.titleMedium,
-                labelColor: context.theme.textTheme.titleMedium!.color,
-                unselectedLabelStyle: context.theme.textTheme.titleMedium,
-                tabs: CollectionType.values
-                    .map(
-                      (CollectionType type) => Text(
-                        S.of(context).collectionType(type.name),
-                      ),
-                    )
-                    .toList(),
-                onTap: (int index) {
-                  _tabController.animateTo(index);
-                },
-              ),
+      body: Column(
+        children: <Widget>[
+          Material(
+            color: context.theme.appBarTheme.backgroundColor,
+            child: TabBar(
+              controller: _tabController,
+              indicatorSize: TabBarIndicatorSize.label,
+              labelPadding: AppTheme.bodyPaddingOnlyVertical,
+              labelStyle: context.theme.textTheme.titleMedium,
+              labelColor: context.theme.textTheme.titleMedium!.color,
+              unselectedLabelStyle: context.theme.textTheme.titleMedium,
+              tabs: CollectionType.values
+                  .map(
+                    (CollectionType type) => Text(
+                      S.of(context).collectionType(type.name),
+                    ),
+                  )
+                  .toList(),
+              onTap: (int index) {
+                _tabController.animateTo(index);
+              },
             ),
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: const <Widget>[
-                  _Article(),
-                  _Website(),
-                ],
-              ),
+          ),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: const <Widget>[
+                _Article(),
+                _Website(),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
