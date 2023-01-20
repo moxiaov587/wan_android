@@ -41,6 +41,7 @@ class _PopupMenuState extends State<PopupMenu> {
       controller: _controller,
       verticalMargin: 0.0,
       arrowColor: context.theme.cardColor,
+      barrierColor: context.theme.colorScheme.scrim,
       pressType: PressType.singleClick,
       menuBuilder: () => ClipRRect(
         borderRadius: AppTheme.adornmentBorderRadius,
