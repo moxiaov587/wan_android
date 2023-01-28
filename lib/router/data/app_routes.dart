@@ -17,6 +17,7 @@ part 'drawer/my_points_route.dart';
 part 'drawer/my_share_route.dart';
 part 'drawer/settings/languages_route.dart';
 part 'drawer/settings/settings_route.dart';
+part 'drawer/settings/storage_route.dart';
 part 'drawer/about_route.dart';
 part 'app_routes.g.dart';
 part 'article_route.dart';

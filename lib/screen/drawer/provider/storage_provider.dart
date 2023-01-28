@@ -24,39 +24,140 @@ extension FileSizeExtension on int? {
   }
 }
 
-final AutoDisposeStateNotifierProvider<ApplicationCacheSizeNotifier,
-        ViewState<int>> applicationCacheSizeProvider =
-    StateNotifierProvider.autoDispose<ApplicationCacheSizeNotifier,
-        ViewState<int>>((_) {
-  return ApplicationCacheSizeNotifier(
-    const ViewState<int>.loading(),
-  );
-});
+final AutoDisposeStateProvider<bool> checkOtherCachesProvider =
+    AutoDisposeStateProvider<bool>(
+  (AutoDisposeStateProviderRef<bool> ref) => true,
+);
+final AutoDisposeStateProvider<bool> disableCheckOtherCachesProvider =
+    AutoDisposeStateProvider<bool>(
+  (AutoDisposeStateProviderRef<bool> ref) => ref
+      .watch(otherCacheSizeProvider)
+      .maybeWhen((int? value) => (value ?? 0) <= 0, orElse: () => true),
+);
+final AutoDisposeStateProvider<bool> cleanableOtherCachesProvider =
+    AutoDisposeStateProvider<bool>(
+  (AutoDisposeStateProviderRef<bool> ref) =>
+      ref.watch(checkOtherCachesProvider) &&
+      !ref.watch(disableCheckOtherCachesProvider),
+);
 
-class ApplicationCacheSizeNotifier extends BaseViewNotifier<int> {
-  ApplicationCacheSizeNotifier(super.state);
+final AutoDisposeStateProvider<bool> checkResponseDataCachesProvider =
+    AutoDisposeStateProvider<bool>(
+  (AutoDisposeStateProviderRef<bool> ref) => true,
+);
+final AutoDisposeStateProvider<bool> disableCheckResponseDataCachesProvider =
+    AutoDisposeStateProvider<bool>(
+  (AutoDisposeStateProviderRef<bool> ref) => ref
+      .watch(responseDataCacheSizeProvider)
+      .maybeWhen((int? value) => (value ?? 0) <= 0, orElse: () => true),
+);
+final AutoDisposeStateProvider<bool> cleanableResponseDataCachesProvider =
+    AutoDisposeStateProvider<bool>(
+  (AutoDisposeStateProviderRef<bool> ref) =>
+      ref.watch(checkResponseDataCachesProvider) &&
+      !ref.watch(disableCheckResponseDataCachesProvider),
+);
+
+final AutoDisposeStateProvider<bool> checkPreferencesCachesProvider =
+    AutoDisposeStateProvider<bool>(
+  (AutoDisposeStateProviderRef<bool> ref) => true,
+);
+final AutoDisposeStateProvider<bool> disableCheckPreferencesCachesProvider =
+    AutoDisposeStateProvider<bool>(
+  (AutoDisposeStateProviderRef<bool> ref) => ref
+      .watch(preferencesCacheSizeProvider)
+      .maybeWhen((int? value) => (value ?? 0) <= 0, orElse: () => true),
+);
+final AutoDisposeStateProvider<bool> cleanablePreferencesCachesProvider =
+    AutoDisposeStateProvider<bool>(
+  (AutoDisposeStateProviderRef<bool> ref) =>
+      ref.watch(checkPreferencesCachesProvider) &&
+      !ref.watch(disableCheckPreferencesCachesProvider),
+);
+
+final AutoDisposeStateProvider<bool> checkAllCachesProvider =
+    AutoDisposeStateProvider<bool>(
+  (AutoDisposeStateProviderRef<bool> ref) =>
+      ref.watch(checkOtherCachesProvider) &&
+      ref.watch(checkResponseDataCachesProvider) &&
+      ref.watch(checkPreferencesCachesProvider),
+);
+final AutoDisposeStateProvider<bool> cleanableProvider =
+    AutoDisposeStateProvider<bool>(
+  (AutoDisposeStateProviderRef<bool> ref) =>
+      ref.watch(cleanableOtherCachesProvider) ||
+      ref.watch(cleanableResponseDataCachesProvider) ||
+      ref.watch(cleanablePreferencesCachesProvider),
+);
+
+final AutoDisposeStateNotifierProvider<OtherCacheSizeNotifier, ViewState<int>>
+    otherCacheSizeProvider =
+    StateNotifierProvider.autoDispose<OtherCacheSizeNotifier, ViewState<int>>(
+  (_) {
+    return OtherCacheSizeNotifier(
+      const ViewState<int>.loading(),
+    );
+  },
+);
+
+class OtherCacheSizeNotifier extends BaseViewNotifier<int> {
+  OtherCacheSizeNotifier(super.state);
+
+  List<Future<void>> get clearTask => <Future<void>>[
+        DatabaseManager.homeBannerCaches.clear(),
+        DatabaseManager.searchHistoryCaches.clear(),
+      ];
 
   @override
   Future<int> loadData() async {
     return (await Future.wait<int>(<Future<int>>[
       DatabaseManager.homeBannerCaches.getSize(),
-      DatabaseManager.responseCaches.getSize(),
       DatabaseManager.searchHistoryCaches.getSize(),
     ]))
         .reduce((int total, int size) => total += size);
   }
+}
 
-  Future<void> clear() async {
-    await DatabaseManager.isar.writeTxn(
-      () => Future.wait<void>(
-        <Future<void>>[
-          DatabaseManager.homeBannerCaches.clear(),
-          DatabaseManager.responseCaches.clear(),
-          DatabaseManager.searchHistoryCaches.clear(),
-        ],
-      ),
-    );
+final AutoDisposeStateNotifierProvider<ResponseDataCacheSizeNotifier,
+        ViewState<int>> responseDataCacheSizeProvider =
+    StateNotifierProvider.autoDispose<ResponseDataCacheSizeNotifier,
+        ViewState<int>>((_) {
+  return ResponseDataCacheSizeNotifier(
+    const ViewState<int>.loading(),
+  );
+});
 
-    initData();
+class ResponseDataCacheSizeNotifier extends BaseViewNotifier<int> {
+  ResponseDataCacheSizeNotifier(super.state);
+
+  List<Future<void>> get clearTask => <Future<void>>[
+        DatabaseManager.responseCaches.clear(),
+      ];
+
+  @override
+  Future<int> loadData() {
+    return DatabaseManager.responseCaches.getSize();
+  }
+}
+
+final AutoDisposeStateNotifierProvider<PreferencesCacheSizeNotifier,
+        ViewState<int>> preferencesCacheSizeProvider =
+    StateNotifierProvider.autoDispose<PreferencesCacheSizeNotifier,
+        ViewState<int>>((_) {
+  return PreferencesCacheSizeNotifier(
+    const ViewState<int>.loading(),
+  );
+});
+
+class PreferencesCacheSizeNotifier extends BaseViewNotifier<int> {
+  PreferencesCacheSizeNotifier(super.state);
+
+  List<Future<void>> get clearTask => <Future<void>>[
+        DatabaseManager.userSettingsCache.clear(),
+      ];
+
+  @override
+  Future<int> loadData() {
+    return DatabaseManager.userSettingsCache.getSize();
   }
 }
