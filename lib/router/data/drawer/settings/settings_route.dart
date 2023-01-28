@@ -4,6 +4,7 @@ part of '../../app_routes.dart';
   path: '/settings',
   routes: <TypedGoRoute<GoRouteData>>[
     TypedGoRoute<LanguagesRoute>(path: 'languages'),
+    TypedGoRoute<StorageRoute>(path: 'storage'),
   ],
 )
 class SettingsRoute extends GoRouteData {

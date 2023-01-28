@@ -5,7 +5,7 @@
 
     "ok": "好",
     "cancel": "取消",
-    
+
     "add": "新增",
     "delete": "删除",
     "edit": "编辑",
@@ -96,8 +96,19 @@
     "about": "关于",
 
     "settings": "设置",
+
     "clearCache": "清除缓存",
-    "clearCacheWarning": "确定要清空缓存吗？",
+    "otherCache": "其他",
+    "otherCacheTips": "包括搜索记录，首页轮播图等",
+    "responseDataCache": "响应数据",
+    "responseDataCacheTips": "缓存具有一定时效性的响应数据用于提升体验",
+    "preferencesCache": "偏好设置",
+    "preferencesCacheTips": "包括当前设置的主题，语言等",
+    "selectAll": "全选",
+    "deselectAll": "全不选",
+    "occupies": "占空间约 {size}",
+    "clear": "清理",
+    "clearCacheWarning": "确定要清除这些缓存吗？",
 
     "themeMode": "{mode, select, light{浅色模式} dark{深色模式} other{跟随系统}}",
     "currentThemeModeTips": "当前系统外观是",

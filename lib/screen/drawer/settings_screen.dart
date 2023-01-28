@@ -9,13 +9,6 @@ class SettingsScreen extends ConsumerStatefulWidget {
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
-  void initState() {
-    super.initState();
-
-    ref.read(applicationCacheSizeProvider.notifier).initData();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -38,50 +31,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ListTile(
                     leading: const Icon(IconFontIcons.deleteLine),
                     title: Text(S.of(context).clearCache),
-                    trailing: ref.watch(applicationCacheSizeProvider).when(
-                          (int? value) => Text(value.fileSize),
-                          loading: () => Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: const <Widget>[
-                              LoadingWidget(
-                                radius: 8.0,
-                              ),
-                            ],
-                          ),
-                          error: (_, __, ___) => Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              const Icon(
-                                IconFontIcons.refreshLine,
-                                size: 14.0,
-                              ),
-                              Gap(
-                                direction: GapDirection.horizontal,
-                                size: GapSize.small,
-                              ),
-                              Text(S.of(context).retry),
-                            ],
-                          ),
-                        ),
                     onTap: () {
-                      ref.read(applicationCacheSizeProvider).when(
-                            (_) {
-                              DialogUtils.confirm<void>(
-                                isDanger: true,
-                                builder: (BuildContext context) =>
-                                    Text(S.of(context).clearCacheWarning),
-                                confirmCallback: ref
-                                    .read(applicationCacheSizeProvider.notifier)
-                                    .clear,
-                              );
-                            },
-                            loading: () {},
-                            error: (_, __, ___) {
-                              ref
-                                  .read(applicationCacheSizeProvider.notifier)
-                                  .initData();
-                            },
-                          );
+                      const StorageRoute().push(context);
                     },
                   ),
                 ],

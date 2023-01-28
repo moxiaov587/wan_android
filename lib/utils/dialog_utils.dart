@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 
@@ -98,7 +100,7 @@ class DialogUtils {
     required Widget Function(BuildContext context) builder,
     String? confirmText,
     String? cancelText,
-    required Future<T?> Function() confirmCallback,
+    required FutureOr<T?> Function() confirmCallback,
     Function()? cancelCallback,
     bool isDanger = false,
     String? tag,
