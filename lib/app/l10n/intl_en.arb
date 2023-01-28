@@ -5,7 +5,7 @@
 
     "ok": "OK",
     "cancel": "Cancel",
-    
+
     "add": "Add",
     "delete": "Delete",
     "edit": "Edit",
@@ -168,7 +168,27 @@
     "about": "About",
 
     "settings": "Settings",
+
     "clearCache": "Clear Cache",
+    "otherCache": "Other",
+    "otherCacheTips": "include search records, home page banner, etc",
+    "responseDataCache": "Response Data",
+    "responseDataCacheTips": "cache time-sensitive data to improve the experience",
+    "preferencesCache": "Preferences",
+    "preferencesCacheTips": "include the currently set theme, language, etc",
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All",
+    "occupies": "Occupies {size}",
+    "@occupies": {
+        "placeholders": {
+            "size": {
+                "type": "String",
+                "example": "100 MB",
+                "description": "cache space"
+            }
+        }
+    },
+    "clear": "Clear",
     "clearCacheWarning": "Are you sure you want to clear the cache?",
 
     "themeMode": "{mode, select, light{Light Mode} dark{Dark Mode} other{Auto}}",
@@ -241,7 +261,7 @@
     "collect": "Collect",
     "recommend": "Recommend",
     "desktop": "Desktop",
-    
+
     "articleNotFound": "Article not found",
     "articleNotFoundMsg": "Can't find the article",
 
