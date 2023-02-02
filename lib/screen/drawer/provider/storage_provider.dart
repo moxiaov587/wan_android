@@ -25,65 +25,65 @@ extension FileSizeExtension on int? {
 }
 
 final AutoDisposeStateProvider<bool> checkOtherCachesProvider =
-    AutoDisposeStateProvider<bool>(
+    StateProvider.autoDispose<bool>(
   (AutoDisposeStateProviderRef<bool> ref) => true,
 );
 final AutoDisposeStateProvider<bool> disableCheckOtherCachesProvider =
-    AutoDisposeStateProvider<bool>(
+    StateProvider.autoDispose<bool>(
   (AutoDisposeStateProviderRef<bool> ref) => ref
       .watch(otherCacheSizeProvider)
       .maybeWhen((int? value) => (value ?? 0) <= 0, orElse: () => true),
 );
 final AutoDisposeStateProvider<bool> cleanableOtherCachesProvider =
-    AutoDisposeStateProvider<bool>(
+    StateProvider.autoDispose<bool>(
   (AutoDisposeStateProviderRef<bool> ref) =>
       ref.watch(checkOtherCachesProvider) &&
       !ref.watch(disableCheckOtherCachesProvider),
 );
 
 final AutoDisposeStateProvider<bool> checkResponseDataCachesProvider =
-    AutoDisposeStateProvider<bool>(
+    StateProvider.autoDispose<bool>(
   (AutoDisposeStateProviderRef<bool> ref) => true,
 );
 final AutoDisposeStateProvider<bool> disableCheckResponseDataCachesProvider =
-    AutoDisposeStateProvider<bool>(
+    StateProvider.autoDispose<bool>(
   (AutoDisposeStateProviderRef<bool> ref) => ref
       .watch(responseDataCacheSizeProvider)
       .maybeWhen((int? value) => (value ?? 0) <= 0, orElse: () => true),
 );
 final AutoDisposeStateProvider<bool> cleanableResponseDataCachesProvider =
-    AutoDisposeStateProvider<bool>(
+    StateProvider.autoDispose<bool>(
   (AutoDisposeStateProviderRef<bool> ref) =>
       ref.watch(checkResponseDataCachesProvider) &&
       !ref.watch(disableCheckResponseDataCachesProvider),
 );
 
 final AutoDisposeStateProvider<bool> checkPreferencesCachesProvider =
-    AutoDisposeStateProvider<bool>(
+    StateProvider.autoDispose<bool>(
   (AutoDisposeStateProviderRef<bool> ref) => true,
 );
 final AutoDisposeStateProvider<bool> disableCheckPreferencesCachesProvider =
-    AutoDisposeStateProvider<bool>(
+    StateProvider.autoDispose<bool>(
   (AutoDisposeStateProviderRef<bool> ref) => ref
       .watch(preferencesCacheSizeProvider)
       .maybeWhen((int? value) => (value ?? 0) <= 0, orElse: () => true),
 );
 final AutoDisposeStateProvider<bool> cleanablePreferencesCachesProvider =
-    AutoDisposeStateProvider<bool>(
+    StateProvider.autoDispose<bool>(
   (AutoDisposeStateProviderRef<bool> ref) =>
       ref.watch(checkPreferencesCachesProvider) &&
       !ref.watch(disableCheckPreferencesCachesProvider),
 );
 
 final AutoDisposeStateProvider<bool> checkAllCachesProvider =
-    AutoDisposeStateProvider<bool>(
+    StateProvider.autoDispose<bool>(
   (AutoDisposeStateProviderRef<bool> ref) =>
       ref.watch(checkOtherCachesProvider) &&
       ref.watch(checkResponseDataCachesProvider) &&
       ref.watch(checkPreferencesCachesProvider),
 );
 final AutoDisposeStateProvider<bool> cleanableProvider =
-    AutoDisposeStateProvider<bool>(
+    StateProvider.autoDispose<bool>(
   (AutoDisposeStateProviderRef<bool> ref) =>
       ref.watch(cleanableOtherCachesProvider) ||
       ref.watch(cleanableResponseDataCachesProvider) ||
