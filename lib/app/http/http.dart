@@ -38,10 +38,24 @@ class Http {
     required ProviderContainer providerContainer,
   }) async {
     if (!kIsWeb) {
-      await initCookieManagement();
+      final String storagePath = await initCookieManagement();
 
-      if (Platform.isIOS || Platform.isMacOS || Platform.isAndroid) {
-        dio.httpClientAdapter = NativeAdapter();
+      if (Platform.isIOS || Platform.isMacOS) {
+        dio.httpClientAdapter = NativeAdapter(
+          cupertinoConfiguration:
+              URLSessionConfiguration.defaultSessionConfiguration()
+                ..timeoutIntervalForRequest = _options.connectTimeout!,
+        );
+      } else if (Platform.isAndroid) {
+        final CronetEngine androidCronetEngine = await CronetEngine.build(
+          cacheMode: CacheMode.disk,
+          cacheMaxSize: 2048,
+          storagePath: storagePath,
+        );
+
+        dio.httpClientAdapter = NativeAdapter(
+          androidCronetEngine: androidCronetEngine,
+        );
       }
 
       dio.interceptors.add(cookieManager);
@@ -61,17 +75,22 @@ class Http {
     }
   }
 
-  static Future<void> initCookieManagement() async {
+  static Future<String> initCookieManagement() async {
     final Directory directory = await getTemporaryDirectory();
-    if (!Directory('${directory.path}/cookie_jar').existsSync()) {
-      Directory('${directory.path}/cookie_jar').createSync();
+
+    final String path = '${directory.path}/cookie_jar';
+
+    if (!Directory(path).existsSync()) {
+      Directory(path).createSync();
     }
 
     cookieJar = PersistCookieJar(
-      storage: FileStorage('${directory.path}/cookie_jar'),
+      storage: FileStorage(path),
       ignoreExpires: true,
     );
     cookieManager = CookieManager(cookieJar);
+
+    return path;
   }
 
   static Future<void> _setCookie(Cookie cookie) =>
