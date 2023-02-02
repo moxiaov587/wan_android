@@ -30,6 +30,10 @@
     "unknownError": "Unknown Error",
     "unknownErrorMsg": "An error has occurred, but don't worry,\nit's not because of you.",
 
+    "unknownPath": "Unknown Path",
+    "unknownPathMsg": "Wow, how did you get here?",
+    "backHome": "Back Home",
+
     "networkException": "Network Exception",
     "networkExceptionMsg": "Please check your current internet connection.",
 

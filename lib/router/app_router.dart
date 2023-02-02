@@ -10,7 +10,6 @@ import '../contacts/instances.dart';
 import '../extensions/extensions.dart' show BuildContextExtension;
 import '../screen/authorized/provider/authorized_provider.dart';
 import '../screen/home/home_screen.dart';
-import '../screen/unknown_screen.dart';
 import 'data/app_routes.dart';
 
 part 'page/app_page.dart';
@@ -65,7 +64,8 @@ class AppRouter {
 
           return null;
         },
-        errorBuilder: (_, __) => const UnknownScreen(),
+        errorBuilder: (BuildContext context, GoRouterState state) =>
+            const UnknownRoute().build(context, state),
         observers: <NavigatorObserver>[
           FlutterSmartDialog.observer,
           Instances.routeObserver,

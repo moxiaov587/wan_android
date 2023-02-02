@@ -30,6 +30,10 @@
     "unknownError": "未知错误",
     "unknownErrorMsg": "发生了错误，但别担心\n不是因为你",
 
+    "unknownPath": "未知路径",
+    "unknownPathMsg": "芽儿哟，你咋跑到这来的？",
+    "backHome": "回到首页",
+
     "networkException": "网络异常",
     "networkExceptionMsg": "请检查您当前的网络连接",
 
