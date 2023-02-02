@@ -67,3 +67,10 @@ class EditCollectedArticleOrWebsiteRoute extends GoRouteData {
         isScrollControlled: true,
       );
 }
+
+@TypedGoRoute<MyCollectionsRootRoute>(path: '/my/collections')
+class MyCollectionsRootRoute extends GoRouteData {
+  @override
+  String redirect(BuildContext context, GoRouterState state) =>
+      const MyCollectionsRoute(type: CollectionType.article).location;
+}
