@@ -1,6 +1,6 @@
 part of '../app_routes.dart';
 
-@TypedGoRoute<TheyArticlesRoute>(path: '/they_articles/:author')
+@TypedGoRoute<TheyArticlesRoute>(path: '/:author/articles')
 class TheyArticlesRoute extends GoRouteData {
   const TheyArticlesRoute({
     required this.author,

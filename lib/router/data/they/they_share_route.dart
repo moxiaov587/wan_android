@@ -1,6 +1,6 @@
 part of '../app_routes.dart';
 
-@TypedGoRoute<TheyShareRoute>(path: '/they_share/:id')
+@TypedGoRoute<TheyShareRoute>(path: '/:id/share')
 class TheyShareRoute extends GoRouteData {
   const TheyShareRoute({
     required this.id,
