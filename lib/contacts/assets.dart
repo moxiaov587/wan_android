@@ -25,4 +25,6 @@ class Assets {
 
   static const String ASSETS_IMAGES_UNKNOWN_PATH_PNG =
       'assets/images/unknown_path.png';
+
+  static const String ASSETS_SPLASH_PNG = 'assets/splash.png';
 }

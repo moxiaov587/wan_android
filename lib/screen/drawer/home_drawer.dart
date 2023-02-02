@@ -2,11 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nil/nil.dart' show nil;
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../app/l10n/generated/l10n.dart';
 import '../../app/provider/mixin/refresh_list_view_state_mixin.dart';
 import '../../app/provider/view_state.dart';
 import '../../app/theme/app_theme.dart';
+import '../../contacts/assets.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../database/database_manager.dart';
 import '../../extensions/extensions.dart';

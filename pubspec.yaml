@@ -44,6 +44,7 @@ dependencies:
       ref: main
       path: plugins/native_diox_adapter
   nil: ^1.1.1
+  package_info_plus: ^3.0.2
   palette_generator: ^0.3.3
   path_provider: ^2.0.8
   shimmer: ^2.0.0
@@ -75,6 +76,7 @@ flutter:
   # **************************************************************************
 
     - assets/images/
+    - assets/splash.png
 
   # assets end
   fonts:
