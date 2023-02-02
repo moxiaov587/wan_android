@@ -14,8 +14,6 @@ class Instances {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'root');
 
-  static final GlobalKey<ScaffoldState> scaffoldStateKey = GlobalKey();
-
   static final RouteObserver<Route<dynamic>> routeObserver =
       RouteObserver<Route<dynamic>>();
 }

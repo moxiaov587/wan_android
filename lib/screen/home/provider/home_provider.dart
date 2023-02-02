@@ -46,9 +46,10 @@ mixin ArticleNotifierSwitchCollectMixin
   }
 }
 
-final StateNotifierProvider<BannerNotifier, ListViewState<HomeBannerCache>>
-    homeBannerProvider =
-    StateNotifierProvider<BannerNotifier, ListViewState<HomeBannerCache>>((_) {
+final AutoDisposeStateNotifierProvider<BannerNotifier,
+        ListViewState<HomeBannerCache>> homeBannerProvider =
+    StateNotifierProvider.autoDispose<BannerNotifier,
+        ListViewState<HomeBannerCache>>((_) {
   return BannerNotifier(
     const ListViewState<HomeBannerCache>.loading(),
   );
@@ -135,10 +136,11 @@ extension Int2ColorExtension on int? {
   Color? get toColor => this == null ? null : Color(this!);
 }
 
-final StateNotifierProvider<CurrentBannerColorNotifier, Color?>
+final AutoDisposeStateNotifierProvider<CurrentBannerColorNotifier, Color?>
     currentBannerColorProvider =
-    StateNotifierProvider<CurrentBannerColorNotifier, Color?>(
-  (StateNotifierProviderRef<CurrentBannerColorNotifier, Color?> ref) {
+    StateNotifierProvider.autoDispose<CurrentBannerColorNotifier, Color?>(
+  (AutoDisposeStateNotifierProviderRef<CurrentBannerColorNotifier, Color?>
+      ref) {
     return ref.watch(homeBannerProvider).whenOrNull(
               (List<HomeBannerCache> list) => CurrentBannerColorNotifier(
                 list.first.primaryColorValue.toColor,
@@ -163,9 +165,10 @@ class CurrentBannerColorNotifier extends StateNotifier<Color?> {
   }
 }
 
-final StateNotifierProvider<TopArticleNotifier, ListViewState<ArticleModel>>
-    homeTopArticleProvider =
-    StateNotifierProvider<TopArticleNotifier, ListViewState<ArticleModel>>((_) {
+final AutoDisposeStateNotifierProvider<TopArticleNotifier,
+        ListViewState<ArticleModel>> homeTopArticleProvider =
+    StateNotifierProvider.autoDispose<TopArticleNotifier,
+        ListViewState<ArticleModel>>((_) {
   return TopArticleNotifier(
     const ListViewState<ArticleModel>.loading(),
   );
@@ -180,10 +183,12 @@ class TopArticleNotifier extends BaseListViewNotifier<ArticleModel> {
   }
 }
 
-final StateNotifierProvider<ArticleNotifier, RefreshListViewState<ArticleModel>>
-    homeArticleProvider =
-    StateNotifierProvider<ArticleNotifier, RefreshListViewState<ArticleModel>>(
-  (StateNotifierProviderRef<ArticleNotifier, RefreshListViewState<ArticleModel>>
+final AutoDisposeStateNotifierProvider<ArticleNotifier,
+        RefreshListViewState<ArticleModel>> homeArticleProvider =
+    StateNotifierProvider.autoDispose<ArticleNotifier,
+        RefreshListViewState<ArticleModel>>(
+  (AutoDisposeStateNotifierProviderRef<ArticleNotifier,
+          RefreshListViewState<ArticleModel>>
       ref) {
     return ref.watch(homeTopArticleProvider).when(
           (List<ArticleModel> list) => ArticleNotifier(
