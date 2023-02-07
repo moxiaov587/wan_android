@@ -14,13 +14,9 @@ class AboutScreen extends StatelessWidget {
           SliverToBoxAdapter(
             child: Column(
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(top: kStyleUint4 * 5),
-                  child: Image.asset(
-                    Assets.ASSETS_SPLASH_PNG,
-                    width: 60.0,
-                    height: 60.0,
-                  ),
+                const Padding(
+                  padding: EdgeInsets.only(top: kStyleUint4 * 5),
+                  child: FlutterLogo(size: kStyleUint4 * 4),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(
