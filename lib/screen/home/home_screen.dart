@@ -492,14 +492,19 @@ class _HomeAppBarUserInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: kStyleUint4),
       child: Row(
         children: <Widget>[
-          CircleAvatar(
-            backgroundColor: context.theme.cardColor,
-            child: Text(
-              name?.substring(0, 1).toUpperCase() ?? '-',
-              style: context.theme.textTheme.titleLarge,
+          GestureDetector(
+            onTap: () {
+              Scaffold.of(context).openDrawer();
+            },
+            child: CircleAvatar(
+              backgroundColor: context.theme.cardColor,
+              child: Text(
+                name?.substring(0, 1).toUpperCase() ?? '-',
+                style: context.theme.textTheme.titleLarge,
+              ),
             ),
           ),
           Gap(direction: GapDirection.horizontal),
