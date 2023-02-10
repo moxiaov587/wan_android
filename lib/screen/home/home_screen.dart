@@ -495,15 +495,29 @@ class _HomeAppBarUserInfo extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: kStyleUint4),
       child: Row(
         children: <Widget>[
-          GestureDetector(
-            onTap: () {
-              Scaffold.of(context).openDrawer();
-            },
-            child: CircleAvatar(
-              backgroundColor: context.theme.cardColor,
-              child: Text(
-                name?.substring(0, 1).toUpperCase() ?? '-',
-                style: context.theme.textTheme.titleLarge,
+          Material(
+            shape: const StadiumBorder(),
+            child: Ink(
+              decoration: BoxDecoration(
+                color: context.theme.cardColor,
+                shape: BoxShape.circle,
+              ),
+              child: InkWell(
+                onTap: () {
+                  Scaffold.of(context).openDrawer();
+                },
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints.tightFor(
+                    width: kStyleUint * 10,
+                    height: kStyleUint * 10,
+                  ),
+                  child: Center(
+                    child: Text(
+                      name?.substring(0, 1).toUpperCase() ?? '-',
+                      style: context.theme.textTheme.titleLarge,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
