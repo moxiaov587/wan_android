@@ -11,6 +11,7 @@ import '../../../contacts/icon_font_icons.dart';
 import '../../../extensions/extensions.dart';
 import '../../../model/models.dart';
 import '../../../router/data/app_routes.dart';
+import '../../../utils/dialog_utils.dart';
 import '../../../utils/screen_utils.dart';
 import '../../../widget/article.dart';
 import '../../../widget/custom_text_form_field.dart';
@@ -145,10 +146,25 @@ class _ShareArticleTile extends ConsumerWidget {
           onDismissed: () {
             ref.read(myShareArticlesProvider.notifier).destroy(article.id);
           },
-          confirmDismiss: () =>
-              ref.read(myShareArticlesProvider.notifier).requestDeleteShare(
-                    articleId: article.id,
-                  ),
+          confirmDismiss: () async {
+            final bool? result = await DialogUtils.confirm<bool>(
+              isDanger: true,
+              builder: (BuildContext context) {
+                return Text(S.of(context).removeShareTips);
+              },
+              confirmCallback: () async {
+                final bool result = await ref
+                    .read(myShareArticlesProvider.notifier)
+                    .requestDeleteShare(
+                      articleId: article.id,
+                    );
+
+                return result;
+              },
+            );
+
+            return result ?? false;
+          },
         ),
         children: <Widget>[
           DismissibleSlidableAction(

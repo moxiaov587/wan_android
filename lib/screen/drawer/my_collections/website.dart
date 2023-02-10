@@ -127,11 +127,25 @@ class _CollectedWebsiteTile extends ConsumerWidget {
                   triggerCompleteCallback: true,
                 );
           },
-          confirmDismiss: () => ref
-              .read(myCollectedWebsiteProvider.notifier)
-              .requestCancelCollect(
-                collectId: website.id,
-              ),
+          confirmDismiss: () async {
+            final bool? result = await DialogUtils.confirm<bool>(
+              isDanger: true,
+              builder: (BuildContext context) {
+                return Text(S.of(context).removeWebsiteTips);
+              },
+              confirmCallback: () async {
+                final bool result = await ref
+                    .read(myCollectedWebsiteProvider.notifier)
+                    .requestCancelCollect(
+                      collectId: website.id,
+                    );
+
+                return result;
+              },
+            );
+
+            return result ?? false;
+          },
         ),
         children: <Widget>[
           DismissibleSlidableAction(

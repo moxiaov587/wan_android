@@ -147,12 +147,26 @@ class _CollectedArticleTile extends ConsumerWidget {
                   triggerCompleteCallback: true,
                 );
           },
-          confirmDismiss: () => ref
-              .read(myCollectedArticleProvider.notifier)
-              .requestCancelCollect(
-                collectId: article.id,
-                articleId: article.originId,
-              ),
+          confirmDismiss: () async {
+            final bool? result = await DialogUtils.confirm<bool>(
+              isDanger: true,
+              builder: (BuildContext context) {
+                return Text(S.of(context).removeArticleTips);
+              },
+              confirmCallback: () async {
+                final bool result = await ref
+                    .read(myCollectedArticleProvider.notifier)
+                    .requestCancelCollect(
+                      collectId: article.id,
+                      articleId: article.originId,
+                    );
+
+                return result;
+              },
+            );
+
+            return result ?? false;
+          },
         ),
         children: <Widget>[
           DismissibleSlidableAction(
