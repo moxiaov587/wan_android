@@ -82,7 +82,7 @@ class _UnknownScreenState extends State<UnknownScreen> {
                       builder: (_, bool isExpanded, __) {
                         if (isExpanded) {
                           return Text(
-                            widget.state.error.toString() * 30,
+                            widget.state.error.toString(),
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                           );
