@@ -8,7 +8,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart' as web_view
     show CookieManager, HTTPCookieSameSitePolicy;
 import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderContainer;
-import 'package:native_diox_adapter/native_diox_adapter.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../utils/log_utils.dart';
@@ -38,34 +37,18 @@ class Http {
     required ProviderContainer providerContainer,
   }) async {
     if (!kIsWeb) {
-      final String storagePath = await initCookieManagement();
-
-      if (Platform.isIOS || Platform.isMacOS) {
-        dio.httpClientAdapter = NativeAdapter(
-          cupertinoConfiguration:
-              URLSessionConfiguration.defaultSessionConfiguration()
-                ..timeoutIntervalForRequest = _options.connectTimeout!,
-        );
-      } else if (Platform.isAndroid) {
-        final CronetEngine androidCronetEngine = await CronetEngine.build(
-          cacheMode: CacheMode.disk,
-          cacheMaxSize: 2048,
-          storagePath: storagePath,
-        );
-
-        dio.httpClientAdapter = NativeAdapter(
-          androidCronetEngine: androidCronetEngine,
-        );
-      }
+      await initCookieManagement();
 
       dio.interceptors.add(cookieManager);
+      tokenDio.interceptors.add(cookieManager);
     }
 
     dio.options.baseUrl = kBaseUrl;
+    tokenDio.options.baseUrl = kBaseUrl;
 
     dio.interceptors.addAll(<Interceptor>[
       NetWorkInterceptor(providerContainer: providerContainer),
-      ErrorInterceptor(),
+      ErrorInterceptor(providerContainer: providerContainer),
       CacheInterceptor(),
     ]);
 

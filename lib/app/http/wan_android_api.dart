@@ -207,6 +207,24 @@ class WanAndroidAPI {
     return UserModel.fromJson(response.data!);
   }
 
+  static Future<UserModel> silentLogin({
+    required String username,
+    required String password,
+    CancelToken? cancelToken,
+  }) async {
+    final Response<Map<String, dynamic>> response =
+        await Http.tokenDio.post<Map<String, dynamic>>(
+      API.login,
+      queryParameters: <String, dynamic>{
+        'username': username,
+        'password': password,
+      },
+      cancelToken: cancelToken,
+    );
+
+    return UserModel.fromJson(response.data!['data'] as Map<String, dynamic>);
+  }
+
   static Future<UserModel> register({
     required String username,
     required String password,
@@ -241,6 +259,20 @@ class WanAndroidAPI {
     );
 
     return UserInfoModel.fromJson(response.data!);
+  }
+
+  static Future<UserInfoModel> silentFetchUserInfo({
+    CancelToken? cancelToken,
+  }) async {
+    final Response<Map<String, dynamic>> response =
+        await Http.tokenDio.post<Map<String, dynamic>>(
+      API.userInfo,
+      cancelToken: cancelToken,
+    );
+
+    return UserInfoModel.fromJson(
+      response.data!['data'] as Map<String, dynamic>,
+    );
   }
 
   static Future<ModelToRefreshListData<UserPointsModel>> fetchPointsRank(
