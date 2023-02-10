@@ -99,6 +99,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
   Future<void> onSubmitted({
     required WidgetRef ref,
   }) async {
+    final GoRouter goRouter = GoRouter.of(context);
+
     if (_formKey.currentState!.validate()) {
       final bool result = await ref.read(authorizedProvider.notifier).login(
             username: _usernameTextEditingController.text,
@@ -107,7 +109,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
           );
 
       if (result) {
-        GoRouter.of(context).pop();
+        goRouter.pop();
       }
     }
   }
