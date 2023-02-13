@@ -10,8 +10,8 @@ class _Square extends ConsumerStatefulWidget {
 class _SquareState extends ConsumerState<_Square>
     with
         AutomaticKeepAliveClientMixin,
-        RefreshListViewStateMixin<
-            StateNotifierProvider<SquareNotifier,
+        AutoDisposeRefreshListViewStateMixin<
+            AutoDisposeStateNotifierProvider<SquareNotifier,
                 RefreshListViewState<ArticleModel>>,
             ArticleModel,
             _Square> {
@@ -80,6 +80,6 @@ class _SquareState extends ConsumerState<_Square>
   bool get wantKeepAlive => true;
 
   @override
-  StateNotifierProvider<SquareNotifier, RefreshListViewState<ArticleModel>>
-      get provider => squareArticleProvider;
+  AutoDisposeStateNotifierProvider<SquareNotifier,
+      RefreshListViewState<ArticleModel>> get provider => squareArticleProvider;
 }

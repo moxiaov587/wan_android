@@ -152,6 +152,32 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?>
     }
   }
 
+  Future<bool> silentLogin({
+    required String username,
+    required String password,
+  }) async {
+    password = decryptString(password);
+    try {
+      final UserModel user = await WanAndroidAPI.silentLogin(
+        username: username,
+        password: password,
+      );
+
+      state = await WanAndroidAPI.silentFetchUserInfo();
+
+      _handleCacheByLogin(
+        user.id,
+        username: username,
+        password: password,
+        rememberPassword: true,
+      );
+
+      return true;
+    } catch (e, _) {
+      return false;
+    }
+  }
+
   Future<bool> register({
     required String username,
     required String password,

@@ -8,7 +8,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart' as web_view
     show CookieManager, HTTPCookieSameSitePolicy;
 import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderContainer;
-import 'package:native_diox_adapter/native_diox_adapter.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../utils/log_utils.dart';
@@ -40,18 +39,16 @@ class Http {
     if (!kIsWeb) {
       await initCookieManagement();
 
-      if (Platform.isIOS || Platform.isMacOS || Platform.isAndroid) {
-        dio.httpClientAdapter = NativeAdapter();
-      }
-
       dio.interceptors.add(cookieManager);
+      tokenDio.interceptors.add(cookieManager);
     }
 
     dio.options.baseUrl = kBaseUrl;
+    tokenDio.options.baseUrl = kBaseUrl;
 
     dio.interceptors.addAll(<Interceptor>[
       NetWorkInterceptor(providerContainer: providerContainer),
-      ErrorInterceptor(),
+      ErrorInterceptor(providerContainer: providerContainer),
       CacheInterceptor(),
     ]);
 
@@ -61,17 +58,22 @@ class Http {
     }
   }
 
-  static Future<void> initCookieManagement() async {
+  static Future<String> initCookieManagement() async {
     final Directory directory = await getTemporaryDirectory();
-    if (!Directory('${directory.path}/cookie_jar').existsSync()) {
-      Directory('${directory.path}/cookie_jar').createSync();
+
+    final String path = '${directory.path}/cookie_jar';
+
+    if (!Directory(path).existsSync()) {
+      Directory(path).createSync();
     }
 
     cookieJar = PersistCookieJar(
-      storage: FileStorage('${directory.path}/cookie_jar'),
+      storage: FileStorage(path),
       ignoreExpires: true,
     );
     cookieManager = CookieManager(cookieJar);
+
+    return path;
   }
 
   static Future<void> _setCookie(Cookie cookie) =>

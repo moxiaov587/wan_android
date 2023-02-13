@@ -10,8 +10,8 @@ class ProjectTypeBottomSheet extends ConsumerStatefulWidget {
 
 class _ProjectTypeBottomSheetState extends ConsumerState<ProjectTypeBottomSheet>
     with
-        ListViewStateMixin<
-            StateNotifierProvider<ProjectTypeNotifier,
+        AutoDisposeListViewStateMixin<
+            AutoDisposeStateNotifierProvider<ProjectTypeNotifier,
                 ListViewState<ProjectTypeModel>>,
             ProjectTypeModel,
             ProjectTypeBottomSheet> {
@@ -89,6 +89,6 @@ class _ProjectTypeBottomSheetState extends ConsumerState<ProjectTypeBottomSheet>
   }
 
   @override
-  StateNotifierProvider<ProjectTypeNotifier, ListViewState<ProjectTypeModel>>
-      get provider => projectTypesProvider;
+  AutoDisposeStateNotifierProvider<ProjectTypeNotifier,
+      ListViewState<ProjectTypeModel>> get provider => projectTypesProvider;
 }

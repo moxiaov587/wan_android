@@ -45,18 +45,7 @@ class AppRouter {
         initialLocation: const HomeRoute(path: HomePath.home).location,
         debugLogDiagnostics: true,
         redirect: (BuildContext context, GoRouterState state) {
-          final String location = state.location;
-
-          if (location.isEmpty) {
-            return const HomeRoute(path: HomePath.home).location;
-          }
-
-          if (location == '/collection') {
-            return const MyCollectionsRoute(type: CollectionType.article)
-                .location;
-          }
-
-          if (needLoginLocations.contains(location)) {
+          if (needLoginLocations.contains(state.location)) {
             return providerContainer.read.call(authorizedProvider) != null
                 ? null
                 : const LoginRoute().location;

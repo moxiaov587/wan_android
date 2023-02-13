@@ -101,7 +101,7 @@ class DialogUtils {
     String? confirmText,
     String? cancelText,
     required FutureOr<T?> Function() confirmCallback,
-    Function()? cancelCallback,
+    FutureOr<T?> Function()? cancelCallback,
     bool isDanger = false,
     String? tag,
   }) {
@@ -116,17 +116,17 @@ class DialogUtils {
         cancelText: cancelText,
         confirmHandle: () async {
           final T? result = await confirmCallback.call();
-          SmartDialog.dismiss(
+          SmartDialog.dismiss<T>(
             result: result,
             tag: tag,
           );
         },
-        cancelHandle: () {
-          SmartDialog.dismiss(
-            result: null,
+        cancelHandle: () async {
+          final T? result = await cancelCallback?.call();
+          SmartDialog.dismiss<T>(
+            result: result,
             tag: tag,
           );
-          cancelCallback?.call();
         },
         isDanger: isDanger,
       ),

@@ -10,3 +10,10 @@ class HomeRoute extends GoRouteData {
   Widget build(BuildContext context, GoRouterState state) =>
       HomeScreen(initialPath: path);
 }
+
+@TypedGoRoute<RootRoute>(path: '/')
+class RootRoute extends GoRouteData {
+  @override
+  String redirect(BuildContext context, GoRouterState state) =>
+      const HomeRoute(path: HomePath.home).location;
+}

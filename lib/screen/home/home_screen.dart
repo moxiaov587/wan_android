@@ -12,7 +12,6 @@ import '../../app/provider/mixin/list_view_state_mixin.dart';
 import '../../app/provider/mixin/refresh_list_view_state_mixin.dart';
 import '../../app/theme/app_theme.dart';
 import '../../contacts/icon_font_icons.dart';
-import '../../contacts/instances.dart';
 import '../../database/database_manager.dart';
 import '../../extensions/extensions.dart';
 import '../../model/models.dart';
@@ -70,7 +69,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: Instances.scaffoldStateKey,
       drawer: const HomeDrawer(),
       drawerScrimColor: context.theme.colorScheme.scrim,
       body: PageView.builder(
@@ -140,8 +138,8 @@ class _Home extends ConsumerStatefulWidget {
 class _HomeState extends ConsumerState<_Home>
     with
         AutomaticKeepAliveClientMixin,
-        RefreshListViewStateMixin<
-            StateNotifierProvider<ArticleNotifier,
+        AutoDisposeRefreshListViewStateMixin<
+            AutoDisposeStateNotifierProvider<ArticleNotifier,
                 RefreshListViewState<ArticleModel>>,
             ArticleModel,
             _Home> {
@@ -211,8 +209,8 @@ class _HomeState extends ConsumerState<_Home>
   bool get wantKeepAlive => true;
 
   @override
-  StateNotifierProvider<ArticleNotifier, RefreshListViewState<ArticleModel>>
-      get provider => homeArticleProvider;
+  AutoDisposeStateNotifierProvider<ArticleNotifier,
+      RefreshListViewState<ArticleModel>> get provider => homeArticleProvider;
 }
 
 class _HomeAppBar extends StatefulWidget {
@@ -337,7 +335,7 @@ class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
                   child: Padding(
                     padding: AppTheme.contentPaddingOnlyHorizontal.copyWith(
                       top: ScreenUtils.topSafeHeight,
-                      bottom: (ScreenUtils.topSafeHeight ~/ 2).toDouble(),
+                      bottom: kStyleUint4,
                     ),
                     child: child,
                   ),
@@ -405,7 +403,7 @@ class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
                                           ),
                                           Text(
                                             '${message ?? detail ?? S.of(context).unknownError}(${statusCode ?? -1})',
-                                            maxLines: 3,
+                                            maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                           Gap(),
@@ -494,18 +492,32 @@ class _HomeAppBarUserInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: kStyleUint4),
       child: Row(
         children: <Widget>[
-          GestureDetector(
-            onTap: () {
-              Instances.scaffoldStateKey.currentState?.openDrawer();
-            },
-            child: CircleAvatar(
-              backgroundColor: context.theme.cardColor,
-              child: Text(
-                name?.substring(0, 1).toUpperCase() ?? '-',
-                style: context.theme.textTheme.titleLarge,
+          Material(
+            shape: const StadiumBorder(),
+            child: Ink(
+              decoration: BoxDecoration(
+                color: context.theme.cardColor,
+                shape: BoxShape.circle,
+              ),
+              child: InkWell(
+                onTap: () {
+                  Scaffold.of(context).openDrawer();
+                },
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints.tightFor(
+                    width: kStyleUint * 10,
+                    height: kStyleUint * 10,
+                  ),
+                  child: Center(
+                    child: Text(
+                      name?.substring(0, 1).toUpperCase() ?? '-',
+                      style: context.theme.textTheme.titleLarge,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),

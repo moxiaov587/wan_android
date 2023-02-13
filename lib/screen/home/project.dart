@@ -10,8 +10,8 @@ class _Project extends ConsumerStatefulWidget {
 class _ProjectState extends ConsumerState<_Project>
     with
         AutomaticKeepAliveClientMixin,
-        RefreshListViewStateMixin<
-            StateNotifierProvider<ProjectNotifier,
+        AutoDisposeRefreshListViewStateMixin<
+            AutoDisposeStateNotifierProvider<ProjectNotifier,
                 RefreshListViewState<ArticleModel>>,
             ArticleModel,
             _Project> {
@@ -106,7 +106,8 @@ class _ProjectState extends ConsumerState<_Project>
   bool get wantKeepAlive => true;
 
   @override
-  StateNotifierProvider<ProjectNotifier, RefreshListViewState<ArticleModel>>
+  AutoDisposeStateNotifierProvider<ProjectNotifier,
+          RefreshListViewState<ArticleModel>>
       get provider => projectArticleProvider;
 }
 

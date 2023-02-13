@@ -150,6 +150,9 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                           label: S.of(context).browser,
                           onTap: () async {
                             final Uri uri = Uri.parse(article.link);
+
+                            final S l10n = S.of(context);
+
                             if (await canLaunchUrl(uri)) {
                               await launchUrl(
                                 uri,
@@ -157,7 +160,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                               );
                             } else {
                               DialogUtils.danger(
-                                S.of(context).unableToOpenLink(uri.toString()),
+                                l10n.unableToOpenLink(uri.toString()),
                               );
                             }
                           },
@@ -325,8 +328,10 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
           valueListenable: _showKeyboardNotifier,
           builder: (_, bool showKeyboard, Widget? child) => AnimatedSwitcher(
             duration: const Duration(
-              milliseconds: 200,
+              milliseconds: 300,
             ),
+            switchInCurve: Curves.easeIn,
+            switchOutCurve: Curves.easeOut,
             transitionBuilder: (Widget child, Animation<double> animation) =>
                 SizeTransition(
               sizeFactor: animation,

@@ -202,10 +202,11 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
               .build()
               .watch(fireImmediately: true),
           builder: (_, AsyncSnapshot<List<SearchHistory>> snapshot) {
-            if (snapshot.data == null || snapshot.data!.isEmpty) {
-              return const SliverToBoxAdapter(
-                child: nil,
-              );
+            final List<SearchHistory> keywords =
+                snapshot.data ?? <SearchHistory>[];
+
+            if (keywords.isEmpty) {
+              return const SliverToBoxAdapter(child: nil);
             }
 
             return SliverToBoxAdapter(
@@ -241,7 +242,7 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
                     child: Wrap(
                       spacing: wrapSpace,
                       runSpacing: wrapSpace,
-                      children: snapshot.data!
+                      children: keywords
                           .map(
                             (SearchHistory e) => CapsuleInk(
                               child: Text(e.keyword),

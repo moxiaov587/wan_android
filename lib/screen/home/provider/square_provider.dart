@@ -1,8 +1,9 @@
 part of 'home_provider.dart';
 
-final StateNotifierProvider<SquareNotifier, RefreshListViewState<ArticleModel>>
-    squareArticleProvider =
-    StateNotifierProvider<SquareNotifier, RefreshListViewState<ArticleModel>>(
+final AutoDisposeStateNotifierProvider<SquareNotifier,
+        RefreshListViewState<ArticleModel>> squareArticleProvider =
+    StateNotifierProvider.autoDispose<SquareNotifier,
+        RefreshListViewState<ArticleModel>>(
   (_) {
     return SquareNotifier(
       const RefreshListViewState<ArticleModel>.loading(),

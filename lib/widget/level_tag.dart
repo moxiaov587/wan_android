@@ -7,6 +7,8 @@ import 'package:flutter/widgets.dart';
 import '../app/theme/app_theme.dart';
 import '../extensions/extensions.dart' show BuildContextExtension;
 
+const double _kCharacterSize = 16.0;
+
 class LevelTag extends StatelessWidget {
   const LevelTag({
     super.key,
@@ -24,7 +26,10 @@ class LevelTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size size = Size(16 + integers.length * 8, 16) *
+    Size size = Size(
+          _kCharacterSize + integers.length * _kCharacterSize / 2,
+          _kCharacterSize,
+        ) *
         scaleFactor *
         MediaQuery.of(context).textScaleFactor;
 

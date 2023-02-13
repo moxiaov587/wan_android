@@ -83,10 +83,13 @@
 
     "myCollections": "我的收藏",
     "collectionType": "{type, select, article{文章} website{网站}}",
+    "removeArticleTips": "您确定要删除这篇文章吗？",
+    "removeWebsiteTips": "您确定要删除该网站吗？",
     "addCollected": "新增收集的{name}",
     "editCollected": "编辑收集的{name}",
 
     "myShare": "我的分享",
+    "removeShareTips": "您确定要删除此分享吗？",
     "addShare": "新增分享",
 
     "title": "标题",

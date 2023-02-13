@@ -1,8 +1,9 @@
 part of 'home_provider.dart';
 
-final StateNotifierProvider<ProjectTypeNotifier,
+final AutoDisposeStateNotifierProvider<ProjectTypeNotifier,
         ListViewState<ProjectTypeModel>> projectTypesProvider =
-    StateNotifierProvider<ProjectTypeNotifier, ListViewState<ProjectTypeModel>>(
+    StateNotifierProvider.autoDispose<ProjectTypeNotifier,
+        ListViewState<ProjectTypeModel>>(
   (_) {
     return ProjectTypeNotifier(
       const ListViewState<ProjectTypeModel>.loading(),
@@ -19,11 +20,11 @@ class ProjectTypeNotifier extends BaseListViewNotifier<ProjectTypeModel> {
   }
 }
 
-final StateNotifierProvider<CurrentProjectTypeNotifier,
+final AutoDisposeStateNotifierProvider<CurrentProjectTypeNotifier,
         ViewState<ProjectTypeModel>> currentProjectTypeProvider =
-    StateNotifierProvider<CurrentProjectTypeNotifier,
+    StateNotifierProvider.autoDispose<CurrentProjectTypeNotifier,
         ViewState<ProjectTypeModel>>(
-  (StateNotifierProviderRef<CurrentProjectTypeNotifier,
+  (AutoDisposeStateNotifierProviderRef<CurrentProjectTypeNotifier,
           ViewState<ProjectTypeModel>>
       ref) {
     return CurrentProjectTypeNotifier(
@@ -51,10 +52,12 @@ class CurrentProjectTypeNotifier
   }
 }
 
-final StateNotifierProvider<ProjectNotifier, RefreshListViewState<ArticleModel>>
-    projectArticleProvider =
-    StateNotifierProvider<ProjectNotifier, RefreshListViewState<ArticleModel>>(
-  (StateNotifierProviderRef<ProjectNotifier, RefreshListViewState<ArticleModel>>
+final AutoDisposeStateNotifierProvider<ProjectNotifier,
+        RefreshListViewState<ArticleModel>> projectArticleProvider =
+    StateNotifierProvider.autoDispose<ProjectNotifier,
+        RefreshListViewState<ArticleModel>>(
+  (AutoDisposeStateNotifierProviderRef<ProjectNotifier,
+          RefreshListViewState<ArticleModel>>
       ref) {
     return ref.watch(currentProjectTypeProvider).when(
           (ProjectTypeModel? value) => ProjectNotifier(

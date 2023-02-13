@@ -127,7 +127,7 @@
     "totalPoints": "Total Points",
 
     "myCollections": "My Collections",
-    "collectionType": "{type, select, article {Article} website {Website}}",
+    "collectionType": "{type, select, article{Article} website{Website}}",
     "@collectionType": {
         "placeholders": {
             "type": {
@@ -137,6 +137,8 @@
             }
         }
     },
+    "removeArticleTips": "Are you sure to remove this article?",
+    "removeWebsiteTips": "Are you sure to remove this website?",
     "addCollected": "Add Collected {name}",
     "@addCollected": {
         "placeholders": {
@@ -159,6 +161,7 @@
     },
 
     "myShare": "My Share",
+    "removeShareTips": "Are you sure to remove this share?",
     "addShare": "Add Share",
 
     "title": "Title",
