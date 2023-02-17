@@ -9,19 +9,6 @@ class StorageScreen extends ConsumerStatefulWidget {
 
 class _StorageScreenState extends ConsumerState<StorageScreen> {
   @override
-  void initState() {
-    super.initState();
-
-    _initData();
-  }
-
-  void _initData() {
-    ref.read(otherCacheSizeProvider.notifier).initData();
-    ref.read(responseDataCacheSizeProvider.notifier).initData();
-    ref.read(preferencesCacheSizeProvider.notifier).initData();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -42,41 +29,42 @@ class _StorageScreenState extends ConsumerState<StorageScreen> {
                           .theme.scaffoldBackgroundColor
                           .withOpacity(0.5),
                       leading: Consumer(
-                        builder: (_, WidgetRef ref, __) {
-                          final bool selected =
-                              ref.watch(checkOtherCachesProvider);
+                        builder: (_, WidgetRef ref, Widget? child) {
                           final bool disabled =
                               ref.watch(disableCheckOtherCachesProvider);
 
                           return Opacity(
                             opacity: disabled ? 0.5 : 1.0,
-                            child: Checkbox(
-                              value: selected,
-                              onChanged: (bool? result) {
-                                ref.read(otherCacheSizeProvider).when(
-                                      (int? value) {
-                                        if ((value ?? 0) > 0) {
-                                          ref
-                                              .read(
-                                                checkOtherCachesProvider
-                                                    .notifier,
-                                              )
-                                              .state = result ?? false;
-                                        }
-                                      },
-                                      loading: () {},
-                                      error: (_, __, ___) {
-                                        ref
-                                            .read(
-                                              otherCacheSizeProvider.notifier,
-                                            )
-                                            .initData();
-                                      },
-                                    );
-                              },
-                            ),
+                            child: child,
                           );
                         },
+                        child: Consumer(builder: (_, WidgetRef ref, __) {
+                          final bool selected =
+                              ref.watch(checkOtherCachesProvider);
+
+                          return Checkbox(
+                            value: selected,
+                            onChanged: (bool? result) {
+                              ref.read(otherCacheSizeProvider).when(
+                                    data: (int data) {
+                                      if (data > 0) {
+                                        ref
+                                            .read(
+                                              checkOtherCachesProvider.notifier,
+                                            )
+                                            .update((_) => result ?? false);
+                                      }
+                                    },
+                                    loading: () {},
+                                    error: (_, __) {
+                                      ref.invalidate(
+                                        otherCacheSizeProvider,
+                                      );
+                                    },
+                                  );
+                            },
+                          );
+                        }),
                       ),
                       title: Text(S.of(context).otherCache),
                       subtitle: Text(S.of(context).otherCacheTips),
@@ -84,29 +72,26 @@ class _StorageScreenState extends ConsumerState<StorageScreen> {
                         builder: (_, WidgetRef ref, __) => ref
                             .watch(otherCacheSizeProvider)
                             .when(
-                              (int? value) => Text(value.fileSize),
+                              data: (int data) => Text(data.fileSize),
                               loading: () => const CupertinoActivityIndicator(),
-                              error: (_, __, ___) =>
+                              error: (_, __) =>
                                   const Icon(IconFontIcons.refreshLine),
                             ),
                       ),
                       onTap: () {
                         ref.read(otherCacheSizeProvider).when(
-                              (int? value) {
-                                if ((value ?? 0) > 0) {
+                              data: (int data) {
+                                if (data > 0) {
                                   ref
-                                          .read(
-                                            checkOtherCachesProvider.notifier,
-                                          )
-                                          .state =
-                                      !ref.read(checkOtherCachesProvider);
+                                      .read(
+                                        checkOtherCachesProvider.notifier,
+                                      )
+                                      .update((bool state) => !state);
                                 }
                               },
                               loading: () {},
-                              error: (_, __, ___) {
-                                ref
-                                    .read(otherCacheSizeProvider.notifier)
-                                    .initData();
+                              error: (_, __) {
+                                ref.invalidate(otherCacheSizeProvider);
                               },
                             );
                       },
@@ -118,40 +103,43 @@ class _StorageScreenState extends ConsumerState<StorageScreen> {
                           .theme.scaffoldBackgroundColor
                           .withOpacity(0.5),
                       leading: Consumer(
-                        builder: (_, WidgetRef ref, __) {
-                          final bool selected =
-                              ref.watch(checkResponseDataCachesProvider);
+                        builder: (_, WidgetRef ref, Widget? child) {
                           final bool disabled =
                               ref.watch(disableCheckResponseDataCachesProvider);
 
                           return Opacity(
                             opacity: disabled ? 0.5 : 1.0,
-                            child: Checkbox(
-                              value: selected,
-                              onChanged: (bool? result) {
-                                ref.read(responseDataCacheSizeProvider).when(
-                                      (int? value) {
-                                        if ((value ?? 0) > 0) {
-                                          ref
-                                              .read(
-                                                checkResponseDataCachesProvider
-                                                    .notifier,
-                                              )
-                                              .state = result ?? false;
-                                        }
-                                      },
-                                      loading: () {},
-                                      error: (_, __, ___) {
-                                        ref
-                                            .read(responseDataCacheSizeProvider
-                                                .notifier)
-                                            .initData();
-                                      },
-                                    );
-                              },
-                            ),
+                            child: child,
                           );
                         },
+                        child: Consumer(builder: (_, WidgetRef ref, __) {
+                          final bool selected =
+                              ref.watch(checkResponseDataCachesProvider);
+
+                          return Checkbox(
+                            value: selected,
+                            onChanged: (bool? result) {
+                              ref.read(responseDataCacheSizeProvider).when(
+                                    data: (int data) {
+                                      if (data > 0) {
+                                        ref
+                                            .read(
+                                              checkResponseDataCachesProvider
+                                                  .notifier,
+                                            )
+                                            .update((_) => result ?? false);
+                                      }
+                                    },
+                                    loading: () {},
+                                    error: (_, __) {
+                                      ref.invalidate(
+                                        responseDataCacheSizeProvider,
+                                      );
+                                    },
+                                  );
+                            },
+                          );
+                        }),
                       ),
                       title: Text(S.of(context).responseDataCache),
                       subtitle: Text(S.of(context).responseDataCacheTips),
@@ -159,33 +147,27 @@ class _StorageScreenState extends ConsumerState<StorageScreen> {
                         builder: (_, WidgetRef ref, __) => ref
                             .watch(responseDataCacheSizeProvider)
                             .when(
-                              (int? value) => Text(value.fileSize),
+                              data: (int? value) => Text(value.fileSize),
                               loading: () => const CupertinoActivityIndicator(),
-                              error: (_, __, ___) =>
+                              error: (_, __) =>
                                   const Icon(IconFontIcons.refreshLine),
                             ),
                       ),
                       onTap: () {
                         ref.read(responseDataCacheSizeProvider).when(
-                              (int? value) {
-                                if ((value ?? 0) > 0) {
+                              data: (int data) {
+                                if (data > 0) {
                                   ref
                                       .read(
                                         checkResponseDataCachesProvider
                                             .notifier,
                                       )
-                                      .state = !ref.read(
-                                    checkResponseDataCachesProvider,
-                                  );
+                                      .update((bool state) => !state);
                                 }
                               },
                               loading: () {},
-                              error: (_, __, ___) {
-                                ref
-                                    .read(
-                                      responseDataCacheSizeProvider.notifier,
-                                    )
-                                    .initData();
+                              error: (_, __) {
+                                ref.invalidate(responseDataCacheSizeProvider);
                               },
                             );
                       },
@@ -197,40 +179,45 @@ class _StorageScreenState extends ConsumerState<StorageScreen> {
                           .theme.scaffoldBackgroundColor
                           .withOpacity(0.5),
                       leading: Consumer(
-                        builder: (_, WidgetRef ref, __) {
-                          final bool selected =
-                              ref.watch(checkPreferencesCachesProvider);
+                        builder: (_, WidgetRef ref, Widget? child) {
                           final bool disabled =
                               ref.watch(disableCheckPreferencesCachesProvider);
 
                           return Opacity(
                             opacity: disabled ? 0.5 : 1.0,
-                            child: Checkbox(
+                            child: child,
+                          );
+                        },
+                        child: Consumer(
+                          builder: (_, WidgetRef ref, __) {
+                            final bool selected =
+                                ref.watch(checkPreferencesCachesProvider);
+
+                            return Checkbox(
                               value: selected,
                               onChanged: (bool? result) {
                                 ref.read(preferencesCacheSizeProvider).when(
-                                      (int? value) {
-                                        if ((value ?? 0) > 0) {
+                                      data: (int data) {
+                                        if (data > 0) {
                                           ref
                                               .read(
                                                 checkPreferencesCachesProvider
                                                     .notifier,
                                               )
-                                              .state = result ?? false;
+                                              .update((_) => result ?? false);
                                         }
                                       },
                                       loading: () {},
-                                      error: (_, __, ___) {
-                                        ref
-                                            .read(preferencesCacheSizeProvider
-                                                .notifier)
-                                            .initData();
+                                      error: (_, __) {
+                                        ref.invalidate(
+                                          preferencesCacheSizeProvider,
+                                        );
                                       },
                                     );
                               },
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
                       title: Text(S.of(context).preferencesCache),
                       subtitle: Text(S.of(context).preferencesCacheTips),
@@ -238,30 +225,26 @@ class _StorageScreenState extends ConsumerState<StorageScreen> {
                         builder: (_, WidgetRef ref, __) => ref
                             .watch(preferencesCacheSizeProvider)
                             .when(
-                              (int? value) => Text(value.fileSize),
+                              data: (int data) => Text(data.fileSize),
                               loading: () => const CupertinoActivityIndicator(),
-                              error: (_, __, ___) =>
+                              error: (_, __) =>
                                   const Icon(IconFontIcons.refreshLine),
                             ),
                       ),
                       onTap: () {
                         ref.read(preferencesCacheSizeProvider).when(
-                              (int? value) {
-                                if ((value ?? 0) > 0) {
+                              data: (int data) {
+                                if (data > 0) {
                                   ref
-                                          .read(
-                                            checkPreferencesCachesProvider
-                                                .notifier,
-                                          )
-                                          .state =
-                                      !ref.read(checkPreferencesCachesProvider);
+                                      .read(
+                                        checkPreferencesCachesProvider.notifier,
+                                      )
+                                      .update((bool state) => !state);
                                 }
                               },
                               loading: () {},
-                              error: (_, __, ___) {
-                                ref
-                                    .read(preferencesCacheSizeProvider.notifier)
-                                    .initData();
+                              error: (_, __) {
+                                ref.invalidate(preferencesCacheSizeProvider);
                               },
                             );
                       },
@@ -294,7 +277,7 @@ class _StorageScreenState extends ConsumerState<StorageScreen> {
                             if (!ref.read(disableCheckOtherCachesProvider)) {
                               ref
                                   .read(checkOtherCachesProvider.notifier)
-                                  .state = !checkAll;
+                                  .update((_) => !checkAll);
                             }
                             if (!ref.read(
                               disableCheckResponseDataCachesProvider,
@@ -303,7 +286,7 @@ class _StorageScreenState extends ConsumerState<StorageScreen> {
                                   .read(
                                     checkResponseDataCachesProvider.notifier,
                                   )
-                                  .state = !checkAll;
+                                  .update((_) => !checkAll);
                             }
 
                             if (!ref.read(
@@ -313,7 +296,7 @@ class _StorageScreenState extends ConsumerState<StorageScreen> {
                                   .read(
                                     checkPreferencesCachesProvider.notifier,
                                   )
-                                  .state = !checkAll;
+                                  .update((_) => !checkAll);
                             }
                           },
                           child: Text(checkAll
@@ -335,27 +318,29 @@ class _StorageScreenState extends ConsumerState<StorageScreen> {
 
                             final int otherCacheSize = ref
                                     .watch(otherCacheSizeProvider)
-                                    .whenOrNull((int? value) => value) ??
+                                    .whenOrNull(data: (int data) => data) ??
                                 0;
                             final int responseDataCacheSize = ref
                                     .watch(responseDataCacheSizeProvider)
-                                    .whenOrNull((int? value) => value) ??
+                                    .whenOrNull(data: (int data) => data) ??
                                 0;
                             final int preferencesCacheSize = ref
                                     .watch(preferencesCacheSizeProvider)
-                                    .whenOrNull((int? value) => value) ??
+                                    .whenOrNull(data: (int data) => data) ??
                                 0;
 
                             final int total = <int>[
-                              0, // Prevent empty arrays from performing reduce
                               if (checkOther) otherCacheSize,
                               if (checkResponseData) responseDataCacheSize,
                               if (checkPreferences) preferencesCacheSize,
-                            ].reduce((
-                              int total,
-                              int size,
-                            ) =>
-                                total += size);
+                            ].fold(
+                              0,
+                              (
+                                int total,
+                                int size,
+                              ) =>
+                                  total += size,
+                            );
 
                             if (total == 0) {
                               return const SizedBox.shrink();
@@ -381,41 +366,51 @@ class _StorageScreenState extends ConsumerState<StorageScreen> {
                                         ),
                                         confirmText: S.of(context).clear,
                                         confirmCallback: () async {
-                                          await DatabaseManager.isar.writeTxn(
-                                            () => Future.wait<void>(
-                                              <Future<void>>[
-                                                if (ref.read(
-                                                  cleanableOtherCachesProvider,
-                                                ))
-                                                  ...ref
-                                                      .read(
-                                                        otherCacheSizeProvider
-                                                            .notifier,
-                                                      )
-                                                      .clearTask,
-                                                if (ref.read(
-                                                  cleanableResponseDataCachesProvider,
-                                                ))
-                                                  ...ref
-                                                      .read(
-                                                        responseDataCacheSizeProvider
-                                                            .notifier,
-                                                      )
-                                                      .clearTask,
-                                                if (ref.read(
-                                                  cleanablePreferencesCachesProvider,
-                                                ))
-                                                  ...ref
-                                                      .read(
-                                                        preferencesCacheSizeProvider
-                                                            .notifier,
-                                                      )
-                                                      .clearTask,
-                                              ],
-                                            ),
-                                          );
+                                          await ref
+                                              .read(appDatabaseProvider)
+                                              .writeTxn(
+                                                () => Future.wait<void>(
+                                                  <Future<void>>[
+                                                    if (ref.read(
+                                                      cleanableOtherCachesProvider,
+                                                    ))
+                                                      ...ref
+                                                          .read(
+                                                            otherCacheSizeProvider
+                                                                .notifier,
+                                                          )
+                                                          .clearTask,
+                                                    if (ref.read(
+                                                      cleanableResponseDataCachesProvider,
+                                                    ))
+                                                      ...ref
+                                                          .read(
+                                                            responseDataCacheSizeProvider
+                                                                .notifier,
+                                                          )
+                                                          .clearTask,
+                                                    if (ref.read(
+                                                      cleanablePreferencesCachesProvider,
+                                                    ))
+                                                      ...ref
+                                                          .read(
+                                                            preferencesCacheSizeProvider
+                                                                .notifier,
+                                                          )
+                                                          .clearTask,
+                                                  ],
+                                                ),
+                                              );
 
-                                          _initData();
+                                          ref.invalidate(
+                                            otherCacheSizeProvider,
+                                          );
+                                          ref.invalidate(
+                                            responseDataCacheSizeProvider,
+                                          );
+                                          ref.invalidate(
+                                            preferencesCacheSizeProvider,
+                                          );
                                         },
                                       );
                                     }

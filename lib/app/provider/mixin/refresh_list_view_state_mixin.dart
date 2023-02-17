@@ -22,8 +22,6 @@ mixin RefreshListViewStateMixin<
   @protected
   ProviderType get provider;
 
-  bool get autoInitData => true;
-
   Widget get pullDownIndicator => Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? empty) =>
             ref.watch(provider).whenOrNull(
@@ -37,16 +35,6 @@ mixin RefreshListViewStateMixin<
 
   void onRetry() {
     ref.read(provider.notifier).initData();
-  }
-
-  @mustCallSuper
-  @override
-  void initState() {
-    super.initState();
-
-    if (autoInitData) {
-      ref.read(provider.notifier).initData();
-    }
   }
 
   @mustCallSuper
@@ -96,16 +84,9 @@ mixin RefreshListViewStateMixin<
         child: LoadingWidget(),
       );
 
-  Widget errorIndicatorBuilder(
-    int? statusCode,
-    String? message,
-    String? detail,
-  ) =>
-      SliverFillRemaining(
-        child: CustomErrorWidget(
-          statusCode: statusCode,
-          message: message,
-          detail: detail,
+  Widget errorIndicatorBuilder(Object e, StackTrace s) => SliverFillRemaining(
+        child: CustomErrorWidget.withViewError(
+          ViewError.create(e, s),
           onRetry: onRetry,
         ),
       );
@@ -123,8 +104,6 @@ mixin AutoDisposeRefreshListViewStateMixin<
   @protected
   ProviderType get provider;
 
-  bool get autoInitData => true;
-
   Widget get pullDownIndicator => Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? empty) =>
             ref.watch(provider).whenOrNull(
@@ -138,16 +117,6 @@ mixin AutoDisposeRefreshListViewStateMixin<
 
   void onRetry() {
     ref.read(provider.notifier).initData();
-  }
-
-  @mustCallSuper
-  @override
-  void initState() {
-    super.initState();
-
-    if (autoInitData) {
-      ref.read(provider.notifier).initData();
-    }
   }
 
   @mustCallSuper
@@ -197,16 +166,9 @@ mixin AutoDisposeRefreshListViewStateMixin<
         child: LoadingWidget(),
       );
 
-  Widget errorIndicatorBuilder(
-    int? statusCode,
-    String? message,
-    String? detail,
-  ) =>
-      SliverFillRemaining(
-        child: CustomErrorWidget(
-          statusCode: statusCode,
-          message: message,
-          detail: detail,
+  Widget errorIndicatorBuilder(Object e, StackTrace s) => SliverFillRemaining(
+        child: CustomErrorWidget.withViewError(
+          ViewError.create(e, s),
           onRetry: onRetry,
         ),
       );

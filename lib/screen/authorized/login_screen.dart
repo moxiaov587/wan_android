@@ -7,7 +7,7 @@ import '../../app/l10n/generated/l10n.dart';
 import '../../app/theme/app_theme.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../contacts/instances.dart';
-import '../../database/database_manager.dart';
+import '../../database/app_database.dart';
 import '../../extensions/extensions.dart' show BuildContextExtension;
 import '../../router/data/app_routes.dart';
 import '../../screen/authorized/provider/authorized_provider.dart';
@@ -41,8 +41,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
   late final ValueNotifier<bool> _rememberPasswordNotifier =
       ValueNotifier<bool>(rememberPassword);
 
+  Isar get isar => ref.read(appDatabaseProvider);
+
   bool get rememberPassword =>
-      DatabaseManager.uniqueUserSettings?.rememberPassword ?? false;
+      isar.uniqueUserSettings?.rememberPassword ?? false;
 
   @override
   void initState() {
@@ -80,10 +82,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
   }
 
   void initTextEditingDefaultValue() {
-    _lastLoginAccountCache = DatabaseManager.accountCaches
-        .where()
-        .sortByUpdateTimeDesc()
-        .findFirstSync();
+    _lastLoginAccountCache =
+        isar.accountCaches.where().sortByUpdateTimeDesc().findFirstSync();
 
     if (_lastLoginAccountCache != null) {
       _usernameTextEditingController.text = _lastLoginAccountCache!.username;
@@ -142,7 +142,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
                         }
                       },
                       optionsBuilder: (TextEditingValue textEditingValue) =>
-                          DatabaseManager.accountCaches
+                          isar.accountCaches
                               .filter()
                               .usernameStartsWith(textEditingValue.text)
                               .sortByUpdateTimeDesc()

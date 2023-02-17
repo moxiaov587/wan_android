@@ -1,12 +1,13 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../app/http/http.dart';
-import '../../../app/http/wan_android_api.dart';
 import '../../../app/l10n/generated/l10n.dart';
 import '../../../app/provider/provider.dart';
-import '../../../database/database_manager.dart';
+import '../../../database/app_database.dart';
 import '../../../model/models.dart';
 import '../../../utils/dialog_utils.dart' show DialogUtils;
+
+part 'authorized_provider.g.dart';
 
 const Map<int, int> _kEncryptOffset = <int, int>{
   2: 7,
@@ -19,47 +20,23 @@ const Map<int, int> _kEncryptOffset = <int, int>{
   4: 0,
 };
 
-final StateNotifierProvider<AuthorizedNotifier, UserInfoModel?>
-    authorizedProvider =
-    StateNotifierProvider<AuthorizedNotifier, UserInfoModel?>((_) {
-  return AuthorizedNotifier();
-});
+@Riverpod(keepAlive: true)
+class Authorized extends _$Authorized {
+  late Http http;
+  late Isar isar;
 
-class AuthorizedNotifier extends StateNotifier<UserInfoModel?>
-    with ViewErrorMixin {
-  AuthorizedNotifier() : super(null);
+  @override
+  Future<UserInfoModel?> build() async {
+    final CancelToken cancelToken = ref.cancelToken();
 
-  Future<int?> initData() async {
-    try {
-      if (await Http.isLogin) {
-        state = await WanAndroidAPI.fetchUserInfo();
-      }
+    http = ref.watch(networkProvider);
+    isar = ref.read(appDatabaseProvider);
 
-      return null;
-    } catch (e, s) {
-      Http.cookieJar.deleteAll();
-
-      return getError(e, s).statusCode ?? -1;
+    if (await http.isLogin) {
+      return http.fetchUserInfo(cancelToken: cancelToken);
     }
-  }
 
-  Future<bool> logout() async {
-    DialogUtils.loading();
-    try {
-      await WanAndroidAPI.logout();
-
-      state = null;
-
-      Http.cookieJar.deleteAll();
-
-      return true;
-    } catch (e, s) {
-      DialogUtils.danger(getError(e, s).errorMessage(S.current.unknownError));
-
-      return false;
-    } finally {
-      DialogUtils.dismiss();
-    }
+    return null;
   }
 
   void _handleCacheByLogin(
@@ -77,14 +54,14 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?>
       accountCache.password = _encryptString(password!);
     }
 
-    final UserSettings userSettings = DatabaseManager.writeUniqueUserSettings(
+    final UserSettings userSettings = isar.writeUniqueUserSettings(
       rememberPassword: rememberPassword,
     );
 
-    DatabaseManager.isar.writeTxnSync<void>(
+    isar.writeTxnSync<void>(
       () {
-        DatabaseManager.accountCaches.putSync(accountCache);
-        DatabaseManager.userSettingsCache.putSync(userSettings);
+        isar.accountCaches.putSync(accountCache);
+        isar.userSettingsCache.putSync(userSettings);
       },
     );
   }
@@ -124,12 +101,12 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?>
   }) async {
     DialogUtils.loading();
     try {
-      final UserModel user = await WanAndroidAPI.login(
+      final UserModel user = await http.login(
         username: username,
         password: password,
       );
 
-      state = await WanAndroidAPI.fetchUserInfo();
+      state = AsyncValue<UserInfoModel?>.data(await http.fetchUserInfo());
 
       _handleCacheByLogin(
         user.id,
@@ -143,7 +120,7 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?>
       return true;
     } catch (e, s) {
       DialogUtils.danger(
-        getError(e, s).errorMessage(S.current.loginFailed),
+        ViewError.create(e, s).errorMessage(S.current.loginFailed),
       );
 
       return false;
@@ -158,12 +135,12 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?>
   }) async {
     password = decryptString(password);
     try {
-      final UserModel user = await WanAndroidAPI.silentLogin(
+      final UserModel user = await http.silentLogin(
         username: username,
         password: password,
       );
 
-      state = await WanAndroidAPI.silentFetchUserInfo();
+      state = AsyncValue<UserInfoModel?>.data(await http.fetchUserInfo());
 
       _handleCacheByLogin(
         user.id,
@@ -178,6 +155,27 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?>
     }
   }
 
+  Future<bool> logout() async {
+    DialogUtils.loading();
+    try {
+      await http.logout();
+
+      state = const AsyncValue<UserInfoModel?>.data(null);
+
+      http.cookieJar.deleteAll();
+
+      return true;
+    } catch (e, s) {
+      DialogUtils.danger(
+        ViewError.create(e, s).errorMessage(S.current.unknownError),
+      );
+
+      return false;
+    } finally {
+      DialogUtils.dismiss();
+    }
+  }
+
   Future<bool> register({
     required String username,
     required String password,
@@ -185,7 +183,7 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?>
   }) async {
     DialogUtils.loading();
     try {
-      final UserModel model = await WanAndroidAPI.register(
+      final UserModel model = await http.register(
         username: username,
         password: password,
         repassword: repassword,
@@ -196,18 +194,14 @@ class AuthorizedNotifier extends StateNotifier<UserInfoModel?>
         ..username = username
         ..updateTime = DateTime.now();
 
-      DatabaseManager.isar.writeTxnSync(
-        () => DatabaseManager.accountCaches.putSync(
-          accountCache,
-        ),
-      );
+      isar.writeTxnSync(() => isar.accountCaches.putSync(accountCache));
 
       DialogUtils.success(S.current.registerSuccess);
 
       return true;
     } catch (e, s) {
       DialogUtils.danger(
-        getError(e, s).errorMessage(S.current.registerFailed),
+        ViewError.create(e, s).errorMessage(S.current.registerFailed),
       );
 
       return false;

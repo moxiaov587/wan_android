@@ -4,18 +4,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nil/nil.dart' show nil;
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../app/http/http.dart';
 import '../../app/l10n/generated/l10n.dart';
 import '../../app/provider/mixin/refresh_list_view_state_mixin.dart';
 import '../../app/provider/view_state.dart';
 import '../../app/theme/app_theme.dart';
 import '../../contacts/icon_font_icons.dart';
-import '../../database/database_manager.dart';
+import '../../database/app_database.dart';
 import '../../extensions/extensions.dart';
 import '../../model/models.dart';
 import '../../router/data/app_routes.dart';
 import '../../screen/authorized/provider/authorized_provider.dart';
-import '../../screen/provider/locale_provider.dart';
-import '../../screen/provider/theme_provider.dart';
+import '../../screen/provider/common_provider.dart';
 import '../../utils/dialog_utils.dart';
 import '../../utils/screen_utils.dart';
 import '../../widget/animated_counter.dart';
@@ -60,9 +60,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
                 builder: (_, WidgetRef ref, Widget? child) {
                   final String? name = ref.watch(
                     authorizedProvider.select(
-                      (UserInfoModel? userInfo) =>
-                          userInfo?.user.nickname.strictValue ??
-                          userInfo?.user.publicName.strictValue,
+                      (AsyncValue<UserInfoModel?> data) =>
+                          data.valueOrNull?.user.nickname.strictValue ??
+                          data.valueOrNull?.user.publicName.strictValue,
                     ),
                   );
 
@@ -103,8 +103,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
                               builder: (_, WidgetRef ref, __) {
                                 final int? level = ref.watch(
                                   authorizedProvider.select(
-                                    (UserInfoModel? value) =>
-                                        value?.userPoints.level,
+                                    (AsyncValue<UserInfoModel?> data) =>
+                                        data.valueOrNull?.userPoints.level,
                                   ),
                                 );
 
@@ -179,7 +179,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   children: <Widget>[
                     Consumer(
                       builder: (_, WidgetRef ref, __) {
-                        final ThemeMode current = ref.watch(themeProvider);
+                        final ThemeMode current =
+                            ref.watch(appThemeModeProvider);
 
                         final bool isDark = current == ThemeMode.dark ||
                             current == ThemeMode.system && context.isDarkTheme;
@@ -189,9 +190,10 @@ class _HomeDrawerState extends State<HomeDrawer> {
 
                         return IconButton(
                           onPressed: () {
-                            ref.read(themeProvider.notifier).switchThemeMode(
-                                  reverse,
-                                );
+                            ref.invalidate(networkProvider);
+                            // ref
+                            //     .read(appThemeModeProvider.notifier)
+                            //     .switchThemeMode(reverse);
                           },
                           tooltip: S.of(context).themeMode(reverse.name),
                           icon: Icon(

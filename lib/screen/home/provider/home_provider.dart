@@ -1,22 +1,24 @@
 import 'dart:ui' as ui show Image;
 
-import 'package:diox/diox.dart';
 import 'package:flutter/rendering.dart' show decodeImageFromList;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:palette_generator/palette_generator.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../app/http/http.dart' show kBaseUrl;
-import '../../../app/http/wan_android_api.dart';
+import '../../../app/http/http.dart';
+
+import '../../../app/provider/mixin/notifier_update_mixin.dart';
 import '../../../app/provider/provider.dart';
 import '../../../app/provider/view_state.dart';
-import '../../../database/database_manager.dart';
+import '../../../database/app_database.dart';
 import '../../../model/models.dart';
 
 part 'project_provider.dart';
 part 'question_provider.dart';
 part 'search_provider.dart';
 part 'square_provider.dart';
+part 'home_provider.g.dart';
 
 const String kHomeArticleProvider = 'kHomeArticleProvider';
 const String kSquareArticleProvider = 'kSquareArticleProvider';
@@ -46,31 +48,25 @@ mixin ArticleNotifierSwitchCollectMixin
   }
 }
 
-final AutoDisposeStateNotifierProvider<BannerNotifier,
-        ListViewState<HomeBannerCache>> homeBannerProvider =
-    StateNotifierProvider.autoDispose<BannerNotifier,
-        ListViewState<HomeBannerCache>>((_) {
-  return BannerNotifier(
-    const ListViewState<HomeBannerCache>.loading(),
-  );
-});
-
-class BannerNotifier extends BaseListViewNotifier<HomeBannerCache> {
-  BannerNotifier(super.state);
+@riverpod
+class HomeBanner extends _$HomeBanner {
+  late Isar isar;
 
   final NetworkAssetBundle _networkAssetBundle =
       NetworkAssetBundle(Uri.parse(kBaseUrl));
 
   @override
-  Future<List<HomeBannerCache>> loadData() async {
-    final List<BannerModel> homeBanners =
-        await WanAndroidAPI.fetchHomeBanners();
+  Future<List<HomeBannerCache>> build() async {
+    final CancelToken cancelToken = ref.cancelToken();
 
-    final List<HomeBannerCache> homeBannersFromCache = DatabaseManager
-        .homeBannerCaches
-        .where()
-        .sortByOrderDesc()
-        .findAllSync();
+    isar = ref.read(appDatabaseProvider);
+
+    final List<BannerModel> homeBanners = await ref
+        .watch(networkProvider)
+        .fetchHomeBanners(cancelToken: cancelToken);
+
+    final List<HomeBannerCache> homeBannersFromCache =
+        isar.homeBannerCaches.where().sortByOrderDesc().findAllSync();
 
     if (_compareRequestAndCache(homeBanners, homeBannersFromCache)) {
       final Iterable<Future<HomeBannerCache>> futures =
@@ -101,11 +97,13 @@ class BannerNotifier extends BaseListViewNotifier<HomeBannerCache> {
           ..textColorValue = paletteColor?.bodyTextColor.value;
       });
 
+      _networkAssetBundle.clear();
+
       final List<HomeBannerCache> banners = await Future.wait(futures);
 
-      DatabaseManager.isar.writeTxn<void>(() async {
-        await DatabaseManager.homeBannerCaches.clear();
-        DatabaseManager.homeBannerCaches.putAll(banners);
+      isar.writeTxn<void>(() async {
+        await isar.homeBannerCaches.clear();
+        isar.homeBannerCaches.putAll(banners);
       });
 
       return banners;
@@ -136,51 +134,34 @@ extension Int2ColorExtension on int? {
   Color? get toColor => this == null ? null : Color(this!);
 }
 
-final AutoDisposeStateNotifierProvider<CurrentBannerColorNotifier, Color?>
-    currentBannerColorProvider =
-    StateNotifierProvider.autoDispose<CurrentBannerColorNotifier, Color?>(
-  (AutoDisposeStateNotifierProviderRef<CurrentBannerColorNotifier, Color?>
-      ref) {
-    return ref.watch(homeBannerProvider).whenOrNull(
-              (List<HomeBannerCache> list) => CurrentBannerColorNotifier(
-                list.first.primaryColorValue.toColor,
-                colors: list.map((HomeBannerCache banner) =>
-                    banner.primaryColorValue.toColor),
-              ),
-            ) ??
-        CurrentBannerColorNotifier(null);
-  },
-);
+@riverpod
+class CurrentHomeBannerBackgroundColorValue
+    extends _$CurrentHomeBannerBackgroundColorValue {
+  late Iterable<int?>? colors;
 
-class CurrentBannerColorNotifier extends StateNotifier<Color?> {
-  CurrentBannerColorNotifier(
-    super.state, {
-    this.colors,
-  });
+  @override
+  int? build() {
+    final AsyncValue<List<HomeBannerCache>> homeBanner =
+        ref.watch(homeBannerProvider);
 
-  final Iterable<Color?>? colors;
+    colors = homeBanner.valueOrNull
+        ?.map((HomeBannerCache banner) => banner.primaryColorValue);
+
+    return colors?.first;
+  }
 
   void onPageChanged(int index) {
     state = colors?.elementAt(index);
   }
 }
 
-final AutoDisposeStateNotifierProvider<TopArticleNotifier,
-        ListViewState<ArticleModel>> homeTopArticleProvider =
-    StateNotifierProvider.autoDispose<TopArticleNotifier,
-        ListViewState<ArticleModel>>((_) {
-  return TopArticleNotifier(
-    const ListViewState<ArticleModel>.loading(),
-  );
-});
+@riverpod
+Future<List<ArticleModel>> homeTopArticles(HomeTopArticlesRef ref) {
+  final CancelToken cancelToken = ref.cancelToken();
 
-class TopArticleNotifier extends BaseListViewNotifier<ArticleModel> {
-  TopArticleNotifier(super.state);
-
-  @override
-  Future<List<ArticleModel>> loadData() {
-    return WanAndroidAPI.fetchHomeTopArticles();
-  }
+  return ref
+      .watch(networkProvider)
+      .fetchHomeTopArticles(cancelToken: cancelToken);
 }
 
 final AutoDisposeStateNotifierProvider<ArticleNotifier,
@@ -190,21 +171,26 @@ final AutoDisposeStateNotifierProvider<ArticleNotifier,
   (AutoDisposeStateNotifierProviderRef<ArticleNotifier,
           RefreshListViewState<ArticleModel>>
       ref) {
-    return ref.watch(homeTopArticleProvider).when(
-          (List<ArticleModel> list) => ArticleNotifier(
+    final CancelToken cancelToken = ref.cancelToken();
+
+    final Http http = ref.watch(networkProvider);
+
+    return ref.watch(homeTopArticlesProvider).when(
+          data: (List<ArticleModel> list) => ArticleNotifier(
             const RefreshListViewState<ArticleModel>.loading(),
             topArticles: list,
+            http: http,
+            cancelToken: cancelToken,
           )..initData(),
           loading: () => ArticleNotifier(
             const RefreshListViewState<ArticleModel>.loading(),
+            http: http,
+            cancelToken: cancelToken,
           ),
-          error: (int? statusCode, String? message, String? detail) =>
-              ArticleNotifier(
-            RefreshListViewState<ArticleModel>.error(
-              statusCode: statusCode,
-              message: message,
-              detail: detail,
-            ),
+          error: (Object e, StackTrace s) => ArticleNotifier(
+            RefreshListViewState<ArticleModel>.error(e, s),
+            http: http,
+            cancelToken: cancelToken,
           ),
         );
   },
@@ -216,21 +202,27 @@ class ArticleNotifier extends BaseRefreshListViewNotifier<ArticleModel>
   ArticleNotifier(
     super.state, {
     this.topArticles,
+    required this.http,
+    this.cancelToken,
   }) : super(initialPageNum: 0);
 
   final List<ArticleModel>? topArticles;
+
+  final Http http;
+
+  final CancelToken? cancelToken;
 
   @override
   Future<RefreshListViewStateData<ArticleModel>> loadData({
     required int pageNum,
     required int pageSize,
   }) async {
-    RefreshListViewStateData<ArticleModel> data =
-        (await WanAndroidAPI.fetchHomeArticles(
+    RefreshListViewStateData<ArticleModel> data = (await http.fetchHomeArticles(
       pageNum,
       pageSize,
+      cancelToken: cancelToken,
     ))
-            .toRefreshListViewStateData();
+        .toRefreshListViewStateData();
 
     if (pageNum == initialPageNum && topArticles != null) {
       data = data.copyWith(

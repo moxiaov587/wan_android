@@ -8,16 +8,8 @@ class ProjectTypeBottomSheet extends ConsumerStatefulWidget {
       _ProjectTypeBottomSheetState();
 }
 
-class _ProjectTypeBottomSheetState extends ConsumerState<ProjectTypeBottomSheet>
-    with
-        AutoDisposeListViewStateMixin<
-            AutoDisposeStateNotifierProvider<ProjectTypeNotifier,
-                ListViewState<ProjectTypeModel>>,
-            ProjectTypeModel,
-            ProjectTypeBottomSheet> {
-  @override
-  final bool autoInitData = false;
-
+class _ProjectTypeBottomSheetState
+    extends ConsumerState<ProjectTypeBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -35,8 +27,8 @@ class _ProjectTypeBottomSheetState extends ConsumerState<ProjectTypeBottomSheet>
           Expanded(
             child: Consumer(
               builder: (_, WidgetRef ref, __) {
-                return ref.watch(provider).when(
-                      (List<ProjectTypeModel> list) => ListView.builder(
+                return ref.watch(projectTypeProvider).when(
+                      data: (List<ProjectTypeModel> list) => ListView.builder(
                         prototypeItem: const ListTile(),
                         itemBuilder: (_, int index) {
                           final ProjectTypeModel projectType = list[index];
@@ -45,9 +37,9 @@ class _ProjectTypeBottomSheetState extends ConsumerState<ProjectTypeBottomSheet>
                             builder: (_, WidgetRef ref, Widget? title) {
                               final bool selected = ref.watch(
                                 currentProjectTypeProvider.select(
-                                  (ViewState<ProjectTypeModel> value) =>
+                                  (AsyncValue<ProjectTypeModel> value) =>
                                       value.whenOrNull(
-                                        (ProjectTypeModel?
+                                        data: (ProjectTypeModel
                                                 currentProjectType) =>
                                             currentProjectType == projectType,
                                       ) ??
@@ -63,7 +55,10 @@ class _ProjectTypeBottomSheetState extends ConsumerState<ProjectTypeBottomSheet>
                                       .read(
                                         currentProjectTypeProvider.notifier,
                                       )
-                                      .selected(projectType);
+                                      .update((_) =>
+                                          AsyncValue<ProjectTypeModel>.data(
+                                            projectType,
+                                          ));
 
                                   Navigator.of(context).maybePop();
                                 },
@@ -77,8 +72,14 @@ class _ProjectTypeBottomSheetState extends ConsumerState<ProjectTypeBottomSheet>
                         },
                         itemCount: list.length,
                       ),
-                      loading: loadingIndicatorBuilder,
-                      error: errorIndicatorBuilder,
+                      loading: () => const LoadingWidget(),
+                      error: (Object e, StackTrace s) =>
+                          CustomErrorWidget.withViewError(
+                        ViewError.create(e, s),
+                        onRetry: () {
+                          ref.invalidate(projectTypeProvider);
+                        },
+                      ),
                     );
               },
             ),
@@ -87,8 +88,4 @@ class _ProjectTypeBottomSheetState extends ConsumerState<ProjectTypeBottomSheet>
       ),
     );
   }
-
-  @override
-  AutoDisposeStateNotifierProvider<ProjectTypeNotifier,
-      ListViewState<ProjectTypeModel>> get provider => projectTypesProvider;
 }

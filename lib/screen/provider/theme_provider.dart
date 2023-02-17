@@ -1,7 +1,30 @@
-import 'package:flutter/material.dart' show Brightness, ThemeMode;
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+part of 'common_provider.dart';
 
-import '../../database/database_manager.dart';
+@Riverpod(keepAlive: true)
+class AppThemeMode extends _$AppThemeMode {
+  late Isar isar;
+
+  @override
+  ThemeMode build() {
+    isar = ref.read(appDatabaseProvider);
+
+    return isar.uniqueUserSettings?.themeMode ?? ThemeMode.system;
+  }
+
+  void switchThemeMode(ThemeMode themeMode) {
+    if (state == themeMode) {
+      return;
+    }
+
+    state = themeMode;
+
+    final UserSettings userSettings = isar.writeUniqueUserSettings(
+      themeMode: themeMode,
+    );
+
+    isar.writeTxnSync<int>(() => isar.userSettingsCache.putSync(userSettings));
+  }
+}
 
 extension ThemeModeExtension on ThemeMode {
   Brightness? get brightness {
@@ -13,32 +36,5 @@ extension ThemeModeExtension on ThemeMode {
       case ThemeMode.system:
         return null;
     }
-  }
-}
-
-final StateNotifierProvider<ThemeModeNotifier, ThemeMode> themeProvider =
-    StateNotifierProvider<ThemeModeNotifier, ThemeMode>((_) {
-  final ThemeMode? themeMode = DatabaseManager.uniqueUserSettings?.themeMode;
-
-  return ThemeModeNotifier(themeMode ?? ThemeMode.system);
-});
-
-class ThemeModeNotifier extends StateNotifier<ThemeMode> {
-  ThemeModeNotifier(super.state);
-
-  void switchThemeMode(ThemeMode themeMode) {
-    if (state == themeMode) {
-      return;
-    }
-
-    state = themeMode;
-
-    final UserSettings userSettings = DatabaseManager.writeUniqueUserSettings(
-      themeMode: themeMode,
-    );
-
-    DatabaseManager.isar.writeTxnSync<int>(
-      () => DatabaseManager.isar.userSettingsCache.putSync(userSettings),
-    );
   }
 }

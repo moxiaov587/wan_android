@@ -9,16 +9,15 @@ final AutoDisposeStateNotifierProvider<MyShareArticlesNotifier,
   (AutoDisposeStateNotifierProviderRef<MyShareArticlesNotifier,
           RefreshListViewState<ArticleModel>>
       ref) {
-    final CancelToken cancelToken = CancelToken();
+    final CancelToken cancelToken = ref.cancelToken();
 
-    ref.onDispose(() {
-      cancelToken.cancel();
-    });
+    final Http http = ref.watch(networkProvider);
 
     return MyShareArticlesNotifier(
       const RefreshListViewState<ArticleModel>.loading(),
+      http: http,
       cancelToken: cancelToken,
-    );
+    )..initData();
   },
   name: kMyShareProvider,
 );
@@ -27,8 +26,11 @@ class MyShareArticlesNotifier
     extends BaseRefreshListViewNotifier<ArticleModel> {
   MyShareArticlesNotifier(
     super.state, {
+    required this.http,
     this.cancelToken,
   });
+
+  final Http http;
 
   final CancelToken? cancelToken;
 
@@ -37,7 +39,7 @@ class MyShareArticlesNotifier
     required int pageNum,
     required int pageSize,
   }) async {
-    return (await WanAndroidAPI.fetchShareArticles(
+    return (await http.fetchShareArticles(
       pageNum,
       pageSize,
       cancelToken: cancelToken,
@@ -53,7 +55,7 @@ class MyShareArticlesNotifier
     try {
       DialogUtils.loading();
 
-      await WanAndroidAPI.addShareArticle(
+      await http.addShareArticle(
         title: title,
         link: link,
       );
@@ -62,7 +64,7 @@ class MyShareArticlesNotifier
 
       return true;
     } catch (e, s) {
-      DialogUtils.danger(getError(e, s).errorMessage(S.current.failed));
+      DialogUtils.danger(ViewError.create(e, s).errorMessage(S.current.failed));
 
       return false;
     } finally {
@@ -74,13 +76,13 @@ class MyShareArticlesNotifier
     required int articleId,
   }) async {
     try {
-      await WanAndroidAPI.deleteShareArticle(
+      await http.deleteShareArticle(
         articleId: articleId,
       );
 
       return true;
     } catch (e, s) {
-      DialogUtils.danger(getError(e, s).errorMessage(S.current.failed));
+      DialogUtils.danger(ViewError.create(e, s).errorMessage(S.current.failed));
 
       return false;
     }

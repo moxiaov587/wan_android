@@ -1,12 +1,13 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../app/provider/view_state.dart' show ModelToRefreshListData;
+import '../app/provider/view_state.dart' show RefreshListViewStateData;
 
 part 'article_model.dart';
 part 'banner_model.dart';
 part 'collected_article_model.dart';
 part 'collected_common_model.dart';
 part 'collected_website_model.dart';
+part 'pagination_data.dart';
 part 'points_model.dart';
 part 'project_type_model.dart';
 part 'search_keyword_model.dart';

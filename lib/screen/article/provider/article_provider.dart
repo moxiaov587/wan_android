@@ -1,9 +1,10 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../app/http/error_interceptor.dart' show AppException;
-import '../../../app/http/http.dart' show kDomain, kBaseUrl;
-import '../../../app/http/wan_android_api.dart';
+import '../../../app/http/http.dart';
+import '../../../app/http/interceptors/interceptors.dart' show AppException;
+
 import '../../../app/l10n/generated/l10n.dart';
 import '../../../app/provider/provider.dart';
 import '../../../app/provider/view_state.dart';
@@ -21,52 +22,27 @@ import '../../drawer/provider/drawer_provider.dart'
         kMyCollectedArticleProvider,
         kMyCollectedWebsiteProvider;
 
+part 'article_provider.g.dart';
+
 const List<String> collects = <String>[
   kMyCollectedArticleProvider,
   kMyCollectedWebsiteProvider,
 ];
 
-const List<String> allArticles = <String>[
-  ...collects,
-];
-
-final AutoDisposeStateNotifierProviderFamily<ArticleNotifier,
-        ViewState<WebViewModel>, int> articleProvider =
-    StateNotifierProvider.autoDispose
-        .family<ArticleNotifier, ViewState<WebViewModel>, int>((
-  AutoDisposeStateNotifierProviderRef<ArticleNotifier, ViewState<WebViewModel>>
-      ref,
-  int articleId,
-) {
-  return ArticleNotifier(
-    ref: ref,
-    providerContainer: ref.container,
-    id: articleId,
-  );
-});
-
-class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
-  ArticleNotifier({
-    required this.ref,
-    required this.providerContainer,
-    required this.id,
-  }) : super(const ViewState<WebViewModel>.loading());
-
-  final Ref ref;
-  final ProviderContainer providerContainer;
-  final int id;
-
+@riverpod
+class AppArticle extends _$AppArticle {
+  late Http http;
   late String from;
   late ProviderBase<dynamic> provider;
 
   Map<String, ProviderBase<dynamic>> getProvidersJson() =>
-      providerContainer.getAllProviderElements().fold(
+      ref.container.getAllProviderElements().fold(
         <String, ProviderBase<dynamic>>{},
         (
           Map<String, ProviderBase<dynamic>> previousValue,
           ProviderElementBase<dynamic> e,
         ) {
-          if (allArticles.contains(e.provider.name)) {
+          if (collects.contains(e.provider.name)) {
             return <String, ProviderBase<dynamic>>{
               ...previousValue,
               e.provider.name!: e.provider,
@@ -77,68 +53,14 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
         },
       );
 
-  WebViewModel? findCollectedArticle(
-    Map<String, ProviderBase<dynamic>> providers,
-  ) {
-    if (!providers.keys.contains(kMyCollectedArticleProvider)) {
-      return null;
-    }
-
-    from = kMyCollectedArticleProvider;
-    provider = providers[kMyCollectedArticleProvider]!;
-
-    final CollectedArticleModel? collectedArticle = ref
-        .read(provider
-            as ProviderBase<RefreshListViewState<CollectedArticleModel>>)
-        .whenOrNull((_, __, List<CollectedArticleModel> list) => list)
-        ?.firstWhereOrNull((CollectedArticleModel e) => e.id == id);
-
-    if (collectedArticle != null) {
-      return WebViewModel(
-        id: collectedArticle.id,
-        link: collectedArticle.link.startsWith('http')
-            ? collectedArticle.link
-            : 'https://${collectedArticle.link}',
-        originId: collectedArticle.originId,
-        title: collectedArticle.title,
-        collect: collectedArticle.collect,
-      );
-    }
-
-    return null;
-  }
-
-  Future<void> collectCollectedArticle(
-    WebViewModel webView, {
-    required bool value,
-  }) async {
-    final AutoDisposeStateNotifierProvider<MyCollectedArticleNotifier,
-            RefreshListViewState<CollectedArticleModel>> realProvider =
-        provider as AutoDisposeStateNotifierProvider<MyCollectedArticleNotifier,
-            RefreshListViewState<CollectedArticleModel>>;
-    if (value) {
-      await WanAndroidAPI.addCollectedArticleByArticleId(
-        articleId: id,
-      );
-    } else {
-      ref.read(realProvider.notifier).requestCancelCollect(
-            collectId: id,
-            articleId: webView.originId,
-          );
-    }
-    ref.read(realProvider.notifier).switchCollect(
-          id,
-          changedValue: value,
-        );
-  }
-
   /// [kMyCollectedArticleProvider] and [kMyCollectedWebsiteProvider] is
   /// autoDispose provider, So if they exist, it can be considered to be
   /// currently in the [MyCollectionsScreen]
   /// that is, they can be searched first from them
   WebViewModel? findCollectedWebsite(
-    Map<String, ProviderBase<dynamic>> providers,
-  ) {
+    Map<String, ProviderBase<dynamic>> providers, {
+    required int articleId,
+  }) {
     if (!providers.keys.contains(kMyCollectedWebsiteProvider)) {
       return null;
     }
@@ -149,7 +71,7 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
     final CollectedWebsiteModel? collectedWebsite = ref
         .read(provider as ProviderBase<ListViewState<CollectedWebsiteModel>>)
         .whenOrNull((List<CollectedWebsiteModel> list) => list)
-        ?.firstWhereOrNull((CollectedWebsiteModel e) => e.id == id);
+        ?.firstWhereOrNull((CollectedWebsiteModel e) => e.id == articleId);
 
     if (collectedWebsite != null) {
       return WebViewModel(
@@ -169,40 +91,51 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
     return null;
   }
 
-  Future<void> collectCollectedWebsite(
-    WebViewModel webView, {
-    required bool value,
-  }) async {
-    final AutoDisposeStateNotifierProvider<MyCollectedWebsiteNotifier,
-            ListViewState<CollectedWebsiteModel>> realProvider =
-        provider as AutoDisposeStateNotifierProvider<MyCollectedWebsiteNotifier,
-            ListViewState<CollectedWebsiteModel>>;
-    if (value) {
-      final CollectedWebsiteModel? newCollectedWebsite =
-          await ref.read(realProvider.notifier).add(
-                title: webView.title ?? '',
-                link: webView.link,
-                needLoading: false,
-              );
-
-      if (newCollectedWebsite != null) {
-        state = ViewStateData<WebViewModel>(
-          value: webView.copyWith(
-            id: newCollectedWebsite.id,
-            collect: true,
-          ),
-        );
-      }
-    } else {
-      await ref
-          .read(realProvider.notifier)
-          .requestCancelCollect(collectId: webView.id);
+  WebViewModel? findCollectedArticle(
+    Map<String, ProviderBase<dynamic>> providers, {
+    required int articleId,
+  }) {
+    if (!providers.keys.contains(kMyCollectedArticleProvider)) {
+      return null;
     }
 
-    ref.read(realProvider.notifier).switchCollect(
-          id,
-          changedValue: value,
-        );
+    from = kMyCollectedArticleProvider;
+    provider = providers[kMyCollectedArticleProvider]!;
+
+    final CollectedArticleModel? collectedArticle = ref
+        .read(provider
+            as ProviderBase<RefreshListViewState<CollectedArticleModel>>)
+        .whenOrNull((_, __, List<CollectedArticleModel> list) => list)
+        ?.firstWhereOrNull((CollectedArticleModel e) => e.id == articleId);
+
+    if (collectedArticle != null) {
+      return WebViewModel(
+        id: collectedArticle.id,
+        link: collectedArticle.link.startsWith('http')
+            ? collectedArticle.link
+            : 'https://${collectedArticle.link}',
+        originId: collectedArticle.originId,
+        title: collectedArticle.title,
+        collect: collectedArticle.collect,
+      );
+    }
+
+    return null;
+  }
+
+  Future<WebViewModel?> findArticle(int id) async {
+    final ArticleModel? article = await http.fetchArticleInfo(articleId: id);
+
+    if (article != null) {
+      return WebViewModel(
+        id: article.id,
+        link: _adjustArticleURL2Https(article.link),
+        title: article.title,
+        collect: article.collect,
+      );
+    }
+
+    return null;
   }
 
   String _adjustArticleURL2Https(String link) {
@@ -220,41 +153,16 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
     return link;
   }
 
-  Future<WebViewModel?> findArticle() async {
-    final ArticleModel? article =
-        await WanAndroidAPI.fetchArticleInfo(articleId: id);
-
-    if (article != null) {
-      return WebViewModel(
-        id: article.id,
-        link: _adjustArticleURL2Https(article.link),
-        title: article.title,
-        collect: article.collect,
-      );
-    }
-
-    return null;
-  }
-
-  Future<void> collectArticle({
-    required bool value,
-  }) async {
-    if (value) {
-      await WanAndroidAPI.addCollectedArticleByArticleId(articleId: id);
-    } else {
-      await WanAndroidAPI.deleteCollectedArticleByArticleId(
-        articleId: id,
-      );
-    }
-  }
-
   @override
-  Future<WebViewModel?> loadData() async {
+  Future<WebViewModel> build(int articleId) async {
+    http = ref.watch(networkProvider);
+
     final Map<String, ProviderBase<dynamic>> providers = getProvidersJson();
 
-    final WebViewModel? webViewModel = findCollectedWebsite(providers) ??
-        findCollectedArticle(providers) ??
-        await findArticle();
+    final WebViewModel? webViewModel =
+        findCollectedWebsite(providers, articleId: articleId) ??
+            findCollectedArticle(providers, articleId: articleId) ??
+            await findArticle(articleId);
 
     if (webViewModel != null) {
       return webViewModel.copyWith(
@@ -269,14 +177,75 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
     }
   }
 
+  Future<void> collectCollectedArticle(
+    WebViewModel webView, {
+    required bool value,
+  }) async {
+    final AutoDisposeStateNotifierProvider<MyCollectedArticleNotifier,
+            RefreshListViewState<CollectedArticleModel>> realProvider =
+        provider as AutoDisposeStateNotifierProvider<MyCollectedArticleNotifier,
+            RefreshListViewState<CollectedArticleModel>>;
+    if (value) {
+      await http.addCollectedArticleByArticleId(articleId: webView.id);
+    } else {
+      ref.read(realProvider.notifier).requestCancelCollect(
+            collectId: webView.id,
+            articleId: webView.originId,
+          );
+    }
+    ref
+        .read(realProvider.notifier)
+        .switchCollect(webView.id, changedValue: value);
+  }
+
+  Future<void> collectCollectedWebsite(
+    WebViewModel webView, {
+    required bool value,
+  }) async {
+    final AutoDisposeStateNotifierProvider<MyCollectedWebsiteNotifier,
+            ListViewState<CollectedWebsiteModel>> realProvider =
+        provider as AutoDisposeStateNotifierProvider<MyCollectedWebsiteNotifier,
+            ListViewState<CollectedWebsiteModel>>;
+    if (value) {
+      final CollectedWebsiteModel? newCollectedWebsite =
+          await ref.read(realProvider.notifier).add(
+                title: webView.title ?? '',
+                link: webView.link,
+                needLoading: false,
+              );
+
+      if (newCollectedWebsite != null) {
+        state = AsyncValue<WebViewModel>.data(webView.copyWith(
+          id: newCollectedWebsite.id,
+          collect: true,
+        ));
+      }
+    } else {
+      await ref
+          .read(realProvider.notifier)
+          .requestCancelCollect(collectId: webView.id);
+    }
+
+    ref
+        .read(realProvider.notifier)
+        .switchCollect(webView.id, changedValue: value);
+  }
+
+  Future<void> collectArticle({
+    required bool value,
+    required int id,
+  }) async {
+    if (value) {
+      await http.addCollectedArticleByArticleId(articleId: id);
+    } else {
+      await http.deleteCollectedArticleByArticleId(articleId: id);
+    }
+  }
+
   void collect(bool value) {
-    state.whenOrNull((WebViewModel? webView) async {
+    state.whenOrNull(data: (WebViewModel? webView) async {
       if (webView != null) {
-        state = ViewStateData<WebViewModel>(
-          value: webView.copyWith(
-            collect: value,
-          ),
-        );
+        state = AsyncValue<WebViewModel>.data(webView.copyWith(collect: value));
         try {
           if (webView.originId != null) {
             /// from MyCollectionsScreen
@@ -290,10 +259,12 @@ class ArticleNotifier extends BaseViewNotifier<WebViewModel> {
           } else {
             /// from other article screen
             /// eg. HomeArticleScreen, SearchScreen
-            await collectArticle(value: value);
+            await collectArticle(value: value, id: webView.id);
           }
         } catch (e, s) {
-          DialogUtils.danger(getError(e, s).errorMessage(S.current.failed));
+          DialogUtils.danger(
+            ViewError.create(e, s).errorMessage(S.current.failed),
+          );
         }
       }
     });

@@ -18,16 +18,15 @@ final AutoDisposeStateNotifierProvider<MyCollectedArticleNotifier,
   (AutoDisposeStateNotifierProviderRef<MyCollectedArticleNotifier,
           RefreshListViewState<CollectedArticleModel>>
       ref) {
-    final CancelToken cancelToken = CancelToken();
+    final CancelToken cancelToken = ref.cancelToken();
 
-    ref.onDispose(() {
-      cancelToken.cancel();
-    });
+    final Http http = ref.watch(networkProvider);
 
     return MyCollectedArticleNotifier(
       const RefreshListViewState<CollectedArticleModel>.loading(),
+      http: http,
       cancelToken: cancelToken,
-    );
+    )..initData();
   },
   name: kMyCollectedArticleProvider,
 );
@@ -36,10 +35,10 @@ class MyCollectedArticleNotifier
     extends BaseRefreshListViewNotifier<CollectedArticleModel> {
   MyCollectedArticleNotifier(
     super.state, {
+    required this.http,
     this.cancelToken,
-  }) : super(
-          initialPageNum: 0,
-        );
+  }) : super(initialPageNum: 0);
+  final Http http;
 
   final CancelToken? cancelToken;
 
@@ -48,7 +47,7 @@ class MyCollectedArticleNotifier
     required int pageNum,
     required int pageSize,
   }) async {
-    return (await WanAndroidAPI.fetchCollectedArticles(
+    return (await http.fetchCollectedArticles(
       pageNum,
       pageSize,
       cancelToken: cancelToken,
@@ -64,8 +63,7 @@ class MyCollectedArticleNotifier
     try {
       DialogUtils.loading();
 
-      final CollectedArticleModel? data =
-          await WanAndroidAPI.addCollectedArticle(
+      final CollectedArticleModel? data = await http.addCollectedArticle(
         title: title,
         author: author,
         link: link,
@@ -81,7 +79,7 @@ class MyCollectedArticleNotifier
         return false;
       }
     } catch (e, s) {
-      DialogUtils.danger(getError(e, s).errorMessage(S.current.failed));
+      DialogUtils.danger(ViewError.create(e, s).errorMessage(S.current.failed));
 
       return false;
     } finally {
@@ -103,7 +101,7 @@ class MyCollectedArticleNotifier
           try {
             DialogUtils.loading();
 
-            await WanAndroidAPI.updateCollectedArticle(
+            await http.updateCollectedArticle(
               id: collectId,
               title: title,
               author: author,
@@ -128,7 +126,9 @@ class MyCollectedArticleNotifier
 
             return true;
           } catch (e, s) {
-            DialogUtils.danger(getError(e, s).errorMessage(S.current.failed));
+            DialogUtils.danger(
+              ViewError.create(e, s).errorMessage(S.current.failed),
+            );
 
             return false;
           } finally {
@@ -143,14 +143,14 @@ class MyCollectedArticleNotifier
     required int? articleId,
   }) async {
     try {
-      await WanAndroidAPI.deleteCollectedArticleByCollectId(
+      await http.deleteCollectedArticleByCollectId(
         collectId: collectId,
         articleId: articleId,
       );
 
       return true;
     } catch (e, s) {
-      DialogUtils.danger(getError(e, s).errorMessage(S.current.failed));
+      DialogUtils.danger(ViewError.create(e, s).errorMessage(S.current.failed));
 
       return false;
     }
@@ -217,16 +217,15 @@ final AutoDisposeStateNotifierProvider<MyCollectedWebsiteNotifier,
   (AutoDisposeStateNotifierProviderRef<MyCollectedWebsiteNotifier,
           ListViewState<CollectedWebsiteModel>>
       ref) {
-    final CancelToken cancelToken = CancelToken();
+    final CancelToken cancelToken = ref.cancelToken();
 
-    ref.onDispose(() {
-      cancelToken.cancel();
-    });
+    final Http http = ref.watch(networkProvider);
 
     return MyCollectedWebsiteNotifier(
       const ListViewState<CollectedWebsiteModel>.loading(),
+      http: http,
       cancelToken: cancelToken,
-    );
+    )..initData();
   },
   name: kMyCollectedWebsiteProvider,
 );
@@ -235,14 +234,16 @@ class MyCollectedWebsiteNotifier
     extends BaseListViewNotifier<CollectedWebsiteModel> {
   MyCollectedWebsiteNotifier(
     super.state, {
+    required this.http,
     this.cancelToken,
   });
+  final Http http;
 
   final CancelToken? cancelToken;
 
   @override
   Future<List<CollectedWebsiteModel>> loadData() {
-    return WanAndroidAPI.fetchCollectedWebsites();
+    return http.fetchCollectedWebsites();
   }
 
   Future<CollectedWebsiteModel?> add({
@@ -255,8 +256,7 @@ class MyCollectedWebsiteNotifier
         DialogUtils.loading();
       }
 
-      final CollectedWebsiteModel? data =
-          await WanAndroidAPI.addCollectedWebsite(
+      final CollectedWebsiteModel? data = await http.addCollectedWebsite(
         title: title,
         link: link,
       );
@@ -269,7 +269,7 @@ class MyCollectedWebsiteNotifier
 
       return data;
     } catch (e, s) {
-      DialogUtils.danger(getError(e, s).errorMessage(S.current.failed));
+      DialogUtils.danger(ViewError.create(e, s).errorMessage(S.current.failed));
 
       return null;
     } finally {
@@ -289,7 +289,7 @@ class MyCollectedWebsiteNotifier
             try {
               DialogUtils.loading();
 
-              await WanAndroidAPI.updateCollectedWebsite(
+              await http.updateCollectedWebsite(
                 id: collectId,
                 title: title,
                 link: link,
@@ -299,10 +299,7 @@ class MyCollectedWebsiteNotifier
                 list: list
                     .map(
                       (CollectedWebsiteModel website) => website.id == collectId
-                          ? website.copyWith(
-                              name: title,
-                              link: link,
-                            )
+                          ? website.copyWith(name: title, link: link)
                           : website,
                     )
                     .toList(),
@@ -310,7 +307,9 @@ class MyCollectedWebsiteNotifier
 
               return true;
             } catch (e, s) {
-              DialogUtils.danger(getError(e, s).errorMessage(S.current.failed));
+              DialogUtils.danger(
+                ViewError.create(e, s).errorMessage(S.current.failed),
+              );
 
               return false;
             } finally {
@@ -321,17 +320,13 @@ class MyCollectedWebsiteNotifier
         false;
   }
 
-  Future<bool> requestCancelCollect({
-    required int collectId,
-  }) async {
+  Future<bool> requestCancelCollect({required int collectId}) async {
     try {
-      await WanAndroidAPI.deleteCollectedWebsite(
-        id: collectId,
-      );
+      await http.deleteCollectedWebsite(id: collectId);
 
       return true;
     } catch (e, s) {
-      DialogUtils.danger(getError(e, s).errorMessage(S.current.failed));
+      DialogUtils.danger(ViewError.create(e, s).errorMessage(S.current.failed));
 
       return false;
     }
@@ -343,16 +338,13 @@ class MyCollectedWebsiteNotifier
     bool triggerCompleteCallback = false,
   }) {
     state.whenOrNull((List<CollectedWebsiteModel> list) {
-      final List<CollectedWebsiteModel> changedList = list
-          .map((CollectedWebsiteModel collectedWebsite) =>
-              collectedWebsite.id == id
-                  ? collectedWebsite.copyWith(
-                      collect: changedValue,
-                    )
-                  : collectedWebsite)
-          .toList();
       state = ListViewStateData<CollectedWebsiteModel>(
-        list: changedList,
+        list: list
+            .map((CollectedWebsiteModel collectedWebsite) =>
+                collectedWebsite.id == id
+                    ? collectedWebsite.copyWith(collect: changedValue)
+                    : collectedWebsite)
+            .toList(),
       );
 
       if (triggerCompleteCallback) {
@@ -372,61 +364,25 @@ class MyCollectedWebsiteNotifier
   }
 }
 
-class CollectionTypeModel {
-  const CollectionTypeModel({
-    required this.type,
-    required this.id,
-  });
-
-  final CollectionType type;
-  final int? id;
-}
-
-final AutoDisposeStateNotifierProviderFamily<CollectedNotifier,
-        ViewState<CollectedCommonModel>, CollectionTypeModel>
-    collectedModelProvider = StateNotifierProvider.autoDispose.family<
-        CollectedNotifier,
-        ViewState<CollectedCommonModel>,
-        CollectionTypeModel>((
-  AutoDisposeStateNotifierProviderRef<CollectedNotifier,
-          ViewState<CollectedCommonModel>>
-      ref,
-  CollectionTypeModel typeModel,
-) {
-  return CollectedNotifier(
-    const ViewState<CollectedCommonModel>.loading(),
-    ref: ref,
-    typeModel: typeModel,
-  );
-});
-
-class CollectedNotifier extends BaseViewNotifier<CollectedCommonModel> {
-  CollectedNotifier(
-    super.state, {
-    required this.ref,
-    required this.typeModel,
-  });
-
-  final AutoDisposeStateNotifierProviderRef<CollectedNotifier,
-      ViewState<CollectedCommonModel>> ref;
-  final CollectionTypeModel typeModel;
-
+@riverpod
+class HandleCollected extends _$HandleCollected {
   @override
-  Future<CollectedCommonModel?> loadData() async {
+  CollectedCommonModel? build({required CollectionType type, int? id}) {
     CollectedCommonModel? model;
 
-    if (typeModel.id == null) {
+    if (id == null) {
       return model;
     }
 
-    switch (typeModel.type) {
+    switch (type) {
       case CollectionType.article:
         final CollectedArticleModel? articleModel = ref
             .read(myCollectedArticleProvider)
             .whenOrNull<CollectedArticleModel?>(
               (_, __, List<CollectedArticleModel> list) =>
-                  list.firstWhereOrNull((CollectedArticleModel article) =>
-                      article.id == typeModel.id),
+                  list.firstWhereOrNull(
+                (CollectedArticleModel article) => article.id == id,
+              ),
             );
 
         if (articleModel != null) {
@@ -443,7 +399,7 @@ class CollectedNotifier extends BaseViewNotifier<CollectedCommonModel> {
             .read(myCollectedWebsiteProvider)
             .whenOrNull<CollectedWebsiteModel?>(
               (List<CollectedWebsiteModel> list) => list.firstWhereOrNull(
-                (CollectedWebsiteModel website) => website.id == typeModel.id,
+                (CollectedWebsiteModel website) => website.id == id,
               ),
             );
 

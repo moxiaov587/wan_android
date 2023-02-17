@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../extensions/extensions.dart' show BuildContextExtension;
 import '../app/l10n/generated/l10n.dart';
+import '../app/provider/provider.dart';
 import '../app/theme/app_theme.dart';
 import '../contacts/assets.dart';
 import 'gap.dart';

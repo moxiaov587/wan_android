@@ -35,12 +35,9 @@ class _HandleCollectedBottomSheetState
 
   late final FocusNode _authorFocusNode;
 
-  late AutoDisposeStateNotifierProvider<CollectedNotifier,
-      ViewState<CollectedCommonModel>> provider = collectedModelProvider(
-    CollectionTypeModel(
-      type: widget.type,
-      id: widget.collectId,
-    ),
+  late final HandleCollectedProvider provider = handleCollectedProvider(
+    type: widget.type,
+    id: widget.collectId,
   );
 
   @override
@@ -52,7 +49,17 @@ class _HandleCollectedBottomSheetState
       _authorFocusNode = FocusNode();
     }
 
-    initData();
+    final CollectedCommonModel? collect = ref.read(provider);
+    if (collect != null) {
+      _titleTextEditingController.text = collect.title;
+      _linkTextEditingController.text = collect.link;
+
+      if (widget.isArticles) {
+        _authorTextEditingController.text = collect.author ?? '';
+      }
+    }
+
+    _titleFocusNode.requestFocus();
   }
 
   @override
@@ -69,23 +76,6 @@ class _HandleCollectedBottomSheetState
       _authorFocusNode.dispose();
     }
     super.dispose();
-  }
-
-  Future<void> initData() async {
-    await ref.read(provider.notifier).initData();
-
-    ref.read(provider).whenOrNull((CollectedCommonModel? collect) {
-      if (collect != null) {
-        _titleTextEditingController.text = collect.title;
-        _linkTextEditingController.text = collect.link;
-
-        if (widget.isArticles) {
-          _authorTextEditingController.text = collect.author ?? '';
-        }
-      }
-    });
-
-    _titleFocusNode.requestFocus();
   }
 
   Future<void> onSubmitted({
@@ -136,151 +126,156 @@ class _HandleCollectedBottomSheetState
   Widget build(BuildContext context) {
     return Material(
       color: context.theme.listTileTheme.tileColor,
-      child: ref.watch(provider).when(
-            (CollectedCommonModel? collect) => Form(
-              key: _formKey,
-              child: CustomScrollView(
-                slivers: <Widget>[
-                  SliverPadding(
-                    padding: AppTheme.contentPadding.copyWith(bottom: 0),
-                    sliver: SliverToBoxAdapter(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          TextButton(
-                            style: ButtonStyle(
-                              textStyle: MaterialStateProperty.all(
-                                context.theme.textTheme.titleMedium,
-                              ),
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).maybePop();
-                            },
-                            child: Text(S.of(context).cancel),
-                          ),
-                          TextButton(
-                            style: ButtonStyle(
-                              textStyle: MaterialStateProperty.all(context
-                                  .theme.textTheme.titleMedium!.semiBold),
-                            ),
-                            onPressed: () {
-                              onSubmitted(
-                                isEdit: collect != null,
-                                collectId: collect?.id,
-                              );
-                            },
-                            child: Text(collect != null
-                                ? S.of(context).save
-                                : S.of(context).add),
-                          ),
-                        ],
+      child: Form(
+        key: _formKey,
+        child: CustomScrollView(
+          slivers: <Widget>[
+            SliverPadding(
+              padding: AppTheme.contentPadding.copyWith(bottom: 0),
+              sliver: SliverToBoxAdapter(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    TextButton(
+                      style: ButtonStyle(
+                        textStyle: MaterialStateProperty.all(
+                          context.theme.textTheme.titleMedium,
+                        ),
                       ),
+                      onPressed: () {
+                        Navigator.of(context).maybePop();
+                      },
+                      child: Text(S.of(context).cancel),
                     ),
-                  ),
-                  SliverPadding(
-                    padding: AppTheme.bodyPadding,
-                    sliver: SliverList(
-                      delegate: SliverChildListDelegate(
-                        <Widget>[
-                          Text(
-                            collect != null
-                                ? S.of(context).editCollected(S
-                                    .of(context)
-                                    .collectionType(widget.type.name))
-                                : S.of(context).addCollected(S
-                                    .of(context)
-                                    .collectionType(widget.type.name)),
-                            style: context.theme.textTheme.titleLarge,
-                            textAlign: TextAlign.center,
-                          ),
-                          Gap(
-                            value: 24.0,
-                          ),
-                          CustomTextFormField(
-                            controller: _titleTextEditingController,
-                            focusNode: _titleFocusNode,
-                            textInputAction: TextInputAction.next,
-                            decoration: InputDecoration(
-                              labelText: S.of(context).title,
-                            ),
-                            validator: (String? value) {
-                              if (value == null || value.isEmpty) {
-                                return S.of(context).titleEmptyTips;
-                              }
+                    Consumer(
+                      builder: (_, WidgetRef ref, __) {
+                        final CollectedCommonModel? collect =
+                            ref.read(provider);
 
-                              return null;
-                            },
-                            onEditingComplete: () {
-                              if (widget.isArticles) {
-                                _authorFocusNode.requestFocus();
-                              } else {
-                                _linkFocusNode.requestFocus();
-                              }
-                            },
-                          ),
-                          Gap(
-                            size: GapSize.big,
-                          ),
-                          if (widget.isArticles)
-                            CustomTextFormField(
-                              controller: _authorTextEditingController,
-                              focusNode: _authorFocusNode,
-                              textInputAction: TextInputAction.next,
-                              decoration: InputDecoration(
-                                labelText: S.of(context).author,
-                              ),
-                              validator: (String? value) {
-                                if (value == null || value.isEmpty) {
-                                  return S.of(context).authorEmptyTips;
-                                }
-
-                                return null;
-                              },
-                              onEditingComplete: () {
-                                _linkFocusNode.requestFocus();
-                              },
+                        return TextButton(
+                          style: ButtonStyle(
+                            textStyle: MaterialStateProperty.all(
+                              context.theme.textTheme.titleMedium!.semiBold,
                             ),
-                          if (widget.isArticles)
-                            Gap(
-                              size: GapSize.big,
-                            ),
-                          CustomTextFormField(
-                            controller: _linkTextEditingController,
-                            focusNode: _linkFocusNode,
-                            textInputAction: TextInputAction.done,
-                            decoration: InputDecoration(
-                              labelText: S.of(context).link,
-                            ),
-                            validator: (String? value) {
-                              if (value.strictValue == null) {
-                                return S.of(context).linkEmptyTips;
-                              }
-
-                              return RegExp(
-                                r'^(((ht|f)tps?):\/\/)?[\w-]+(\.[\w-]+)+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$',
-                              ).hasMatch(value!)
-                                  ? null
-                                  : S.of(context).linkFormatTips;
-                            },
-                            onEditingComplete: () {
-                              _linkFocusNode.unfocus();
-                            },
                           ),
-                        ],
-                      ),
+                          onPressed: () {
+                            onSubmitted(
+                              isEdit: collect != null,
+                              collectId: collect?.id,
+                            );
+                          },
+                          child: Text(collect != null
+                              ? S.of(context).save
+                              : S.of(context).add),
+                        );
+                      },
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-            loading: () => const LoadingWidget(),
-            error: (int? statusCode, String? message, String? detail) =>
-                CustomErrorWidget(
-              statusCode: statusCode,
-              message: message,
-              detail: detail,
+            SliverPadding(
+              padding: AppTheme.bodyPadding,
+              sliver: SliverList(
+                delegate: SliverChildListDelegate(
+                  <Widget>[
+                    Consumer(
+                      builder: (_, WidgetRef ref, __) => Text(
+                        ref.read(provider) != null
+                            ? S.of(context).editCollected(
+                                  S
+                                      .of(context)
+                                      .collectionType(widget.type.name),
+                                )
+                            : S.of(context).addCollected(
+                                  S
+                                      .of(context)
+                                      .collectionType(widget.type.name),
+                                ),
+                        style: context.theme.textTheme.titleLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Gap(
+                      value: 24.0,
+                    ),
+                    CustomTextFormField(
+                      controller: _titleTextEditingController,
+                      focusNode: _titleFocusNode,
+                      textInputAction: TextInputAction.next,
+                      decoration: InputDecoration(
+                        labelText: S.of(context).title,
+                      ),
+                      validator: (String? value) {
+                        if (value == null || value.isEmpty) {
+                          return S.of(context).titleEmptyTips;
+                        }
+
+                        return null;
+                      },
+                      onEditingComplete: () {
+                        if (widget.isArticles) {
+                          _authorFocusNode.requestFocus();
+                        } else {
+                          _linkFocusNode.requestFocus();
+                        }
+                      },
+                    ),
+                    Gap(
+                      size: GapSize.big,
+                    ),
+                    if (widget.isArticles)
+                      CustomTextFormField(
+                        controller: _authorTextEditingController,
+                        focusNode: _authorFocusNode,
+                        textInputAction: TextInputAction.next,
+                        decoration: InputDecoration(
+                          labelText: S.of(context).author,
+                        ),
+                        validator: (String? value) {
+                          if (value == null || value.isEmpty) {
+                            return S.of(context).authorEmptyTips;
+                          }
+
+                          return null;
+                        },
+                        onEditingComplete: () {
+                          _linkFocusNode.requestFocus();
+                        },
+                      ),
+                    if (widget.isArticles)
+                      Gap(
+                        size: GapSize.big,
+                      ),
+                    CustomTextFormField(
+                      controller: _linkTextEditingController,
+                      focusNode: _linkFocusNode,
+                      textInputAction: TextInputAction.done,
+                      decoration: InputDecoration(
+                        labelText: S.of(context).link,
+                      ),
+                      validator: (String? value) {
+                        if (value.strictValue == null) {
+                          return S.of(context).linkEmptyTips;
+                        }
+
+                        return RegExp(
+                          r'^(((ht|f)tps?):\/\/)?[\w-]+(\.[\w-]+)+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$',
+                        ).hasMatch(value!)
+                            ? null
+                            : S.of(context).linkFormatTips;
+                      },
+                      onEditingComplete: () {
+                        _linkFocusNode.unfocus();
+                      },
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
+          ],
+        ),
+      ),
     );
   }
 }

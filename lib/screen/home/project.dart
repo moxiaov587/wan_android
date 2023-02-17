@@ -16,23 +16,12 @@ class _ProjectState extends ConsumerState<_Project>
             ArticleModel,
             _Project> {
   @override
-  final bool autoInitData = false;
-
-  @override
   void onRetry() {
-    if (ref.read(projectTypesProvider)
-        is ListViewStateError<ProjectTypeModel>) {
-      ref.read(projectTypesProvider.notifier).initData();
+    if (ref.read(projectTypeProvider).hasError) {
+      ref.invalidate(projectTypeProvider);
     } else {
       super.onRetry();
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    ref.read(projectTypesProvider.notifier).initData();
   }
 
   @override
@@ -129,29 +118,26 @@ class _ProjectTypeSwitchExtentProtoType extends ConsumerWidget {
               return CapsuleInk(
                 color: theme.cardColor,
                 onTap: ref.watch(currentProjectTypeProvider).when(
-                      (ProjectTypeModel? value) => () {
-                        // AppRouterDelegate.instance.currentBeamState.updateWith(
-                        //   showProjectTypeBottomSheet: true,
-                        // );
+                      data: (ProjectTypeModel value) => () {
                         const ProjectTypeRoute().push(context);
                       },
                       loading: () => null,
-                      error: (_, __, ___) => () {
-                        ref.read(projectTypesProvider.notifier).refresh();
+                      error: (_, __) => () {
+                        ref.invalidate(projectTypeProvider);
                       },
                     ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: ref.watch(currentProjectTypeProvider).when(
-                        (ProjectTypeModel? value) => <Widget>[
-                          Text(value!.name),
+                        data: (ProjectTypeModel value) => <Widget>[
+                          Text(value.name),
                         ],
                         loading: () => const <Widget>[
                           LoadingWidget(
                             radius: 5.0,
                           ),
                         ],
-                        error: (_, __, ___) => <Widget>[
+                        error: (_, __) => <Widget>[
                           const Icon(
                             IconFontIcons.refreshLine,
                             size: 14.0,

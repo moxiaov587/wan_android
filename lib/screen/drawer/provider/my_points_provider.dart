@@ -6,24 +6,26 @@ final AutoDisposeStateNotifierProvider<UserPointsRecordNotifier,
         RefreshListViewState<PointsModel>>((AutoDisposeStateNotifierProviderRef<
             UserPointsRecordNotifier, RefreshListViewState<PointsModel>>
         ref) {
-  final CancelToken cancelToken = CancelToken();
+  final CancelToken cancelToken = ref.cancelToken();
 
-  ref.onDispose(() {
-    cancelToken.cancel();
-  });
+  final Http http = ref.watch(networkProvider);
 
   return UserPointsRecordNotifier(
     const RefreshListViewState<PointsModel>.loading(),
+    http: http,
     cancelToken: cancelToken,
-  );
+  )..initData();
 });
 
 class UserPointsRecordNotifier
     extends BaseRefreshListViewNotifier<PointsModel> {
   UserPointsRecordNotifier(
     super.state, {
+    required this.http,
     this.cancelToken,
   });
+
+  final Http http;
 
   final CancelToken? cancelToken;
 
@@ -32,7 +34,7 @@ class UserPointsRecordNotifier
     required int pageNum,
     required int pageSize,
   }) async {
-    return (await WanAndroidAPI.fetchUserPointsRecord(
+    return (await http.fetchUserPointsRecord(
       pageNum,
       pageSize,
       cancelToken: cancelToken,

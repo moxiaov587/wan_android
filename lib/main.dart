@@ -1,4 +1,5 @@
 import 'dart:async' show StreamSubscription, FutureOr;
+import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart'
     show ConnectivityResult;
@@ -10,17 +11,18 @@ import 'package:flutter_native_splash/flutter_native_splash.dart'
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:flutter_web_plugins/url_strategy.dart' show usePathUrlStrategy;
+import 'package:path_provider/path_provider.dart';
 
 import 'app/http/http.dart';
 import 'app/l10n/generated/l10n.dart';
+import 'app/provider/provider.dart';
 import 'app/theme/app_theme.dart' show AppTextTheme, AppTheme;
-import 'database/database_manager.dart';
+import 'database/app_database.dart';
 import 'extensions/extensions.dart' show BuildContextExtension;
+import 'model/models.dart';
 import 'router/app_router.dart';
 import 'screen/authorized/provider/authorized_provider.dart';
-import 'screen/provider/connectivity_provider.dart';
-import 'screen/provider/locale_provider.dart';
-import 'screen/provider/theme_provider.dart';
+import 'screen/provider/common_provider.dart';
 import 'utils/dialog_utils.dart';
 
 Future<void> main() async {
@@ -28,28 +30,29 @@ Future<void> main() async {
       WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  final ProviderContainer providerContainer = ProviderContainer();
+  final List<dynamic> state = await Future.wait<dynamic>(
+    <Future<dynamic>>[getTemporaryDirectory(), openIsar()],
+  );
 
-  await Future.wait(<Future<void>>[
-    DatabaseManager.openIsar(),
-    Http.initConfig(providerContainer: providerContainer),
-  ]);
+  final Directory temporaryDirectory = state.first as Directory;
+  final Isar isar = state.last as Isar;
 
   // turn off the # in the URLs on the web
   usePathUrlStrategy();
 
   SystemChrome.setSystemUIOverlayStyle(
-    (DatabaseManager.uniqueUserSettings?.themeMode?.brightness ??
+    (isar.uniqueUserSettings?.themeMode?.brightness ??
                 widgetsBinding.window.platformBrightness) ==
             ThemeMode.dark
         ? AppTheme.dark.appBarTheme.systemOverlayStyle!
         : AppTheme.light.appBarTheme.systemOverlayStyle!,
   );
 
-  AppRouter.instance.initRouter(providerContainer: providerContainer);
-
-  runApp(UncontrolledProviderScope(
-    container: providerContainer,
+  runApp(ProviderScope(
+    overrides: <Override>[
+      appTemporaryDirectoryProvider.overrideWithValue(temporaryDirectory),
+      appDatabaseProvider.overrideWithValue(isar),
+    ],
     child: const MyApp(),
   ));
 }
@@ -70,11 +73,12 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
 
     WidgetsBinding.instance.addObserver(this);
     closeSplash();
-    ref.read(connectivityProvider.notifier).initData();
-    _connectivitySubscription = ref
-        .read(connectivityProvider.notifier)
-        .onConnectivityChanged
-        .listen(ref.read(connectivityProvider.notifier).onConnectivityChange);
+    // _connectivitySubscription = ref
+    //     .read(networkConnectivityProvider.notifier)
+    //     .onConnectivityChanged
+    //     .listen(ref
+    //         .read(networkConnectivityProvider.notifier)
+    //         .onConnectivityChange);
   }
 
   @override
@@ -92,7 +96,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
 
   FutureOr<void> requestResetThemeMode() {
     if (mounted) {
-      final Brightness? brightness = ref.read(themeProvider).brightness;
+      final Brightness? brightness = ref.read(appThemeModeProvider).brightness;
 
       if (brightness != null &&
           brightness != WidgetsBinding.instance.window.platformBrightness) {
@@ -124,7 +128,9 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
           );
 
           if (data ?? false) {
-            ref.read(themeProvider.notifier).switchThemeMode(ThemeMode.system);
+            ref
+                .read(appThemeModeProvider.notifier)
+                .switchThemeMode(ThemeMode.system);
           }
         });
       }
@@ -132,28 +138,33 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
   }
 
   Future<void> closeSplash() async {
-    final int? errorCode =
-        await ref.read(authorizedProvider.notifier).initData();
+    await ref.read(authorizedProvider.future);
+
+    final AsyncValue<UserInfoModel?> auth = ref.read(authorizedProvider);
 
     FlutterNativeSplash.remove();
 
     await requestResetThemeMode();
 
-    if (errorCode != null) {
+    if (auth.hasError) {
+      final ViewError error = ViewError.create(auth.error!, auth.stackTrace);
+
       Future<void>.delayed(const Duration(seconds: 3), () {
-        DialogUtils.tips(S.current.loginInfoInvalidTips(errorCode));
+        DialogUtils.tips(
+          S.current.loginInfoInvalidTips(error.statusCode ?? -1),
+        );
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final ThemeMode themeMode = ref.watch(themeProvider);
-    final Locale? locale = ref.watch(localeProvider)?.value;
+    final ThemeMode themeMode = ref.watch(appThemeModeProvider);
+    final Locale? locale = ref.watch(appLanguageProvider)?.toLocale;
 
     return MaterialApp.router(
       onGenerateTitle: (BuildContext context) => S.of(context).appName,
-      routerConfig: AppRouter.instance.router,
+      routerConfig: ref.read(appRouterProvider),
       builder: FlutterSmartDialog.init(
         builder: (_, Widget? child) => ScrollConfiguration(
           behavior: const AppScrollBehavior(),
