@@ -1,14 +1,4 @@
-import 'dart:collection' show LinkedHashMap;
-import 'dart:convert' show jsonEncode, jsonDecode;
-import 'package:diox/diox.dart'
-    show
-        Interceptor,
-        RequestOptions,
-        RequestInterceptorHandler,
-        Response,
-        ResponseInterceptorHandler;
-
-import '../../database/database_manager.dart';
+part of 'interceptors.dart';
 
 const Duration _kMaxAgeOfCache = Duration(hours: 12);
 const int _kMaxNumOfCacheForMemory = 10;
@@ -16,6 +6,10 @@ const int _kMaxNumOfCacheForMemory = 10;
 const String _kGetMethodLowerCase = 'get';
 
 class CacheInterceptor extends Interceptor {
+  CacheInterceptor({required this.ref});
+
+  final Ref ref;
+
   final LinkedHashMap<String, ResponseCache> _cache =
       LinkedHashMap<String, ResponseCache>();
 
@@ -29,15 +23,17 @@ class CacheInterceptor extends Interceptor {
 
     if (options.needRefresh) {
       if (options.isDiskCache) {
-        DatabaseManager.isar.writeTxnSync(() {
-          final int? id = DatabaseManager.responseCaches
+        final Isar isar = ref.read(appDatabaseProvider);
+
+        isar.writeTxnSync(() {
+          final int? id = isar.responseCaches
               .filter()
               .uriEqualTo(uriString)
               .idProperty()
               .findFirstSync();
 
           if (id != null) {
-            DatabaseManager.responseCaches.delete(id);
+            isar.responseCaches.delete(id);
           }
         });
       } else {
@@ -66,8 +62,10 @@ class CacheInterceptor extends Interceptor {
         }
       }
 
+      final Isar isar = ref.read(appDatabaseProvider);
+
       final Query<ResponseCache> queryBuilder =
-          DatabaseManager.responseCaches.filter().uriEqualTo(uriString).build();
+          isar.responseCaches.filter().uriEqualTo(uriString).build();
 
       if (options.isDiskCache) {
         final ResponseCache? responseCacheForDisk =
@@ -85,9 +83,7 @@ class CacheInterceptor extends Interceptor {
 
           return;
         } else {
-          DatabaseManager.isar.writeTxnSync(
-            () => queryBuilder.deleteFirstSync(),
-          );
+          isar.writeTxnSync(() => queryBuilder.deleteFirstSync());
         }
       }
     }
@@ -110,10 +106,10 @@ class CacheInterceptor extends Interceptor {
         ..expires = DateTime.now().add(_kMaxAgeOfCache)
         ..data = jsonEncode(response.data);
 
+      final Isar isar = ref.read(appDatabaseProvider);
+
       if (options.isDiskCache) {
-        DatabaseManager.isar.writeTxnSync(
-          () => DatabaseManager.responseCaches.putSync(responseCache),
-        );
+        isar.writeTxnSync(() => isar.responseCaches.putSync(responseCache));
       } else {
         if (_cache.length == _kMaxNumOfCacheForMemory) {
           _cache.remove(_cache.keys.first);

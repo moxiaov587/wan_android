@@ -22,7 +22,7 @@ class _RankScreenState extends ConsumerState<RankScreen>
         _kCurrentUserRankTileHeight + ScreenUtils.bottomSafeHeight;
 
     final UserPointsModel? currentUserPoints =
-        ref.read(authorizedProvider)?.userPoints;
+        ref.read(authorizedProvider).valueOrNull?.userPoints;
 
     return Scaffold(
       appBar: AppBar(
@@ -107,7 +107,7 @@ class _RankScreenState extends ConsumerState<RankScreen>
                   );
 
                   final String? fullName =
-                      ref.read(authorizedProvider)?.user.nickname;
+                      ref.read(authorizedProvider).valueOrNull?.user.nickname;
 
                   return showUserRank
                       ? Container(

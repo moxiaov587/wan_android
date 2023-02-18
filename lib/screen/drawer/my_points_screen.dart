@@ -38,7 +38,8 @@ class _MyPointsScreenState extends ConsumerState<MyPointsScreen>
                         Consumer(
                           builder: (_, WidgetRef ref, __) => AnimatedCounter(
                             count: ref
-                                .read(authorizedProvider)!
+                                .read(authorizedProvider)
+                                .value!
                                 .userPoints
                                 .coinCount,
                           ),

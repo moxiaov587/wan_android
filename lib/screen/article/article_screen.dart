@@ -9,7 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/http/http.dart';
 import '../../app/l10n/generated/l10n.dart';
-import '../../app/provider/view_state.dart';
+import '../../app/provider/provider.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../extensions/extensions.dart' show BuildContextExtension;
 import '../../model/models.dart' show WebViewModel;
@@ -37,8 +37,7 @@ class ArticleScreen extends ConsumerStatefulWidget {
 
 class _ArticleScreenState extends ConsumerState<ArticleScreen>
     with WidgetsBindingObserver {
-  late final AutoDisposeStateNotifierProvider<ArticleNotifier,
-      ViewState<WebViewModel>> provider = articleProvider(widget.id);
+  late final AppArticleProvider provider = appArticleProvider(widget.id);
 
   final StreamController<double> _progress =
       StreamController<double>.broadcast();
@@ -62,8 +61,6 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
     super.initState();
 
     WidgetsBinding.instance.addObserver(this);
-
-    ref.read(provider.notifier).initData();
   }
 
   @override
@@ -104,10 +101,10 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
           builder: (_, WidgetRef ref, __) {
             final String? title = ref.watch(
               provider.select(
-                (ViewState<WebViewModel> value) => value.when(
-                  (WebViewModel? value) => value?.title,
+                (AsyncValue<WebViewModel> value) => value.when(
+                  data: (WebViewModel? value) => value?.title,
                   loading: () => S.of(context).loading,
-                  error: (_, __, ___) => S.of(context).loadFailed,
+                  error: (_, __) => S.of(context).loadFailed,
                 ),
               ),
             );
@@ -122,9 +119,9 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
             builder: (_, WidgetRef ref, Widget? empty) {
               final WebViewModel? article = ref.watch(
                 provider.select(
-                  (ViewState<WebViewModel> model) =>
+                  (AsyncValue<WebViewModel> model) =>
                       model.whenOrNull<WebViewModel?>(
-                    (WebViewModel? article) => article,
+                    data: (WebViewModel? article) => article,
                   ),
                 ),
               );
@@ -180,7 +177,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
           Widget? bottomActionBar,
         ) =>
             ref.watch(provider).when(
-                  (WebViewModel? article) => Column(
+                  data: (WebViewModel? article) => Column(
                     children: <Widget>[
                       Expanded(
                         child: Stack(
@@ -244,7 +241,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                                 },
                                 onLoadStart: (_, Uri? uri) {
                                   if (article.withCookie) {
-                                    Http.syncCookies(uri);
+                                    ref.read(networkProvider).syncCookies(uri);
                                   }
                                 },
                                 onLoadStop: (
@@ -316,12 +313,12 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                     ],
                   ),
                   loading: () => const LoadingWidget(),
-                  error: (int? statusCode, String? message, String? detail) =>
-                      CustomErrorWidget(
-                    statusCode: statusCode,
-                    message: message,
-                    detail: detail,
-                    onRetry: ref.read(provider.notifier).initData,
+                  error: (Object e, StackTrace s) =>
+                      CustomErrorWidget.withViewError(
+                    ViewError.create(e, s),
+                    onRetry: () {
+                      ref.invalidate(provider);
+                    },
                   ),
                 ),
         child: ValueListenableBuilder<bool>(
@@ -389,9 +386,10 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                     builder: (_, WidgetRef ref, __) {
                       final bool collect = ref.watch(
                         provider.select(
-                          (ViewState<WebViewModel> value) =>
+                          (AsyncValue<WebViewModel> value) =>
                               value.whenOrNull(
-                                (WebViewModel? article) => article!.collect,
+                                data: (WebViewModel? article) =>
+                                    article!.collect,
                               ) ??
                               false,
                         ),
@@ -403,10 +401,11 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                             : S.of(context).collect,
                         color: collect ? context.theme.primaryColor : null,
                         onPressed: throttle(() {
-                          if (ref.read(authorizedProvider) == null) {
-                            const LoginRoute().push(context);
-                          } else {
+                          if (ref.read(authorizedProvider).valueOrNull !=
+                              null) {
                             ref.read(provider.notifier).collect(!collect);
+                          } else {
+                            const LoginRoute().push(context);
                           }
                         }),
                         icon: Icon(

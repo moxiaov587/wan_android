@@ -13,10 +13,10 @@ class LanguagesScreen extends StatelessWidget {
         itemBuilder: (_, int index) {
           return Consumer(
             builder: (_, WidgetRef ref, __) {
-              final Language? value = LocaleNotifier.languages[index];
+              final Language? value = AppLanguage.languages[index];
 
               final bool selected = ref.watch(
-                localeProvider
+                appLanguageProvider
                     .select((Language? language) => language == value),
               );
 
@@ -27,14 +27,14 @@ class LanguagesScreen extends StatelessWidget {
                 ),
                 trailing: selected ? const Icon(IconFontIcons.checkLine) : null,
                 onTap: () {
-                  ref.read(localeProvider.notifier).switchLocale(value);
+                  ref.read(appLanguageProvider.notifier).switchLocale(value);
                 },
               );
             },
           );
         },
         separatorBuilder: (_, __) => const IndentDivider(),
-        itemCount: LocaleNotifier.languages.length,
+        itemCount: AppLanguage.languages.length,
       ),
     );
   }

@@ -70,6 +70,8 @@ class __ResultsState extends ConsumerState<_Results>
                 RefreshListViewState<ArticleModel>>,
             ArticleModel,
             _Results> {
+  Isar get isar => ref.read(appDatabaseProvider);
+
   @override
   void initState() {
     super.initState();
@@ -78,10 +80,9 @@ class __ResultsState extends ConsumerState<_Results>
   }
 
   void addSearchHistory() {
-    final int length = DatabaseManager.searchHistoryCaches.countSync();
+    final int length = isar.searchHistoryCaches.countSync();
 
-    final SearchHistory? duplicateSearchHistory = DatabaseManager
-        .searchHistoryCaches
+    final SearchHistory? duplicateSearchHistory = isar.searchHistoryCaches
         .filter()
         .keywordEqualTo(widget.query)
         .findFirstSync();
@@ -89,7 +90,7 @@ class __ResultsState extends ConsumerState<_Results>
     int? id;
 
     if (length == _kMaxNumOfSearchHistory) {
-      id = DatabaseManager.searchHistoryCaches
+      id = isar.searchHistoryCaches
           .where()
           .sortByUpdateTime()
           .findFirstSync()
@@ -104,13 +105,13 @@ class __ResultsState extends ConsumerState<_Results>
       searchHistory.id = duplicateSearchHistory.id;
     }
 
-    DatabaseManager.isar.writeTxnSync<void>(
+    isar.writeTxnSync<void>(
       () {
         if (id != null) {
-          DatabaseManager.searchHistoryCaches.deleteSync(id);
+          isar.searchHistoryCaches.deleteSync(id);
         }
 
-        DatabaseManager.searchHistoryCaches.putSync(searchHistory);
+        isar.searchHistoryCaches.putSync(searchHistory);
       },
     );
   }
@@ -182,12 +183,7 @@ class _Suggestions extends ConsumerStatefulWidget {
 }
 
 class __SuggestionsState extends ConsumerState<_Suggestions> {
-  @override
-  void initState() {
-    super.initState();
-
-    ref.read(searchPopularKeywordProvider.notifier).initData();
-  }
+  Isar get isar => ref.read(appDatabaseProvider);
 
   @override
   Widget build(BuildContext context) {
@@ -196,7 +192,7 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
     return CustomScrollView(
       slivers: <Widget>[
         StreamBuilder<List<SearchHistory>>(
-          stream: DatabaseManager.searchHistoryCaches
+          stream: isar.searchHistoryCaches
               .where()
               .sortByUpdateTimeDesc()
               .build()
@@ -226,9 +222,8 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
                       IconButton(
                         padding: AppTheme.bodyPaddingOnlyHorizontal,
                         onPressed: () {
-                          DatabaseManager.isar.writeTxnSync(
-                            () =>
-                                DatabaseManager.searchHistoryCaches.clearSync(),
+                          isar.writeTxnSync(
+                            () => isar.searchHistoryCaches.clearSync(),
                           );
                         },
                         icon: const Icon(
@@ -277,7 +272,7 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
                   spacing: wrapSpace,
                   runSpacing: wrapSpace,
                   children: ref.watch(searchPopularKeywordProvider).when(
-                        (List<SearchKeywordModel> list) => list
+                        data: (List<SearchKeywordModel> list) => list
                             .map(
                               (SearchKeywordModel e) => CapsuleInk(
                                 child: Text(e.name),
@@ -290,11 +285,11 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
                         loading: () => <Widget>[
                           loadingWidget!,
                         ],
-                        error: (_, __, ___) => <Widget>[
+                        error: (_, __) => <Widget>[
                           CapsuleInk(
-                            onTap: ref
-                                .read(searchPopularKeywordProvider.notifier)
-                                .initData,
+                            onTap: () {
+                              ref.invalidate(searchPopularKeywordProvider);
+                            },
                             child: const Icon(
                               IconFontIcons.refreshLine,
                               size: 16.0,

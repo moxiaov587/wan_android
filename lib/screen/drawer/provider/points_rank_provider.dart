@@ -7,26 +7,26 @@ final AutoDisposeStateNotifierProvider<PointsRankNotifier,
   (AutoDisposeStateNotifierProviderRef<PointsRankNotifier,
           RefreshListViewState<UserPointsModel>>
       ref) {
-    final CancelToken cancelToken = CancelToken();
+    final CancelToken cancelToken = ref.cancelToken();
 
-    ref.onDispose(() {
-      cancelToken.cancel();
-    });
+    final Http http = ref.watch(networkProvider);
 
     return PointsRankNotifier(
       const RefreshListViewState<UserPointsModel>.loading(),
+      http: http,
       cancelToken: cancelToken,
-    );
+    )..initData();
   },
 );
 
 class PointsRankNotifier extends BaseRefreshListViewNotifier<UserPointsModel> {
   PointsRankNotifier(
     super.state, {
+    required this.http,
     this.cancelToken,
-  }) : super(
-          pageSize: 30,
-        );
+  });
+
+  final Http http;
 
   final CancelToken? cancelToken;
 
@@ -35,7 +35,7 @@ class PointsRankNotifier extends BaseRefreshListViewNotifier<UserPointsModel> {
     required int pageNum,
     required int pageSize,
   }) async {
-    return (await WanAndroidAPI.fetchPointsRank(
+    return (await http.fetchPointsRank(
       pageNum,
       cancelToken: cancelToken,
     ))

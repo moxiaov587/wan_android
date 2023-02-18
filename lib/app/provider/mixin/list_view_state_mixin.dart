@@ -16,8 +16,6 @@ mixin ListViewStateMixin<
   @protected
   ProviderType get provider;
 
-  bool get autoInitData => true;
-
   Widget get pullDownIndicator => Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? empty) =>
             ref.watch(provider).whenOrNull(
@@ -33,30 +31,13 @@ mixin ListViewStateMixin<
     ref.read(provider.notifier).initData();
   }
 
-  @mustCallSuper
-  @override
-  void initState() {
-    super.initState();
-
-    if (autoInitData) {
-      ref.read(provider.notifier).initData();
-    }
-  }
-
   Widget loadingIndicatorBuilder() => const SliverFillRemaining(
         child: LoadingWidget(),
       );
 
-  Widget errorIndicatorBuilder(
-    int? statusCode,
-    String? message,
-    String? detail,
-  ) =>
-      SliverFillRemaining(
-        child: CustomErrorWidget(
-          statusCode: statusCode,
-          message: message,
-          detail: detail,
+  Widget errorIndicatorBuilder(Object e, StackTrace s) => SliverFillRemaining(
+        child: CustomErrorWidget.withViewError(
+          ViewError.create(e, s),
           onRetry: onRetry,
         ),
       );
@@ -71,8 +52,6 @@ mixin AutoDisposeListViewStateMixin<
   @protected
   ProviderType get provider;
 
-  bool get autoInitData => true;
-
   Widget get pullDownIndicator => Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? empty) =>
             ref.watch(provider).whenOrNull(
@@ -88,30 +67,13 @@ mixin AutoDisposeListViewStateMixin<
     ref.read(provider.notifier).initData();
   }
 
-  @mustCallSuper
-  @override
-  void initState() {
-    super.initState();
-
-    if (autoInitData) {
-      ref.read(provider.notifier).initData();
-    }
-  }
-
   Widget loadingIndicatorBuilder() => const SliverFillRemaining(
         child: LoadingWidget(),
       );
 
-  Widget errorIndicatorBuilder(
-    int? statusCode,
-    String? message,
-    String? detail,
-  ) =>
-      SliverFillRemaining(
-        child: CustomErrorWidget(
-          statusCode: statusCode,
-          message: message,
-          detail: detail,
+  Widget errorIndicatorBuilder(Object e, StackTrace s) => SliverFillRemaining(
+        child: CustomErrorWidget.withViewError(
+          ViewError.create(e, s),
           onRetry: onRetry,
         ),
       );

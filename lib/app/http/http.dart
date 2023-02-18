@@ -7,37 +7,38 @@ import 'package:diox_cookie_manager/diox_cookie_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart' as web_view
     show CookieManager, HTTPCookieSameSitePolicy;
-import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderContainer;
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' show Ref;
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../utils/log_utils.dart';
-import 'cache_interceptor.dart';
-import 'error_interceptor.dart';
-import 'logging_interceptor.dart';
-import 'network_interceptor.dart';
+import 'interceptors/interceptors.dart';
+
+export 'package:diox/diox.dart' show CancelToken;
+
+export 'api/api.dart';
+
+part 'http.g.dart';
 
 const String kDomain = 'wanandroid.com';
 const String kBaseUrl = 'https://$kDomain';
 
 class Http {
-  const Http._();
+  late final Dio dio = Dio(_options);
+  late final Dio tokenDio = Dio(_options);
 
-  static const bool shouldLogRequest = false;
+  late final PersistCookieJar cookieJar;
+  late final CookieManager cookieManager;
 
-  static final Dio dio = Dio(_options);
-  static final Dio tokenDio = Dio(_options);
-
-  static late final PersistCookieJar cookieJar;
-  static late final CookieManager cookieManager;
-
-  static final web_view.CookieManager webViewCookieManager =
+  final web_view.CookieManager webViewCookieManager =
       web_view.CookieManager.instance();
 
-  static Future<void> initConfig({
-    required ProviderContainer providerContainer,
+  Future<void> initConfig({
+    required Ref ref,
   }) async {
     if (!kIsWeb) {
-      await initCookieManagement();
+      cookieJar = ref.read(appCookieJarProvider);
+
+      cookieManager = CookieManager(cookieJar);
 
       dio.interceptors.add(cookieManager);
       tokenDio.interceptors.add(cookieManager);
@@ -47,37 +48,18 @@ class Http {
     tokenDio.options.baseUrl = kBaseUrl;
 
     dio.interceptors.addAll(<Interceptor>[
-      NetWorkInterceptor(providerContainer: providerContainer),
-      ErrorInterceptor(providerContainer: providerContainer),
-      CacheInterceptor(),
+      NetWorkInterceptor(ref: ref),
+      ErrorInterceptor(ref: ref),
+      CacheInterceptor(ref: ref),
     ]);
 
-    if (kDebugMode && shouldLogRequest) {
-      dio.interceptors.add(LoggingInterceptor());
-      tokenDio.interceptors.add(LoggingInterceptor());
+    if (kDebugMode) {
+      dio.interceptors.add(LogInterceptor());
+      tokenDio.interceptors.add(LogInterceptor());
     }
   }
 
-  static Future<String> initCookieManagement() async {
-    final Directory directory = await getTemporaryDirectory();
-
-    final String path = '${directory.path}/cookie_jar';
-
-    if (!Directory(path).existsSync()) {
-      Directory(path).createSync();
-    }
-
-    cookieJar = PersistCookieJar(
-      storage: FileStorage(path),
-      ignoreExpires: true,
-    );
-    cookieManager = CookieManager(cookieJar);
-
-    return path;
-  }
-
-  static Future<void> _setCookie(Cookie cookie) =>
-      webViewCookieManager.setCookie(
+  Future<void> _setCookie(Cookie cookie) => webViewCookieManager.setCookie(
         url: Uri.parse(kBaseUrl),
         name: cookie.name,
         value: cookie.value,
@@ -90,7 +72,7 @@ class Http {
       );
 
   /// Sync local cookies to webview under the same domain name
-  static Future<void> syncCookies(Uri? uri) async {
+  Future<void> syncCookies(Uri? uri) async {
     try {
       final List<Cookie> cookies =
           await cookieJar.loadForRequest(uri ?? Uri.parse(kBaseUrl));
@@ -101,76 +83,10 @@ class Http {
     }
   }
 
-  static Future<bool> get isLogin async =>
+  Future<bool> get isLogin async =>
       (await cookieJar.loadForRequest(Uri.parse(kBaseUrl))).length > 1;
 
-  // ignore: long-parameter-list
-  static Future<Response<T>> get<T>(
-    String url, {
-    Map<String, dynamic>? queryParameters,
-    Map<String, dynamic>? headers,
-    CancelToken? cancelToken,
-    Options? options,
-    bool needCache = false,
-    bool needRefresh = false,
-    bool isDiskCache = false,
-  }) =>
-      dio.get<T>(
-        url,
-        queryParameters: queryParameters,
-        cancelToken: cancelToken,
-        options: (options ?? Options()).copyWith(
-          headers: headers,
-          extra: <String, dynamic>{
-            ...options?.extra ?? <String, dynamic>{},
-            ..._buildMethodGetCacheOptionsExtra(
-              needCache: needCache,
-              needRefresh: needRefresh,
-              isDiskCache: isDiskCache,
-            ),
-          },
-        ),
-      );
-
-  // ignore: long-parameter-list
-  static Future<Response<T>> post<T>(
-    String url, {
-    dynamic data,
-    Map<String, dynamic>? queryParameters,
-    Map<String, dynamic>? headers,
-    CancelToken? cancelToken,
-    Options? options,
-  }) =>
-      dio.post<T>(
-        url,
-        queryParameters: queryParameters,
-        data: data,
-        options: (options ?? Options()).copyWith(
-          headers: headers,
-        ),
-        cancelToken: cancelToken,
-      );
-
-  // ignore: long-parameter-list
-  static Future<Response<T>> delete<T>(
-    String url, {
-    Map<String, dynamic>? data,
-    Map<String, dynamic>? queryParameters,
-    Map<String, dynamic>? headers,
-    CancelToken? cancelToken,
-    Options? options,
-  }) =>
-      dio.delete<T>(
-        url,
-        data: data,
-        queryParameters: queryParameters,
-        cancelToken: cancelToken,
-        options: (options ?? Options()).copyWith(
-          headers: headers,
-        ),
-      );
-
-  static BaseOptions get _options {
+  BaseOptions get _options {
     return BaseOptions(
       connectTimeout: const Duration(seconds: 60),
       sendTimeout: const Duration(seconds: 60),
@@ -178,15 +94,56 @@ class Http {
     );
   }
 
-  static Map<String, dynamic> _buildMethodGetCacheOptionsExtra({
-    required bool needCache,
-    required bool needRefresh,
-    required bool isDiskCache,
+  Map<String, dynamic> buildMethodGetCacheOptionsExtra({
+    bool needCache = false,
+    bool needRefresh = false,
+    bool isDiskCache = false,
   }) {
     return <String, dynamic>{
       CacheOption.needCache.name: needCache,
       CacheOption.needRefresh.name: needRefresh,
       CacheOption.isDiskCache.name: isDiskCache,
     };
+  }
+}
+
+extension CancelTokenX on Ref {
+  CancelToken cancelToken() {
+    final CancelToken cancelToken = CancelToken();
+    onDispose(cancelToken.cancel);
+
+    return cancelToken;
+  }
+}
+
+@Riverpod(keepAlive: true)
+Directory appTemporaryDirectory(AppTemporaryDirectoryRef _) {
+  throw UnimplementedError();
+}
+
+@Riverpod(keepAlive: true)
+class AppCookieJar extends _$AppCookieJar {
+  @override
+  PersistCookieJar build() {
+    final Directory directory = ref.read(appTemporaryDirectoryProvider);
+
+    final String path = '${directory.path}/cookie_jar';
+
+    if (!Directory(path).existsSync()) {
+      Directory(path).createSync();
+    }
+
+    return PersistCookieJar(
+      storage: FileStorage(path),
+      ignoreExpires: true,
+    );
+  }
+}
+
+@Riverpod(keepAlive: true)
+class Network extends _$Network {
+  @override
+  Http build() {
+    return Http()..initConfig(ref: ref);
   }
 }

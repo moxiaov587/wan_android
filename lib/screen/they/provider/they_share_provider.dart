@@ -9,27 +9,28 @@ final AutoDisposeStateNotifierProviderFamily<TheyShareNotifier,
       ref,
   int userId,
 ) {
-  final CancelToken cancelToken = CancelToken();
+  final CancelToken cancelToken = ref.cancelToken();
 
-  ref.onDispose(() {
-    cancelToken.cancel();
-  });
+  final Http http = ref.watch(networkProvider);
 
   return TheyShareNotifier(
     const RefreshListViewState<ArticleModel>.loading(),
     userId: userId,
+    http: http,
     cancelToken: cancelToken,
-  );
+  )..initData();
 });
 
 class TheyShareNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
   TheyShareNotifier(
     super.state, {
     required this.userId,
+    required this.http,
     this.cancelToken,
   });
 
   final int userId;
+  final Http http;
   final CancelToken? cancelToken;
 
   UserPointsModel? _userPoints;
@@ -41,7 +42,7 @@ class TheyShareNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
     required int pageSize,
   }) async {
     final TheyShareModel userShareArticleModel =
-        await WanAndroidAPI.fetchShareArticlesByUserId(
+        await http.fetchShareArticlesByUserId(
       pageNum,
       pageSize,
       userId: userId,

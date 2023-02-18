@@ -10,15 +10,16 @@ final AutoDisposeStateNotifierProviderFamily<SearchNotifier,
         ref,
     String keyword,
   ) {
-    final CancelToken cancelToken = CancelToken();
+    final CancelToken cancelToken = ref.cancelToken();
 
-    ref.onDispose(() => cancelToken.cancel());
+    final Http http = ref.watch(networkProvider);
 
     return SearchNotifier(
       const RefreshListViewState<ArticleModel>.loading(),
       keyword: keyword,
+      http: http,
       cancelToken: cancelToken,
-    );
+    )..initData();
   },
   name: kSearchArticleProvider,
 );
@@ -28,10 +29,13 @@ class SearchNotifier extends BaseRefreshListViewNotifier<ArticleModel>
   SearchNotifier(
     super.state, {
     required this.keyword,
+    required this.http,
     this.cancelToken,
   }) : super(initialPageNum: 0);
 
   final String keyword;
+
+  final Http http;
 
   final CancelToken? cancelToken;
 
@@ -40,7 +44,7 @@ class SearchNotifier extends BaseRefreshListViewNotifier<ArticleModel>
     required int pageNum,
     required int pageSize,
   }) async {
-    return (await WanAndroidAPI.fetchSearchArticles(
+    return (await http.fetchSearchArticles(
       pageNum,
       pageSize,
       keyword: keyword,
@@ -50,21 +54,13 @@ class SearchNotifier extends BaseRefreshListViewNotifier<ArticleModel>
   }
 }
 
-final AutoDisposeStateNotifierProvider<SearchPopularKeywordNotifier,
-        ListViewState<SearchKeywordModel>> searchPopularKeywordProvider =
-    StateNotifierProvider.autoDispose<SearchPopularKeywordNotifier,
-        ListViewState<SearchKeywordModel>>((_) {
-  return SearchPopularKeywordNotifier(
-    const ListViewState<SearchKeywordModel>.loading(),
-  );
-});
+@riverpod
+Future<List<SearchKeywordModel>> searchPopularKeyword(
+  SearchPopularKeywordRef ref,
+) {
+  final CancelToken cancelToken = ref.cancelToken();
 
-class SearchPopularKeywordNotifier
-    extends BaseListViewNotifier<SearchKeywordModel> {
-  SearchPopularKeywordNotifier(super.state);
-
-  @override
-  Future<List<SearchKeywordModel>> loadData() {
-    return WanAndroidAPI.fetchSearchPopularKeywords();
-  }
+  return ref
+      .watch(networkProvider)
+      .fetchSearchPopularKeywords(cancelToken: cancelToken);
 }

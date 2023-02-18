@@ -1,7 +1,7 @@
 part of 'provider.dart';
 
 abstract class BaseRefreshListViewNotifier<T>
-    extends StateNotifier<RefreshListViewState<T>> with ViewErrorMixin {
+    extends StateNotifier<RefreshListViewState<T>> {
   BaseRefreshListViewNotifier(
     super.state, {
     this.initialPageNum = 1,
@@ -73,10 +73,7 @@ abstract class BaseRefreshListViewNotifier<T>
               state = RefreshListViewState<T>(
                 pageNum: data.pageNum,
                 isLastPage: data.isLastPage,
-                list: <T>[
-                  ...list,
-                  ...data.list,
-                ],
+                list: <T>[...list, ...data.list],
               );
 
               return data.isLastPage
@@ -92,26 +89,8 @@ abstract class BaseRefreshListViewNotifier<T>
 
   @override
   ErrorListener get onError => (Object e, StackTrace? s) {
-        final ViewError error = getError(e, s);
-
-        setError(
-          statusCode: error.statusCode,
-          message: error.message,
-          detail: error.detail,
-        );
+        state = RefreshListViewState<T>.error(e, s ?? StackTrace.current);
       };
-
-  void setError({
-    int? statusCode,
-    String? message,
-    String? detail,
-  }) {
-    state = RefreshListViewState<T>.error(
-      statusCode: statusCode,
-      message: message,
-      detail: detail,
-    );
-  }
 }
 
 enum LoadingMoreStatus {

@@ -1,17 +1,9 @@
-import 'dart:io';
-
-import 'package:diox/diox.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../database/database_manager.dart';
-import '../../screen/authorized/provider/authorized_provider.dart';
-import '../../utils/log_utils.dart';
-import 'http.dart';
+part of 'interceptors.dart';
 
 class ErrorInterceptor extends Interceptor {
-  ErrorInterceptor({required this.providerContainer});
+  ErrorInterceptor({required this.ref});
 
-  final ProviderContainer providerContainer;
+  final Ref ref;
 
   @override
   void onResponse(
@@ -61,24 +53,25 @@ class ErrorInterceptor extends Interceptor {
             withStackTrace: false,
           );
 
-          final AccountCache? lastLoginAccount = DatabaseManager.accountCaches
-              .where()
-              .sortByUpdateTimeDesc()
-              .findFirstSync();
+          final Isar isar = ref.read(appDatabaseProvider);
+
+          final AccountCache? lastLoginAccount =
+              isar.accountCaches.where().sortByUpdateTimeDesc().findFirstSync();
 
           if (lastLoginAccount != null && lastLoginAccount.password != null) {
-            final bool result = await providerContainer
-                .read(authorizedProvider.notifier)
-                .silentLogin(
-                  username: lastLoginAccount.username,
-                  password: lastLoginAccount.password!,
-                );
+            final bool result =
+                await ref.read(authorizedProvider.notifier).silentLogin(
+                      username: lastLoginAccount.username,
+                      password: lastLoginAccount.password!,
+                    );
 
             if (result) {
               // Retry once
               try {
-                final Response<dynamic> response =
-                    await Http.dio.fetch<dynamic>(err.requestOptions);
+                final Response<dynamic> response = await ref
+                    .read(networkProvider)
+                    .dio
+                    .fetch<dynamic>(err.requestOptions);
 
                 handler.resolve(response);
               } catch (_) {

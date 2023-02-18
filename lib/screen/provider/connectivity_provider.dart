@@ -1,68 +1,26 @@
-import 'dart:async';
+part of 'common_provider.dart';
 
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/services.dart' show PlatformException;
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../app/l10n/generated/l10n.dart';
-import '../../app/provider/provider.dart';
-import '../../app/provider/view_state.dart';
-import '../../utils/dialog_utils.dart';
-
-final StateNotifierProvider<ConnectivityNotifier, ViewState<ConnectivityResult>>
-    connectivityProvider =
-    StateNotifierProvider<ConnectivityNotifier, ViewState<ConnectivityResult>>(
-  (_) {
-    return ConnectivityNotifier();
+final StreamProvider<ConnectivityResult> connectivityStreamProvider =
+    StreamProvider<ConnectivityResult>(
+  (StreamProviderRef<ConnectivityResult> ref) {
+    return Connectivity().onConnectivityChanged;
   },
 );
 
-class ConnectivityNotifier extends BaseViewNotifier<ConnectivityResult> {
-  ConnectivityNotifier() : super(const ViewState<ConnectivityResult>.loading());
-
-  final Connectivity _connectivity = Connectivity();
-
-  Stream<ConnectivityResult> get onConnectivityChanged =>
-      _connectivity.onConnectivityChanged;
-
-  bool get _isDisconnected =>
-      state.whenOrNull(
-        (ConnectivityResult? result) => result == ConnectivityResult.none,
-      ) ??
-      false;
+@Riverpod(keepAlive: true)
+class NetworkConnectivity extends _$NetworkConnectivity {
+  bool get isDisconnected => state == ConnectivityResult.none;
 
   @override
-  Future<ConnectivityResult?> loadData() async {
-    try {
-      return await _connectivity.checkConnectivity();
-    } on PlatformException {
-      rethrow;
-    }
-  }
+  ConnectivityResult? build() {
+    final ConnectivityResult? data = ref
+        .watch(connectivityStreamProvider)
+        .whenOrNull(data: (ConnectivityResult data) => data);
 
-  Future<void> onConnectivityChange(ConnectivityResult result) async {
-    state = ViewStateData<ConnectivityResult>(value: result);
-
-    if (result == ConnectivityResult.mobile) {
+    if (data == ConnectivityResult.mobile) {
       DialogUtils.tips(S.current.useDataTrafficTips);
     }
-  }
 
-  FutureOr<bool> checkDisconnection() {
-    if (_isDisconnected) {
-      return Future<bool>.delayed(
-        Duration.zero,
-        () async {
-          try {
-            return (await _connectivity.checkConnectivity()) ==
-                ConnectivityResult.none;
-          } catch (_) {
-            return false;
-          }
-        },
-      );
-    }
-
-    return false;
+    return data;
   }
 }

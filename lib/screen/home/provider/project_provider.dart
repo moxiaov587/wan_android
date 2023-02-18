@@ -1,54 +1,22 @@
 part of 'home_provider.dart';
 
-final AutoDisposeStateNotifierProvider<ProjectTypeNotifier,
-        ListViewState<ProjectTypeModel>> projectTypesProvider =
-    StateNotifierProvider.autoDispose<ProjectTypeNotifier,
-        ListViewState<ProjectTypeModel>>(
-  (_) {
-    return ProjectTypeNotifier(
-      const ListViewState<ProjectTypeModel>.loading(),
-    );
-  },
-);
-
-class ProjectTypeNotifier extends BaseListViewNotifier<ProjectTypeModel> {
-  ProjectTypeNotifier(super.state);
-
-  @override
-  Future<List<ProjectTypeModel>> loadData() {
-    return WanAndroidAPI.fetchProjectTypes();
-  }
+@riverpod
+Future<List<ProjectTypeModel>> projectType(ProjectTypeRef ref) {
+  return ref.watch(networkProvider).fetchProjectTypes();
 }
 
-final AutoDisposeStateNotifierProvider<CurrentProjectTypeNotifier,
-        ViewState<ProjectTypeModel>> currentProjectTypeProvider =
-    StateNotifierProvider.autoDispose<CurrentProjectTypeNotifier,
-        ViewState<ProjectTypeModel>>(
-  (AutoDisposeStateNotifierProviderRef<CurrentProjectTypeNotifier,
-          ViewState<ProjectTypeModel>>
-      ref) {
-    return CurrentProjectTypeNotifier(
-      ref.watch(projectTypesProvider).when(
-            (List<ProjectTypeModel> value) =>
-                ViewState<ProjectTypeModel>(value: value.first),
-            loading: () => const ViewStateLoading<ProjectTypeModel>(),
-            error: (int? statusCode, String? message, String? detail) =>
-                ViewStateError<ProjectTypeModel>(
-              statusCode: statusCode,
-              message: message,
-              detail: detail,
-            ),
-          ),
-    );
-  },
-);
-
-class CurrentProjectTypeNotifier
-    extends StateNotifier<ViewState<ProjectTypeModel>> {
-  CurrentProjectTypeNotifier(super.state);
-
-  void selected(ProjectTypeModel data) {
-    state = ViewState<ProjectTypeModel>(value: data);
+@riverpod
+class CurrentProjectType extends _$CurrentProjectType
+    with AutoDisposeNotifierUpdateMixin<AsyncValue<ProjectTypeModel>> {
+  @override
+  AsyncValue<ProjectTypeModel> build() {
+    return ref.watch(projectTypeProvider).when(
+          data: (List<ProjectTypeModel> data) =>
+              AsyncValue<ProjectTypeModel>.data(data.first),
+          error: (Object e, StackTrace s) =>
+              AsyncValue<ProjectTypeModel>.error(e, s),
+          loading: () => const AsyncValue<ProjectTypeModel>.loading(),
+        );
   }
 }
 
@@ -59,23 +27,28 @@ final AutoDisposeStateNotifierProvider<ProjectNotifier,
   (AutoDisposeStateNotifierProviderRef<ProjectNotifier,
           RefreshListViewState<ArticleModel>>
       ref) {
+    final CancelToken cancelToken = ref.cancelToken();
+
+    final Http http = ref.watch(networkProvider);
+
     return ref.watch(currentProjectTypeProvider).when(
-          (ProjectTypeModel? value) => ProjectNotifier(
+          data: (ProjectTypeModel value) => ProjectNotifier(
             const RefreshListViewState<ArticleModel>.loading(),
-            categoryId: value!.id,
+            categoryId: value.id,
+            http: http,
+            cancelToken: cancelToken,
           )..initData(),
           loading: () => ProjectNotifier(
             const RefreshListViewState<ArticleModel>.loading(),
             categoryId: null,
+            http: http,
+            cancelToken: cancelToken,
           ),
-          error: (int? statusCode, String? message, String? detail) =>
-              ProjectNotifier(
-            RefreshListViewState<ArticleModel>.error(
-              statusCode: statusCode,
-              message: message,
-              detail: detail,
-            ),
+          error: (Object e, StackTrace s) => ProjectNotifier(
+            RefreshListViewState<ArticleModel>.error(e, s),
             categoryId: null,
+            http: http,
+            cancelToken: cancelToken,
           ),
         );
   },
@@ -87,19 +60,24 @@ class ProjectNotifier extends BaseRefreshListViewNotifier<ArticleModel>
   ProjectNotifier(
     super.state, {
     required this.categoryId,
+    required this.http,
+    this.cancelToken,
   }) : super(initialPageNum: 0);
 
   final int? categoryId;
+  final Http http;
+  final CancelToken? cancelToken;
 
   @override
   Future<RefreshListViewStateData<ArticleModel>> loadData({
     required int pageNum,
     required int pageSize,
   }) async {
-    return (await WanAndroidAPI.fetchProjectArticles(
+    return (await http.fetchProjectArticles(
       pageNum,
       pageSize,
       categoryId: categoryId!,
+      cancelToken: cancelToken,
     ))
         .toRefreshListViewStateData();
   }

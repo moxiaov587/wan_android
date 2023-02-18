@@ -8,11 +8,11 @@ import 'package:nil/nil.dart' show nil;
 import '../../../app/provider/view_state.dart';
 import '../../../widget/view_state_widget.dart';
 import '../../app/l10n/generated/l10n.dart';
-import '../../app/provider/mixin/list_view_state_mixin.dart';
 import '../../app/provider/mixin/refresh_list_view_state_mixin.dart';
+import '../../app/provider/provider.dart';
 import '../../app/theme/app_theme.dart';
 import '../../contacts/icon_font_icons.dart';
-import '../../database/database_manager.dart';
+import '../../database/app_database.dart';
 import '../../extensions/extensions.dart';
 import '../../model/models.dart';
 import '../../router/data/app_routes.dart';
@@ -144,23 +144,12 @@ class _HomeState extends ConsumerState<_Home>
             ArticleModel,
             _Home> {
   @override
-  final bool autoInitData = false;
-
-  @override
   void onRetry() {
-    if (ref.read(homeTopArticleProvider) is ListViewStateError<ArticleModel>) {
-      ref.read(homeTopArticleProvider.notifier).initData();
+    if (ref.read(homeTopArticlesProvider).hasError) {
+      ref.invalidate(homeTopArticlesProvider);
     } else {
       super.onRetry();
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    ref.read(homeBannerProvider.notifier).initData();
-    ref.read(homeTopArticleProvider.notifier).initData();
   }
 
   @override
@@ -283,8 +272,9 @@ class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
               padding: EdgeInsets.only(top: ScreenUtils.topSafeHeight),
               child: Consumer(
                 builder: (_, WidgetRef ref, Widget? title) {
-                  final UserInfoModel? userInfo =
-                      ref.watch<UserInfoModel?>(authorizedProvider);
+                  final UserInfoModel? userInfo = ref.watch(authorizedProvider
+                      .select((AsyncValue<UserInfoModel?> data) =>
+                          data.valueOrNull));
 
                   if (userInfo == null) {
                     return title!;
@@ -314,7 +304,9 @@ class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
             opacity: reversedProgress,
             child: Consumer(
               builder: (_, WidgetRef ref, Widget? child) {
-                final Color color = ref.watch(currentBannerColorProvider) ??
+                final Color color = ref
+                        .watch(currentHomeBannerBackgroundColorValueProvider)
+                        ?.toColor ??
                     context.theme.primaryColor;
 
                 return DecoratedBox(
@@ -355,11 +347,12 @@ class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
                         child: Consumer(
                           builder: (_, WidgetRef ref, __) {
                             return ref.watch(homeBannerProvider).when(
-                                  (List<HomeBannerCache> list) =>
+                                  data: (List<HomeBannerCache> list) =>
                                       PageView.builder(
                                     onPageChanged: ref
                                         .read(
-                                          currentBannerColorProvider.notifier,
+                                          currentHomeBannerBackgroundColorValueProvider
+                                              .notifier,
                                         )
                                         .onPageChanged,
                                     itemBuilder:
@@ -374,44 +367,40 @@ class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
                                     itemCount: list.length,
                                   ),
                                   loading: () => const LoadingWidget(),
-                                  error: (
-                                    int? statusCode,
-                                    String? message,
-                                    String? detail,
-                                  ) =>
-                                      Ink(
-                                    child: InkWell(
-                                      onTap: () {
-                                        ref
-                                            .read(
-                                              homeBannerProvider.notifier,
-                                            )
-                                            .initData();
-                                      },
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          Icon(
-                                            IconFontIcons.refreshLine,
-                                            color: context.theme.textTheme
-                                                .bodySmall!.color,
-                                            size: 36.0,
-                                          ),
-                                          Gap(
-                                            size: GapSize.big,
-                                          ),
-                                          Text(
-                                            '${message ?? detail ?? S.of(context).unknownError}(${statusCode ?? -1})',
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          Gap(),
-                                          Text(S.of(context).tapToRetry),
-                                        ],
+                                  error: (Object e, StackTrace s) {
+                                    final ViewError error =
+                                        ViewError.create(e, s);
+
+                                    return Ink(
+                                      child: InkWell(
+                                        onTap: () {
+                                          ref.invalidate(homeBannerProvider);
+                                        },
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            Icon(
+                                              IconFontIcons.refreshLine,
+                                              color: context.theme.textTheme
+                                                  .bodySmall!.color,
+                                              size: 36.0,
+                                            ),
+                                            Gap(
+                                              size: GapSize.big,
+                                            ),
+                                            Text(
+                                              '${error.message ?? error.detail ?? S.of(context).unknownError}(${error.statusCode ?? -1})',
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            Gap(),
+                                            Text(S.of(context).tapToRetry),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ),
+                                    );
+                                  },
                                 );
                           },
                         ),

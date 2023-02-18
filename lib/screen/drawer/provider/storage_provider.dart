@@ -24,140 +24,135 @@ extension FileSizeExtension on int? {
   }
 }
 
-final AutoDisposeStateProvider<bool> checkOtherCachesProvider =
-    StateProvider.autoDispose<bool>(
-  (AutoDisposeStateProviderRef<bool> ref) => true,
-);
-final AutoDisposeStateProvider<bool> disableCheckOtherCachesProvider =
-    StateProvider.autoDispose<bool>(
-  (AutoDisposeStateProviderRef<bool> ref) => ref
-      .watch(otherCacheSizeProvider)
-      .maybeWhen((int? value) => (value ?? 0) <= 0, orElse: () => true),
-);
-final AutoDisposeStateProvider<bool> cleanableOtherCachesProvider =
-    StateProvider.autoDispose<bool>(
-  (AutoDisposeStateProviderRef<bool> ref) =>
-      ref.watch(checkOtherCachesProvider) &&
-      !ref.watch(disableCheckOtherCachesProvider),
-);
+// OtherCaches START
+@riverpod
+class CheckOtherCaches extends _$CheckOtherCaches
+    with AutoDisposeNotifierUpdateMixin<bool> {
+  @override
+  bool build() => true;
+}
 
-final AutoDisposeStateProvider<bool> checkResponseDataCachesProvider =
-    StateProvider.autoDispose<bool>(
-  (AutoDisposeStateProviderRef<bool> ref) => true,
-);
-final AutoDisposeStateProvider<bool> disableCheckResponseDataCachesProvider =
-    StateProvider.autoDispose<bool>(
-  (AutoDisposeStateProviderRef<bool> ref) => ref
-      .watch(responseDataCacheSizeProvider)
-      .maybeWhen((int? value) => (value ?? 0) <= 0, orElse: () => true),
-);
-final AutoDisposeStateProvider<bool> cleanableResponseDataCachesProvider =
-    StateProvider.autoDispose<bool>(
-  (AutoDisposeStateProviderRef<bool> ref) =>
-      ref.watch(checkResponseDataCachesProvider) &&
-      !ref.watch(disableCheckResponseDataCachesProvider),
-);
-
-final AutoDisposeStateProvider<bool> checkPreferencesCachesProvider =
-    StateProvider.autoDispose<bool>(
-  (AutoDisposeStateProviderRef<bool> ref) => true,
-);
-final AutoDisposeStateProvider<bool> disableCheckPreferencesCachesProvider =
-    StateProvider.autoDispose<bool>(
-  (AutoDisposeStateProviderRef<bool> ref) => ref
-      .watch(preferencesCacheSizeProvider)
-      .maybeWhen((int? value) => (value ?? 0) <= 0, orElse: () => true),
-);
-final AutoDisposeStateProvider<bool> cleanablePreferencesCachesProvider =
-    StateProvider.autoDispose<bool>(
-  (AutoDisposeStateProviderRef<bool> ref) =>
-      ref.watch(checkPreferencesCachesProvider) &&
-      !ref.watch(disableCheckPreferencesCachesProvider),
-);
-
-final AutoDisposeStateProvider<bool> checkAllCachesProvider =
-    StateProvider.autoDispose<bool>(
-  (AutoDisposeStateProviderRef<bool> ref) =>
-      ref.watch(checkOtherCachesProvider) &&
-      ref.watch(checkResponseDataCachesProvider) &&
-      ref.watch(checkPreferencesCachesProvider),
-);
-final AutoDisposeStateProvider<bool> cleanableProvider =
-    StateProvider.autoDispose<bool>(
-  (AutoDisposeStateProviderRef<bool> ref) =>
-      ref.watch(cleanableOtherCachesProvider) ||
-      ref.watch(cleanableResponseDataCachesProvider) ||
-      ref.watch(cleanablePreferencesCachesProvider),
-);
-
-final AutoDisposeStateNotifierProvider<OtherCacheSizeNotifier, ViewState<int>>
-    otherCacheSizeProvider =
-    StateNotifierProvider.autoDispose<OtherCacheSizeNotifier, ViewState<int>>(
-  (_) {
-    return OtherCacheSizeNotifier(
-      const ViewState<int>.loading(),
+@riverpod
+bool disableCheckOtherCaches(DisableCheckOtherCachesRef ref) => ref.watch(
+      otherCacheSizeProvider.select(
+        (AsyncValue<int> value) =>
+            value.whenOrNull(data: (int data) => data <= 0) ?? true,
+      ),
     );
-  },
-);
 
-class OtherCacheSizeNotifier extends BaseViewNotifier<int> {
-  OtherCacheSizeNotifier(super.state);
+@riverpod
+bool cleanableOtherCaches(CleanableOtherCachesRef ref) =>
+    ref.watch(checkOtherCachesProvider) &&
+    !ref.watch(disableCheckOtherCachesProvider);
+
+@riverpod
+class OtherCacheSize extends _$OtherCacheSize {
+  late Isar isar;
 
   List<Future<void>> get clearTask => <Future<void>>[
-        DatabaseManager.homeBannerCaches.clear(),
-        DatabaseManager.searchHistoryCaches.clear(),
+        isar.homeBannerCaches.clear(),
+        isar.searchHistoryCaches.clear(),
       ];
 
   @override
-  Future<int> loadData() async {
+  Future<int> build() async {
+    isar = ref.read(appDatabaseProvider);
+
     return (await Future.wait<int>(<Future<int>>[
-      DatabaseManager.homeBannerCaches.getSize(),
-      DatabaseManager.searchHistoryCaches.getSize(),
+      isar.homeBannerCaches.getSize(),
+      isar.searchHistoryCaches.getSize(),
     ]))
         .reduce((int total, int size) => total += size);
   }
 }
+// OtherCaches END
 
-final AutoDisposeStateNotifierProvider<ResponseDataCacheSizeNotifier,
-        ViewState<int>> responseDataCacheSizeProvider =
-    StateNotifierProvider.autoDispose<ResponseDataCacheSizeNotifier,
-        ViewState<int>>((_) {
-  return ResponseDataCacheSizeNotifier(
-    const ViewState<int>.loading(),
-  );
-});
+// ResponseDataCaches START
+@riverpod
+class CheckResponseDataCaches extends _$CheckResponseDataCaches
+    with AutoDisposeNotifierUpdateMixin<bool> {
+  @override
+  bool build() => true;
+}
 
-class ResponseDataCacheSizeNotifier extends BaseViewNotifier<int> {
-  ResponseDataCacheSizeNotifier(super.state);
+@riverpod
+bool disableCheckResponseDataCaches(DisableCheckResponseDataCachesRef ref) =>
+    ref.watch(
+      responseDataCacheSizeProvider.select(
+        (AsyncValue<int> value) =>
+            value.whenOrNull(data: (int data) => data <= 0) ?? true,
+      ),
+    );
+
+@riverpod
+bool cleanableResponseDataCaches(CleanableResponseDataCachesRef ref) =>
+    ref.watch(checkResponseDataCachesProvider) &&
+    !ref.watch(disableCheckResponseDataCachesProvider);
+
+@riverpod
+class ResponseDataCacheSize extends _$ResponseDataCacheSize {
+  late Isar isar;
 
   List<Future<void>> get clearTask => <Future<void>>[
-        DatabaseManager.responseCaches.clear(),
+        isar.responseCaches.clear(),
       ];
 
   @override
-  Future<int> loadData() {
-    return DatabaseManager.responseCaches.getSize();
+  Future<int> build() {
+    isar = ref.read(appDatabaseProvider);
+
+    return isar.responseCaches.getSize();
   }
 }
+// ResponseDataCaches END
 
-final AutoDisposeStateNotifierProvider<PreferencesCacheSizeNotifier,
-        ViewState<int>> preferencesCacheSizeProvider =
-    StateNotifierProvider.autoDispose<PreferencesCacheSizeNotifier,
-        ViewState<int>>((_) {
-  return PreferencesCacheSizeNotifier(
-    const ViewState<int>.loading(),
-  );
-});
+// PreferencesCaches START
+@riverpod
+class CheckPreferencesCaches extends _$CheckPreferencesCaches
+    with AutoDisposeNotifierUpdateMixin<bool> {
+  @override
+  bool build() => true;
+}
 
-class PreferencesCacheSizeNotifier extends BaseViewNotifier<int> {
-  PreferencesCacheSizeNotifier(super.state);
+@riverpod
+bool disableCheckPreferencesCaches(DisableCheckPreferencesCachesRef ref) =>
+    ref.watch(
+      preferencesCacheSizeProvider.select(
+        (AsyncValue<int> value) =>
+            value.whenOrNull(data: (int data) => data <= 0) ?? true,
+      ),
+    );
+
+@riverpod
+bool cleanablePreferencesCaches(CleanablePreferencesCachesRef ref) =>
+    ref.watch(checkPreferencesCachesProvider) &&
+    !ref.watch(disableCheckPreferencesCachesProvider);
+
+@riverpod
+class PreferencesCacheSize extends _$PreferencesCacheSize {
+  late Isar isar;
 
   List<Future<void>> get clearTask => <Future<void>>[
-        DatabaseManager.userSettingsCache.clear(),
+        isar.userSettingsCache.clear(),
       ];
 
   @override
-  Future<int> loadData() {
-    return DatabaseManager.userSettingsCache.getSize();
+  Future<int> build() {
+    isar = ref.read(appDatabaseProvider);
+
+    return isar.userSettingsCache.getSize();
   }
 }
+// PreferencesCaches END
+
+@riverpod
+bool checkAllCaches(CheckAllCachesRef ref) =>
+    ref.watch(checkOtherCachesProvider) &&
+    ref.watch(checkResponseDataCachesProvider) &&
+    ref.watch(checkPreferencesCachesProvider);
+
+@riverpod
+bool cleanable(CleanableRef ref) =>
+    ref.watch(cleanableOtherCachesProvider) ||
+    ref.watch(cleanableResponseDataCachesProvider) ||
+    ref.watch(cleanablePreferencesCachesProvider);

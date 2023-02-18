@@ -9,27 +9,28 @@ final AutoDisposeStateNotifierProviderFamily<TheyArticlesNotifier,
       ref,
   String author,
 ) {
-  final CancelToken cancelToken = CancelToken();
+  final CancelToken cancelToken = ref.cancelToken();
 
-  ref.onDispose(() {
-    cancelToken.cancel();
-  });
+  final Http http = ref.watch(networkProvider);
 
   return TheyArticlesNotifier(
     const RefreshListViewState<ArticleModel>.loading(),
     author: author,
+    http: http,
     cancelToken: cancelToken,
-  );
+  )..initData();
 });
 
 class TheyArticlesNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
   TheyArticlesNotifier(
     super.state, {
     required this.author,
+    required this.http,
     this.cancelToken,
   });
 
   final String author;
+  final Http http;
   final CancelToken? cancelToken;
 
   @override
@@ -37,7 +38,7 @@ class TheyArticlesNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
     required int pageNum,
     required int pageSize,
   }) async {
-    return (await WanAndroidAPI.fetchArticlesByAuthor(
+    return (await http.fetchArticlesByAuthor(
       pageNum,
       pageSize,
       author: author,

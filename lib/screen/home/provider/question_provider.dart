@@ -4,24 +4,39 @@ final AutoDisposeStateNotifierProvider<QuestionNotifier,
         RefreshListViewState<ArticleModel>> questionArticleProvider =
     StateNotifierProvider.autoDispose<QuestionNotifier,
         RefreshListViewState<ArticleModel>>(
-  (_) {
+  (AutoDisposeStateNotifierProviderRef<QuestionNotifier,
+          RefreshListViewState<ArticleModel>>
+      ref) {
+    final CancelToken cancelToken = ref.cancelToken();
+
+    final Http http = ref.watch(networkProvider);
+
     return QuestionNotifier(
       const RefreshListViewState<ArticleModel>.loading(),
-    );
+      http: http,
+      cancelToken: cancelToken,
+    )..initData();
   },
   name: kQuestionArticleProvider,
 );
 
 class QuestionNotifier extends BaseRefreshListViewNotifier<ArticleModel>
     with ArticleNotifierSwitchCollectMixin {
-  QuestionNotifier(super.state) : super(initialPageNum: 0);
+  QuestionNotifier(
+    super.state, {
+    required this.http,
+    this.cancelToken,
+  }) : super(initialPageNum: 0);
+
+  final Http http;
+  final CancelToken? cancelToken;
 
   @override
   Future<RefreshListViewStateData<ArticleModel>> loadData({
     required int pageNum,
     required int pageSize,
   }) async {
-    return (await WanAndroidAPI.fetchQuestionArticles(
+    return (await http.fetchQuestionArticles(
       pageNum,
       pageSize,
     ))
