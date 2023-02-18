@@ -10,14 +10,16 @@ const List<String> articles = <String>[
 const String kMyCollectedArticleProvider = 'kMyCollectedArticleProvider';
 const String kMyCollectedWebsiteProvider = 'kMyCollectedWebsiteProvider';
 
-final AutoDisposeStateNotifierProvider<MyCollectedArticleNotifier,
-        RefreshListViewState<CollectedArticleModel>>
-    myCollectedArticleProvider = StateNotifierProvider.autoDispose<
-        MyCollectedArticleNotifier,
+typedef MyCollectedArticleProvider = AutoDisposeStateNotifierProvider<
+    MyCollectedArticleNotifier, RefreshListViewState<CollectedArticleModel>>;
+
+typedef MyCollectedArticleProviderRef = AutoDisposeStateNotifierProviderRef<
+    MyCollectedArticleNotifier, RefreshListViewState<CollectedArticleModel>>;
+
+final MyCollectedArticleProvider myCollectedArticleProvider =
+    StateNotifierProvider.autoDispose<MyCollectedArticleNotifier,
         RefreshListViewState<CollectedArticleModel>>(
-  (AutoDisposeStateNotifierProviderRef<MyCollectedArticleNotifier,
-          RefreshListViewState<CollectedArticleModel>>
-      ref) {
+  (MyCollectedArticleProviderRef ref) {
     final CancelToken cancelToken = ref.cancelToken();
 
     final Http http = ref.watch(networkProvider);
@@ -210,13 +212,16 @@ class MyCollectedArticleNotifier
   }
 }
 
-final AutoDisposeStateNotifierProvider<MyCollectedWebsiteNotifier,
-        ListViewState<CollectedWebsiteModel>> myCollectedWebsiteProvider =
+typedef MyCollectedWebsiteProvider = AutoDisposeStateNotifierProvider<
+    MyCollectedWebsiteNotifier, ListViewState<CollectedWebsiteModel>>;
+
+typedef MyCollectedWebsiteProviderRef = AutoDisposeStateNotifierProviderRef<
+    MyCollectedWebsiteNotifier, ListViewState<CollectedWebsiteModel>>;
+
+final MyCollectedWebsiteProvider myCollectedWebsiteProvider =
     StateNotifierProvider.autoDispose<MyCollectedWebsiteNotifier,
         ListViewState<CollectedWebsiteModel>>(
-  (AutoDisposeStateNotifierProviderRef<MyCollectedWebsiteNotifier,
-          ListViewState<CollectedWebsiteModel>>
-      ref) {
+  (MyCollectedWebsiteProviderRef ref) {
     final CancelToken cancelToken = ref.cancelToken();
 
     final Http http = ref.watch(networkProvider);

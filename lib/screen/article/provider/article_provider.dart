@@ -7,7 +7,6 @@ import '../../../app/http/interceptors/interceptors.dart' show AppException;
 
 import '../../../app/l10n/generated/l10n.dart';
 import '../../../app/provider/provider.dart';
-import '../../../app/provider/view_state.dart';
 import '../../../model/models.dart'
     show
         ArticleModel,
@@ -17,8 +16,8 @@ import '../../../model/models.dart'
 import '../../../utils/dialog_utils.dart';
 import '../../drawer/provider/drawer_provider.dart'
     show
-        MyCollectedArticleNotifier,
-        MyCollectedWebsiteNotifier,
+        MyCollectedArticleProvider,
+        MyCollectedWebsiteProvider,
         kMyCollectedArticleProvider,
         kMyCollectedWebsiteProvider;
 
@@ -68,8 +67,11 @@ class AppArticle extends _$AppArticle {
     from = kMyCollectedWebsiteProvider;
     provider = providers[kMyCollectedWebsiteProvider]!;
 
+    final MyCollectedWebsiteProvider realProvider =
+        provider as MyCollectedWebsiteProvider;
+
     final CollectedWebsiteModel? collectedWebsite = ref
-        .read(provider as ProviderBase<ListViewState<CollectedWebsiteModel>>)
+        .read(realProvider)
         .whenOrNull((List<CollectedWebsiteModel> list) => list)
         ?.firstWhereOrNull((CollectedWebsiteModel e) => e.id == articleId);
 
@@ -102,9 +104,11 @@ class AppArticle extends _$AppArticle {
     from = kMyCollectedArticleProvider;
     provider = providers[kMyCollectedArticleProvider]!;
 
+    final MyCollectedArticleProvider realProvider =
+        provider as MyCollectedArticleProvider;
+
     final CollectedArticleModel? collectedArticle = ref
-        .read(provider
-            as ProviderBase<RefreshListViewState<CollectedArticleModel>>)
+        .read(realProvider)
         .whenOrNull((_, __, List<CollectedArticleModel> list) => list)
         ?.firstWhereOrNull((CollectedArticleModel e) => e.id == articleId);
 
@@ -181,10 +185,8 @@ class AppArticle extends _$AppArticle {
     WebViewModel webView, {
     required bool value,
   }) async {
-    final AutoDisposeStateNotifierProvider<MyCollectedArticleNotifier,
-            RefreshListViewState<CollectedArticleModel>> realProvider =
-        provider as AutoDisposeStateNotifierProvider<MyCollectedArticleNotifier,
-            RefreshListViewState<CollectedArticleModel>>;
+    final MyCollectedArticleProvider realProvider =
+        provider as MyCollectedArticleProvider;
     if (value) {
       await http.addCollectedArticleByArticleId(articleId: webView.id);
     } else {
@@ -202,10 +204,8 @@ class AppArticle extends _$AppArticle {
     WebViewModel webView, {
     required bool value,
   }) async {
-    final AutoDisposeStateNotifierProvider<MyCollectedWebsiteNotifier,
-            ListViewState<CollectedWebsiteModel>> realProvider =
-        provider as AutoDisposeStateNotifierProvider<MyCollectedWebsiteNotifier,
-            ListViewState<CollectedWebsiteModel>>;
+    final MyCollectedWebsiteProvider realProvider =
+        provider as MyCollectedWebsiteProvider;
     if (value) {
       final CollectedWebsiteModel? newCollectedWebsite =
           await ref.read(realProvider.notifier).add(
