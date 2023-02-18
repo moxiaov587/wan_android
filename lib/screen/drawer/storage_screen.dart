@@ -1,15 +1,10 @@
 part of 'home_drawer.dart';
 
-class StorageScreen extends ConsumerStatefulWidget {
+class StorageScreen extends ConsumerWidget {
   const StorageScreen({super.key});
 
   @override
-  ConsumerState<StorageScreen> createState() => _StorageScreenState();
-}
-
-class _StorageScreenState extends ConsumerState<StorageScreen> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         title: Text(S.of(context).clearCache),

@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nil/nil.dart' show nil;
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../../app/http/http.dart';
 import '../../app/l10n/generated/l10n.dart';
 import '../../app/provider/mixin/refresh_list_view_state_mixin.dart';
 import '../../app/provider/view_state.dart';
@@ -36,14 +35,9 @@ part 'rank_screen.dart';
 part 'settings_screen.dart';
 part 'storage_screen.dart';
 
-class HomeDrawer extends StatefulWidget {
+class HomeDrawer extends StatelessWidget {
   const HomeDrawer({super.key});
 
-  @override
-  _HomeDrawerState createState() => _HomeDrawerState();
-}
-
-class _HomeDrawerState extends State<HomeDrawer> {
   @override
   Widget build(BuildContext context) {
     const double avatarRadius = 30.0;

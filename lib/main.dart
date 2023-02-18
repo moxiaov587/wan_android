@@ -1,8 +1,6 @@
-import 'dart:async' show StreamSubscription, FutureOr;
+import 'dart:async' show FutureOr;
 import 'dart:io';
 
-import 'package:connectivity_plus/connectivity_plus.dart'
-    show ConnectivityResult;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemChrome;
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -65,25 +63,16 @@ class MyApp extends ConsumerStatefulWidget {
 }
 
 class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
-  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
-
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addObserver(this);
     closeSplash();
-    // _connectivitySubscription = ref
-    //     .read(networkConnectivityProvider.notifier)
-    //     .onConnectivityChanged
-    //     .listen(ref
-    //         .read(networkConnectivityProvider.notifier)
-    //         .onConnectivityChange);
   }
 
   @override
   void dispose() {
-    _connectivitySubscription.cancel();
     WidgetsBinding.instance.removeObserver(this);
 
     super.dispose();
