@@ -11,11 +11,8 @@ class __ArticleState extends ConsumerState<_Article>
     with
         AutomaticKeepAliveClientMixin,
         RouteAware,
-        AutoDisposeRefreshListViewStateMixin<
-            AutoDisposeStateNotifierProvider<MyCollectedArticleNotifier,
-                RefreshListViewState<CollectedArticleModel>>,
-            CollectedArticleModel,
-            _Article> {
+        AutoDisposeRefreshListViewStateMixin<MyCollectedArticleProvider,
+            CollectedArticleModel, _Article> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();

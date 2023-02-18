@@ -10,11 +10,8 @@ class _QA extends ConsumerStatefulWidget {
 class _QAState extends ConsumerState<_QA>
     with
         AutomaticKeepAliveClientMixin,
-        AutoDisposeRefreshListViewStateMixin<
-            AutoDisposeStateNotifierProvider<QuestionNotifier,
-                RefreshListViewState<ArticleModel>>,
-            ArticleModel,
-            _QA> {
+        AutoDisposeRefreshListViewStateMixin<QuestionArticleProvider,
+            ArticleModel, _QA> {
   @override
   Widget build(BuildContext context) {
     super.build(context);

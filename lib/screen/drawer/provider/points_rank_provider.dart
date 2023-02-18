@@ -1,9 +1,10 @@
 part of 'drawer_provider.dart';
 
-final AutoDisposeStateNotifierProvider<PointsRankNotifier,
-        RefreshListViewState<UserPointsModel>> pointsRankProvider =
-    StateNotifierProvider.autoDispose<PointsRankNotifier,
-        RefreshListViewState<UserPointsModel>>(
+typedef PointsRankProvider = AutoDisposeStateNotifierProvider<
+    PointsRankNotifier, RefreshListViewState<UserPointsModel>>;
+
+final PointsRankProvider pointsRankProvider = StateNotifierProvider.autoDispose<
+    PointsRankNotifier, RefreshListViewState<UserPointsModel>>(
   (AutoDisposeStateNotifierProviderRef<PointsRankNotifier,
           RefreshListViewState<UserPointsModel>>
       ref) {

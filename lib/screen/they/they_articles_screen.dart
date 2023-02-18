@@ -14,10 +14,7 @@ class TheyArticlesScreen extends ConsumerStatefulWidget {
 
 class _TheyArticlesScreenState extends ConsumerState<TheyArticlesScreen>
     with
-        AutoDisposeRefreshListViewStateMixin<
-            AutoDisposeStateNotifierProvider<TheyArticlesNotifier,
-                RefreshListViewState<ArticleModel>>,
-            ArticleModel,
+        AutoDisposeRefreshListViewStateMixin<TheyArticlesProvider, ArticleModel,
             TheyArticlesScreen> {
   @override
   Widget build(BuildContext context) {

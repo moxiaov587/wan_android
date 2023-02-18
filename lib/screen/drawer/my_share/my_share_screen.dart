@@ -32,11 +32,8 @@ class MyShareScreen extends ConsumerStatefulWidget {
 
 class _MyShareScreenState extends ConsumerState<MyShareScreen>
     with
-        AutoDisposeRefreshListViewStateMixin<
-            AutoDisposeStateNotifierProvider<MyShareArticlesNotifier,
-                RefreshListViewState<ArticleModel>>,
-            ArticleModel,
-            MyShareScreen> {
+        AutoDisposeRefreshListViewStateMixin<MyShareArticlesProvider,
+            ArticleModel, MyShareScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

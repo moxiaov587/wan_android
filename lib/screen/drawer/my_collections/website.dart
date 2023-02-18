@@ -11,11 +11,8 @@ class __WebsiteState extends ConsumerState<_Website>
     with
         AutomaticKeepAliveClientMixin,
         RouteAware,
-        AutoDisposeListViewStateMixin<
-            AutoDisposeStateNotifierProvider<MyCollectedWebsiteNotifier,
-                ListViewState<CollectedWebsiteModel>>,
-            CollectedWebsiteModel,
-            _Website> {
+        AutoDisposeListViewStateMixin<MyCollectedWebsiteProvider,
+            CollectedWebsiteModel, _Website> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();

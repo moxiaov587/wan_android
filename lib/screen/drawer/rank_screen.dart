@@ -11,11 +11,8 @@ class RankScreen extends ConsumerStatefulWidget {
 
 class _RankScreenState extends ConsumerState<RankScreen>
     with
-        AutoDisposeRefreshListViewStateMixin<
-            AutoDisposeStateNotifierProvider<PointsRankNotifier,
-                RefreshListViewState<UserPointsModel>>,
-            UserPointsModel,
-            RankScreen> {
+        AutoDisposeRefreshListViewStateMixin<PointsRankProvider,
+            UserPointsModel, RankScreen> {
   @override
   Widget build(BuildContext context) {
     final double paddingBottom =

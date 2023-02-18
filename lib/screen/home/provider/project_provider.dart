@@ -20,10 +20,11 @@ class CurrentProjectType extends _$CurrentProjectType
   }
 }
 
-final AutoDisposeStateNotifierProvider<ProjectNotifier,
-        RefreshListViewState<ArticleModel>> projectArticleProvider =
-    StateNotifierProvider.autoDispose<ProjectNotifier,
-        RefreshListViewState<ArticleModel>>(
+typedef ProjectArticleProvider = AutoDisposeStateNotifierProvider<
+    ProjectNotifier, RefreshListViewState<ArticleModel>>;
+
+final ProjectArticleProvider projectArticleProvider = StateNotifierProvider
+    .autoDispose<ProjectNotifier, RefreshListViewState<ArticleModel>>(
   (AutoDisposeStateNotifierProviderRef<ProjectNotifier,
           RefreshListViewState<ArticleModel>>
       ref) {

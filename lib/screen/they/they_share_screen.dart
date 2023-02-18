@@ -14,10 +14,7 @@ class TheyShareScreen extends ConsumerStatefulWidget {
 
 class _TheyShareScreenState extends ConsumerState<TheyShareScreen>
     with
-        AutoDisposeRefreshListViewStateMixin<
-            AutoDisposeStateNotifierProvider<TheyShareNotifier,
-                RefreshListViewState<ArticleModel>>,
-            ArticleModel,
+        AutoDisposeRefreshListViewStateMixin<TheyShareProvider, ArticleModel,
             TheyShareScreen> {
   @override
   Widget build(BuildContext context) {

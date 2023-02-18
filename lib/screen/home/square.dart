@@ -10,11 +10,8 @@ class _Square extends ConsumerStatefulWidget {
 class _SquareState extends ConsumerState<_Square>
     with
         AutomaticKeepAliveClientMixin,
-        AutoDisposeRefreshListViewStateMixin<
-            AutoDisposeStateNotifierProvider<SquareNotifier,
-                RefreshListViewState<ArticleModel>>,
-            ArticleModel,
-            _Square> {
+        AutoDisposeRefreshListViewStateMixin<SquareArticleProvider,
+            ArticleModel, _Square> {
   @override
   Widget build(BuildContext context) {
     super.build(context);

@@ -9,10 +9,7 @@ class MyPointsScreen extends ConsumerStatefulWidget {
 
 class _MyPointsScreenState extends ConsumerState<MyPointsScreen>
     with
-        AutoDisposeRefreshListViewStateMixin<
-            AutoDisposeStateNotifierProvider<UserPointsRecordNotifier,
-                RefreshListViewState<PointsModel>>,
-            PointsModel,
+        AutoDisposeRefreshListViewStateMixin<MyPointsProvider, PointsModel,
             MyPointsScreen> {
   @override
   Widget build(BuildContext context) {

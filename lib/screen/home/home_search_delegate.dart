@@ -65,11 +65,8 @@ class _Results extends ConsumerStatefulWidget {
 
 class __ResultsState extends ConsumerState<_Results>
     with
-        AutoDisposeRefreshListViewStateMixin<
-            AutoDisposeStateNotifierProvider<SearchNotifier,
-                RefreshListViewState<ArticleModel>>,
-            ArticleModel,
-            _Results> {
+        AutoDisposeRefreshListViewStateMixin<SearchArticlesProvider,
+            ArticleModel, _Results> {
   Isar get isar => ref.read(appDatabaseProvider);
 
   @override

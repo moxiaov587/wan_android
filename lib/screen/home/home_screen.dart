@@ -138,10 +138,7 @@ class _Home extends ConsumerStatefulWidget {
 class _HomeState extends ConsumerState<_Home>
     with
         AutomaticKeepAliveClientMixin,
-        AutoDisposeRefreshListViewStateMixin<
-            AutoDisposeStateNotifierProvider<ArticleNotifier,
-                RefreshListViewState<ArticleModel>>,
-            ArticleModel,
+        AutoDisposeRefreshListViewStateMixin<HomeArticleProvider, ArticleModel,
             _Home> {
   @override
   void onRetry() {

@@ -1,5 +1,8 @@
 part of 'they_provider.dart';
 
+typedef TheyArticlesProvider = AutoDisposeStateNotifierProvider<
+    TheyArticlesNotifier, RefreshListViewState<ArticleModel>>;
+
 final AutoDisposeStateNotifierProviderFamily<TheyArticlesNotifier,
         RefreshListViewState<ArticleModel>, String> theyArticlesProvider =
     StateNotifierProvider.family.autoDispose<TheyArticlesNotifier,
