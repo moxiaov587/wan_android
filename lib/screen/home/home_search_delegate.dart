@@ -132,7 +132,7 @@ class __ResultsState extends ConsumerState<_Results>
               ) {
                 if (list.isEmpty) {
                   return const SliverFillRemaining(
-                    child: EmptyWidget(),
+                    child: EmptyWidget.search(),
                   );
                 }
 

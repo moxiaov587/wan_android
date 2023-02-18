@@ -59,7 +59,7 @@ class __ArticleState extends ConsumerState<_Article>
 
                 if (list.isEmpty) {
                   return const SliverFillRemaining(
-                    child: EmptyWidget(),
+                    child: EmptyWidget.favorites(),
                   );
                 }
 

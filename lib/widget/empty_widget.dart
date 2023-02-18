@@ -6,8 +6,23 @@ class EmptyWidget extends StatelessWidget {
     this.message,
     this.detail,
     this.onRetry,
-  });
+  }) : _assets = Assets.ASSETS_IMAGES_EMPTY_PNG;
 
+  const EmptyWidget.favorites({
+    super.key,
+    this.message,
+    this.detail,
+    this.onRetry,
+  }) : _assets = Assets.ASSETS_IMAGES_FAVORITES_EMPTY_PNG;
+
+  const EmptyWidget.search({
+    super.key,
+    this.message,
+    this.detail,
+    this.onRetry,
+  }) : _assets = Assets.ASSETS_IMAGES_SEARCH_EMPTY_PNG;
+
+  final String _assets;
   final String? message;
   final String? detail;
   final VoidCallback? onRetry;
@@ -19,7 +34,7 @@ class EmptyWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Image.asset(
-            Assets.ASSETS_IMAGES_EMPTY_PNG,
+            _assets,
             width: 180,
           ),
           Text(

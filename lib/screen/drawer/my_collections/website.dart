@@ -53,7 +53,7 @@ class __WebsiteState extends ConsumerState<_Website>
 
               if (list.isEmpty) {
                 return const SliverFillRemaining(
-                  child: EmptyWidget(),
+                  child: EmptyWidget.favorites(),
                 );
               }
 
