@@ -190,10 +190,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
 
                         return IconButton(
                           onPressed: () {
-                            ref.invalidate(networkProvider);
-                            // ref
-                            //     .read(appThemeModeProvider.notifier)
-                            //     .switchThemeMode(reverse);
+                            ref
+                                .read(appThemeModeProvider.notifier)
+                                .switchThemeMode(reverse);
                           },
                           tooltip: S.of(context).themeMode(reverse.name),
                           icon: Icon(
