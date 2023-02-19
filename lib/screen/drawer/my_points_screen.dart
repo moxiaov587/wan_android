@@ -9,11 +9,11 @@ class MyPointsScreen extends ConsumerStatefulWidget {
 
 class _MyPointsScreenState extends ConsumerState<MyPointsScreen>
     with
-        AutoDisposeRefreshListViewStateMixin<
-            AutoDisposeStateNotifierProvider<UserPointsRecordNotifier,
-                RefreshListViewState<PointsModel>>,
-            PointsModel,
+        AutoDisposeRefreshListViewStateMixin<MyPointsProvider, PointsModel,
             MyPointsScreen> {
+  @override
+  MyPointsProvider get provider => myPointsProvider;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,8 +120,4 @@ class _MyPointsScreenState extends ConsumerState<MyPointsScreen>
       ),
     );
   }
-
-  @override
-  AutoDisposeStateNotifierProvider<UserPointsRecordNotifier,
-      RefreshListViewState<PointsModel>> get provider => myPointsProvider;
 }

@@ -1,9 +1,10 @@
 part of 'home_provider.dart';
 
-final AutoDisposeStateNotifierProvider<SquareNotifier,
-        RefreshListViewState<ArticleModel>> squareArticleProvider =
-    StateNotifierProvider.autoDispose<SquareNotifier,
-        RefreshListViewState<ArticleModel>>(
+typedef SquareArticleProvider = AutoDisposeStateNotifierProvider<SquareNotifier,
+    RefreshListViewState<ArticleModel>>;
+
+final SquareArticleProvider squareArticleProvider = StateNotifierProvider
+    .autoDispose<SquareNotifier, RefreshListViewState<ArticleModel>>(
   (AutoDisposeStateNotifierProviderRef<SquareNotifier,
           RefreshListViewState<ArticleModel>>
       ref) {

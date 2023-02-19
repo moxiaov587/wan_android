@@ -11,11 +11,14 @@ class __ArticleState extends ConsumerState<_Article>
     with
         AutomaticKeepAliveClientMixin,
         RouteAware,
-        AutoDisposeRefreshListViewStateMixin<
-            AutoDisposeStateNotifierProvider<MyCollectedArticleNotifier,
-                RefreshListViewState<CollectedArticleModel>>,
-            CollectedArticleModel,
-            _Article> {
+        AutoDisposeRefreshListViewStateMixin<MyCollectedArticleProvider,
+            CollectedArticleModel, _Article> {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  MyCollectedArticleProvider get provider => myCollectedArticleProvider;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -59,7 +62,7 @@ class __ArticleState extends ConsumerState<_Article>
 
                 if (list.isEmpty) {
                   return const SliverFillRemaining(
-                    child: EmptyWidget(),
+                    child: EmptyWidget.favorites(),
                   );
                 }
 
@@ -105,14 +108,6 @@ class __ArticleState extends ConsumerState<_Article>
       ),
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
-
-  @override
-  AutoDisposeStateNotifierProvider<MyCollectedArticleNotifier,
-          RefreshListViewState<CollectedArticleModel>>
-      get provider => myCollectedArticleProvider;
 }
 
 class _CollectedArticleTile extends ConsumerWidget {

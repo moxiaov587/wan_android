@@ -2,7 +2,7 @@ import 'dart:collection' show LinkedHashMap;
 import 'dart:convert' show jsonEncode, jsonDecode;
 import 'dart:io';
 
-import 'package:diox/diox.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../database/app_database.dart';

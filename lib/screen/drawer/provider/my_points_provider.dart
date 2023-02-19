@@ -1,11 +1,13 @@
 part of 'drawer_provider.dart';
 
-final AutoDisposeStateNotifierProvider<UserPointsRecordNotifier,
-        RefreshListViewState<PointsModel>> myPointsProvider =
-    StateNotifierProvider.autoDispose<UserPointsRecordNotifier,
-        RefreshListViewState<PointsModel>>((AutoDisposeStateNotifierProviderRef<
-            UserPointsRecordNotifier, RefreshListViewState<PointsModel>>
-        ref) {
+typedef MyPointsProvider = AutoDisposeStateNotifierProvider<
+    UserPointsRecordNotifier, RefreshListViewState<PointsModel>>;
+
+final MyPointsProvider myPointsProvider = StateNotifierProvider.autoDispose<
+    UserPointsRecordNotifier,
+    RefreshListViewState<PointsModel>>((AutoDisposeStateNotifierProviderRef<
+        UserPointsRecordNotifier, RefreshListViewState<PointsModel>>
+    ref) {
   final CancelToken cancelToken = ref.cancelToken();
 
   final Http http = ref.watch(networkProvider);

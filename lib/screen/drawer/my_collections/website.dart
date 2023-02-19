@@ -11,11 +11,14 @@ class __WebsiteState extends ConsumerState<_Website>
     with
         AutomaticKeepAliveClientMixin,
         RouteAware,
-        AutoDisposeListViewStateMixin<
-            AutoDisposeStateNotifierProvider<MyCollectedWebsiteNotifier,
-                ListViewState<CollectedWebsiteModel>>,
-            CollectedWebsiteModel,
-            _Website> {
+        AutoDisposeListViewStateMixin<MyCollectedWebsiteProvider,
+            CollectedWebsiteModel, _Website> {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  MyCollectedWebsiteProvider get provider => myCollectedWebsiteProvider;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -53,7 +56,7 @@ class __WebsiteState extends ConsumerState<_Website>
 
               if (list.isEmpty) {
                 return const SliverFillRemaining(
-                  child: EmptyWidget(),
+                  child: EmptyWidget.favorites(),
                 );
               }
 
@@ -92,14 +95,6 @@ class __WebsiteState extends ConsumerState<_Website>
       ],
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
-
-  @override
-  AutoDisposeStateNotifierProvider<MyCollectedWebsiteNotifier,
-          ListViewState<CollectedWebsiteModel>>
-      get provider => myCollectedWebsiteProvider;
 }
 
 class _CollectedWebsiteTile extends ConsumerWidget {

@@ -65,11 +65,12 @@ class _Results extends ConsumerStatefulWidget {
 
 class __ResultsState extends ConsumerState<_Results>
     with
-        AutoDisposeRefreshListViewStateMixin<
-            AutoDisposeStateNotifierProvider<SearchNotifier,
-                RefreshListViewState<ArticleModel>>,
-            ArticleModel,
-            _Results> {
+        AutoDisposeRefreshListViewStateMixin<SearchArticlesProvider,
+            ArticleModel, _Results> {
+  @override
+  late final SearchArticlesProvider provider =
+      searchArticlesProvider(widget.query);
+
   Isar get isar => ref.read(appDatabaseProvider);
 
   @override
@@ -132,7 +133,7 @@ class __ResultsState extends ConsumerState<_Results>
               ) {
                 if (list.isEmpty) {
                   return const SliverFillRemaining(
-                    child: EmptyWidget(),
+                    child: EmptyWidget.search(),
                   );
                 }
 
@@ -164,11 +165,6 @@ class __ResultsState extends ConsumerState<_Results>
       ),
     );
   }
-
-  @override
-  late final AutoDisposeStateNotifierProvider<SearchNotifier,
-          RefreshListViewState<ArticleModel>> provider =
-      searchArticlesProvider(widget.query);
 }
 
 typedef SearchHistoryCallback = Function(String keyword);

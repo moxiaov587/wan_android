@@ -2,10 +2,11 @@ part of 'drawer_provider.dart';
 
 const String kMyShareProvider = 'kMyShareProvider';
 
-final AutoDisposeStateNotifierProvider<MyShareArticlesNotifier,
-        RefreshListViewState<ArticleModel>> myShareArticlesProvider =
-    StateNotifierProvider.autoDispose<MyShareArticlesNotifier,
-        RefreshListViewState<ArticleModel>>(
+typedef MyShareArticlesProvider = AutoDisposeStateNotifierProvider<
+    MyShareArticlesNotifier, RefreshListViewState<ArticleModel>>;
+
+final MyShareArticlesProvider myShareArticlesProvider = StateNotifierProvider
+    .autoDispose<MyShareArticlesNotifier, RefreshListViewState<ArticleModel>>(
   (AutoDisposeStateNotifierProviderRef<MyShareArticlesNotifier,
           RefreshListViewState<ArticleModel>>
       ref) {

@@ -5,7 +5,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 
 import '../../../app/l10n/generated/l10n.dart';
 import '../../../app/provider/mixin/refresh_list_view_state_mixin.dart';
-import '../../../app/provider/view_state.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../contacts/icon_font_icons.dart';
 import '../../../extensions/extensions.dart';
@@ -32,11 +31,11 @@ class MyShareScreen extends ConsumerStatefulWidget {
 
 class _MyShareScreenState extends ConsumerState<MyShareScreen>
     with
-        AutoDisposeRefreshListViewStateMixin<
-            AutoDisposeStateNotifierProvider<MyShareArticlesNotifier,
-                RefreshListViewState<ArticleModel>>,
-            ArticleModel,
-            MyShareScreen> {
+        AutoDisposeRefreshListViewStateMixin<MyShareArticlesProvider,
+            ArticleModel, MyShareScreen> {
+  @override
+  MyShareArticlesProvider get provider => myShareArticlesProvider;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -118,11 +117,6 @@ class _MyShareScreenState extends ConsumerState<MyShareScreen>
       ),
     );
   }
-
-  @override
-  AutoDisposeStateNotifierProvider<MyShareArticlesNotifier,
-          RefreshListViewState<ArticleModel>>
-      get provider => myShareArticlesProvider;
 }
 
 class _ShareArticleTile extends ConsumerWidget {

@@ -14,11 +14,12 @@ class TheyArticlesScreen extends ConsumerStatefulWidget {
 
 class _TheyArticlesScreenState extends ConsumerState<TheyArticlesScreen>
     with
-        AutoDisposeRefreshListViewStateMixin<
-            AutoDisposeStateNotifierProvider<TheyArticlesNotifier,
-                RefreshListViewState<ArticleModel>>,
-            ArticleModel,
+        AutoDisposeRefreshListViewStateMixin<TheyArticlesProvider, ArticleModel,
             TheyArticlesScreen> {
+  @override
+  late final TheyArticlesProvider provider =
+      theyArticlesProvider(widget.author);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,9 +77,4 @@ class _TheyArticlesScreenState extends ConsumerState<TheyArticlesScreen>
       ),
     );
   }
-
-  @override
-  late final AutoDisposeStateNotifierProvider<TheyArticlesNotifier,
-          RefreshListViewState<ArticleModel>> provider =
-      theyArticlesProvider(widget.author);
 }

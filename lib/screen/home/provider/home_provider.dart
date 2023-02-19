@@ -164,10 +164,11 @@ Future<List<ArticleModel>> homeTopArticles(HomeTopArticlesRef ref) {
       .fetchHomeTopArticles(cancelToken: cancelToken);
 }
 
-final AutoDisposeStateNotifierProvider<ArticleNotifier,
-        RefreshListViewState<ArticleModel>> homeArticleProvider =
-    StateNotifierProvider.autoDispose<ArticleNotifier,
-        RefreshListViewState<ArticleModel>>(
+typedef HomeArticleProvider = AutoDisposeStateNotifierProvider<ArticleNotifier,
+    RefreshListViewState<ArticleModel>>;
+
+final HomeArticleProvider homeArticleProvider = StateNotifierProvider
+    .autoDispose<ArticleNotifier, RefreshListViewState<ArticleModel>>(
   (AutoDisposeStateNotifierProviderRef<ArticleNotifier,
           RefreshListViewState<ArticleModel>>
       ref) {

@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cookie_jar/cookie_jar.dart';
-import 'package:diox/diox.dart';
-import 'package:diox_cookie_manager/diox_cookie_manager.dart';
+import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart' as web_view
     show CookieManager, HTTPCookieSameSitePolicy;
@@ -13,7 +13,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../utils/log_utils.dart';
 import 'interceptors/interceptors.dart';
 
-export 'package:diox/diox.dart' show CancelToken;
+export 'package:dio/dio.dart' show CancelToken;
 
 export 'api/api.dart';
 
