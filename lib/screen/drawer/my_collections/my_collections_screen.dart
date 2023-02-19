@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-import '../../../app/http/http.dart';
 import '../../../app/l10n/generated/l10n.dart';
 import '../../../app/provider/mixin/list_view_state_mixin.dart';
 import '../../../app/provider/mixin/refresh_list_view_state_mixin.dart';
@@ -65,10 +64,9 @@ class _MyCollectionsScreenState extends State<MyCollectionsScreen>
           Consumer(
             builder: (_, WidgetRef ref, __) => IconButton(
               onPressed: () {
-                ref.invalidate(networkProvider);
-                // AddCollectedArticleOrWebsiteRoute(
-                //   type: CollectionType.values[_tabController.index],
-                // ).push(context);
+                AddCollectedArticleOrWebsiteRoute(
+                  type: CollectionType.values[_tabController.index],
+                ).push(context);
               },
               icon: const Icon(
                 IconFontIcons.addLine,
