@@ -17,6 +17,9 @@ class _TheyShareScreenState extends ConsumerState<TheyShareScreen>
         AutoDisposeRefreshListViewStateMixin<TheyShareProvider, ArticleModel,
             TheyShareScreen> {
   @override
+  late final TheyShareProvider provider = theyShareProvider(widget.userId);
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -216,9 +219,4 @@ class _TheyShareScreenState extends ConsumerState<TheyShareScreen>
       ),
     );
   }
-
-  @override
-  late final AutoDisposeStateNotifierProvider<TheyShareNotifier,
-          RefreshListViewState<ArticleModel>> provider =
-      theyShareProvider(widget.userId);
 }

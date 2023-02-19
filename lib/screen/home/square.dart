@@ -13,6 +13,12 @@ class _SquareState extends ConsumerState<_Square>
         AutoDisposeRefreshListViewStateMixin<SquareArticleProvider,
             ArticleModel, _Square> {
   @override
+  bool get wantKeepAlive => true;
+
+  @override
+  SquareArticleProvider get provider => squareArticleProvider;
+
+  @override
   Widget build(BuildContext context) {
     super.build(context);
 
@@ -72,11 +78,4 @@ class _SquareState extends ConsumerState<_Square>
       ],
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
-
-  @override
-  AutoDisposeStateNotifierProvider<SquareNotifier,
-      RefreshListViewState<ArticleModel>> get provider => squareArticleProvider;
 }

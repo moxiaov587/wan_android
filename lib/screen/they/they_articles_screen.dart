@@ -17,6 +17,10 @@ class _TheyArticlesScreenState extends ConsumerState<TheyArticlesScreen>
         AutoDisposeRefreshListViewStateMixin<TheyArticlesProvider, ArticleModel,
             TheyArticlesScreen> {
   @override
+  late final TheyArticlesProvider provider =
+      theyArticlesProvider(widget.author);
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -73,9 +77,4 @@ class _TheyArticlesScreenState extends ConsumerState<TheyArticlesScreen>
       ),
     );
   }
-
-  @override
-  late final AutoDisposeStateNotifierProvider<TheyArticlesNotifier,
-          RefreshListViewState<ArticleModel>> provider =
-      theyArticlesProvider(widget.author);
 }

@@ -13,6 +13,12 @@ class _ProjectState extends ConsumerState<_Project>
         AutoDisposeRefreshListViewStateMixin<ProjectArticleProvider,
             ArticleModel, _Project> {
   @override
+  bool get wantKeepAlive => true;
+
+  @override
+  ProjectArticleProvider get provider => projectArticleProvider;
+
+  @override
   void onRetry() {
     if (ref.read(projectTypeProvider).hasError) {
       ref.invalidate(projectTypeProvider);
@@ -87,14 +93,6 @@ class _ProjectState extends ConsumerState<_Project>
       ],
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
-
-  @override
-  AutoDisposeStateNotifierProvider<ProjectNotifier,
-          RefreshListViewState<ArticleModel>>
-      get provider => projectArticleProvider;
 }
 
 class _ProjectTypeSwitchExtentProtoType extends ConsumerWidget {

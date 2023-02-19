@@ -14,6 +14,9 @@ class _RankScreenState extends ConsumerState<RankScreen>
         AutoDisposeRefreshListViewStateMixin<PointsRankProvider,
             UserPointsModel, RankScreen> {
   @override
+  PointsRankProvider get provider => pointsRankProvider;
+
+  @override
   Widget build(BuildContext context) {
     final double paddingBottom =
         _kCurrentUserRankTileHeight + ScreenUtils.bottomSafeHeight;
@@ -149,10 +152,6 @@ class _RankScreenState extends ConsumerState<RankScreen>
       ),
     );
   }
-
-  @override
-  AutoDisposeStateNotifierProvider<PointsRankNotifier,
-      RefreshListViewState<UserPointsModel>> get provider => pointsRankProvider;
 }
 
 class _RankTile extends StatelessWidget {

@@ -14,6 +14,12 @@ class __ArticleState extends ConsumerState<_Article>
         AutoDisposeRefreshListViewStateMixin<MyCollectedArticleProvider,
             CollectedArticleModel, _Article> {
   @override
+  bool get wantKeepAlive => true;
+
+  @override
+  MyCollectedArticleProvider get provider => myCollectedArticleProvider;
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
@@ -102,14 +108,6 @@ class __ArticleState extends ConsumerState<_Article>
       ),
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
-
-  @override
-  AutoDisposeStateNotifierProvider<MyCollectedArticleNotifier,
-          RefreshListViewState<CollectedArticleModel>>
-      get provider => myCollectedArticleProvider;
 }
 
 class _CollectedArticleTile extends ConsumerWidget {

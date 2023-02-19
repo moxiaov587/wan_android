@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nil/nil.dart' show nil;
 
-import '../../../app/provider/view_state.dart';
 import '../../../widget/view_state_widget.dart';
 import '../../app/l10n/generated/l10n.dart';
 import '../../app/provider/mixin/refresh_list_view_state_mixin.dart';
@@ -141,6 +140,12 @@ class _HomeState extends ConsumerState<_Home>
         AutoDisposeRefreshListViewStateMixin<HomeArticleProvider, ArticleModel,
             _Home> {
   @override
+  bool get wantKeepAlive => true;
+
+  @override
+  HomeArticleProvider get provider => homeArticleProvider;
+
+  @override
   void onRetry() {
     if (ref.read(homeTopArticlesProvider).hasError) {
       ref.invalidate(homeTopArticlesProvider);
@@ -190,13 +195,6 @@ class _HomeState extends ConsumerState<_Home>
       ),
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
-
-  @override
-  AutoDisposeStateNotifierProvider<ArticleNotifier,
-      RefreshListViewState<ArticleModel>> get provider => homeArticleProvider;
 }
 
 class _HomeAppBar extends StatefulWidget {

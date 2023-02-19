@@ -67,6 +67,10 @@ class __ResultsState extends ConsumerState<_Results>
     with
         AutoDisposeRefreshListViewStateMixin<SearchArticlesProvider,
             ArticleModel, _Results> {
+  @override
+  late final SearchArticlesProvider provider =
+      searchArticlesProvider(widget.query);
+
   Isar get isar => ref.read(appDatabaseProvider);
 
   @override
@@ -161,11 +165,6 @@ class __ResultsState extends ConsumerState<_Results>
       ),
     );
   }
-
-  @override
-  late final AutoDisposeStateNotifierProvider<SearchNotifier,
-          RefreshListViewState<ArticleModel>> provider =
-      searchArticlesProvider(widget.query);
 }
 
 typedef SearchHistoryCallback = Function(String keyword);

@@ -12,6 +12,9 @@ class _MyPointsScreenState extends ConsumerState<MyPointsScreen>
         AutoDisposeRefreshListViewStateMixin<MyPointsProvider, PointsModel,
             MyPointsScreen> {
   @override
+  MyPointsProvider get provider => myPointsProvider;
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.theme.appBarTheme.backgroundColor,
@@ -117,8 +120,4 @@ class _MyPointsScreenState extends ConsumerState<MyPointsScreen>
       ),
     );
   }
-
-  @override
-  AutoDisposeStateNotifierProvider<UserPointsRecordNotifier,
-      RefreshListViewState<PointsModel>> get provider => myPointsProvider;
 }
