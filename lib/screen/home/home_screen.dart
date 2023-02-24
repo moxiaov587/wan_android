@@ -1,7 +1,7 @@
 import 'package:extended_image/extended_image.dart';
-import 'package:extended_sliver/extended_sliver.dart';
 import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nil/nil.dart' show nil;
 
@@ -166,7 +166,7 @@ class _HomeState extends ConsumerState<_Home>
           pullDownIndicator,
           Consumer(
             builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-              (int nextPageNum, bool isLastPage, List<ArticleModel> list) {
+              (int pageNum, bool isLastPage, List<ArticleModel> list) {
                 if (list.isEmpty) {
                   return const SliverFillRemaining(
                     child: EmptyWidget(),
