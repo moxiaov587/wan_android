@@ -63,7 +63,7 @@ class ProjectNotifier extends BaseRefreshListViewNotifier<ArticleModel>
     required this.categoryId,
     required this.http,
     this.cancelToken,
-  }) : super(initialPageNum: 0);
+  }) : super(initialPageNum: 1);
 
   final int? categoryId;
   final Http http;
