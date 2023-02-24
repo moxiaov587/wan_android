@@ -36,7 +36,7 @@ class _TheyArticlesScreenState extends ConsumerState<TheyArticlesScreen>
                 Consumer(
                   builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
                     (
-                      int nextPageNum,
+                      int pageNum,
                       bool isLastPage,
                       List<ArticleModel> list,
                     ) {

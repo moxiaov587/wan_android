@@ -41,7 +41,7 @@ class _SquareState extends ConsumerState<_Square>
                       builder: (_, WidgetRef ref, __) =>
                           ref.watch(provider).when(
                         (
-                          int nextPageNum,
+                          int pageNum,
                           bool isLastPage,
                           List<ArticleModel> list,
                         ) {

@@ -127,7 +127,7 @@ class __ResultsState extends ConsumerState<_Results>
           Consumer(
             builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
               (
-                int nextPageNum,
+                int pageNum,
                 bool isLastPage,
                 List<ArticleModel> list,
               ) {

@@ -41,7 +41,7 @@ class _QAState extends ConsumerState<_QA>
                       builder: (_, WidgetRef ref, __) =>
                           ref.watch(provider).when(
                         (
-                          int nextPageNum,
+                          int pageNum,
                           bool isLastPage,
                           List<ArticleModel> list,
                         ) {
