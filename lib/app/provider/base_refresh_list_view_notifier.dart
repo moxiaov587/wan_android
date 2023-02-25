@@ -30,7 +30,7 @@ abstract class BaseRefreshListViewNotifier<T>
       onCompleted(data.list);
 
       state = RefreshListViewState<T>(
-        pageNum: data.pageNum,
+        pageNum: initialPageNum,
         isLastPage: data.isLastPage,
         list: data.list,
       );
@@ -59,9 +59,9 @@ abstract class BaseRefreshListViewNotifier<T>
                 return LoadingMoreStatus.noData;
               }
 
-              if (initialPageNum != 0) {
-                pageNum += 1;
-              }
+              /// Some api's pageNum will be self-increasing, some won't, so here
+              /// it's handled internally.
+              pageNum++;
 
               final RefreshListViewStateData<T> data = await loadData(
                 pageNum: pageNum,
@@ -71,7 +71,7 @@ abstract class BaseRefreshListViewNotifier<T>
               onCompleted(data.list);
 
               state = RefreshListViewState<T>(
-                pageNum: data.pageNum,
+                pageNum: pageNum,
                 isLastPage: data.isLastPage,
                 list: <T>[...list, ...data.list],
               );

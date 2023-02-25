@@ -41,7 +41,7 @@ class _RankScreenState extends ConsumerState<RankScreen>
                       builder: (_, WidgetRef ref, __) =>
                           ref.watch(provider).when(
                         (
-                          int nextPageNum,
+                          int pageNum,
                           bool isLastPage,
                           List<UserPointsModel> list,
                         ) {

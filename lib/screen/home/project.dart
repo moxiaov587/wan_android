@@ -39,55 +39,45 @@ class _ProjectState extends ConsumerState<_Project>
           title: Text(S.of(context).project),
         ),
         Expanded(
-          child: Consumer(
-            builder: (_, WidgetRef ref, __) {
-              return NotificationListener<ScrollNotification>(
-                onNotification: onScrollNotification,
-                child: CustomScrollView(
-                  slivers: <Widget>[
-                    pullDownIndicator,
-                    SliverPinnedPersistentHeader(
-                      delegate: _ProjectTypeSwitchSliverHeaderDelegate(
-                        extentProtoType:
-                            const _ProjectTypeSwitchExtentProtoType(),
-                      ),
-                    ),
-                    Consumer(
-                      builder: (_, WidgetRef ref, __) =>
-                          ref.watch(provider).when(
-                        (
-                          int nextPageNum,
-                          bool isLastPage,
-                          List<ArticleModel> list,
-                        ) {
-                          if (list.isEmpty) {
-                            return const SliverFillRemaining(
-                              child: EmptyWidget(),
-                            );
-                          }
+          child: NotificationListener<ScrollNotification>(
+            onNotification: onScrollNotification,
+            child: CustomScrollView(
+              slivers: <Widget>[
+                const _FloatingHeader(),
+                pullDownIndicator,
+                Consumer(
+                  builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
+                    (
+                      int pageNum,
+                      bool isLastPage,
+                      List<ArticleModel> list,
+                    ) {
+                      if (list.isEmpty) {
+                        return const SliverFillRemaining(
+                          child: EmptyWidget(),
+                        );
+                      }
 
-                          return LoadMoreSliverList.separator(
-                            loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
-                            itemBuilder: (_, int index) {
-                              final ArticleModel article = list[index];
+                      return LoadMoreSliverList.separator(
+                        loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
+                        itemBuilder: (_, int index) {
+                          final ArticleModel article = list[index];
 
-                              return ArticleTile(
-                                key: Key('project_article_${article.id}'),
-                                article: article,
-                              );
-                            },
-                            separatorBuilder: (_, __) => const IndentDivider(),
-                            itemCount: list.length,
+                          return ArticleTile(
+                            key: Key('project_article_${article.id}'),
+                            article: article,
                           );
                         },
-                        loading: loadingIndicatorBuilder,
-                        error: errorIndicatorBuilder,
-                      ),
-                    ),
-                  ],
+                        separatorBuilder: (_, __) => const IndentDivider(),
+                        itemCount: list.length,
+                      );
+                    },
+                    loading: loadingIndicatorBuilder,
+                    error: errorIndicatorBuilder,
+                  ),
                 ),
-              );
-            },
+              ],
+            ),
           ),
         ),
       ],
@@ -95,48 +85,41 @@ class _ProjectState extends ConsumerState<_Project>
   }
 }
 
-class _ProjectTypeSwitchExtentProtoType extends ConsumerWidget {
-  const _ProjectTypeSwitchExtentProtoType();
+class _ProjectTypeSwitch extends StatelessWidget {
+  const _ProjectTypeSwitch();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final ThemeData theme = Theme.of(context);
-
+  Widget build(BuildContext context) {
     return Material(
-      color: theme.scaffoldBackgroundColor,
+      color: context.theme.scaffoldBackgroundColor,
       child: Padding(
-        padding: AppTheme.bodyPadding,
+        padding: AppTheme.bodyPaddingOnlyHorizontal,
         child: Align(
           alignment: Alignment.centerLeft,
           child: Consumer(
             builder: (_, WidgetRef ref, __) {
               return CapsuleInk(
-                color: theme.cardColor,
-                onTap: ref.watch(currentProjectTypeProvider).when(
-                      data: (ProjectTypeModel value) => () {
-                        const ProjectTypeRoute().push(context);
-                      },
-                      loading: () => null,
-                      error: (_, __) => () {
-                        ref.invalidate(projectTypeProvider);
-                      },
-                    ),
+                color: context.theme.cardColor,
+                onTap: () {
+                  ref.read(currentProjectTypeProvider).when(
+                        data: (ProjectTypeModel value) {
+                          const ProjectTypeRoute().push(context);
+                        },
+                        loading: () {},
+                        error: (_, __) {
+                          ref.invalidate(projectTypeProvider);
+                        },
+                      );
+                },
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: ref.watch(currentProjectTypeProvider).when(
-                        data: (ProjectTypeModel value) => <Widget>[
-                          Text(value.name),
-                        ],
-                        loading: () => const <Widget>[
-                          LoadingWidget(
-                            radius: 5.0,
-                          ),
-                        ],
+                        data: (ProjectTypeModel value) =>
+                            <Widget>[Text(value.name)],
+                        loading: () =>
+                            const <Widget>[LoadingWidget(radius: 5.0)],
                         error: (_, __) => <Widget>[
-                          const Icon(
-                            IconFontIcons.refreshLine,
-                            size: 14.0,
-                          ),
+                          const Icon(IconFontIcons.refreshLine, size: 14.0),
                           Gap(
                             direction: GapDirection.horizontal,
                             size: GapSize.small,
@@ -154,29 +137,69 @@ class _ProjectTypeSwitchExtentProtoType extends ConsumerWidget {
   }
 }
 
-class _ProjectTypeSwitchSliverHeaderDelegate
-    extends SliverPinnedPersistentHeaderDelegate {
-  _ProjectTypeSwitchSliverHeaderDelegate({
-    required Widget extentProtoType,
-  }) : super(
-          minExtentProtoType: extentProtoType,
-          maxExtentProtoType: extentProtoType,
-        );
+class _FloatingHeaderSnapDelegate extends SliverPersistentHeaderDelegate {
+  const _FloatingHeaderSnapDelegate({
+    required this.vsync,
+    required this.snapConfiguration,
+    required this.showOnScreenConfiguration,
+  });
+
+  @override
+  final TickerProvider vsync;
+
+  @override
+  final FloatingHeaderSnapConfiguration snapConfiguration;
+
+  @override
+  final PersistentHeaderShowOnScreenConfiguration showOnScreenConfiguration;
+
+  @override
+  double get maxExtent => kToolbarHeight;
+
+  @override
+  double get minExtent => kToolbarHeight;
 
   @override
   Widget build(
     BuildContext context,
     double shrinkOffset,
-    double? minExtent,
-    double maxExtent,
     bool overlapsContent,
   ) {
-    return minExtentProtoType;
+    return const _ProjectTypeSwitch();
   }
 
   @override
-  bool shouldRebuild(
-    covariant SliverPinnedPersistentHeaderDelegate oldDelegate,
-  ) =>
-      false;
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
+      oldDelegate.vsync != vsync ||
+      oldDelegate.snapConfiguration != snapConfiguration ||
+      oldDelegate.showOnScreenConfiguration != showOnScreenConfiguration;
+}
+
+class _FloatingHeader extends StatefulWidget {
+  const _FloatingHeader();
+
+  @override
+  State<_FloatingHeader> createState() => _FloatingHeaderState();
+}
+
+class _FloatingHeaderState extends State<_FloatingHeader>
+    with TickerProviderStateMixin {
+  late final FloatingHeaderSnapConfiguration _snapConfiguration =
+      FloatingHeaderSnapConfiguration(curve: Curves.easeOut);
+
+  late final PersistentHeaderShowOnScreenConfiguration
+      _showOnScreenConfiguration =
+      const PersistentHeaderShowOnScreenConfiguration();
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverPersistentHeader(
+      delegate: _FloatingHeaderSnapDelegate(
+        vsync: this,
+        snapConfiguration: _snapConfiguration,
+        showOnScreenConfiguration: _showOnScreenConfiguration,
+      ),
+      floating: true,
+    );
+  }
 }

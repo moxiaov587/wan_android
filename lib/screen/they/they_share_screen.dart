@@ -176,7 +176,7 @@ class _TheyShareScreenState extends ConsumerState<TheyShareScreen>
                 Consumer(
                   builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
                     (
-                      int nextPageNum,
+                      int pageNum,
                       bool isLastPage,
                       List<ArticleModel> list,
                     ) {
