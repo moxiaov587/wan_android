@@ -51,11 +51,7 @@ class __ArticleState extends ConsumerState<_Article>
           pullDownIndicator,
           Consumer(
             builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-              (
-                int pageNum,
-                bool isLastPage,
-                List<CollectedArticleModel> list,
-              ) {
+              (_, __, List<CollectedArticleModel> list) {
                 list = list
                     .where((CollectedArticleModel article) => article.collect)
                     .toList();
@@ -67,9 +63,8 @@ class __ArticleState extends ConsumerState<_Article>
                 }
 
                 return SliverPadding(
-                  padding: EdgeInsets.only(
-                    bottom: ScreenUtils.bottomSafeHeight,
-                  ),
+                  padding:
+                      EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
                   sliver: SlidableAutoCloseBehavior(
                     child: LoadMoreSliverList.separator(
                       loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
@@ -178,10 +173,8 @@ class _CollectedArticleTile extends ConsumerWidget {
         ],
       ),
       child: ConstrainedBox(
-        constraints: BoxConstraints.tightFor(
-          width: ScreenUtils.width,
-          height: 94.0,
-        ),
+        constraints:
+            BoxConstraints.tightFor(width: ScreenUtils.width, height: 94.0),
         child: Material(
           child: Ink(
             child: InkWell(

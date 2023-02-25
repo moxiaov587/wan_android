@@ -203,9 +203,8 @@ class _HandleCollectedBottomSheetState
                       controller: _titleTextEditingController,
                       focusNode: _titleFocusNode,
                       textInputAction: TextInputAction.next,
-                      decoration: InputDecoration(
-                        labelText: S.of(context).title,
-                      ),
+                      decoration:
+                          InputDecoration(labelText: S.of(context).title),
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
                           return S.of(context).titleEmptyTips;
@@ -229,9 +228,8 @@ class _HandleCollectedBottomSheetState
                         controller: _authorTextEditingController,
                         focusNode: _authorFocusNode,
                         textInputAction: TextInputAction.next,
-                        decoration: InputDecoration(
-                          labelText: S.of(context).author,
-                        ),
+                        decoration:
+                            InputDecoration(labelText: S.of(context).author),
                         validator: (String? value) {
                           if (value == null || value.isEmpty) {
                             return S.of(context).authorEmptyTips;

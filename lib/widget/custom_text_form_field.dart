@@ -155,7 +155,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
         ),
         suffixIcon: ValueListenableBuilder<bool>(
           valueListenable: _showCleanButtonNotifier,
-          builder: (_, bool value, Widget? empty) {
+          builder: (_, bool value, __) {
             return value
                 ? IconButton(
                     icon: const Icon(
@@ -166,9 +166,8 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                       widget.controller.text = '';
                     },
                   )
-                : empty!;
+                : nil;
           },
-          child: nil,
         ),
       ),
       keyboardType: widget.keyboardType,

@@ -47,15 +47,9 @@ class _ProjectState extends ConsumerState<_Project>
                 pullDownIndicator,
                 Consumer(
                   builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-                    (
-                      int pageNum,
-                      bool isLastPage,
-                      List<ArticleModel> list,
-                    ) {
+                    (_, __, List<ArticleModel> list) {
                       if (list.isEmpty) {
-                        return const SliverFillRemaining(
-                          child: EmptyWidget(),
-                        );
+                        return const SliverFillRemaining(child: EmptyWidget());
                       }
 
                       return LoadMoreSliverList.separator(
@@ -97,39 +91,36 @@ class _ProjectTypeSwitch extends StatelessWidget {
         child: Align(
           alignment: Alignment.centerLeft,
           child: Consumer(
-            builder: (_, WidgetRef ref, __) {
-              return CapsuleInk(
-                color: context.theme.cardColor,
-                onTap: () {
-                  ref.read(currentProjectTypeProvider).when(
-                        data: (ProjectTypeModel value) {
-                          const ProjectTypeRoute().push(context);
-                        },
-                        loading: () {},
-                        error: (_, __) {
-                          ref.invalidate(projectTypeProvider);
-                        },
-                      );
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: ref.watch(currentProjectTypeProvider).when(
-                        data: (ProjectTypeModel value) =>
-                            <Widget>[Text(value.name)],
-                        loading: () =>
-                            const <Widget>[LoadingWidget(radius: 5.0)],
-                        error: (_, __) => <Widget>[
-                          const Icon(IconFontIcons.refreshLine, size: 14.0),
-                          Gap(
-                            direction: GapDirection.horizontal,
-                            size: GapSize.small,
-                          ),
-                          Text(S.of(context).retry),
-                        ],
-                      ),
-                ),
-              );
-            },
+            builder: (_, WidgetRef ref, __) => CapsuleInk(
+              color: context.theme.cardColor,
+              onTap: () {
+                ref.read(currentProjectTypeProvider).when(
+                      data: (ProjectTypeModel value) {
+                        const ProjectTypeRoute().push(context);
+                      },
+                      loading: () {},
+                      error: (_, __) {
+                        ref.invalidate(projectTypeProvider);
+                      },
+                    );
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: ref.watch(currentProjectTypeProvider).when(
+                      data: (ProjectTypeModel value) =>
+                          <Widget>[Text(value.name)],
+                      loading: () => const <Widget>[LoadingWidget(radius: 5.0)],
+                      error: (_, __) => <Widget>[
+                        const Icon(IconFontIcons.refreshLine, size: 14.0),
+                        Gap(
+                          direction: GapDirection.horizontal,
+                          size: GapSize.small,
+                        ),
+                        Text(S.of(context).retry),
+                      ],
+                    ),
+              ),
+            ),
           ),
         ),
       ),

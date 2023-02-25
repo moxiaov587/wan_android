@@ -30,81 +30,67 @@ class _RankScreenState extends ConsumerState<RankScreen>
       ),
       body: Stack(
         children: <Widget>[
-          Consumer(
-            builder: (_, WidgetRef ref, __) {
-              return NotificationListener<ScrollNotification>(
-                onNotification: onScrollNotification,
-                child: CustomScrollView(
-                  slivers: <Widget>[
-                    pullDownIndicator,
-                    Consumer(
-                      builder: (_, WidgetRef ref, __) =>
-                          ref.watch(provider).when(
-                        (
-                          int pageNum,
-                          bool isLastPage,
-                          List<UserPointsModel> list,
-                        ) {
-                          if (list.isEmpty) {
-                            return const SliverFillRemaining(
-                              child: EmptyWidget(),
+          NotificationListener<ScrollNotification>(
+            onNotification: onScrollNotification,
+            child: CustomScrollView(
+              slivers: <Widget>[
+                pullDownIndicator,
+                Consumer(
+                  builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
+                    (_, __, List<UserPointsModel> list) {
+                      if (list.isEmpty) {
+                        return const SliverFillRemaining(child: EmptyWidget());
+                      }
+
+                      return SliverPadding(
+                        padding: EdgeInsets.only(
+                          bottom: currentUserPoints != null
+                              ? paddingBottom
+                              : ScreenUtils.bottomSafeHeight,
+                        ),
+                        sliver: LoadMoreSliverList.separator(
+                          loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
+                          itemBuilder: (_, int index) {
+                            final UserPointsModel points = list[index];
+
+                            return Material(
+                              key: Key('rank_${points.userId}'),
+                              child: Padding(
+                                padding: const EdgeInsets.all(kStyleUint4),
+                                child: _RankTile(
+                                  rank: points.rank,
+                                  level: points.level,
+                                  nickname: points.nickname.strictValue ??
+                                      points.username.strictValue ??
+                                      '',
+                                  totalPoints: points.coinCount,
+                                ),
+                              ),
                             );
-                          }
-
-                          return SliverPadding(
-                            padding: EdgeInsets.only(
-                              bottom: currentUserPoints != null
-                                  ? paddingBottom
-                                  : ScreenUtils.bottomSafeHeight,
-                            ),
-                            sliver: LoadMoreSliverList.separator(
-                              loadMoreIndicatorBuilder:
-                                  loadMoreIndicatorBuilder,
-                              itemBuilder: (_, int index) {
-                                final UserPointsModel points = list[index];
-
-                                return Material(
-                                  key: Key('rank_${points.userId}'),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(kStyleUint4),
-                                    child: _RankTile(
-                                      rank: points.rank,
-                                      level: points.level,
-                                      nickname: points.nickname.strictValue ??
-                                          points.username.strictValue ??
-                                          '',
-                                      totalPoints: points.coinCount,
-                                    ),
-                                  ),
-                                );
-                              },
-                              separatorBuilder: (_, __) =>
-                                  const IndentDivider(),
-                              itemCount: list.length,
-                            ),
-                          );
-                        },
-                        loading: loadingIndicatorBuilder,
-                        error: errorIndicatorBuilder,
-                      ),
-                    ),
-                  ],
+                          },
+                          separatorBuilder: (_, __) =>
+                              const IndentDivider.canvas(),
+                          itemCount: list.length,
+                        ),
+                      );
+                    },
+                    loading: loadingIndicatorBuilder,
+                    error: errorIndicatorBuilder,
+                  ),
                 ),
-              );
-            },
+              ],
+            ),
           ),
           if (currentUserPoints != null)
             Positioned(
               left: 0.0,
               bottom: 0.0,
               child: Consumer(
-                builder: (_, WidgetRef ref, Widget? empty) {
-                  final bool showUserRank = ref.watch(
-                    pointsRankProvider.select(
-                      (RefreshListViewState<UserPointsModel> vm) =>
-                          vm.whenOrNull((_, __, ___) => true) ?? false,
-                    ),
-                  );
+                builder: (_, WidgetRef ref, __) {
+                  final bool showUserRank = ref.watch(pointsRankProvider.select(
+                    (RefreshListViewState<UserPointsModel> vm) =>
+                        vm.whenOrNull((_, __, ___) => true) ?? false,
+                  ));
 
                   final String? fullName =
                       ref.read(authorizedProvider).valueOrNull?.user.nickname;
@@ -120,9 +106,8 @@ class _RankScreenState extends ConsumerState<RankScreen>
                             kStyleUint4 + ScreenUtils.bottomSafeHeight,
                           ),
                           decoration: BoxDecoration(
-                            border: Border(
-                              top: Divider.createBorderSide(context),
-                            ),
+                            border:
+                                Border(top: Divider.createBorderSide(context)),
                             boxShadow: <BoxShadow>[
                               BoxShadow(
                                 color: context.theme.colorScheme.background,
@@ -132,9 +117,7 @@ class _RankScreenState extends ConsumerState<RankScreen>
                             ],
                           ),
                           child: _RankTile(
-                            key: Key(
-                              'rank_tile_${currentUserPoints.userId}',
-                            ),
+                            key: Key('rank_tile_${currentUserPoints.userId}'),
                             rank: currentUserPoints.rank,
                             nickname: fullName.strictValue ??
                                 currentUserPoints.nickname.strictValue ??
@@ -143,9 +126,8 @@ class _RankScreenState extends ConsumerState<RankScreen>
                             totalPoints: currentUserPoints.coinCount,
                           ),
                         )
-                      : empty!;
+                      : const SizedBox.shrink();
                 },
-                child: const SizedBox.shrink(),
               ),
             ),
         ],
@@ -194,9 +176,7 @@ class _RankTile extends StatelessWidget {
               Gap(
                 direction: GapDirection.horizontal,
               ),
-              LevelTag(
-                level: level,
-              ),
+              LevelTag(level: level),
             ],
           ),
         ),
@@ -204,7 +184,7 @@ class _RankTile extends StatelessWidget {
           direction: GapDirection.horizontal,
         ),
         Text(
-          '$totalPoints',
+          totalPoints.toString(),
           style: context.theme.textTheme.titleMedium,
         ),
       ],

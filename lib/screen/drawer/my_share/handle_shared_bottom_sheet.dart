@@ -112,9 +112,8 @@ class _HandleSharedBottomSheetState
                       controller: _titleTextEditingController,
                       focusNode: _titleFocusNode,
                       textInputAction: TextInputAction.next,
-                      decoration: InputDecoration(
-                        labelText: S.of(context).title,
-                      ),
+                      decoration:
+                          InputDecoration(labelText: S.of(context).title),
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
                           return S.of(context).titleEmptyTips;
@@ -133,9 +132,8 @@ class _HandleSharedBottomSheetState
                       controller: _linkTextEditingController,
                       focusNode: _linkFocusNode,
                       textInputAction: TextInputAction.done,
-                      decoration: InputDecoration(
-                        labelText: S.of(context).link,
-                      ),
+                      decoration:
+                          InputDecoration(labelText: S.of(context).link),
                       validator: (String? value) {
                         if (value.strictValue == null) {
                           return S.of(context).linkEmptyTips;

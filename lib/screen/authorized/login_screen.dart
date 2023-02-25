@@ -241,7 +241,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
                     Consumer(
                       builder: (_, WidgetRef ref, Widget? text) =>
                           ElevatedButton(
-                        onPressed: () async {
+                        onPressed: () {
                           onSubmitted(ref: ref);
                         },
                         child: text,
@@ -257,9 +257,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
                         onPressed: () {
                           const RegisterRoute(fromLogin: true).push(context);
                         },
-                        child: Text(
-                          S.of(context).register,
-                        ),
+                        child: Text(S.of(context).register),
                       ),
                     ),
                   ],
@@ -299,9 +297,7 @@ class _AccountOptionsView extends StatelessWidget {
           ),
           color: context.theme.dialogBackgroundColor,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxHeight: 200,
-            ),
+            constraints: const BoxConstraints(maxHeight: 200),
             child: ListView.separated(
               padding: EdgeInsets.zero,
               shrinkWrap: true,
@@ -324,9 +320,8 @@ class _AccountOptionsView extends StatelessWidget {
                       if (lastLoginAccount?.username != null &&
                           option.username == lastLoginAccount!.username)
                         Padding(
-                          padding: EdgeInsets.only(
-                            left: AppTheme.bodyPadding.left,
-                          ),
+                          padding:
+                              EdgeInsets.only(left: AppTheme.bodyPadding.left),
                           child: Text(
                             S.of(context).lastLogin,
                             style: context.theme.textTheme.labelMedium,
@@ -359,9 +354,7 @@ class _AccountOptionsView extends StatelessWidget {
                       child: Builder(
                         builder: (BuildContext context) {
                           final bool highlight =
-                              AutocompleteHighlightedOption.of(
-                                    context,
-                                  ) ==
+                              AutocompleteHighlightedOption.of(context) ==
                                   index;
                           if (highlight) {
                             SchedulerBinding.instance.addPostFrameCallback(

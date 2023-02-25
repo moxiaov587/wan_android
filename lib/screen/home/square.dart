@@ -30,49 +30,38 @@ class _SquareState extends ConsumerState<_Square>
           title: Text(S.of(context).square),
         ),
         Expanded(
-          child: Consumer(
-            builder: (_, WidgetRef ref, __) {
-              return NotificationListener<ScrollNotification>(
-                onNotification: onScrollNotification,
-                child: CustomScrollView(
-                  slivers: <Widget>[
-                    pullDownIndicator,
-                    Consumer(
-                      builder: (_, WidgetRef ref, __) =>
-                          ref.watch(provider).when(
-                        (
-                          int pageNum,
-                          bool isLastPage,
-                          List<ArticleModel> list,
-                        ) {
-                          if (list.isEmpty) {
-                            return const SliverFillRemaining(
-                              child: EmptyWidget(),
-                            );
-                          }
+          child: NotificationListener<ScrollNotification>(
+            onNotification: onScrollNotification,
+            child: CustomScrollView(
+              slivers: <Widget>[
+                pullDownIndicator,
+                Consumer(
+                  builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
+                    (_, __, List<ArticleModel> list) {
+                      if (list.isEmpty) {
+                        return const SliverFillRemaining(child: EmptyWidget());
+                      }
 
-                          return LoadMoreSliverList.separator(
-                            loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
-                            itemBuilder: (_, int index) {
-                              final ArticleModel article = list[index];
+                      return LoadMoreSliverList.separator(
+                        loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
+                        itemBuilder: (_, int index) {
+                          final ArticleModel article = list[index];
 
-                              return ArticleTile(
-                                key: Key('square_article_${article.id}'),
-                                article: article,
-                              );
-                            },
-                            separatorBuilder: (_, __) => const IndentDivider(),
-                            itemCount: list.length,
+                          return ArticleTile(
+                            key: Key('square_article_${article.id}'),
+                            article: article,
                           );
                         },
-                        loading: loadingIndicatorBuilder,
-                        error: errorIndicatorBuilder,
-                      ),
-                    ),
-                  ],
+                        separatorBuilder: (_, __) => const IndentDivider(),
+                        itemCount: list.length,
+                      );
+                    },
+                    loading: loadingIndicatorBuilder,
+                    error: errorIndicatorBuilder,
+                  ),
                 ),
-              );
-            },
+              ],
+            ),
           ),
         ),
       ],

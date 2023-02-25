@@ -23,65 +23,63 @@ class _ProjectTypeBottomSheetState
               style: context.theme.textTheme.titleLarge,
             ),
           ),
-          const Divider(),
+          const IndentDivider.listTile(),
           Expanded(
             child: Consumer(
-              builder: (_, WidgetRef ref, __) {
-                return ref.watch(projectTypeProvider).when(
-                      data: (List<ProjectTypeModel> list) => ListView.builder(
-                        prototypeItem: const ListTile(),
-                        itemBuilder: (_, int index) {
-                          final ProjectTypeModel projectType = list[index];
+              builder: (_, WidgetRef ref, __) => ref
+                  .watch(projectTypeProvider)
+                  .when(
+                    data: (List<ProjectTypeModel> list) => ListView.builder(
+                      prototypeItem: const ListTile(),
+                      itemBuilder: (_, int index) {
+                        final ProjectTypeModel projectType = list[index];
 
-                          return Consumer(
-                            builder: (_, WidgetRef ref, Widget? title) {
-                              final bool selected = ref.watch(
-                                currentProjectTypeProvider.select(
-                                  (AsyncValue<ProjectTypeModel> value) =>
-                                      value.whenOrNull(
-                                        data: (ProjectTypeModel
-                                                currentProjectType) =>
-                                            currentProjectType == projectType,
-                                      ) ??
-                                      false,
-                                ),
-                              );
+                        return Consumer(
+                          builder: (_, WidgetRef ref, Widget? title) {
+                            final bool selected = ref.watch(
+                              currentProjectTypeProvider.select(
+                                (AsyncValue<ProjectTypeModel> value) =>
+                                    value.whenOrNull(
+                                      data: (ProjectTypeModel
+                                              currentProjectType) =>
+                                          currentProjectType == projectType,
+                                    ) ??
+                                    false,
+                              ),
+                            );
 
-                              return ListTile(
-                                selected: selected,
-                                title: title,
-                                onTap: () {
-                                  ref
-                                      .read(
-                                        currentProjectTypeProvider.notifier,
-                                      )
-                                      .update((_) =>
-                                          AsyncValue<ProjectTypeModel>.data(
-                                            projectType,
-                                          ));
+                            return ListTile(
+                              selected: selected,
+                              title: title,
+                              onTap: () {
+                                ref
+                                    .read(currentProjectTypeProvider.notifier)
+                                    .update((_) =>
+                                        AsyncValue<ProjectTypeModel>.data(
+                                          projectType,
+                                        ));
 
-                                  Navigator.of(context).maybePop();
-                                },
-                              );
-                            },
-                            child: Text(
-                              HTMLParseUtils.unescapeHTML(projectType.name) ??
-                                  S.of(context).unknown,
-                            ),
-                          );
-                        },
-                        itemCount: list.length,
-                      ),
-                      loading: () => const LoadingWidget(),
-                      error: (Object e, StackTrace s) =>
-                          CustomErrorWidget.withViewError(
-                        ViewError.create(e, s),
-                        onRetry: () {
-                          ref.invalidate(projectTypeProvider);
-                        },
-                      ),
-                    );
-              },
+                                Navigator.of(context).maybePop();
+                              },
+                            );
+                          },
+                          child: Text(
+                            HTMLParseUtils.unescapeHTML(projectType.name) ??
+                                S.of(context).unknown,
+                          ),
+                        );
+                      },
+                      itemCount: list.length,
+                    ),
+                    loading: () => const LoadingWidget(),
+                    error: (Object e, StackTrace s) =>
+                        CustomErrorWidget.withViewError(
+                      ViewError.create(e, s),
+                      onRetry: () {
+                        ref.invalidate(projectTypeProvider);
+                      },
+                    ),
+                  ),
             ),
           ),
         ],

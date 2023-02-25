@@ -22,9 +22,7 @@ class LanguagesScreen extends StatelessWidget {
 
               return ListTile(
                 selected: selected,
-                title: Text(
-                  S.of(context).locale(value?.name ?? ''),
-                ),
+                title: Text(S.of(context).locale(value?.name ?? '')),
                 trailing: selected ? const Icon(IconFontIcons.checkLine) : null,
                 onTap: () {
                   ref.read(appLanguageProvider.notifier).switchLocale(value);
@@ -33,7 +31,7 @@ class LanguagesScreen extends StatelessWidget {
             },
           );
         },
-        separatorBuilder: (_, __) => const IndentDivider(),
+        separatorBuilder: (_, __) => const IndentDivider.listTile(),
         itemCount: AppLanguage.languages.length,
       ),
     );
