@@ -92,9 +92,7 @@ class ArticleTile extends StatelessWidget {
                     ],
                   ),
                 ),
-                Gap(
-                  value: titleVerticalGap,
-                ),
+                Gap.v(value: titleVerticalGap),
                 if (query != null)
                   ArticleTileSearchTitle(
                     prefixesChildren: <InlineSpan>[
@@ -139,9 +137,7 @@ class ArticleTile extends StatelessWidget {
                       ],
                     ),
                   ),
-                Gap(
-                  value: titleVerticalGap,
-                ),
+                Gap.v(value: titleVerticalGap),
                 Wrap(
                   spacing: kStyleUint2,
                   children: <Widget>[
