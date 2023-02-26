@@ -126,21 +126,14 @@ class __ResultsState extends ConsumerState<_Results>
           pullDownIndicator,
           Consumer(
             builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-              (
-                int pageNum,
-                bool isLastPage,
-                List<ArticleModel> list,
-              ) {
+              (_, __, List<ArticleModel> list) {
                 if (list.isEmpty) {
-                  return const SliverFillRemaining(
-                    child: EmptyWidget.search(),
-                  );
+                  return const SliverFillRemaining(child: EmptyWidget.search());
                 }
 
                 return SliverPadding(
-                  padding: EdgeInsets.only(
-                    bottom: ScreenUtils.bottomSafeHeight,
-                  ),
+                  padding:
+                      EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
                   sliver: LoadMoreSliverList.separator(
                     loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
                     itemBuilder: (_, int index) {
@@ -187,22 +180,22 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
 
     return CustomScrollView(
       slivers: <Widget>[
-        StreamBuilder<List<SearchHistory>>(
-          stream: isar.searchHistoryCaches
-              .where()
-              .sortByUpdateTimeDesc()
-              .build()
-              .watch(fireImmediately: true),
-          builder: (_, AsyncSnapshot<List<SearchHistory>> snapshot) {
-            final List<SearchHistory> keywords =
-                snapshot.data ?? <SearchHistory>[];
+        SliverToBoxAdapter(
+          child: StreamBuilder<List<SearchHistory>>(
+            stream: isar.searchHistoryCaches
+                .where()
+                .sortByUpdateTimeDesc()
+                .build()
+                .watch(fireImmediately: true),
+            builder: (_, AsyncSnapshot<List<SearchHistory>> snapshot) {
+              final List<SearchHistory> keywords =
+                  snapshot.data ?? <SearchHistory>[];
 
-            if (keywords.isEmpty) {
-              return const SliverToBoxAdapter(child: nil);
-            }
+              if (keywords.isEmpty) {
+                return nil;
+              }
 
-            return SliverToBoxAdapter(
-              child: Column(
+              return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Row(
@@ -246,9 +239,9 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
                     ),
                   ),
                 ],
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
         SliverPadding(
           padding: AppTheme.bodyPadding,
@@ -261,44 +254,39 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
         ),
         SliverPadding(
           padding: AppTheme.bodyPaddingOnlyHorizontal,
-          sliver: Consumer(
-            builder: (_, WidgetRef ref, Widget? loadingWidget) {
-              return SliverToBoxAdapter(
-                child: Wrap(
-                  spacing: wrapSpace,
-                  runSpacing: wrapSpace,
-                  children: ref.watch(searchPopularKeywordProvider).when(
-                        data: (List<SearchKeywordModel> list) => list
-                            .map(
-                              (SearchKeywordModel e) => CapsuleInk(
-                                child: Text(e.name),
-                                onTap: () {
-                                  widget.onTap.call(e.name);
-                                },
-                              ),
-                            )
-                            .toList(),
-                        loading: () => <Widget>[
-                          loadingWidget!,
-                        ],
-                        error: (_, __) => <Widget>[
-                          CapsuleInk(
-                            onTap: () {
-                              ref.invalidate(searchPopularKeywordProvider);
-                            },
-                            child: const Icon(
-                              IconFontIcons.refreshLine,
-                              size: 16.0,
+          sliver: SliverToBoxAdapter(
+            child: Consumer(
+              builder: (_, WidgetRef ref, __) => Wrap(
+                spacing: wrapSpace,
+                runSpacing: wrapSpace,
+                children: ref.watch(searchPopularKeywordProvider).when(
+                      data: (List<SearchKeywordModel> list) => list
+                          .map(
+                            (SearchKeywordModel e) => CapsuleInk(
+                              child: Text(e.name),
+                              onTap: () {
+                                widget.onTap.call(e.name);
+                              },
                             ),
+                          )
+                          .toList(),
+                      loading: () => const <Widget>[
+                        CapsuleInk(
+                          child: CupertinoActivityIndicator(radius: 7.0),
+                        ),
+                      ],
+                      error: (_, __) => <Widget>[
+                        CapsuleInk(
+                          onTap: () {
+                            ref.invalidate(searchPopularKeywordProvider);
+                          },
+                          child: const Icon(
+                            IconFontIcons.refreshLine,
+                            size: 16.0,
                           ),
-                        ],
-                      ),
-                ),
-              );
-            },
-            child: const CapsuleInk(
-              child: CupertinoActivityIndicator(
-                radius: 7.0,
+                        ),
+                      ],
+                    ),
               ),
             ),
           ),

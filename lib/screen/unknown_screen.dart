@@ -55,9 +55,7 @@ class _UnknownScreenState extends State<UnknownScreen> {
                       S.of(context).unknownPath,
                       style: context.theme.textTheme.titleSmall,
                     ),
-                    Gap(
-                      size: GapSize.small,
-                    ),
+                    const Gap.vs(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
@@ -91,9 +89,7 @@ class _UnknownScreenState extends State<UnknownScreen> {
                         return const SizedBox.shrink();
                       },
                     ),
-                    Gap(
-                      size: GapSize.big,
-                    ),
+                    const Gap.vb(),
                     ElevatedButton(
                       onPressed: () {
                         const HomeRoute(path: HomePath.home).go(context);

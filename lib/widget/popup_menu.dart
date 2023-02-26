@@ -115,10 +115,7 @@ class _PopupMenuItem extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Icon(config.iconData),
-              Gap(
-                direction: GapDirection.horizontal,
-                value: 8.0,
-              ),
+              const Gap.h(value: kStyleUint2),
               Expanded(
                 child: Text(
                   config.label,

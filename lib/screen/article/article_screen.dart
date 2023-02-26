@@ -116,15 +116,13 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
         ),
         actions: <Widget>[
           Consumer(
-            builder: (_, WidgetRef ref, Widget? empty) {
-              final WebViewModel? article = ref.watch(
-                provider.select(
-                  (AsyncValue<WebViewModel> model) =>
-                      model.whenOrNull<WebViewModel?>(
-                    data: (WebViewModel? article) => article,
-                  ),
+            builder: (_, WidgetRef ref, __) {
+              final WebViewModel? article = ref.watch(provider.select(
+                (AsyncValue<WebViewModel> model) =>
+                    model.whenOrNull<WebViewModel?>(
+                  data: (WebViewModel? article) => article,
                 ),
-              );
+              ));
 
               return article != null
                   ? PopupMenu(
@@ -164,9 +162,8 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                         ),
                       ],
                     )
-                  : empty!;
+                  : const SizedBox.shrink();
             },
-            child: const SizedBox.shrink(),
           ),
         ],
       ),
@@ -186,12 +183,11 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                               valueListenable: _useDesktopModeNotifier,
                               builder: (_, bool useDesktopMode, __) =>
                                   InAppWebView(
-                                key: ValueKey<String>(
+                                key: Key(
                                   '${useDesktopMode ? 'desktop' : 'recommended'}_${article!.link}',
                                 ),
-                                initialUrlRequest: URLRequest(
-                                  url: Uri.parse(article.link),
-                                ),
+                                initialUrlRequest:
+                                    URLRequest(url: Uri.parse(article.link)),
                                 initialOptions: InAppWebViewGroupOptions(
                                   crossPlatform: InAppWebViewOptions(
                                     cacheEnabled: article.withCookie,
@@ -244,14 +240,11 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                                     ref.read(networkProvider).syncCookies(uri);
                                   }
                                 },
-                                onLoadStop: (
-                                  InAppWebViewController controller,
-                                  Uri? url,
-                                ) {
+                                onLoadStop: (_, __) {
                                   hideProgress();
                                 },
                                 shouldOverrideUrlLoading: (
-                                  InAppWebViewController controller,
+                                  _,
                                   NavigationAction navigationAction,
                                 ) async {
                                   if (!<String>[
@@ -323,133 +316,127 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                 ),
         child: ValueListenableBuilder<bool>(
           valueListenable: _showKeyboardNotifier,
-          builder: (_, bool showKeyboard, Widget? child) => AnimatedSwitcher(
-            duration: const Duration(
-              milliseconds: 300,
-            ),
-            switchInCurve: Curves.easeIn,
-            switchOutCurve: Curves.easeOut,
+          builder: (_, bool showKeyboard, __) => AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            switchInCurve: Curves.elasticOut,
+            switchOutCurve: Curves.elasticIn,
             transitionBuilder: (Widget child, Animation<double> animation) =>
-                SizeTransition(
-              sizeFactor: animation,
-              child: child,
-            ),
-            child: showKeyboard ? nil : child,
-          ),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: context.theme.colorScheme.background,
-              boxShadow: <BoxShadow>[
-                BoxShadow(
-                  color: context.theme.colorScheme.background.withAlpha(100),
-                  offset: const Offset(0.0, -2.0),
-                  blurRadius: 8.0,
-                ),
-              ],
-            ),
-            child: Padding(
-              padding: EdgeInsets.only(
-                bottom: ScreenUtils.bottomSafeHeight,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  ValueListenableBuilder<bool>(
-                    valueListenable: _canGoBackNotifier,
-                    builder: (_, bool canGoBack, __) => IconButton(
-                      tooltip: S.of(context).back,
-                      disabledColor:
-                          context.theme.iconTheme.color!.withOpacity(0.5),
-                      onPressed: canGoBack
-                          ? () {
-                              _inAppWebViewController.goBack();
-                            }
-                          : null,
-                      icon: const Icon(Icons.arrow_back_ios_new),
-                    ),
-                  ),
-                  ValueListenableBuilder<bool>(
-                    valueListenable: _canGoForwardModeNotifier,
-                    builder: (_, bool canGoForward, __) => IconButton(
-                      tooltip: S.of(context).forward,
-                      disabledColor:
-                          context.theme.iconTheme.color!.withOpacity(0.5),
-                      onPressed: canGoForward
-                          ? () {
-                              _inAppWebViewController.goForward();
-                            }
-                          : null,
-                      icon: const Icon(Icons.arrow_forward_ios),
-                    ),
-                  ),
-                  Consumer(
-                    builder: (_, WidgetRef ref, __) {
-                      final bool collect = ref.watch(
-                        provider.select(
-                          (AsyncValue<WebViewModel> value) =>
-                              value.whenOrNull(
-                                data: (WebViewModel? article) =>
-                                    article!.collect,
-                              ) ??
-                              false,
+                SizeTransition(sizeFactor: animation, child: child),
+            child: showKeyboard
+                ? nil
+                : DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: context.theme.colorScheme.background,
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          color: context.theme.colorScheme.background
+                              .withAlpha(100),
+                          offset: const Offset(0.0, -2.0),
+                          blurRadius: 8.0,
                         ),
-                      );
+                      ],
+                    ),
+                    child: Padding(
+                      padding:
+                          EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          ValueListenableBuilder<bool>(
+                            valueListenable: _canGoBackNotifier,
+                            builder: (_, bool canGoBack, __) => IconButton(
+                              tooltip: S.of(context).back,
+                              disabledColor: context.theme.iconTheme.color!
+                                  .withOpacity(0.5),
+                              onPressed: canGoBack
+                                  ? () {
+                                      _inAppWebViewController.goBack();
+                                    }
+                                  : null,
+                              icon: const Icon(Icons.arrow_back_ios_new),
+                            ),
+                          ),
+                          ValueListenableBuilder<bool>(
+                            valueListenable: _canGoForwardModeNotifier,
+                            builder: (_, bool canGoForward, __) => IconButton(
+                              tooltip: S.of(context).forward,
+                              disabledColor: context.theme.iconTheme.color!
+                                  .withOpacity(0.5),
+                              onPressed: canGoForward
+                                  ? () {
+                                      _inAppWebViewController.goForward();
+                                    }
+                                  : null,
+                              icon: const Icon(Icons.arrow_forward_ios),
+                            ),
+                          ),
+                          Consumer(
+                            builder: (_, WidgetRef ref, __) {
+                              final bool collect = ref.watch(provider.select(
+                                (AsyncValue<WebViewModel> value) =>
+                                    value.whenOrNull(
+                                      data: (WebViewModel? article) =>
+                                          article!.collect,
+                                    ) ??
+                                    false,
+                              ));
 
-                      return IconButton(
-                        tooltip: collect
-                            ? S.of(context).collected
-                            : S.of(context).collect,
-                        color: collect ? context.theme.primaryColor : null,
-                        onPressed: throttle(() {
-                          if (ref.read(authorizedProvider).valueOrNull !=
-                              null) {
-                            ref.read(provider.notifier).collect(!collect);
-                          } else {
-                            const LoginRoute().push(context);
-                          }
-                        }),
-                        icon: Icon(
-                          collect
-                              ? IconFontIcons.starFill
-                              : IconFontIcons.starLine,
-                        ),
-                      );
-                    },
-                  ),
-                  IconButton(
-                    tooltip: S.of(context).refresh,
-                    onPressed: () {
-                      _inAppWebViewController.reload();
-                    },
-                    icon: const Icon(
-                      IconFontIcons.refreshLine,
+                              return IconButton(
+                                tooltip: collect
+                                    ? S.of(context).collected
+                                    : S.of(context).collect,
+                                color:
+                                    collect ? context.theme.primaryColor : null,
+                                onPressed: throttle(() {
+                                  if (ref
+                                          .read(authorizedProvider)
+                                          .valueOrNull !=
+                                      null) {
+                                    ref
+                                        .read(provider.notifier)
+                                        .collect(!collect);
+                                  } else {
+                                    const LoginRoute().push(context);
+                                  }
+                                }),
+                                icon: Icon(
+                                  collect
+                                      ? IconFontIcons.starFill
+                                      : IconFontIcons.starLine,
+                                ),
+                              );
+                            },
+                          ),
+                          IconButton(
+                            tooltip: S.of(context).refresh,
+                            onPressed: () {
+                              _inAppWebViewController.reload();
+                            },
+                            icon: const Icon(IconFontIcons.refreshLine),
+                          ),
+                          ValueListenableBuilder<bool>(
+                            valueListenable: _useDesktopModeNotifier,
+                            builder: (_, bool useDesktop, __) => IconButton(
+                              tooltip: useDesktop
+                                  ? S.of(context).desktop
+                                  : S.of(context).recommend,
+                              onPressed: debounce(
+                                () {
+                                  _useDesktopModeNotifier.value = !useDesktop;
+                                },
+                              ),
+                              color: useDesktop
+                                  ? context.theme.primaryColor
+                                  : null,
+                              icon: Icon(useDesktop
+                                  ? Icons.desktop_mac
+                                  : Icons.devices),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  ValueListenableBuilder<bool>(
-                    valueListenable: _useDesktopModeNotifier,
-                    builder: (
-                      _,
-                      bool useDesktop,
-                      __,
-                    ) =>
-                        IconButton(
-                      tooltip: useDesktop
-                          ? S.of(context).desktop
-                          : S.of(context).recommend,
-                      onPressed: debounce(
-                        () {
-                          _useDesktopModeNotifier.value = !useDesktop;
-                        },
-                      ),
-                      color: useDesktop ? context.theme.primaryColor : null,
-                      icon: Icon(
-                        useDesktop ? Icons.desktop_mac : Icons.devices,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ),
         ),
       ),

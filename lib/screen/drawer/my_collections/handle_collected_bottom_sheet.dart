@@ -196,16 +196,13 @@ class _HandleCollectedBottomSheetState
                         textAlign: TextAlign.center,
                       ),
                     ),
-                    Gap(
-                      value: 24.0,
-                    ),
+                    const Gap.v(value: kStyleUint3 * 2),
                     CustomTextFormField(
                       controller: _titleTextEditingController,
                       focusNode: _titleFocusNode,
                       textInputAction: TextInputAction.next,
-                      decoration: InputDecoration(
-                        labelText: S.of(context).title,
-                      ),
+                      decoration:
+                          InputDecoration(labelText: S.of(context).title),
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
                           return S.of(context).titleEmptyTips;
@@ -221,17 +218,14 @@ class _HandleCollectedBottomSheetState
                         }
                       },
                     ),
-                    Gap(
-                      size: GapSize.big,
-                    ),
-                    if (widget.isArticles)
+                    const Gap.vb(),
+                    if (widget.isArticles) ...<Widget>[
                       CustomTextFormField(
                         controller: _authorTextEditingController,
                         focusNode: _authorFocusNode,
                         textInputAction: TextInputAction.next,
-                        decoration: InputDecoration(
-                          labelText: S.of(context).author,
-                        ),
+                        decoration:
+                            InputDecoration(labelText: S.of(context).author),
                         validator: (String? value) {
                           if (value == null || value.isEmpty) {
                             return S.of(context).authorEmptyTips;
@@ -243,10 +237,8 @@ class _HandleCollectedBottomSheetState
                           _linkFocusNode.requestFocus();
                         },
                       ),
-                    if (widget.isArticles)
-                      Gap(
-                        size: GapSize.big,
-                      ),
+                      const Gap.vb(),
+                    ],
                     CustomTextFormField(
                       controller: _linkTextEditingController,
                       focusNode: _linkFocusNode,

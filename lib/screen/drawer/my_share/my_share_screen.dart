@@ -46,10 +46,7 @@ class _MyShareScreenState extends ConsumerState<MyShareScreen>
             onPressed: () {
               const HandleSharedBottomSheetRoute().push(context);
             },
-            icon: const Icon(
-              IconFontIcons.addLine,
-              size: 30.0,
-            ),
+            icon: const Icon(IconFontIcons.addLine, size: 30.0),
           ),
         ],
       ),
@@ -60,25 +57,18 @@ class _MyShareScreenState extends ConsumerState<MyShareScreen>
             pullDownIndicator,
             Consumer(
               builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-                (
-                  int pageNum,
-                  bool isLastPage,
-                  List<ArticleModel> list,
-                ) {
+                (_, __, List<ArticleModel> list) {
                   list = list
                       .where((ArticleModel article) => article.collect)
                       .toList();
 
                   if (list.isEmpty) {
-                    return const SliverFillRemaining(
-                      child: EmptyWidget(),
-                    );
+                    return const SliverFillRemaining(child: EmptyWidget());
                   }
 
                   return SliverPadding(
-                    padding: EdgeInsets.only(
-                      bottom: ScreenUtils.bottomSafeHeight,
-                    ),
+                    padding:
+                        EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
                     sliver: SlidableAutoCloseBehavior(
                       child: LoadMoreSliverList.separator(
                         loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
@@ -171,12 +161,8 @@ class _ShareArticleTile extends ConsumerWidget {
         ],
       ),
       child: ConstrainedBox(
-        constraints: BoxConstraints.tightFor(
-          width: ScreenUtils.width,
-        ),
-        child: ArticleTile(
-          article: article,
-        ),
+        constraints: BoxConstraints.tightFor(width: ScreenUtils.width),
+        child: ArticleTile(article: article),
       ),
     );
   }

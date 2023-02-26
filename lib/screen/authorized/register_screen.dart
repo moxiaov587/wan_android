@@ -94,9 +94,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         _passwordFocusNode.requestFocus();
                       },
                     ),
-                    Gap(
-                      value: _kBodyPadding.top,
-                    ),
+                    Gap.v(value: _kBodyPadding.top),
                     CustomTextFormField(
                       controller: _passwordTextEditingController,
                       focusNode: _passwordFocusNode,
@@ -117,9 +115,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         _repasswordFocusNode.requestFocus();
                       },
                     ),
-                    Gap(
-                      value: _kBodyPadding.top,
-                    ),
+                    Gap.v(value: _kBodyPadding.top),
                     Consumer(
                       builder: (_, WidgetRef ref, __) => CustomTextFormField(
                         controller: _repasswordTextEditingController,
@@ -147,9 +143,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         },
                       ),
                     ),
-                    Gap(
-                      value: _kBodyPadding.top,
-                    ),
+                    Gap.v(value: _kBodyPadding.top),
                     Consumer(
                       builder: (_, WidgetRef ref, Widget? text) =>
                           ElevatedButton(
@@ -160,9 +154,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       child: Text(S.of(context).register),
                     ),
-                    Gap(
-                      value: _kBodyPadding.top / 4,
-                    ),
+                    Gap.v(value: _kBodyPadding.top / 4),
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(

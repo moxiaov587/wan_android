@@ -44,9 +44,7 @@ class _MyPointsScreenState extends ConsumerState<MyPointsScreen>
                                 .coinCount,
                           ),
                         ),
-                        Gap(
-                          size: GapSize.big,
-                        ),
+                        const Gap.vb(),
                         Text(
                           S.of(context).totalPoints,
                           style: context.theme.textTheme.titleMedium,
@@ -58,21 +56,14 @@ class _MyPointsScreenState extends ConsumerState<MyPointsScreen>
               ),
               Consumer(
                 builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-                  (
-                    int pageNum,
-                    bool isLastPage,
-                    List<PointsModel> list,
-                  ) {
+                  (_, __, List<PointsModel> list) {
                     if (list.isEmpty) {
-                      return const SliverFillRemaining(
-                        child: EmptyWidget(),
-                      );
+                      return const SliverFillRemaining(child: EmptyWidget());
                     }
 
                     return SliverPadding(
-                      padding: EdgeInsets.only(
-                        bottom: ScreenUtils.bottomSafeHeight,
-                      ),
+                      padding:
+                          EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
                       sliver: LoadMoreSliverList.separator(
                         loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
                         itemBuilder: (_, int index) {
@@ -82,9 +73,7 @@ class _MyPointsScreenState extends ConsumerState<MyPointsScreen>
 
                           return ListTile(
                             key: Key('my_points_record_${points.id}'),
-                            title: Text(
-                              points.desc ?? '',
-                            ),
+                            title: Text(points.desc ?? ''),
                             trailing: RichText(
                               text: TextSpan(
                                 style: context
@@ -96,9 +85,7 @@ class _MyPointsScreenState extends ConsumerState<MyPointsScreen>
                                 ),
                                 text: isIncrease ? '+' : '-',
                                 children: <TextSpan>[
-                                  TextSpan(
-                                    text: points.coinCount.toString(),
-                                  ),
+                                  TextSpan(text: points.coinCount.toString()),
                                 ],
                               ),
                             ),

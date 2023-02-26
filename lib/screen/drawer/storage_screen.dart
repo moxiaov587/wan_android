@@ -52,9 +52,7 @@ class StorageScreen extends ConsumerWidget {
                                     },
                                     loading: () {},
                                     error: (_, __) {
-                                      ref.invalidate(
-                                        otherCacheSizeProvider,
-                                      );
+                                      ref.invalidate(otherCacheSizeProvider);
                                     },
                                   );
                             },
@@ -249,179 +247,178 @@ class StorageScreen extends ConsumerWidget {
               ),
             ],
           ),
-          Positioned(
+          const Positioned(
             left: 0.0,
             right: 0.0,
             bottom: 0.0,
-            child: ColoredBox(
-              color: context.theme.cardColor,
-              child: Padding(
-                padding: AppTheme.contentPadding.copyWith(
-                  bottom: AppTheme.contentPadding.bottom +
-                      ScreenUtils.bottomSafeHeight,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Consumer(
-                      builder: (_, WidgetRef ref, __) {
-                        final bool checkAll = ref.watch(checkAllCachesProvider);
-
-                        return TextButton(
-                          onPressed: () {
-                            if (!ref.read(disableCheckOtherCachesProvider)) {
-                              ref
-                                  .read(checkOtherCachesProvider.notifier)
-                                  .update((_) => !checkAll);
-                            }
-                            if (!ref.read(
-                              disableCheckResponseDataCachesProvider,
-                            )) {
-                              ref
-                                  .read(
-                                    checkResponseDataCachesProvider.notifier,
-                                  )
-                                  .update((_) => !checkAll);
-                            }
-
-                            if (!ref.read(
-                              disableCheckPreferencesCachesProvider,
-                            )) {
-                              ref
-                                  .read(
-                                    checkPreferencesCachesProvider.notifier,
-                                  )
-                                  .update((_) => !checkAll);
-                            }
-                          },
-                          child: Text(checkAll
-                              ? S.of(context).deselectAll
-                              : S.of(context).selectAll),
-                        );
-                      },
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Consumer(
-                          builder: (_, WidgetRef ref, __) {
-                            final bool checkOther =
-                                ref.watch(checkOtherCachesProvider);
-                            final bool checkResponseData =
-                                ref.watch(checkResponseDataCachesProvider);
-                            final bool checkPreferences =
-                                ref.watch(checkPreferencesCachesProvider);
-
-                            final int otherCacheSize = ref
-                                    .watch(otherCacheSizeProvider)
-                                    .whenOrNull(data: (int data) => data) ??
-                                0;
-                            final int responseDataCacheSize = ref
-                                    .watch(responseDataCacheSizeProvider)
-                                    .whenOrNull(data: (int data) => data) ??
-                                0;
-                            final int preferencesCacheSize = ref
-                                    .watch(preferencesCacheSizeProvider)
-                                    .whenOrNull(data: (int data) => data) ??
-                                0;
-
-                            final int total = <int>[
-                              if (checkOther) otherCacheSize,
-                              if (checkResponseData) responseDataCacheSize,
-                              if (checkPreferences) preferencesCacheSize,
-                            ].fold(
-                              0,
-                              (
-                                int total,
-                                int size,
-                              ) =>
-                                  total += size,
-                            );
-
-                            if (total == 0) {
-                              return const SizedBox.shrink();
-                            }
-
-                            return Text(
-                              S.of(context).occupies(total.fileSize),
-                            );
-                          },
-                        ),
-                        Gap(direction: GapDirection.horizontal),
-                        Consumer(
-                          builder: (_, WidgetRef ref, __) {
-                            final bool cleanable = ref.watch(cleanableProvider);
-
-                            return ElevatedButton(
-                              onPressed: cleanable
-                                  ? () {
-                                      DialogUtils.confirm<void>(
-                                        isDanger: true,
-                                        builder: (BuildContext context) => Text(
-                                          S.of(context).clearCacheWarning,
-                                        ),
-                                        confirmText: S.of(context).clear,
-                                        confirmCallback: () async {
-                                          await ref
-                                              .read(appDatabaseProvider)
-                                              .writeTxn(
-                                                () => Future.wait<void>(
-                                                  <Future<void>>[
-                                                    if (ref.read(
-                                                      cleanableOtherCachesProvider,
-                                                    ))
-                                                      ...ref
-                                                          .read(
-                                                            otherCacheSizeProvider
-                                                                .notifier,
-                                                          )
-                                                          .clearTask,
-                                                    if (ref.read(
-                                                      cleanableResponseDataCachesProvider,
-                                                    ))
-                                                      ...ref
-                                                          .read(
-                                                            responseDataCacheSizeProvider
-                                                                .notifier,
-                                                          )
-                                                          .clearTask,
-                                                    if (ref.read(
-                                                      cleanablePreferencesCachesProvider,
-                                                    ))
-                                                      ...ref
-                                                          .read(
-                                                            preferencesCacheSizeProvider
-                                                                .notifier,
-                                                          )
-                                                          .clearTask,
-                                                  ],
-                                                ),
-                                              );
-
-                                          ref.invalidate(
-                                            otherCacheSizeProvider,
-                                          );
-                                          ref.invalidate(
-                                            responseDataCacheSizeProvider,
-                                          );
-                                          ref.invalidate(
-                                            preferencesCacheSizeProvider,
-                                          );
-                                        },
-                                      );
-                                    }
-                                  : null,
-                              child: Text(S.of(context).clear),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            child: _BottomActionBar(),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _BottomActionBar extends StatelessWidget {
+  const _BottomActionBar();
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: context.theme.cardColor,
+      child: Padding(
+        padding: AppTheme.contentPadding.copyWith(
+          bottom: AppTheme.contentPadding.bottom + ScreenUtils.bottomSafeHeight,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Consumer(
+              builder: (_, WidgetRef ref, __) {
+                final bool checkAll = ref.watch(checkAllCachesProvider);
+
+                return TextButton(
+                  onPressed: () {
+                    if (!ref.read(disableCheckOtherCachesProvider)) {
+                      ref
+                          .read(checkOtherCachesProvider.notifier)
+                          .update((_) => !checkAll);
+                    }
+                    if (!ref.read(
+                      disableCheckResponseDataCachesProvider,
+                    )) {
+                      ref
+                          .read(
+                            checkResponseDataCachesProvider.notifier,
+                          )
+                          .update((_) => !checkAll);
+                    }
+
+                    if (!ref.read(
+                      disableCheckPreferencesCachesProvider,
+                    )) {
+                      ref
+                          .read(
+                            checkPreferencesCachesProvider.notifier,
+                          )
+                          .update((_) => !checkAll);
+                    }
+                  },
+                  child: Text(checkAll
+                      ? S.of(context).deselectAll
+                      : S.of(context).selectAll),
+                );
+              },
+            ),
+            Row(
+              children: <Widget>[
+                Consumer(
+                  builder: (_, WidgetRef ref, __) {
+                    final bool checkOther = ref.watch(checkOtherCachesProvider);
+                    final bool checkResponseData =
+                        ref.watch(checkResponseDataCachesProvider);
+                    final bool checkPreferences =
+                        ref.watch(checkPreferencesCachesProvider);
+
+                    final int otherCacheSize = ref
+                            .watch(otherCacheSizeProvider)
+                            .whenOrNull(data: (int data) => data) ??
+                        0;
+                    final int responseDataCacheSize = ref
+                            .watch(responseDataCacheSizeProvider)
+                            .whenOrNull(data: (int data) => data) ??
+                        0;
+                    final int preferencesCacheSize = ref
+                            .watch(preferencesCacheSizeProvider)
+                            .whenOrNull(data: (int data) => data) ??
+                        0;
+
+                    final int total = <int>[
+                      if (checkOther) otherCacheSize,
+                      if (checkResponseData) responseDataCacheSize,
+                      if (checkPreferences) preferencesCacheSize,
+                    ].fold(
+                      0,
+                      (
+                        int total,
+                        int size,
+                      ) =>
+                          total += size,
+                    );
+
+                    if (total == 0) {
+                      return const SizedBox.shrink();
+                    }
+
+                    return Text(S.of(context).occupies(total.fileSize));
+                  },
+                ),
+                const Gap.hn(),
+                Consumer(
+                  builder: (_, WidgetRef ref, __) => ElevatedButton(
+                    onPressed: ref.watch(cleanableProvider)
+                        ? () {
+                            DialogUtils.confirm<void>(
+                              isDanger: true,
+                              builder: (BuildContext context) => Text(
+                                S.of(context).clearCacheWarning,
+                              ),
+                              confirmText: S.of(context).clear,
+                              confirmCallback: () async {
+                                await ref.read(appDatabaseProvider).writeTxn(
+                                      () => Future.wait<void>(
+                                        <Future<void>>[
+                                          if (ref.read(
+                                            cleanableOtherCachesProvider,
+                                          ))
+                                            ...ref
+                                                .read(
+                                                  otherCacheSizeProvider
+                                                      .notifier,
+                                                )
+                                                .clearTask,
+                                          if (ref.read(
+                                            cleanableResponseDataCachesProvider,
+                                          ))
+                                            ...ref
+                                                .read(
+                                                  responseDataCacheSizeProvider
+                                                      .notifier,
+                                                )
+                                                .clearTask,
+                                          if (ref.read(
+                                            cleanablePreferencesCachesProvider,
+                                          ))
+                                            ...ref
+                                                .read(
+                                                  preferencesCacheSizeProvider
+                                                      .notifier,
+                                                )
+                                                .clearTask,
+                                        ],
+                                      ),
+                                    );
+
+                                ref.invalidate(
+                                  otherCacheSizeProvider,
+                                );
+                                ref.invalidate(
+                                  responseDataCacheSizeProvider,
+                                );
+                                ref.invalidate(
+                                  preferencesCacheSizeProvider,
+                                );
+                              },
+                            );
+                          }
+                        : null,
+                    child: Text(S.of(context).clear),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

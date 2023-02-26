@@ -157,10 +157,8 @@ class _CollectedWebsiteTile extends ConsumerWidget {
         ],
       ),
       child: ConstrainedBox(
-        constraints: BoxConstraints.tightFor(
-          width: ScreenUtils.width,
-          height: 94.0,
-        ),
+        constraints:
+            BoxConstraints.tightFor(width: ScreenUtils.width, height: 94.0),
         child: Material(
           child: Ink(
             child: InkWell(

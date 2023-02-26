@@ -100,13 +100,14 @@ class Authorized extends _$Authorized {
     required bool rememberPassword,
   }) async {
     DialogUtils.loading();
-    try {
+
+    state = await AsyncValue.guard<UserInfoModel?>(() async {
       final UserModel user = await http.login(
         username: username,
         password: password,
       );
 
-      state = AsyncValue<UserInfoModel?>.data(await http.fetchUserInfo());
+      final UserInfoModel userInfo = await http.fetchUserInfo();
 
       _handleCacheByLogin(
         user.id,
@@ -115,18 +116,16 @@ class Authorized extends _$Authorized {
         rememberPassword: rememberPassword,
       );
 
-      DialogUtils.success(S.current.loginSuccess);
+      return userInfo;
+    });
 
-      return true;
-    } catch (e, s) {
-      DialogUtils.danger(
-        ViewError.create(e, s).errorMessage(S.current.loginFailed),
-      );
-
-      return false;
-    } finally {
-      DialogUtils.dismiss();
+    if (state.hasError) {
+      DialogUtils.danger(ViewError.create(state.error!, state.stackTrace)
+          .errorMessage(S.current.loginFailed));
     }
+    DialogUtils.dismiss();
+
+    return state.hasValue;
   }
 
   Future<bool> silentLogin({
@@ -134,13 +133,14 @@ class Authorized extends _$Authorized {
     required String password,
   }) async {
     password = decryptString(password);
-    try {
+
+    state = await AsyncValue.guard<UserInfoModel?>(() async {
       final UserModel user = await http.silentLogin(
         username: username,
         password: password,
       );
 
-      state = AsyncValue<UserInfoModel?>.data(await http.fetchUserInfo());
+      final UserInfoModel userInfo = await http.silentFetchUserInfo();
 
       _handleCacheByLogin(
         user.id,
@@ -149,31 +149,29 @@ class Authorized extends _$Authorized {
         rememberPassword: true,
       );
 
-      return true;
-    } catch (e, _) {
-      return false;
-    }
+      return userInfo;
+    });
+
+    return state.hasValue;
   }
 
   Future<bool> logout() async {
     DialogUtils.loading();
-    try {
+    state = await AsyncValue.guard<UserInfoModel?>(() async {
       await http.logout();
-
-      state = const AsyncValue<UserInfoModel?>.data(null);
-
       http.cookieJar.deleteAll();
 
-      return true;
-    } catch (e, s) {
-      DialogUtils.danger(
-        ViewError.create(e, s).errorMessage(S.current.unknownError),
-      );
+      return null;
+    });
 
-      return false;
-    } finally {
-      DialogUtils.dismiss();
+    if (state.hasError) {
+      DialogUtils.danger(ViewError.create(state.error!, state.stackTrace)
+          .errorMessage(S.current.unknownError));
     }
+
+    DialogUtils.dismiss();
+
+    return state.hasValue;
   }
 
   Future<bool> register({

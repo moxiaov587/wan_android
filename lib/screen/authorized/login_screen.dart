@@ -184,9 +184,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
                         },
                       ),
                     ),
-                    Gap(
-                      value: _kBodyPadding.top,
-                    ),
+                    Gap.v(value: _kBodyPadding.top),
                     Consumer(
                       builder: (_, WidgetRef ref, __) => CustomTextFormField(
                         controller: _passwordTextEditingController,
@@ -209,9 +207,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
                         },
                       ),
                     ),
-                    Gap(
-                      value: _kBodyPadding.top / 4,
-                    ),
+                    Gap.v(value: _kBodyPadding.top / 4),
                     Transform.translate(
                       offset: const Offset(-10.0, 0.0),
                       child: Row(
@@ -235,31 +231,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
                         ],
                       ),
                     ),
-                    Gap(
-                      value: _kBodyPadding.top / 4,
-                    ),
+                    Gap.v(value: _kBodyPadding.top / 4),
                     Consumer(
                       builder: (_, WidgetRef ref, Widget? text) =>
                           ElevatedButton(
-                        onPressed: () async {
+                        onPressed: () {
                           onSubmitted(ref: ref);
                         },
                         child: text,
                       ),
                       child: Text(S.of(context).login),
                     ),
-                    Gap(
-                      value: _kBodyPadding.top / 4,
-                    ),
+                    Gap.v(value: _kBodyPadding.top / 4),
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () {
                           const RegisterRoute(fromLogin: true).push(context);
                         },
-                        child: Text(
-                          S.of(context).register,
-                        ),
+                        child: Text(S.of(context).register),
                       ),
                     ),
                   ],
@@ -299,9 +289,7 @@ class _AccountOptionsView extends StatelessWidget {
           ),
           color: context.theme.dialogBackgroundColor,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxHeight: 200,
-            ),
+            constraints: const BoxConstraints(maxHeight: 200),
             child: ListView.separated(
               padding: EdgeInsets.zero,
               shrinkWrap: true,
@@ -324,9 +312,8 @@ class _AccountOptionsView extends StatelessWidget {
                       if (lastLoginAccount?.username != null &&
                           option.username == lastLoginAccount!.username)
                         Padding(
-                          padding: EdgeInsets.only(
-                            left: AppTheme.bodyPadding.left,
-                          ),
+                          padding:
+                              EdgeInsets.only(left: AppTheme.bodyPadding.left),
                           child: Text(
                             S.of(context).lastLogin,
                             style: context.theme.textTheme.labelMedium,
@@ -359,9 +346,7 @@ class _AccountOptionsView extends StatelessWidget {
                       child: Builder(
                         builder: (BuildContext context) {
                           final bool highlight =
-                              AutocompleteHighlightedOption.of(
-                                    context,
-                                  ) ==
+                              AutocompleteHighlightedOption.of(context) ==
                                   index;
                           if (highlight) {
                             SchedulerBinding.instance.addPostFrameCallback(

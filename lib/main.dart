@@ -83,6 +83,13 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
     requestResetThemeMode();
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      ref.invalidate(connectivityStreamProvider);
+    }
+  }
+
   FutureOr<void> requestResetThemeMode() {
     if (mounted) {
       final Brightness? brightness = ref.read(appThemeModeProvider).brightness;
@@ -103,13 +110,9 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
                           WidgetsBinding
                               .instance.window.platformBrightness.name,
                         )}\n',
-                    style: const TextStyle(
-                      fontWeight: AppTextTheme.semiBold,
-                    ),
+                    style: const TextStyle(fontWeight: AppTextTheme.semiBold),
                   ),
-                  TextSpan(
-                    text: S.of(context).resetThemeModeTips,
-                  ),
+                  TextSpan(text: S.of(context).resetThemeModeTips),
                 ],
               ),
             ),

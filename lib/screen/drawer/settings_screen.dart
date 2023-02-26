@@ -1,10 +1,10 @@
 part of 'home_drawer.dart';
 
-class SettingsScreen extends ConsumerWidget {
+class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(S.of(context).settings),
@@ -37,17 +37,20 @@ class SettingsScreen extends ConsumerWidget {
           SliverPadding(
             padding: const EdgeInsets.only(top: kStyleUint4),
             sliver: SliverToBoxAdapter(
-              child: ref.watch(authorizedProvider).valueOrNull != null
-                  ? ListTile(
-                      iconColor: context.theme.colorScheme.error,
-                      textColor: context.theme.colorScheme.error,
-                      leading: const Icon(IconFontIcons.shutDownLine),
-                      title: Text(S.of(context).logout),
-                      onTap: () {
-                        ref.read(authorizedProvider.notifier).logout();
-                      },
-                    )
-                  : nil,
+              child: Consumer(
+                builder: (BuildContext context, WidgetRef ref, _) =>
+                    ref.watch(authorizedProvider).valueOrNull != null
+                        ? ListTile(
+                            iconColor: context.theme.colorScheme.error,
+                            textColor: context.theme.colorScheme.error,
+                            leading: const Icon(IconFontIcons.shutDownLine),
+                            title: Text(S.of(context).logout),
+                            onTap: () {
+                              ref.read(authorizedProvider.notifier).logout();
+                            },
+                          )
+                        : nil,
+              ),
             ),
           ),
         ],

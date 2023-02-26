@@ -63,9 +63,7 @@ class CustomErrorWidget extends StatelessWidget {
                   : message ?? S.of(context).unknownError,
               style: context.theme.textTheme.titleSmall,
             ),
-            Gap(
-              size: GapSize.small,
-            ),
+            const Gap.vs(),
             Text(
               isDisconnected
                   ? S.of(context).networkExceptionMsg
@@ -73,22 +71,18 @@ class CustomErrorWidget extends StatelessWidget {
               textAlign: TextAlign.center,
               style: context.theme.textTheme.bodyMedium,
             ),
-            if (onRetry != null)
-              Gap(
-                size: GapSize.big,
-              ),
-            if (onRetry != null)
+            if (onRetry != null) ...<Widget>[
+              const Gap.vn(),
               ElevatedButton(
                 onPressed: onRetry,
                 style: const ButtonStyle(
                   padding: MaterialStatePropertyAll<EdgeInsetsGeometry>(
-                    EdgeInsets.symmetric(
-                      horizontal: 32.0,
-                    ),
+                    EdgeInsets.symmetric(horizontal: 32.0),
                   ),
                 ),
                 child: Text(S.of(context).retry),
               ),
+            ],
           ],
         ),
       ),

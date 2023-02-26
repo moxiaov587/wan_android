@@ -79,7 +79,7 @@ class HomeDrawer extends StatelessWidget {
                                     .theme.textTheme.displayMedium!.color,
                               ),
                       ),
-                      Gap(),
+                      const Gap.vn(),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
@@ -88,24 +88,20 @@ class HomeDrawer extends StatelessWidget {
                             style: context.theme.textTheme.titleMedium,
                           ),
                           if (name != null)
-                            Gap(
-                              direction: GapDirection.horizontal,
-                              size: GapSize.small,
-                            ),
-                          if (name != null)
-                            Consumer(
-                              builder: (_, WidgetRef ref, __) {
-                                final int? level = ref.watch(
-                                  authorizedProvider.select(
-                                    (AsyncValue<UserInfoModel?> data) =>
-                                        data.valueOrNull?.userPoints.level,
-                                  ),
-                                );
+                            Padding(
+                              padding: const EdgeInsets.only(left: kStyleUint2),
+                              child: Consumer(
+                                builder: (_, WidgetRef ref, __) {
+                                  final int? level = ref.watch(
+                                    authorizedProvider.select(
+                                      (AsyncValue<UserInfoModel?> data) =>
+                                          data.valueOrNull?.userPoints.level,
+                                    ),
+                                  );
 
-                                return LevelTag(
-                                  level: level,
-                                );
-                              },
+                                  return LevelTag(level: level);
+                                },
+                              ),
                             ),
                         ],
                       ),
@@ -128,7 +124,6 @@ class HomeDrawer extends StatelessWidget {
             delegate: SliverChildListDelegate(
               <Widget>[
                 ListTile(
-                  minLeadingWidth: 24.0,
                   leading: const Icon(IconFontIcons.coinLine),
                   title: Text(S.of(context).myPoints),
                   onTap: () {
@@ -136,7 +131,6 @@ class HomeDrawer extends StatelessWidget {
                   },
                 ),
                 ListTile(
-                  minLeadingWidth: 24.0,
                   leading: const Icon(IconFontIcons.starLine),
                   title: Text(S.of(context).myCollections),
                   onTap: () {
@@ -146,7 +140,6 @@ class HomeDrawer extends StatelessWidget {
                   },
                 ),
                 ListTile(
-                  minLeadingWidth: 24.0,
                   leading: const Icon(IconFontIcons.shareCircleLine),
                   title: Text(S.of(context).myShare),
                   onTap: () {
@@ -154,7 +147,6 @@ class HomeDrawer extends StatelessWidget {
                   },
                 ),
                 ListTile(
-                  minLeadingWidth: 24.0,
                   leading: const Icon(IconFontIcons.informationLine),
                   title: Text(S.of(context).about),
                   onTap: () {
@@ -166,10 +158,11 @@ class HomeDrawer extends StatelessWidget {
           ),
           SliverFillRemaining(
             hasScrollBody: false,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                Row(
+            child: Align(
+              alignment: Alignment.bottomLeft,
+              child: Padding(
+                padding: EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
+                child: Row(
                   children: <Widget>[
                     Consumer(
                       builder: (_, WidgetRef ref, __) {
@@ -206,10 +199,7 @@ class HomeDrawer extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(
-                  height: ScreenUtils.bottomSafeHeight,
-                ),
-              ],
+              ),
             ),
           ),
         ],

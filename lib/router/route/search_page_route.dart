@@ -242,7 +242,7 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
                   ),
                   suffixIcon: ValueListenableBuilder<bool>(
                     valueListenable: _showClearButtonNotifier,
-                    builder: (_, bool value, Widget? empty) {
+                    builder: (_, bool value, __) {
                       return value
                           ? IconButton(
                               icon: const Icon(
@@ -253,9 +253,8 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
                                 widget.delegate.query = '';
                               },
                             )
-                          : empty!;
+                          : nil;
                     },
-                    child: nil,
                   ),
                 ),
               ),

@@ -17,14 +17,13 @@ mixin ListViewStateMixin<
   ProviderType get provider;
 
   Widget get pullDownIndicator => Consumer(
-        builder: (BuildContext context, WidgetRef ref, Widget? empty) =>
+        builder: (BuildContext context, WidgetRef ref, _) =>
             ref.watch(provider).whenOrNull(
                   (_) => CupertinoSliverRefreshControl(
                     onRefresh: ref.watch(provider.notifier).refresh,
                   ),
                 ) ??
-            empty!,
-        child: const SliverToBoxAdapter(child: nil),
+            const SliverToBoxAdapter(child: nil),
       );
 
   void onRetry() {
@@ -53,14 +52,13 @@ mixin AutoDisposeListViewStateMixin<
   ProviderType get provider;
 
   Widget get pullDownIndicator => Consumer(
-        builder: (BuildContext context, WidgetRef ref, Widget? empty) =>
+        builder: (BuildContext context, WidgetRef ref, _) =>
             ref.watch(provider).whenOrNull(
                   (_) => CupertinoSliverRefreshControl(
                     onRefresh: ref.watch(provider.notifier).refresh,
                   ),
                 ) ??
-            empty!,
-        child: const SliverToBoxAdapter(child: nil),
+            const SliverToBoxAdapter(child: nil),
       );
 
   void onRetry() {
