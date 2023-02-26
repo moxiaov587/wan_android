@@ -112,10 +112,7 @@ class _ProjectTypeSwitch extends StatelessWidget {
                       loading: () => const <Widget>[LoadingWidget(radius: 5.0)],
                       error: (_, __) => <Widget>[
                         const Icon(IconFontIcons.refreshLine, size: 14.0),
-                        Gap(
-                          direction: GapDirection.horizontal,
-                          size: GapSize.small,
-                        ),
+                        const Gap.hs(),
                         Text(S.of(context).retry),
                       ],
                     ),

@@ -76,7 +76,7 @@ class _RotateLoadingState extends State<RotateLoading>
                   ),
                 ),
               ),
-              Gap(),
+              const Gap.vn(),
               Text(
                 S.of(context).loading,
                 style: context.theme.textTheme.bodyLarge,

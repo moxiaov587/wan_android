@@ -207,9 +207,7 @@ class _CollectedArticleTile extends ConsumerWidget {
                         ],
                       ),
                     ),
-                    Gap(
-                      value: AppTheme.bodyPadding.top,
-                    ),
+                    Gap.v(value: AppTheme.bodyPadding.top),
                     Text(
                       HTMLParseUtils.unescapeHTML(article.title) ??
                           S.of(context).unknown,

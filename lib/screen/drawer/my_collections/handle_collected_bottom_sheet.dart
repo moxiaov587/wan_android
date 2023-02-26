@@ -196,9 +196,7 @@ class _HandleCollectedBottomSheetState
                         textAlign: TextAlign.center,
                       ),
                     ),
-                    Gap(
-                      value: 24.0,
-                    ),
+                    const Gap.v(value: kStyleUint3 * 2),
                     CustomTextFormField(
                       controller: _titleTextEditingController,
                       focusNode: _titleFocusNode,
@@ -220,10 +218,8 @@ class _HandleCollectedBottomSheetState
                         }
                       },
                     ),
-                    Gap(
-                      size: GapSize.big,
-                    ),
-                    if (widget.isArticles)
+                    const Gap.vb(),
+                    if (widget.isArticles) ...<Widget>[
                       CustomTextFormField(
                         controller: _authorTextEditingController,
                         focusNode: _authorFocusNode,
@@ -241,10 +237,8 @@ class _HandleCollectedBottomSheetState
                           _linkFocusNode.requestFocus();
                         },
                       ),
-                    if (widget.isArticles)
-                      Gap(
-                        size: GapSize.big,
-                      ),
+                      const Gap.vb(),
+                    ],
                     CustomTextFormField(
                       controller: _linkTextEditingController,
                       focusNode: _linkFocusNode,

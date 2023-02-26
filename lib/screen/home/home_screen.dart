@@ -382,7 +382,7 @@ class _HomeAppBarUserInfo extends StatelessWidget {
               ),
             ),
           ),
-          Gap(direction: GapDirection.horizontal),
+          const Gap.hn(),
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -461,15 +461,13 @@ class _BannerCarousel extends StatelessWidget {
                                         .theme.textTheme.bodySmall!.color,
                                     size: 36.0,
                                   ),
-                                  Gap(
-                                    size: GapSize.big,
-                                  ),
+                                  const Gap.vb(),
                                   Text(
                                     '${error.message ?? error.detail ?? S.of(context).unknownError}(${error.statusCode ?? -1})',
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  Gap(),
+                                  const Gap.vn(),
                                   Text(S.of(context).tapToRetry),
                                 ],
                               ),

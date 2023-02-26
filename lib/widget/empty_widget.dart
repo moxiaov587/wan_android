@@ -41,27 +41,23 @@ class EmptyWidget extends StatelessWidget {
             message ?? S.of(context).empty,
             style: context.theme.textTheme.titleSmall,
           ),
-          Gap(
-            size: GapSize.small,
-          ),
+          const Gap.vs(),
           Text(
             detail ?? S.of(context).emptyMsg,
             style: context.theme.textTheme.bodyMedium,
           ),
-          if (onRetry != null) Gap(),
-          if (onRetry != null)
+          if (onRetry != null) ...<Widget>[
+            const Gap.vn(),
             ElevatedButton(
-              style: ButtonStyle(
-                minimumSize: MaterialStateProperty.all(_kRetryButtonSize),
-                textStyle: MaterialStateProperty.all(
-                  const TextStyle(
-                    fontSize: AppTextTheme.body1,
-                  ),
+              onPressed: onRetry,
+              style: const ButtonStyle(
+                padding: MaterialStatePropertyAll<EdgeInsetsGeometry>(
+                  EdgeInsets.symmetric(horizontal: 32.0),
                 ),
               ),
-              onPressed: onRetry,
               child: Text(S.of(context).retry),
             ),
+          ],
         ],
       ),
     );

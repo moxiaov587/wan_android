@@ -158,9 +158,7 @@ class _RankTile extends StatelessWidget {
           rank ?? '',
           style: context.theme.textTheme.titleLarge,
         ),
-        Gap(
-          direction: GapDirection.horizontal,
-        ),
+        const Gap.hn(),
         Expanded(
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -173,16 +171,12 @@ class _RankTile extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              Gap(
-                direction: GapDirection.horizontal,
-              ),
+              const Gap.hn(),
               LevelTag(level: level),
             ],
           ),
         ),
-        Gap(
-          direction: GapDirection.horizontal,
-        ),
+        const Gap.hn(),
         Text(
           totalPoints.toString(),
           style: context.theme.textTheme.titleMedium,

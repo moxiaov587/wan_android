@@ -103,13 +103,9 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
                           WidgetsBinding
                               .instance.window.platformBrightness.name,
                         )}\n',
-                    style: const TextStyle(
-                      fontWeight: AppTextTheme.semiBold,
-                    ),
+                    style: const TextStyle(fontWeight: AppTextTheme.semiBold),
                   ),
-                  TextSpan(
-                    text: S.of(context).resetThemeModeTips,
-                  ),
+                  TextSpan(text: S.of(context).resetThemeModeTips),
                 ],
               ),
             ),

@@ -353,7 +353,7 @@ class _BottomActionBar extends StatelessWidget {
                     return Text(S.of(context).occupies(total.fileSize));
                   },
                 ),
-                Gap(direction: GapDirection.horizontal),
+                const Gap.hn(),
                 Consumer(
                   builder: (_, WidgetRef ref, __) => ElevatedButton(
                     onPressed: ref.watch(cleanableProvider)

@@ -79,7 +79,7 @@ class HomeDrawer extends StatelessWidget {
                                     .theme.textTheme.displayMedium!.color,
                               ),
                       ),
-                      Gap(),
+                      const Gap.vn(),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[

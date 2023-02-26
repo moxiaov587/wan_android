@@ -6,6 +6,7 @@ import 'package:nil/nil.dart';
 import '../../../contacts/icon_font_icons.dart';
 import '../../../widget/gap.dart';
 import '../../l10n/generated/l10n.dart';
+import '../../theme/app_theme.dart';
 import '../provider.dart';
 
 class LoadingMoreIndicator extends StatelessWidget {
@@ -34,11 +35,7 @@ class LoadingMoreIndicator extends StatelessWidget {
       case LoadingMoreStatus.completed:
         break;
       case LoadingMoreStatus.loading:
-        icon = const SizedBox(
-          width: 25.0,
-          height: 25.0,
-          child: CupertinoActivityIndicator(),
-        );
+        icon = const CupertinoActivityIndicator();
         tips = S.of(context).loadingMore;
         break;
       case LoadingMoreStatus.noData:
@@ -51,14 +48,14 @@ class LoadingMoreIndicator extends StatelessWidget {
     }
 
     final Widget child = Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 20.0,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: kStyleUint * 5),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          if (icon != null) icon,
-          if (icon != null) Gap(direction: GapDirection.horizontal),
+          if (icon != null) ...<Widget>[
+            icon,
+            const Gap.hn(),
+          ],
           if (tips != null) Text(tips),
         ],
       ),

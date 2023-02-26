@@ -17,21 +17,24 @@ class CapsuleInk extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Ink(
-      decoration: BoxDecoration(
-        color: color ?? context.theme.dialogBackgroundColor,
-        borderRadius: AppTheme.roundedBorderRadius,
-      ),
-      child: InkWell(
-        borderRadius: AppTheme.roundedBorderRadius,
-        onTap: onTap,
-        child: Padding(
-          padding: AppTheme.contentPadding,
-          child: DefaultTextStyle(
-            style: context.theme.textTheme.bodyMedium!.copyWith(
-              height: 1.35,
+    return Material(
+      borderRadius: AppTheme.roundedBorderRadius,
+      child: Ink(
+        decoration: BoxDecoration(
+          color: color ?? context.theme.dialogBackgroundColor,
+          borderRadius: AppTheme.roundedBorderRadius,
+        ),
+        child: InkWell(
+          borderRadius: AppTheme.roundedBorderRadius,
+          onTap: onTap,
+          child: Padding(
+            padding: AppTheme.contentPadding,
+            child: DefaultTextStyle(
+              style: context.theme.textTheme.bodyMedium!.copyWith(
+                height: 1.35,
+              ),
+              child: child,
             ),
-            child: child,
           ),
         ),
       ),

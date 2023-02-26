@@ -105,9 +105,7 @@ class _HandleSharedBottomSheetState
                       style: context.theme.textTheme.titleLarge,
                       textAlign: TextAlign.center,
                     ),
-                    Gap(
-                      value: 24.0,
-                    ),
+                    const Gap.v(value: kStyleUint3 * 2),
                     CustomTextFormField(
                       controller: _titleTextEditingController,
                       focusNode: _titleFocusNode,
@@ -125,9 +123,7 @@ class _HandleSharedBottomSheetState
                         _linkFocusNode.requestFocus();
                       },
                     ),
-                    Gap(
-                      size: GapSize.big,
-                    ),
+                    const Gap.vb(),
                     CustomTextFormField(
                       controller: _linkTextEditingController,
                       focusNode: _linkFocusNode,

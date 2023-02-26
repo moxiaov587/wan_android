@@ -44,9 +44,7 @@ class _MyPointsScreenState extends ConsumerState<MyPointsScreen>
                                 .coinCount,
                           ),
                         ),
-                        Gap(
-                          size: GapSize.big,
-                        ),
+                        const Gap.vb(),
                         Text(
                           S.of(context).totalPoints,
                           style: context.theme.textTheme.titleMedium,

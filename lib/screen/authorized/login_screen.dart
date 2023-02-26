@@ -184,9 +184,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
                         },
                       ),
                     ),
-                    Gap(
-                      value: _kBodyPadding.top,
-                    ),
+                    Gap.v(value: _kBodyPadding.top),
                     Consumer(
                       builder: (_, WidgetRef ref, __) => CustomTextFormField(
                         controller: _passwordTextEditingController,
@@ -209,9 +207,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
                         },
                       ),
                     ),
-                    Gap(
-                      value: _kBodyPadding.top / 4,
-                    ),
+                    Gap.v(value: _kBodyPadding.top / 4),
                     Transform.translate(
                       offset: const Offset(-10.0, 0.0),
                       child: Row(
@@ -235,9 +231,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
                         ],
                       ),
                     ),
-                    Gap(
-                      value: _kBodyPadding.top / 4,
-                    ),
+                    Gap.v(value: _kBodyPadding.top / 4),
                     Consumer(
                       builder: (_, WidgetRef ref, Widget? text) =>
                           ElevatedButton(
@@ -248,9 +242,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
                       ),
                       child: Text(S.of(context).login),
                     ),
-                    Gap(
-                      value: _kBodyPadding.top / 4,
-                    ),
+                    Gap.v(value: _kBodyPadding.top / 4),
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(

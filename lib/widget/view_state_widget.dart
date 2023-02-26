@@ -11,5 +11,3 @@ import 'gap.dart';
 part 'custom_error_widget.dart';
 part 'empty_widget.dart';
 part 'loading_widget.dart';
-
-const Size _kRetryButtonSize = Size(64.0, 36.0);
