@@ -83,6 +83,13 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
     requestResetThemeMode();
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      ref.invalidate(connectivityStreamProvider);
+    }
+  }
+
   FutureOr<void> requestResetThemeMode() {
     if (mounted) {
       final Brightness? brightness = ref.read(appThemeModeProvider).brightness;
