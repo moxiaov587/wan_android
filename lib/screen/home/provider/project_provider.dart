@@ -11,6 +11,7 @@ class CurrentProjectType extends _$CurrentProjectType
   @override
   AsyncValue<ProjectTypeModel> build() {
     return ref.watch(projectTypeProvider).when(
+          skipLoadingOnRefresh: false,
           data: (List<ProjectTypeModel> data) =>
               AsyncValue<ProjectTypeModel>.data(data.first),
           error: (Object e, StackTrace s) =>

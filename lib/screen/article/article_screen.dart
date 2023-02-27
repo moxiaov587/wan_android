@@ -174,6 +174,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
           Widget? bottomActionBar,
         ) =>
             ref.watch(provider).when(
+                  skipLoadingOnRefresh: false,
                   data: (WebViewModel? article) => Column(
                     children: <Widget>[
                       Expanded(

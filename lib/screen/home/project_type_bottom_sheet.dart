@@ -29,6 +29,7 @@ class _ProjectTypeBottomSheetState
               builder: (_, WidgetRef ref, __) => ref
                   .watch(projectTypeProvider)
                   .when(
+                    skipLoadingOnRefresh: false,
                     data: (List<ProjectTypeModel> list) => ListView.builder(
                       prototypeItem: const ListTile(),
                       itemBuilder: (_, int index) {

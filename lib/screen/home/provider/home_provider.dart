@@ -177,6 +177,7 @@ final HomeArticleProvider homeArticleProvider = StateNotifierProvider
     final Http http = ref.watch(networkProvider);
 
     return ref.watch(homeTopArticlesProvider).when(
+          skipLoadingOnRefresh: false,
           data: (List<ArticleModel> list) => ArticleNotifier(
             const RefreshListViewState<ArticleModel>.loading(),
             topArticles: list,

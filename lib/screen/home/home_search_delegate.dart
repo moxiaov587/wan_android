@@ -260,6 +260,7 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
                 spacing: wrapSpace,
                 runSpacing: wrapSpace,
                 children: ref.watch(searchPopularKeywordProvider).when(
+                      skipLoadingOnRefresh: false,
                       data: (List<SearchKeywordModel> list) => list
                           .map(
                             (SearchKeywordModel e) => CapsuleInk(
@@ -272,7 +273,8 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
                           .toList(),
                       loading: () => const <Widget>[
                         CapsuleInk(
-                          child: CupertinoActivityIndicator(radius: 7.0),
+                          child:
+                              LoadingWidget(radius: 8.0, warpWithCenter: false),
                         ),
                       ],
                       error: (_, __) => <Widget>[
@@ -280,10 +282,8 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
                           onTap: () {
                             ref.invalidate(searchPopularKeywordProvider);
                           },
-                          child: const Icon(
-                            IconFontIcons.refreshLine,
-                            size: 16.0,
-                          ),
+                          child:
+                              const Icon(IconFontIcons.refreshLine, size: 16.0),
                         ),
                       ],
                     ),

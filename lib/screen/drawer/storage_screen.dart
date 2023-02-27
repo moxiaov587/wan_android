@@ -62,14 +62,17 @@ class StorageScreen extends ConsumerWidget {
                       title: Text(S.of(context).otherCache),
                       subtitle: Text(S.of(context).otherCacheTips),
                       trailing: Consumer(
-                        builder: (_, WidgetRef ref, __) => ref
-                            .watch(otherCacheSizeProvider)
-                            .when(
-                              data: (int data) => Text(data.fileSize),
-                              loading: () => const CupertinoActivityIndicator(),
-                              error: (_, __) =>
-                                  const Icon(IconFontIcons.refreshLine),
-                            ),
+                        builder: (_, WidgetRef ref, __) =>
+                            ref.watch(otherCacheSizeProvider).when(
+                                  skipLoadingOnRefresh: false,
+                                  data: (int data) => Text(data.fileSize),
+                                  loading: () => const LoadingWidget(
+                                    radius: 10.0,
+                                    warpWithCenter: false,
+                                  ),
+                                  error: (_, __) =>
+                                      const Icon(IconFontIcons.refreshLine),
+                                ),
                       ),
                       onTap: () {
                         ref.read(otherCacheSizeProvider).when(
@@ -137,14 +140,17 @@ class StorageScreen extends ConsumerWidget {
                       title: Text(S.of(context).responseDataCache),
                       subtitle: Text(S.of(context).responseDataCacheTips),
                       trailing: Consumer(
-                        builder: (_, WidgetRef ref, __) => ref
-                            .watch(responseDataCacheSizeProvider)
-                            .when(
-                              data: (int? value) => Text(value.fileSize),
-                              loading: () => const CupertinoActivityIndicator(),
-                              error: (_, __) =>
-                                  const Icon(IconFontIcons.refreshLine),
-                            ),
+                        builder: (_, WidgetRef ref, __) =>
+                            ref.watch(responseDataCacheSizeProvider).when(
+                                  skipLoadingOnRefresh: false,
+                                  data: (int data) => Text(data.fileSize),
+                                  loading: () => const LoadingWidget(
+                                    radius: 10.0,
+                                    warpWithCenter: false,
+                                  ),
+                                  error: (_, __) =>
+                                      const Icon(IconFontIcons.refreshLine),
+                                ),
                       ),
                       onTap: () {
                         ref.read(responseDataCacheSizeProvider).when(
@@ -215,14 +221,17 @@ class StorageScreen extends ConsumerWidget {
                       title: Text(S.of(context).preferencesCache),
                       subtitle: Text(S.of(context).preferencesCacheTips),
                       trailing: Consumer(
-                        builder: (_, WidgetRef ref, __) => ref
-                            .watch(preferencesCacheSizeProvider)
-                            .when(
-                              data: (int data) => Text(data.fileSize),
-                              loading: () => const CupertinoActivityIndicator(),
-                              error: (_, __) =>
-                                  const Icon(IconFontIcons.refreshLine),
-                            ),
+                        builder: (_, WidgetRef ref, __) =>
+                            ref.watch(preferencesCacheSizeProvider).when(
+                                  skipLoadingOnRefresh: false,
+                                  data: (int data) => Text(data.fileSize),
+                                  loading: () => const LoadingWidget(
+                                    radius: 10.0,
+                                    warpWithCenter: false,
+                                  ),
+                                  error: (_, __) =>
+                                      const Icon(IconFontIcons.refreshLine),
+                                ),
                       ),
                       onTap: () {
                         ref.read(preferencesCacheSizeProvider).when(
@@ -399,15 +408,9 @@ class _BottomActionBar extends StatelessWidget {
                                       ),
                                     );
 
-                                ref.invalidate(
-                                  otherCacheSizeProvider,
-                                );
-                                ref.invalidate(
-                                  responseDataCacheSizeProvider,
-                                );
-                                ref.invalidate(
-                                  preferencesCacheSizeProvider,
-                                );
+                                ref.invalidate(otherCacheSizeProvider);
+                                ref.invalidate(responseDataCacheSizeProvider);
+                                ref.invalidate(preferencesCacheSizeProvider);
                               },
                             );
                           }

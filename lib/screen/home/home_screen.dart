@@ -1,5 +1,4 @@
 import 'package:extended_image/extended_image.dart';
-import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -425,6 +424,7 @@ class _BannerCarousel extends StatelessWidget {
                 builder: (_, WidgetRef ref, __) => ref
                     .watch(homeBannerProvider)
                     .when(
+                      skipLoadingOnRefresh: false,
                       data: (List<HomeBannerCache> list) => PageView.builder(
                         onPageChanged: ref
                             .read(
@@ -453,24 +453,27 @@ class _BannerCarousel extends StatelessWidget {
                               onTap: () {
                                 ref.invalidate(homeBannerProvider);
                               },
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Icon(
-                                    IconFontIcons.refreshLine,
-                                    color: context
-                                        .theme.textTheme.bodySmall!.color,
-                                    size: 36.0,
-                                  ),
-                                  const Gap.vb(),
-                                  Text(
-                                    '${error.message ?? error.detail ?? S.of(context).unknownError}(${error.statusCode ?? -1})',
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const Gap.vn(),
-                                  Text(S.of(context).tapToRetry),
-                                ],
+                              child: Padding(
+                                padding: AppTheme.bodyPaddingOnlyHorizontal,
+                                child: Column(
+                                  children: <Widget>[
+                                    const Gap.v(value: kStyleUint4 * 3),
+                                    Icon(
+                                      IconFontIcons.refreshLine,
+                                      color: context
+                                          .theme.textTheme.bodySmall!.color,
+                                      size: 36.0,
+                                    ),
+                                    const Gap.vn(),
+                                    Text(
+                                      '${error.message ?? error.detail ?? S.of(context).unknownError}(${error.statusCode ?? -1})',
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const Gap.vs(),
+                                    Text(S.of(context).tapToRetry),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
