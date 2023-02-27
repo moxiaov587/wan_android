@@ -3,49 +3,59 @@ part of 'article.dart';
 class ArticleTileSearchTitle extends StatelessWidget {
   const ArticleTileSearchTitle({
     super.key,
-    required this.query,
     required this.title,
     required this.textStyle,
+    this.query,
     this.prefixesChildren = const <InlineSpan>[],
   });
 
-  final String query;
   final String title;
   final TextStyle textStyle;
+  final String? query;
   final List<InlineSpan> prefixesChildren;
-
-  List<String> get keywords => query
-      .split(Unicode.halfWidthSpace)
-      .map((String keyword) => keyword.toLowerCase())
-      .toList();
-
-  List<String>? get words => HTMLParseUtils.parseSearchResultArticleTile(title);
 
   @override
   Widget build(BuildContext context) {
+    final List<String>? keywords = query
+        ?.split(Unicode.halfWidthSpace)
+        .map((String keyword) => keyword.toLowerCase())
+        .toList();
+
     final Color keywordsBackgroundColor =
         (context.isDarkTheme ? AppColors.yellowDark : AppColors.yellow)
             .withOpacity(0.2);
 
     return RichText(
+      textScaleFactor: MediaQuery.of(context).textScaleFactor,
       text: TextSpan(
         style: textStyle,
-        children: <InlineSpan>[
-          ...prefixesChildren,
-          ...words?.map((String word) {
-                final bool isKeywords = keywords.contains(word.toLowerCase());
+        children: prefixesChildren
+          ..addAll(
+            <InlineSpan>[
+              if (keywords?.isEmpty ?? true)
+                TextSpan(
+                  text: HTMLParseUtils.unescapeHTML(title) ??
+                      S.of(context).unknown,
+                )
+              else
+                ...HTMLParseUtils.parseSearchResultArticleTile(title)
+                        ?.map((String word) {
+                      final bool isKeywords =
+                          keywords!.contains(word.toLowerCase());
 
-                return TextSpan(
-                  text: word,
-                  style: TextStyle(
-                    backgroundColor:
-                        isKeywords ? keywordsBackgroundColor : null,
-                    color: isKeywords ? context.theme.colorScheme.error : null,
-                  ),
-                );
-              }) ??
-              <InlineSpan>[],
-        ],
+                      return TextSpan(
+                        text: word,
+                        style: isKeywords
+                            ? TextStyle(
+                                backgroundColor: keywordsBackgroundColor,
+                                color: context.theme.colorScheme.error,
+                              )
+                            : null,
+                      );
+                    }) ??
+                    <InlineSpan>[],
+            ],
+          ),
       ),
     );
   }
