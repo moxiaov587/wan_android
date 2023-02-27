@@ -171,24 +171,25 @@ class _HomeState extends ConsumerState<_Home>
                   return const SliverFillRemaining(child: EmptyWidget());
                 }
 
-                return LoadMoreSliverList.separator(
-                  loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
-                  itemBuilder: (_, int index) {
-                    final ArticleModel article = list[index];
+                return SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (_, int index) {
+                      final ArticleModel article = list[index];
 
-                    return ArticleTile(
-                      key: Key('home_article_${article.id}'),
-                      article: article,
-                    );
-                  },
-                  separatorBuilder: (_, __) => const IndentDivider(),
-                  itemCount: list.length,
+                      return ArticleTile(
+                        key: Key('home_article_${article.id}'),
+                        article: article,
+                      );
+                    },
+                    childCount: list.length,
+                  ),
                 );
               },
               loading: loadingIndicatorBuilder,
               error: errorIndicatorBuilder,
             ),
           ),
+          loadMoreIndicator,
         ],
       ),
     );

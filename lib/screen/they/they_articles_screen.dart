@@ -38,12 +38,9 @@ class _TheyArticlesScreenState extends ConsumerState<TheyArticlesScreen>
                     return const SliverFillRemaining(child: EmptyWidget());
                   }
 
-                  return SliverPadding(
-                    padding:
-                        EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
-                    sliver: LoadMoreSliverList.separator(
-                      loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
-                      itemBuilder: (_, int index) {
+                  return SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (_, int index) {
                         final ArticleModel article = list[index];
 
                         return ArticleTile(
@@ -52,14 +49,17 @@ class _TheyArticlesScreenState extends ConsumerState<TheyArticlesScreen>
                           article: article,
                         );
                       },
-                      separatorBuilder: (_, __) => const IndentDivider(),
-                      itemCount: list.length,
+                      childCount: list.length,
                     ),
                   );
                 },
                 loading: loadingIndicatorBuilder,
                 error: errorIndicatorBuilder,
               ),
+            ),
+            SliverPadding(
+              padding: EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
+              sliver: loadMoreIndicator,
             ),
           ],
         ),

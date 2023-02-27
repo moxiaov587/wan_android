@@ -61,12 +61,9 @@ class _MyPointsScreenState extends ConsumerState<MyPointsScreen>
                       return const SliverFillRemaining(child: EmptyWidget());
                     }
 
-                    return SliverPadding(
-                      padding:
-                          EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
-                      sliver: LoadMoreSliverList.separator(
-                        loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
-                        itemBuilder: (_, int index) {
+                    return SliverPrototypeExtentList(
+                      delegate: SliverChildBuilderDelegate(
+                        (_, int index) {
                           final PointsModel points = list[index];
 
                           final bool isIncrease = points.coinCount > 0;
@@ -91,15 +88,18 @@ class _MyPointsScreenState extends ConsumerState<MyPointsScreen>
                             ),
                           );
                         },
-                        separatorBuilder: (_, __) =>
-                            const IndentDivider.listTile(),
-                        itemCount: list.length,
+                        childCount: list.length,
                       ),
+                      prototypeItem: const ListTile(),
                     );
                   },
                   loading: loadingIndicatorBuilder,
                   error: errorIndicatorBuilder,
                 ),
+              ),
+              SliverPadding(
+                padding: EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
+                sliver: loadMoreIndicator,
               ),
             ],
           ),

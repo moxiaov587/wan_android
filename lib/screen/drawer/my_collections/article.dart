@@ -62,13 +62,10 @@ class __ArticleState extends ConsumerState<_Article>
                   );
                 }
 
-                return SliverPadding(
-                  padding:
-                      EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
-                  sliver: SlidableAutoCloseBehavior(
-                    child: LoadMoreSliverList.separator(
-                      loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
-                      itemBuilder: (_, int index) {
+                return SlidableAutoCloseBehavior(
+                  child: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (_, int index) {
                         final CollectedArticleModel article = list[index];
 
                         return _CollectedArticleTile(
@@ -89,8 +86,7 @@ class __ArticleState extends ConsumerState<_Article>
 
                         return index;
                       },
-                      separatorBuilder: (_, __) => const IndentDivider(),
-                      itemCount: list.length,
+                      childCount: list.length,
                     ),
                   ),
                 );
@@ -98,6 +94,10 @@ class __ArticleState extends ConsumerState<_Article>
               loading: loadingIndicatorBuilder,
               error: errorIndicatorBuilder,
             ),
+          ),
+          SliverPadding(
+            padding: EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
+            sliver: loadMoreIndicator,
           ),
         ],
       ),

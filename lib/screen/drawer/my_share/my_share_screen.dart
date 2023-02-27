@@ -16,7 +16,6 @@ import '../../../widget/article.dart';
 import '../../../widget/custom_text_form_field.dart';
 import '../../../widget/dismissible_slidable_action.dart';
 import '../../../widget/gap.dart';
-import '../../../widget/indent_divider.dart';
 import '../../../widget/view_state_widget.dart';
 import '../provider/drawer_provider.dart';
 
@@ -66,13 +65,10 @@ class _MyShareScreenState extends ConsumerState<MyShareScreen>
                     return const SliverFillRemaining(child: EmptyWidget());
                   }
 
-                  return SliverPadding(
-                    padding:
-                        EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
-                    sliver: SlidableAutoCloseBehavior(
-                      child: LoadMoreSliverList.separator(
-                        loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
-                        itemBuilder: (_, int index) {
+                  return SlidableAutoCloseBehavior(
+                    child: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (_, int index) {
                           final ArticleModel article = list[index];
 
                           return _ShareArticleTile(
@@ -92,8 +88,7 @@ class _MyShareScreenState extends ConsumerState<MyShareScreen>
 
                           return index;
                         },
-                        separatorBuilder: (_, __) => const IndentDivider(),
-                        itemCount: list.length,
+                        childCount: list.length,
                       ),
                     ),
                   );
@@ -101,6 +96,10 @@ class _MyShareScreenState extends ConsumerState<MyShareScreen>
                 loading: loadingIndicatorBuilder,
                 error: errorIndicatorBuilder,
               ),
+            ),
+            SliverPadding(
+              padding: EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
+              sliver: loadMoreIndicator,
             ),
           ],
         ),

@@ -42,41 +42,37 @@ class _RankScreenState extends ConsumerState<RankScreen>
                         return const SliverFillRemaining(child: EmptyWidget());
                       }
 
-                      return SliverPadding(
-                        padding: EdgeInsets.only(
-                          bottom: currentUserPoints != null
-                              ? paddingBottom
-                              : ScreenUtils.bottomSafeHeight,
-                        ),
-                        sliver: LoadMoreSliverList.separator(
-                          loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
-                          itemBuilder: (_, int index) {
+                      return SliverPrototypeExtentList(
+                        delegate: SliverChildBuilderDelegate(
+                          (_, int index) {
                             final UserPointsModel points = list[index];
 
-                            return Material(
+                            return _RankTile(
                               key: Key('rank_${points.userId}'),
-                              child: Padding(
-                                padding: const EdgeInsets.all(kStyleUint4),
-                                child: _RankTile(
-                                  rank: points.rank,
-                                  level: points.level,
-                                  nickname: points.nickname.strictValue ??
-                                      points.username.strictValue ??
-                                      '',
-                                  totalPoints: points.coinCount,
-                                ),
-                              ),
+                              rank: points.rank,
+                              level: points.level,
+                              nickname: points.nickname.strictValue ??
+                                  points.username.strictValue ??
+                                  '',
+                              totalPoints: points.coinCount,
                             );
                           },
-                          separatorBuilder: (_, __) =>
-                              const IndentDivider.canvas(),
-                          itemCount: list.length,
+                          childCount: list.length,
                         ),
+                        prototypeItem: const _RankTile.prototypeItem(),
                       );
                     },
                     loading: loadingIndicatorBuilder,
                     error: errorIndicatorBuilder,
                   ),
+                ),
+                SliverPadding(
+                  padding: EdgeInsets.only(
+                    bottom: currentUserPoints != null
+                        ? paddingBottom
+                        : ScreenUtils.bottomSafeHeight,
+                  ),
+                  sliver: loadMoreIndicator,
                 ),
               ],
             ),
@@ -96,26 +92,8 @@ class _RankScreenState extends ConsumerState<RankScreen>
                       ref.read(authorizedProvider).valueOrNull?.user.nickname;
 
                   return showUserRank
-                      ? Container(
-                          width: ScreenUtils.width,
-                          height: paddingBottom,
-                          padding: EdgeInsets.fromLTRB(
-                            kStyleUint4,
-                            kStyleUint4,
-                            kStyleUint4,
-                            kStyleUint4 + ScreenUtils.bottomSafeHeight,
-                          ),
-                          decoration: BoxDecoration(
-                            border:
-                                Border(top: Divider.createBorderSide(context)),
-                            boxShadow: <BoxShadow>[
-                              BoxShadow(
-                                color: context.theme.colorScheme.background,
-                                blurRadius: _kCurrentUserRankTileHeight / 2,
-                                blurStyle: BlurStyle.inner,
-                              ),
-                            ],
-                          ),
+                      ? SizedBox.fromSize(
+                          size: Size(ScreenUtils.width, paddingBottom),
                           child: _RankTile(
                             key: Key('rank_tile_${currentUserPoints.userId}'),
                             rank: currentUserPoints.rank,
@@ -124,6 +102,7 @@ class _RankScreenState extends ConsumerState<RankScreen>
                                 currentUserPoints.username.strictValue,
                             level: currentUserPoints.level,
                             totalPoints: currentUserPoints.coinCount,
+                            isSelf: true,
                           ),
                         )
                       : const SizedBox.shrink();
@@ -143,45 +122,69 @@ class _RankTile extends StatelessWidget {
     required this.nickname,
     required this.level,
     required this.totalPoints,
+    this.isSelf = false,
   });
+
+  const _RankTile.prototypeItem()
+      : rank = '1',
+        nickname = 'PROTOTYPE_ITEM',
+        level = 1000,
+        totalPoints = 100,
+        isSelf = false;
 
   final String? rank;
   final String? nickname;
   final int level;
   final int totalPoints;
+  final bool isSelf;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Text(
-          rank ?? '',
-          style: context.theme.textTheme.titleLarge,
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: context.theme.colorScheme.background
+            .withOpacity(isSelf ? 0.65 : 1.0),
+        border: Border(
+          top: isSelf ? Divider.createBorderSide(context) : BorderSide.none,
+          bottom: isSelf ? BorderSide.none : Divider.createBorderSide(context),
         ),
-        const Gap.hn(),
-        Expanded(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Flexible(
-                child: Text(
-                  nickname.strictValue ?? '',
-                  style: context.theme.textTheme.titleMedium,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(kStyleUint4).copyWith(
+          bottom: isSelf ? kStyleUint4 + ScreenUtils.bottomSafeHeight : null,
+        ),
+        child: Row(
+          children: <Widget>[
+            Text(
+              rank ?? '',
+              style: context.theme.textTheme.titleLarge,
+            ),
+            const Gap.hn(),
+            Expanded(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Flexible(
+                    child: Text(
+                      nickname.strictValue ?? '',
+                      style: context.theme.textTheme.titleMedium,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const Gap.hn(),
+                  LevelTag(level: level),
+                ],
               ),
-              const Gap.hn(),
-              LevelTag(level: level),
-            ],
-          ),
+            ),
+            const Gap.hn(),
+            Text(
+              totalPoints.toString(),
+              style: context.theme.textTheme.titleMedium,
+            ),
+          ],
         ),
-        const Gap.hn(),
-        Text(
-          totalPoints.toString(),
-          style: context.theme.textTheme.titleMedium,
-        ),
-      ],
+      ),
     );
   }
 }
