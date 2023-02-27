@@ -1,11 +1,15 @@
 part of 'view_state_widget.dart';
 
 class LoadingWidget extends StatelessWidget {
-  const LoadingWidget({
+  const LoadingWidget.listView({
     super.key,
-    this.radius = 25.0,
-    this.warpWithCenter = true,
-  });
+  })  : radius = 25.0,
+        warpWithCenter = true;
+
+  const LoadingWidget.capsuleInk({
+    super.key,
+  })  : radius = kStyleUint2,
+        warpWithCenter = false;
 
   final double radius;
   final bool warpWithCenter;

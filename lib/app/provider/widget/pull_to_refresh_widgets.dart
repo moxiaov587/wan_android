@@ -1,10 +1,10 @@
-import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart'
     hide RefreshIndicator, RefreshIndicatorState;
 import 'package:nil/nil.dart';
 
 import '../../../contacts/icon_font_icons.dart';
 import '../../../widget/gap.dart';
+import '../../../widget/view_state_widget.dart';
 import '../../l10n/generated/l10n.dart';
 import '../../theme/app_theme.dart';
 import '../provider.dart';
@@ -35,7 +35,7 @@ class LoadingMoreIndicator extends StatelessWidget {
       case LoadingMoreStatus.completed:
         break;
       case LoadingMoreStatus.loading:
-        icon = const CupertinoActivityIndicator();
+        icon = const LoadingWidget.capsuleInk();
         tips = S.of(context).loadingMore;
         break;
       case LoadingMoreStatus.noData:

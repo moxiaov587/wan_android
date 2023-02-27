@@ -92,32 +92,30 @@ class _ProjectTypeSwitch extends StatelessWidget {
         child: Align(
           alignment: Alignment.centerLeft,
           child: Consumer(
-            builder: (_, WidgetRef ref, __) => ref
-                .watch(currentProjectTypeProvider)
-                .when(
-                  data: (ProjectTypeModel value) => CapsuleInk(
-                    onTap: () {
-                      const ProjectTypeRoute().push(context);
-                    },
-                    child: Text(value.name),
-                  ),
-                  error: (_, __) => CapsuleInk(
-                    onTap: () {
-                      ref.invalidate(projectTypeProvider);
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        const Icon(IconFontIcons.refreshLine, size: 14.0),
-                        const Gap.hs(),
-                        Text(S.of(context).retry),
-                      ],
+            builder: (_, WidgetRef ref, __) =>
+                ref.watch(currentProjectTypeProvider).when(
+                      data: (ProjectTypeModel value) => CapsuleInk(
+                        onTap: () {
+                          const ProjectTypeRoute().push(context);
+                        },
+                        child: Text(value.name),
+                      ),
+                      error: (_, __) => CapsuleInk(
+                        onTap: () {
+                          ref.invalidate(projectTypeProvider);
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            const Icon(IconFontIcons.refreshLine, size: 14.0),
+                            const Gap.hs(),
+                            Text(S.of(context).retry),
+                          ],
+                        ),
+                      ),
+                      loading: () =>
+                          const CapsuleInk(child: LoadingWidget.capsuleInk()),
                     ),
-                  ),
-                  loading: () => const CapsuleInk(
-                    child: LoadingWidget(radius: 8.0, warpWithCenter: false),
-                  ),
-                ),
           ),
         ),
       ),

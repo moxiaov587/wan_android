@@ -87,7 +87,7 @@ mixin RefreshListViewStateMixin<
   }
 
   Widget loadingIndicatorBuilder() => const SliverFillRemaining(
-        child: LoadingWidget(),
+        child: LoadingWidget.listView(),
       );
 
   Widget errorIndicatorBuilder(Object e, StackTrace s) => SliverFillRemaining(
@@ -177,7 +177,7 @@ mixin AutoDisposeRefreshListViewStateMixin<
   }
 
   Widget loadingIndicatorBuilder() => const SliverFillRemaining(
-        child: LoadingWidget(),
+        child: LoadingWidget.listView(),
       );
 
   Widget errorIndicatorBuilder(Object e, StackTrace s) => SliverFillRemaining(

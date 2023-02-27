@@ -442,7 +442,7 @@ class _BannerCarousel extends StatelessWidget {
                         },
                         itemCount: list.length,
                       ),
-                      loading: () => const LoadingWidget(),
+                      loading: () => const LoadingWidget.listView(),
                       error: (Object e, StackTrace s) {
                         final ViewError error = ViewError.create(e, s);
 

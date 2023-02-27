@@ -29,11 +29,14 @@ class CapsuleInk extends StatelessWidget {
           onTap: onTap,
           child: Padding(
             padding: AppTheme.contentPadding,
-            child: DefaultTextStyle(
-              style: context.theme.textTheme.bodyMedium!.copyWith(
-                height: 1.35,
+            child: IconTheme(
+              data: const IconThemeData(size: kStyleUint4),
+              child: DefaultTextStyle(
+                style: context.theme.textTheme.bodyMedium!.copyWith(
+                  height: 1.35,
+                ),
+                child: child,
               ),
-              child: child,
             ),
           ),
         ),

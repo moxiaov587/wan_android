@@ -72,7 +72,7 @@ class _ProjectTypeBottomSheetState
                       },
                       itemCount: list.length,
                     ),
-                    loading: () => const LoadingWidget(),
+                    loading: () => const LoadingWidget.listView(),
                     error: (Object e, StackTrace s) =>
                         CustomErrorWidget.withViewError(
                       ViewError.create(e, s),
