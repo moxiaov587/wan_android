@@ -174,7 +174,7 @@ final HomeArticleProvider homeArticleProvider = StateNotifierProvider
       ref) {
     final CancelToken cancelToken = ref.cancelToken();
 
-    final Http http = ref.watch(networkProvider);
+    final Http http = ref.read(networkProvider);
 
     return ref.watch(homeTopArticlesProvider).when(
           skipLoadingOnRefresh: false,
@@ -228,11 +228,10 @@ class ArticleNotifier extends BaseRefreshListViewNotifier<ArticleModel>
 
     if (pageNum == initialPageNum && topArticles != null) {
       data = data.copyWith(
-        list: <ArticleModel>[
-          ...topArticles!
-              .map((ArticleModel article) => article.copyWith(isTop: true)),
-          ...data.list,
-        ],
+        list: topArticles!
+            .map((ArticleModel article) => article.copyWith(isTop: true))
+            .toList()
+          ..addAll(data.list),
       );
     }
 

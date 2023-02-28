@@ -31,7 +31,7 @@ final ProjectArticleProvider projectArticleProvider = StateNotifierProvider
       ref) {
     final CancelToken cancelToken = ref.cancelToken();
 
-    final Http http = ref.watch(networkProvider);
+    final Http http = ref.read(networkProvider);
 
     return ref.watch(currentProjectTypeProvider).when(
           data: (ProjectTypeModel value) => ProjectNotifier(
