@@ -131,12 +131,9 @@ class __ResultsState extends ConsumerState<_Results>
                   return const SliverFillRemaining(child: EmptyWidget.search());
                 }
 
-                return SliverPadding(
-                  padding:
-                      EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
-                  sliver: LoadMoreSliverList.separator(
-                    loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
-                    itemBuilder: (_, int index) {
+                return SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (_, int index) {
                       final ArticleModel article = list[index];
 
                       return ArticleTile(
@@ -145,14 +142,17 @@ class __ResultsState extends ConsumerState<_Results>
                         query: widget.query,
                       );
                     },
-                    separatorBuilder: (_, __) => const IndentDivider(),
-                    itemCount: list.length,
+                    childCount: list.length,
                   ),
                 );
               },
               loading: loadingIndicatorBuilder,
               error: errorIndicatorBuilder,
             ),
+          ),
+          SliverPadding(
+            padding: EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
+            sliver: loadMoreIndicator,
           ),
         ],
       ),
@@ -260,6 +260,7 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
                 spacing: wrapSpace,
                 runSpacing: wrapSpace,
                 children: ref.watch(searchPopularKeywordProvider).when(
+                      skipLoadingOnRefresh: false,
                       data: (List<SearchKeywordModel> list) => list
                           .map(
                             (SearchKeywordModel e) => CapsuleInk(
@@ -272,7 +273,7 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
                           .toList(),
                       loading: () => const <Widget>[
                         CapsuleInk(
-                          child: CupertinoActivityIndicator(radius: 7.0),
+                          child: LoadingWidget.capsuleInk(),
                         ),
                       ],
                       error: (_, __) => <Widget>[
@@ -280,10 +281,7 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
                           onTap: () {
                             ref.invalidate(searchPopularKeywordProvider);
                           },
-                          child: const Icon(
-                            IconFontIcons.refreshLine,
-                            size: 16.0,
-                          ),
+                          child: const Icon(IconFontIcons.refreshLine),
                         ),
                       ],
                     ),

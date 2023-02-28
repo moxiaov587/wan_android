@@ -8,8 +8,6 @@ import '../provider.dart';
 import '../view_state.dart';
 import '../widget/pull_to_refresh_widgets.dart';
 
-export '../widget/load_more_list.dart';
-
 mixin RefreshListViewStateMixin<
         ProviderType extends StateNotifierProvider<
             BaseRefreshListViewNotifier<T>, RefreshListViewState<T>>,
@@ -26,10 +24,29 @@ mixin RefreshListViewStateMixin<
         builder: (BuildContext context, WidgetRef ref, _) =>
             ref.watch(provider).whenOrNull(
                   (_, __, ___) => CupertinoSliverRefreshControl(
-                    onRefresh: ref.watch(provider.notifier).refresh,
+                    onRefresh: () {
+                      _loadingMoreStatusNotifier.value =
+                          LoadingMoreStatus.completed;
+
+                      return ref.watch(provider.notifier).refresh();
+                    },
                   ),
                 ) ??
             const SliverToBoxAdapter(child: nil),
+      );
+
+  Widget get loadMoreIndicator => SliverToBoxAdapter(
+        child: ValueListenableBuilder<LoadingMoreStatus>(
+          valueListenable: _loadingMoreStatusNotifier,
+          builder: (_, LoadingMoreStatus status, __) => LoadingMoreIndicator(
+            status: status,
+            onRetry: () async {
+              _loadingMoreStatusNotifier.value = LoadingMoreStatus.loading;
+              _loadingMoreStatusNotifier.value =
+                  (await ref.read(provider.notifier).loadMore())!;
+            },
+          ),
+        ),
       );
 
   void onRetry() {
@@ -52,7 +69,10 @@ mixin RefreshListViewStateMixin<
     // reach the pixels to loading more
     if (notification.metrics.axisDirection == AxisDirection.down &&
         notification.metrics.pixels >= notification.metrics.maxScrollExtent) {
-      if ((ref.read(provider).whenOrNull((_, __, ___) => true) ?? false) &&
+      if ((ref
+                  .read(provider)
+                  .whenOrNull((_, __, List<T> list) => list.isNotEmpty) ??
+              false) &&
           _loadingMoreStatusNotifier.value == LoadingMoreStatus.completed) {
         _loadingMoreStatusNotifier.value = LoadingMoreStatus.loading;
 
@@ -66,21 +86,8 @@ mixin RefreshListViewStateMixin<
     return false;
   }
 
-  Widget loadMoreIndicatorBuilder(BuildContext _) =>
-      ValueListenableBuilder<LoadingMoreStatus>(
-        valueListenable: _loadingMoreStatusNotifier,
-        builder: (_, LoadingMoreStatus status, __) => LoadingMoreIndicator(
-          status: status,
-          onRetry: () async {
-            _loadingMoreStatusNotifier.value = LoadingMoreStatus.loading;
-            _loadingMoreStatusNotifier.value =
-                (await ref.read(provider.notifier).loadMore())!;
-          },
-        ),
-      );
-
   Widget loadingIndicatorBuilder() => const SliverFillRemaining(
-        child: LoadingWidget(),
+        child: LoadingWidget.listView(),
       );
 
   Widget errorIndicatorBuilder(Object e, StackTrace s) => SliverFillRemaining(
@@ -107,10 +114,29 @@ mixin AutoDisposeRefreshListViewStateMixin<
         builder: (BuildContext context, WidgetRef ref, _) =>
             ref.watch(provider).whenOrNull(
                   (_, __, ___) => CupertinoSliverRefreshControl(
-                    onRefresh: ref.watch(provider.notifier).refresh,
+                    onRefresh: () {
+                      _loadingMoreStatusNotifier.value =
+                          LoadingMoreStatus.completed;
+
+                      return ref.watch(provider.notifier).refresh();
+                    },
                   ),
                 ) ??
             const SliverToBoxAdapter(child: nil),
+      );
+
+  Widget get loadMoreIndicator => SliverToBoxAdapter(
+        child: ValueListenableBuilder<LoadingMoreStatus>(
+          valueListenable: _loadingMoreStatusNotifier,
+          builder: (_, LoadingMoreStatus status, __) => LoadingMoreIndicator(
+            status: status,
+            onRetry: () async {
+              _loadingMoreStatusNotifier.value = LoadingMoreStatus.loading;
+              _loadingMoreStatusNotifier.value =
+                  (await ref.read(provider.notifier).loadMore())!;
+            },
+          ),
+        ),
       );
 
   void onRetry() {
@@ -133,7 +159,10 @@ mixin AutoDisposeRefreshListViewStateMixin<
     // reach the pixels to loading more
     if (notification.metrics.axisDirection == AxisDirection.down &&
         notification.metrics.pixels >= notification.metrics.maxScrollExtent) {
-      if ((ref.read(provider).whenOrNull((_, __, ___) => true) ?? false) &&
+      if ((ref
+                  .read(provider)
+                  .whenOrNull((_, __, List<T> list) => list.isNotEmpty) ??
+              false) &&
           _loadingMoreStatusNotifier.value == LoadingMoreStatus.completed) {
         _loadingMoreStatusNotifier.value = LoadingMoreStatus.loading;
 
@@ -147,21 +176,8 @@ mixin AutoDisposeRefreshListViewStateMixin<
     return false;
   }
 
-  Widget loadMoreIndicatorBuilder(BuildContext _) =>
-      ValueListenableBuilder<LoadingMoreStatus>(
-        valueListenable: _loadingMoreStatusNotifier,
-        builder: (_, LoadingMoreStatus status, __) => LoadingMoreIndicator(
-          status: status,
-          onRetry: () async {
-            _loadingMoreStatusNotifier.value = LoadingMoreStatus.loading;
-            _loadingMoreStatusNotifier.value =
-                (await ref.read(provider.notifier).loadMore())!;
-          },
-        ),
-      );
-
   Widget loadingIndicatorBuilder() => const SliverFillRemaining(
-        child: LoadingWidget(),
+        child: LoadingWidget.listView(),
       );
 
   Widget errorIndicatorBuilder(Object e, StackTrace s) => SliverFillRemaining(

@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -9,18 +8,13 @@ import '../../../app/provider/mixin/refresh_list_view_state_mixin.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../contacts/icon_font_icons.dart';
 import '../../../contacts/instances.dart';
-import '../../../contacts/unicode.dart';
 import '../../../extensions/extensions.dart';
 import '../../../model/models.dart';
 import '../../../router/data/app_routes.dart';
-import '../../../utils/dialog_utils.dart';
-import '../../../utils/html_parse_utils.dart';
 import '../../../utils/screen_utils.dart';
 import '../../../widget/custom_text_form_field.dart';
-import '../../../widget/dismissible_slidable_action.dart';
 import '../../../widget/gap.dart';
-import '../../../widget/indent_divider.dart';
-import '../../../widget/sliver_child_with_separator_builder_delegate.dart';
+import '../../../widget/slidable_tile.dart';
 import '../../../widget/view_state_widget.dart';
 import '../provider/drawer_provider.dart';
 
@@ -67,10 +61,7 @@ class _MyCollectionsScreenState extends State<MyCollectionsScreen>
                   type: CollectionType.values[_tabController.index],
                 ).push(context);
               },
-              icon: const Icon(
-                IconFontIcons.addLine,
-                size: 30.0,
-              ),
+              icon: const Icon(IconFontIcons.addLine, size: 30.0),
             ),
           ),
         ],
@@ -87,11 +78,8 @@ class _MyCollectionsScreenState extends State<MyCollectionsScreen>
               labelColor: context.theme.textTheme.titleMedium!.color,
               unselectedLabelStyle: context.theme.textTheme.titleMedium,
               tabs: CollectionType.values
-                  .map(
-                    (CollectionType type) => Text(
-                      S.of(context).collectionType(type.name),
-                    ),
-                  )
+                  .map((CollectionType type) =>
+                      Text(S.of(context).collectionType(type.name)))
                   .toList(),
               onTap: (int index) {
                 _tabController.animateTo(index);

@@ -10,21 +10,16 @@ class ArticleTile extends StatelessWidget {
 
   final ArticleModel article;
   final String? query;
-
   final bool authorTextOrShareUserTextCanOnTap;
 
   TextSpan get _textSpace => const TextSpan(
         text: '${Unicode.halfWidthSpace}•${Unicode.halfWidthSpace}',
-        style: TextStyle(
-          wordSpacing: kStyleUint / 2,
-        ),
+        style: TextStyle(wordSpacing: kStyleUint / 2),
       );
 
   @override
   Widget build(BuildContext context) {
     final bool isShare = article.author.strictValue == null;
-
-    final bool hasTags = article.tags != null && article.tags!.isNotEmpty;
 
     final double titleVerticalGap = AppTheme.bodyPadding.top;
 
@@ -32,6 +27,9 @@ class ArticleTile extends StatelessWidget {
 
     return Material(
       child: Ink(
+        decoration: BoxDecoration(
+          border: Border(bottom: Divider.createBorderSide(context)),
+        ),
         child: InkWell(
           onTap: () {
             ArticleRoute(id: article.id).push(context);
@@ -42,6 +40,7 @@ class ArticleTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 RichText(
+                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
                   text: TextSpan(
                     style: context.theme.textTheme.bodyMedium,
                     children: <TextSpan>[
@@ -49,9 +48,7 @@ class ArticleTile extends StatelessWidget {
                         TextSpan(
                           text: article.author.strictValue,
                           style: authorTextOrShareUserTextCanOnTap
-                              ? TextStyle(
-                                  color: titleStyle.color,
-                                )
+                              ? TextStyle(color: titleStyle.color)
                               : null,
                           recognizer: authorTextOrShareUserTextCanOnTap
                               ? (TapGestureRecognizer()
@@ -65,9 +62,7 @@ class ArticleTile extends StatelessWidget {
                         TextSpan(
                           text: article.shareUser.strictValue,
                           style: authorTextOrShareUserTextCanOnTap
-                              ? TextStyle(
-                                  color: titleStyle.color,
-                                )
+                              ? TextStyle(color: titleStyle.color)
                               : null,
                           recognizer: authorTextOrShareUserTextCanOnTap
                               ? (TapGestureRecognizer()
@@ -93,50 +88,31 @@ class ArticleTile extends StatelessWidget {
                   ),
                 ),
                 Gap.v(value: titleVerticalGap),
-                if (query != null)
-                  ArticleTileSearchTitle(
-                    prefixesChildren: <InlineSpan>[
-                      if (article.fresh)
-                        WidgetSpan(
-                          child: _TagTile(
-                            text: S.of(context).fresh,
-                            color: context.theme.primaryColor,
-                            marginRight: true,
-                          ),
+                ArticleTileSearchTitle(
+                  prefixesChildren: <InlineSpan>[
+                    if (article.isTop)
+                      WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: _TagTile(
+                          text: S.of(context).top,
+                          color: context.theme.colorScheme.error,
+                          marginRight: true,
                         ),
-                    ],
-                    query: query!,
-                    title: article.title,
-                    textStyle: titleStyle,
-                  )
-                else
-                  RichText(
-                    text: TextSpan(
-                      style: titleStyle,
-                      children: <InlineSpan>[
-                        if (article.isTop)
-                          WidgetSpan(
-                            child: _TagTile(
-                              text: S.of(context).top,
-                              color: context.theme.colorScheme.error,
-                              marginRight: true,
-                            ),
-                          ),
-                        if (article.fresh)
-                          WidgetSpan(
-                            child: _TagTile(
-                              text: S.of(context).fresh,
-                              color: context.theme.primaryColor,
-                              marginRight: true,
-                            ),
-                          ),
-                        TextSpan(
-                          text: HTMLParseUtils.unescapeHTML(article.title) ??
-                              S.of(context).unknown,
+                      ),
+                    if (article.fresh)
+                      WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: _TagTile(
+                          text: S.of(context).fresh,
+                          color: context.theme.primaryColor,
+                          marginRight: true,
                         ),
-                      ],
-                    ),
-                  ),
+                      ),
+                  ],
+                  query: query,
+                  title: article.title,
+                  textStyle: titleStyle,
+                ),
                 Gap.v(value: titleVerticalGap),
                 Wrap(
                   spacing: kStyleUint2,
@@ -146,15 +122,15 @@ class ArticleTile extends StatelessWidget {
                           ? S.of(context).share
                           : S.of(context).original,
                     ),
-                    if (hasTags)
-                      ...article.tags!
-                          .map(
-                            (TagModel tag) => _TagTile(
-                              key: UniqueKey(),
-                              text: HTMLParseUtils.unescapeHTML(tag.name),
-                            ),
-                          )
-                          .toList(),
+                    ...article.tags
+                            ?.map(
+                              (TagModel tag) => _TagTile(
+                                key: UniqueKey(),
+                                text: HTMLParseUtils.unescapeHTML(tag.name),
+                              ),
+                            )
+                            .toList() ??
+                        <Widget>[],
                   ],
                 ),
               ],
@@ -187,13 +163,13 @@ class _TagTile extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: kStyleUint,
-          vertical: kStyleUint / 2,
+          vertical: kStyleUint / 4,
         ),
         child: Text(
           text ?? S.of(context).unknown,
           style: context.theme.textTheme.bodySmall!.copyWith(
             color: color,
-            height: 1.35,
+            fontSize: AppTextTheme.label3,
           ),
         ),
       ),

@@ -10,7 +10,6 @@ import '../../model/models.dart';
 import '../../utils/screen_utils.dart';
 import '../../widget/article.dart';
 import '../../widget/gap.dart';
-import '../../widget/indent_divider.dart';
 import '../../widget/view_state_widget.dart';
 import 'provider/they_provider.dart';
 

@@ -29,6 +29,7 @@ class _ProjectTypeBottomSheetState
               builder: (_, WidgetRef ref, __) => ref
                   .watch(projectTypeProvider)
                   .when(
+                    skipLoadingOnRefresh: false,
                     data: (List<ProjectTypeModel> list) => ListView.builder(
                       prototypeItem: const ListTile(),
                       itemBuilder: (_, int index) {
@@ -71,7 +72,7 @@ class _ProjectTypeBottomSheetState
                       },
                       itemCount: list.length,
                     ),
-                    loading: () => const LoadingWidget(),
+                    loading: () => const LoadingWidget.listView(),
                     error: (Object e, StackTrace s) =>
                         CustomErrorWidget.withViewError(
                       ViewError.create(e, s),

@@ -65,8 +65,9 @@ class StorageScreen extends ConsumerWidget {
                         builder: (_, WidgetRef ref, __) => ref
                             .watch(otherCacheSizeProvider)
                             .when(
+                              skipLoadingOnRefresh: false,
                               data: (int data) => Text(data.fileSize),
-                              loading: () => const CupertinoActivityIndicator(),
+                              loading: () => const LoadingWidget.capsuleInk(),
                               error: (_, __) =>
                                   const Icon(IconFontIcons.refreshLine),
                             ),
@@ -140,8 +141,9 @@ class StorageScreen extends ConsumerWidget {
                         builder: (_, WidgetRef ref, __) => ref
                             .watch(responseDataCacheSizeProvider)
                             .when(
-                              data: (int? value) => Text(value.fileSize),
-                              loading: () => const CupertinoActivityIndicator(),
+                              skipLoadingOnRefresh: false,
+                              data: (int data) => Text(data.fileSize),
+                              loading: () => const LoadingWidget.capsuleInk(),
                               error: (_, __) =>
                                   const Icon(IconFontIcons.refreshLine),
                             ),
@@ -218,8 +220,9 @@ class StorageScreen extends ConsumerWidget {
                         builder: (_, WidgetRef ref, __) => ref
                             .watch(preferencesCacheSizeProvider)
                             .when(
+                              skipLoadingOnRefresh: false,
                               data: (int data) => Text(data.fileSize),
-                              loading: () => const CupertinoActivityIndicator(),
+                              loading: () => const LoadingWidget.capsuleInk(),
                               error: (_, __) =>
                                   const Icon(IconFontIcons.refreshLine),
                             ),
@@ -399,15 +402,9 @@ class _BottomActionBar extends StatelessWidget {
                                       ),
                                     );
 
-                                ref.invalidate(
-                                  otherCacheSizeProvider,
-                                );
-                                ref.invalidate(
-                                  responseDataCacheSizeProvider,
-                                );
-                                ref.invalidate(
-                                  preferencesCacheSizeProvider,
-                                );
+                                ref.invalidate(otherCacheSizeProvider);
+                                ref.invalidate(responseDataCacheSizeProvider);
+                                ref.invalidate(preferencesCacheSizeProvider);
                               },
                             );
                           }

@@ -62,13 +62,40 @@ class __WebsiteState extends ConsumerState<_Website>
 
               return SlidableAutoCloseBehavior(
                 child: SliverList(
-                  delegate: SliverChildWithSeparatorBuilderDelegate(
+                  delegate: SliverChildBuilderDelegate(
                     (_, int index) {
                       final CollectedWebsiteModel website = list[index];
 
-                      return _CollectedWebsiteTile(
+                      return SlidableTile.collectedWebsite(
                         key: Key('my_collections_website_${website.id}'),
-                        website: website,
+                        collectedWebsite: website,
+                        onDismissed: () {
+                          ref
+                              .read(myCollectedWebsiteProvider.notifier)
+                              .switchCollect(
+                                website.id,
+                                changedValue: false,
+                                triggerCompleteCallback: true,
+                              );
+                        },
+                        confirmCallback: () async {
+                          final bool result = await ref
+                              .read(myCollectedWebsiteProvider.notifier)
+                              .requestCancelCollect(
+                                collectId: website.id,
+                              );
+
+                          return result;
+                        },
+                        onTap: () {
+                          ArticleRoute(id: website.id).push(context);
+                        },
+                        onEditTap: () {
+                          EditCollectedArticleOrWebsiteRoute(
+                            type: CollectionType.website,
+                            id: website.id,
+                          ).push(context);
+                        },
                       );
                     },
                     findChildIndexCallback: (Key key) {
@@ -93,90 +120,6 @@ class __WebsiteState extends ConsumerState<_Website>
           ),
         ),
       ],
-    );
-  }
-}
-
-class _CollectedWebsiteTile extends ConsumerWidget {
-  const _CollectedWebsiteTile({super.key, required this.website});
-
-  final CollectedWebsiteModel website;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Slidable(
-      key: key,
-      groupTag: CollectionType.website.name,
-      dragStartBehavior: DragStartBehavior.start,
-      endActionPane: ActionPane(
-        extentRatio: 0.25,
-        motion: const StretchMotion(),
-        dismissible: DismissiblePane(
-          closeOnCancel: true,
-          dismissThreshold: 0.65,
-          dismissalDuration: const Duration(milliseconds: 500),
-          onDismissed: () {
-            ref.read(myCollectedWebsiteProvider.notifier).switchCollect(
-                  website.id,
-                  changedValue: false,
-                  triggerCompleteCallback: true,
-                );
-          },
-          confirmDismiss: () async {
-            final bool? result = await DialogUtils.confirm<bool>(
-              isDanger: true,
-              builder: (BuildContext context) {
-                return Text(S.of(context).removeWebsiteTips);
-              },
-              confirmCallback: () async {
-                final bool result = await ref
-                    .read(myCollectedWebsiteProvider.notifier)
-                    .requestCancelCollect(
-                      collectId: website.id,
-                    );
-
-                return result;
-              },
-            );
-
-            return result ?? false;
-          },
-        ),
-        children: <Widget>[
-          DismissibleSlidableAction(
-            slidableExtentRatio: 0.25,
-            dismissiblePaneThreshold: 0.65,
-            label: S.of(context).edit,
-            onTap: () {
-              EditCollectedArticleOrWebsiteRoute(
-                type: CollectionType.website,
-                id: website.id,
-              ).push(context);
-            },
-          ),
-        ],
-      ),
-      child: ConstrainedBox(
-        constraints:
-            BoxConstraints.tightFor(width: ScreenUtils.width, height: 94.0),
-        child: Material(
-          child: Ink(
-            child: InkWell(
-              onTap: () {
-                ArticleRoute(id: website.id).push(context);
-              },
-              child: Padding(
-                padding: AppTheme.bodyPadding,
-                child: Text(
-                  HTMLParseUtils.unescapeHTML(website.name) ??
-                      S.of(context).unknown,
-                  style: context.theme.textTheme.titleSmall,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

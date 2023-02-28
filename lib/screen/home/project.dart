@@ -52,24 +52,25 @@ class _ProjectState extends ConsumerState<_Project>
                         return const SliverFillRemaining(child: EmptyWidget());
                       }
 
-                      return LoadMoreSliverList.separator(
-                        loadMoreIndicatorBuilder: loadMoreIndicatorBuilder,
-                        itemBuilder: (_, int index) {
-                          final ArticleModel article = list[index];
+                      return SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (_, int index) {
+                            final ArticleModel article = list[index];
 
-                          return ArticleTile(
-                            key: Key('project_article_${article.id}'),
-                            article: article,
-                          );
-                        },
-                        separatorBuilder: (_, __) => const IndentDivider(),
-                        itemCount: list.length,
+                            return ArticleTile(
+                              key: Key('project_article_${article.id}'),
+                              article: article,
+                            );
+                          },
+                          childCount: list.length,
+                        ),
                       );
                     },
                     loading: loadingIndicatorBuilder,
                     error: errorIndicatorBuilder,
                   ),
                 ),
+                loadMoreIndicator,
               ],
             ),
           ),
@@ -91,33 +92,30 @@ class _ProjectTypeSwitch extends StatelessWidget {
         child: Align(
           alignment: Alignment.centerLeft,
           child: Consumer(
-            builder: (_, WidgetRef ref, __) => CapsuleInk(
-              color: context.theme.cardColor,
-              onTap: () {
-                ref.read(currentProjectTypeProvider).when(
-                      data: (ProjectTypeModel value) {
-                        const ProjectTypeRoute().push(context);
-                      },
-                      loading: () {},
-                      error: (_, __) {
-                        ref.invalidate(projectTypeProvider);
-                      },
-                    );
-              },
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: ref.watch(currentProjectTypeProvider).when(
-                      data: (ProjectTypeModel value) =>
-                          <Widget>[Text(value.name)],
-                      loading: () => const <Widget>[LoadingWidget(radius: 5.0)],
-                      error: (_, __) => <Widget>[
-                        const Icon(IconFontIcons.refreshLine, size: 14.0),
-                        const Gap.hs(),
-                        Text(S.of(context).retry),
-                      ],
+            builder: (_, WidgetRef ref, __) =>
+                ref.watch(currentProjectTypeProvider).when(
+                      data: (ProjectTypeModel value) => CapsuleInk(
+                        onTap: () {
+                          const ProjectTypeRoute().push(context);
+                        },
+                        child: Text(value.name),
+                      ),
+                      error: (_, __) => CapsuleInk(
+                        onTap: () {
+                          ref.invalidate(projectTypeProvider);
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            const Icon(IconFontIcons.refreshLine, size: 14.0),
+                            const Gap.hs(),
+                            Text(S.of(context).retry),
+                          ],
+                        ),
+                      ),
+                      loading: () =>
+                          const CapsuleInk(child: LoadingWidget.capsuleInk()),
                     ),
-              ),
-            ),
           ),
         ),
       ),

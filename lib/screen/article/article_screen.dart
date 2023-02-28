@@ -174,6 +174,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
           Widget? bottomActionBar,
         ) =>
             ref.watch(provider).when(
+                  skipLoadingOnRefresh: false,
                   data: (WebViewModel? article) => Column(
                     children: <Widget>[
                       Expanded(
@@ -305,7 +306,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                       bottomActionBar!,
                     ],
                   ),
-                  loading: () => const LoadingWidget(),
+                  loading: () => const LoadingWidget.listView(),
                   error: (Object e, StackTrace s) =>
                       CustomErrorWidget.withViewError(
                     ViewError.create(e, s),
