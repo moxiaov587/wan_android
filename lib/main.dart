@@ -83,13 +83,6 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
     requestResetThemeMode();
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      ref.invalidate(connectivityStreamProvider);
-    }
-  }
-
   FutureOr<void> requestResetThemeMode() {
     if (mounted) {
       final Brightness? brightness = ref.read(appThemeModeProvider).brightness;
@@ -97,7 +90,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
       if (brightness != null &&
           brightness != WidgetsBinding.instance.window.platformBrightness) {
         return Future<void>.delayed(const Duration(seconds: 1), () async {
-          final bool? data = await DialogUtils.confirm<bool?>(
+          final bool? data = await DialogUtils.confirm<bool>(
             builder: (BuildContext context) => RichText(
               textScaleFactor: MediaQuery.of(context).textScaleFactor,
               textAlign: TextAlign.center,

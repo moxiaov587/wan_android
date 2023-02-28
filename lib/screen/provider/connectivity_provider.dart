@@ -2,25 +2,14 @@ part of 'common_provider.dart';
 
 final StreamProvider<ConnectivityResult> connectivityStreamProvider =
     StreamProvider<ConnectivityResult>(
-  (StreamProviderRef<ConnectivityResult> ref) {
-    return Connectivity().onConnectivityChanged;
+  (StreamProviderRef<ConnectivityResult> ref) async* {
+    await for (final ConnectivityResult result
+        in Connectivity().onConnectivityChanged) {
+      if (result == ConnectivityResult.mobile) {
+        DialogUtils.tips(S.current.useDataTrafficTips);
+      }
+
+      yield result;
+    }
   },
 );
-
-@Riverpod(keepAlive: true)
-class NetworkConnectivity extends _$NetworkConnectivity {
-  bool get isDisconnected => state == ConnectivityResult.none;
-
-  @override
-  ConnectivityResult? build() {
-    final ConnectivityResult? data = ref
-        .watch(connectivityStreamProvider)
-        .whenOrNull(data: (ConnectivityResult data) => data);
-
-    if (data == ConnectivityResult.mobile) {
-      DialogUtils.tips(S.current.useDataTrafficTips);
-    }
-
-    return data;
-  }
-}

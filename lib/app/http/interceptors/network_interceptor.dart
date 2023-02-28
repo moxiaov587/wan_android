@@ -10,7 +10,15 @@ class NetWorkInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    if (ref.read(networkConnectivityProvider.notifier).isDisconnected) {
+    if (ref.read(connectivityStreamProvider).whenOrNull(
+              data: (ConnectivityResult value) =>
+                  value == ConnectivityResult.none,
+            ) ??
+        false) {
+      // Add a random delay of 500 ms to 1000 ms to "comfort" the user.
+      await Future<void>.delayed(
+        Duration(milliseconds: Random().nextInt(500) + 500),
+      );
       handler.reject(
         DioError(
           requestOptions: options,
