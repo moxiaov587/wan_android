@@ -2,7 +2,7 @@ import 'package:dio/dio.dart' show DioError, DioErrorType, Response;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../http/interceptors/interceptors.dart' show AppException;
+import '../http/interceptors/interceptors.dart' show ResponseData;
 import 'view_state.dart';
 
 part 'base_list_view_notifier.dart';
@@ -17,7 +17,7 @@ extension ViewErrorExtension on ViewError {
 }
 
 @freezed
-class ViewError with _$ViewError {
+class ViewError with _$ViewError implements Exception {
   const factory ViewError({
     int? statusCode,
     String? message,
@@ -26,6 +26,21 @@ class ViewError with _$ViewError {
 
   /// Define a private empty constructor to make custom methods work.
   const ViewError._();
+
+  factory ViewError.networkException({
+    String? message,
+    String? detail,
+  }) =>
+      ViewError(
+        statusCode: kNetworkExceptionStatusCode,
+        message: message,
+        detail: detail,
+      );
+
+  factory ViewError.fromResponseData(ResponseData data) => ViewError(
+        statusCode: data.code,
+        message: data.message,
+      );
 
   factory ViewError.create(Object e, StackTrace? _) {
     int? statusCode;
@@ -38,7 +53,7 @@ class ViewError with _$ViewError {
         case DioErrorType.sendTimeout:
         case DioErrorType.receiveTimeout:
           // timeout
-          statusCode = -1;
+          statusCode = kTimeoutStatusCode;
           message = e.message;
           break;
         case DioErrorType.badCertificate:
@@ -54,24 +69,20 @@ class ViewError with _$ViewError {
         case DioErrorType.cancel:
         case DioErrorType.unknown:
           if (e.type == DioErrorType.cancel) {
-            statusCode = -3;
+            statusCode = kCancelRequestStatusCode;
             message = e.message;
           }
           final dynamic error = e.error;
-          if (error is AppException) {
-            statusCode = error.errorCode;
-            message = error.message;
-            detail = error.detail;
+          if (error is ViewError) {
+            return error;
           } else {
             message ??= e.message;
             detail = e.error?.toString();
           }
           break;
       }
-    } else if (e is AppException) {
-      statusCode = e.errorCode;
-      message = e.message;
-      detail = e.detail;
+    } else if (e is ViewError) {
+      return e;
     } else {
       detail = e.toString();
     }
@@ -82,4 +93,13 @@ class ViewError with _$ViewError {
       detail: detail,
     );
   }
+
+  bool get isUnAuthorized => statusCode == kUnAuthorizedStatusCode;
+
+  bool get isNetworkException => statusCode == kNetworkExceptionStatusCode;
 }
+
+const int kUnAuthorizedStatusCode = -1001;
+const int kTimeoutStatusCode = -1;
+const int kNetworkExceptionStatusCode = -2;
+const int kCancelRequestStatusCode = -3;

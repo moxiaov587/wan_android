@@ -19,8 +19,7 @@ class NetWorkInterceptor extends Interceptor {
       handler.reject(
         DioError(
           requestOptions: options,
-          error: AppException(
-            errorCode: -2,
+          error: ViewError.networkException(
             message: S.current.networkException,
           ),
         ),

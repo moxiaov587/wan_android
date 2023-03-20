@@ -20,7 +20,7 @@ class ErrorInterceptor extends Interceptor {
       handler.reject(
         DioError(
           requestOptions: response.requestOptions,
-          error: AppException.fromResponseData(responseData),
+          error: ViewError.fromResponseData(responseData),
         ),
         true,
       );
@@ -46,7 +46,7 @@ class ErrorInterceptor extends Interceptor {
       );
 
       final dynamic error = err.error;
-      if (error is AppException) {
+      if (error is ViewError) {
         if (error.isUnAuthorized) {
           LogUtils.e(
             'Session is outdated, calling updater...',
@@ -74,7 +74,7 @@ class ErrorInterceptor extends Interceptor {
                     .fetch<dynamic>(err.requestOptions);
 
                 handler.resolve(response);
-              } catch (_) {
+              } on Exception catch (_) {
                 handler.reject(
                   DioError(
                     requestOptions: err.requestOptions,
@@ -94,43 +94,18 @@ class ErrorInterceptor extends Interceptor {
   }
 }
 
-class ResponseData {
-  ResponseData({
-    this.code = 0,
-    this.message,
-    this.data,
-  });
+@freezed
+class ResponseData with _$ResponseData {
+  factory ResponseData({
+    @Default(0) int code,
+    String? message,
+    dynamic data,
+  }) = _ResponseData;
 
-  ResponseData.fromJson(Map<String, dynamic> json)
-      : code = json['errorCode'] as int,
-        message = json['errorMsg'] as String,
-        data = json['data'];
+  const ResponseData._();
 
-  int code;
-  String? message;
-  dynamic data;
+  factory ResponseData.fromJson(Map<String, dynamic> json) =>
+      _$ResponseDataFromJson(json);
 
   bool get success => code == 0;
-}
-
-class AppException implements Exception {
-  AppException({
-    this.errorCode,
-    this.message,
-    this.detail,
-  });
-
-  AppException.fromResponseData(ResponseData data)
-      : errorCode = data.code,
-        message = data.message;
-
-  int? errorCode;
-  String? message;
-  String? detail;
-
-  bool get isUnAuthorized => errorCode == -1001;
-
-  @override
-  String toString() =>
-      '$runtimeType(${errorCode ?? -1}) ${message ?? 'unknown error'} ${detail ?? 'no more info.'}';
 }

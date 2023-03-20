@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../app/http/http.dart';
-import '../../../app/http/interceptors/interceptors.dart' show AppException;
 
 import '../../../app/l10n/generated/l10n.dart';
 import '../../../app/provider/provider.dart';
@@ -173,8 +172,8 @@ class AppArticle extends _$AppArticle {
         withCookie: webViewModel.link.startsWith(kBaseUrl),
       );
     } else {
-      throw AppException(
-        errorCode: 404,
+      throw ViewError(
+        statusCode: 404,
         message: S.current.articleNotFound,
         detail: S.current.articleNotFoundMsg,
       );

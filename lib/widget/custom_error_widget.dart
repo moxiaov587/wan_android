@@ -22,12 +22,12 @@ class CustomErrorWidget extends StatelessWidget {
   final String? detail;
   final VoidCallback? onRetry;
 
-  bool get isDisconnected => statusCode == -2;
+  bool get isDisconnected => statusCode == kNetworkExceptionStatusCode;
 
   String get errorImage {
     switch (statusCode) {
-      case -1:
-      case -2:
+      case kTimeoutStatusCode:
+      case kCancelRequestStatusCode:
         return Assets.ASSETS_IMAGES_TIMEOUT_PNG;
       case 400:
       case 403:
