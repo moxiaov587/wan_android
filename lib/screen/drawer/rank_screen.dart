@@ -142,12 +142,20 @@ class _RankTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: context.theme.colorScheme.background
-            .withOpacity(isSelf ? 0.65 : 1.0),
+        color: isSelf ? null : context.theme.colorScheme.background,
         border: Border(
           top: isSelf ? Divider.createBorderSide(context) : BorderSide.none,
           bottom: isSelf ? BorderSide.none : Divider.createBorderSide(context),
         ),
+        boxShadow: isSelf
+            ? <BoxShadow>[
+                BoxShadow(
+                  color: context.theme.colorScheme.background,
+                  blurRadius: _kCurrentUserRankTileHeight / 2,
+                  blurStyle: BlurStyle.inner,
+                ),
+              ]
+            : null,
       ),
       child: Padding(
         padding: const EdgeInsets.all(kStyleUint4).copyWith(
