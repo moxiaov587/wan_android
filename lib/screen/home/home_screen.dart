@@ -96,21 +96,25 @@ class _HomeScreenState extends State<HomeScreen> {
               label: S.of(context).home,
               icon: const Icon(IconFontIcons.homeLine),
               activeIcon: const Icon(IconFontIcons.homeFill),
+              tooltip: S.of(context).home,
             ),
             BottomNavigationBarItem(
               label: S.of(context).square,
               icon: const Icon(IconFontIcons.seedlingLine),
               activeIcon: const Icon(IconFontIcons.seedlingFill),
+              tooltip: S.of(context).square,
             ),
             BottomNavigationBarItem(
               label: S.of(context).question,
               icon: const Icon(IconFontIcons.questionnaireLine),
               activeIcon: const Icon(IconFontIcons.questionnaireFill),
+              tooltip: S.of(context).question,
             ),
             BottomNavigationBarItem(
               label: S.of(context).project,
               icon: const Icon(IconFontIcons.androidLine),
               activeIcon: const Icon(IconFontIcons.androidFill),
+              tooltip: S.of(context).project,
             ),
           ],
         ),
@@ -301,7 +305,12 @@ class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
                         ?.toColor ??
                     context.theme.primaryColor;
 
-                return DecoratedBox(
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 500),
+                  padding: AppTheme.contentPaddingOnlyHorizontal.copyWith(
+                    top: ScreenUtils.topSafeHeight,
+                    bottom: kStyleUint4,
+                  ),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
@@ -310,13 +319,7 @@ class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
                       stops: const <double>[0.0, 0.8],
                     ),
                   ),
-                  child: Padding(
-                    padding: AppTheme.contentPaddingOnlyHorizontal.copyWith(
-                      top: ScreenUtils.topSafeHeight,
-                      bottom: kStyleUint4,
-                    ),
-                    child: child,
-                  ),
+                  child: child,
                 );
               },
               child: const _BannerCarousel(),
