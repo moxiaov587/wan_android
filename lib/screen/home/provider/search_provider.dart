@@ -27,8 +27,7 @@ final AutoDisposeStateNotifierProviderFamily<SearchNotifier,
   name: kSearchArticleProvider,
 );
 
-class SearchNotifier extends BaseRefreshListViewNotifier<ArticleModel>
-    with ArticleNotifierSwitchCollectMixin {
+class SearchNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
   SearchNotifier(
     super.state, {
     required this.keyword,

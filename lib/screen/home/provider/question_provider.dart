@@ -21,8 +21,7 @@ final QuestionArticleProvider questionArticleProvider = StateNotifierProvider
   name: kQuestionArticleProvider,
 );
 
-class QuestionNotifier extends BaseRefreshListViewNotifier<ArticleModel>
-    with ArticleNotifierSwitchCollectMixin {
+class QuestionNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
   QuestionNotifier(
     super.state, {
     required this.http,

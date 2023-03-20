@@ -26,28 +26,6 @@ const String kSearchArticleProvider = 'kSearchArticleProvider';
 const String kQuestionArticleProvider = 'kQuestionArticleProvider';
 const String kProjectArticleProvider = 'kProjectArticleProvider';
 
-mixin ArticleNotifierSwitchCollectMixin
-    on BaseRefreshListViewNotifier<ArticleModel> {
-  void switchCollect(
-    int id, {
-    required bool changedValue,
-  }) {
-    state.whenOrNull((int pageNum, bool isLastPage, List<ArticleModel> list) {
-      state = RefreshListViewStateData<ArticleModel>(
-        pageNum: pageNum,
-        isLastPage: isLastPage,
-        list: list
-            .map((ArticleModel article) => article.id == id
-                ? article.copyWith(
-                    collect: changedValue,
-                  )
-                : article)
-            .toList(),
-      );
-    });
-  }
-}
-
 @riverpod
 class HomeBanner extends _$HomeBanner {
   late Isar isar;
@@ -199,8 +177,7 @@ final HomeArticleProvider homeArticleProvider = StateNotifierProvider
   name: kHomeArticleProvider,
 );
 
-class ArticleNotifier extends BaseRefreshListViewNotifier<ArticleModel>
-    with ArticleNotifierSwitchCollectMixin {
+class ArticleNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
   ArticleNotifier(
     super.state, {
     this.topArticles,

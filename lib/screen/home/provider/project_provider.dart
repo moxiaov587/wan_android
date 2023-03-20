@@ -57,8 +57,7 @@ final ProjectArticleProvider projectArticleProvider = StateNotifierProvider
   name: kProjectArticleProvider,
 );
 
-class ProjectNotifier extends BaseRefreshListViewNotifier<ArticleModel>
-    with ArticleNotifierSwitchCollectMixin {
+class ProjectNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
   ProjectNotifier(
     super.state, {
     required this.categoryId,

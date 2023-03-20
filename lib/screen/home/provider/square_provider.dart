@@ -21,8 +21,7 @@ final SquareArticleProvider squareArticleProvider = StateNotifierProvider
   name: kSquareArticleProvider,
 );
 
-class SquareNotifier extends BaseRefreshListViewNotifier<ArticleModel>
-    with ArticleNotifierSwitchCollectMixin {
+class SquareNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
   SquareNotifier(
     super.state, {
     required this.http,
