@@ -32,9 +32,7 @@ class Http {
   final web_view.CookieManager webViewCookieManager =
       web_view.CookieManager.instance();
 
-  Future<void> initConfig({
-    required Ref ref,
-  }) async {
+  void initConfig({required Ref ref}) {
     if (!kIsWeb) {
       cookieJar = ref.read(appCookieJarProvider);
 
@@ -117,11 +115,9 @@ extension CancelTokenX on Ref {
 }
 
 @Riverpod(keepAlive: true)
-Directory appTemporaryDirectory(AppTemporaryDirectoryRef _) {
-  throw UnimplementedError();
-}
+external Directory appTemporaryDirectory();
 
-@Riverpod(keepAlive: true)
+@Riverpod(keepAlive: true, dependencies: <Object>[appTemporaryDirectory])
 class AppCookieJar extends _$AppCookieJar {
   @override
   PersistCookieJar build() {

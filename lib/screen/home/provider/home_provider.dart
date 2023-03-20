@@ -26,7 +26,7 @@ const String kSearchArticleProvider = 'kSearchArticleProvider';
 const String kQuestionArticleProvider = 'kQuestionArticleProvider';
 const String kProjectArticleProvider = 'kProjectArticleProvider';
 
-@riverpod
+@Riverpod(dependencies: <Object>[appDatabase])
 class HomeBanner extends _$HomeBanner {
   late Isar isar;
 
@@ -112,7 +112,7 @@ extension Int2ColorExtension on int? {
   Color? get toColor => this == null ? null : Color(this!);
 }
 
-@riverpod
+@Riverpod(dependencies: <Object>[HomeBanner])
 class CurrentHomeBannerBackgroundColorValue
     extends _$CurrentHomeBannerBackgroundColorValue {
   late Iterable<int?>? colors;

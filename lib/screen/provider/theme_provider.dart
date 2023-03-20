@@ -1,6 +1,6 @@
 part of 'common_provider.dart';
 
-@Riverpod(keepAlive: true)
+@Riverpod(keepAlive: true, dependencies: <Object>[appDatabase])
 class AppThemeMode extends _$AppThemeMode {
   late Isar isar;
 

@@ -15,9 +15,7 @@ part 'isar_extension.dart';
 part 'app_database.g.dart';
 
 @Riverpod(keepAlive: true)
-Isar appDatabase(AppDatabaseRef _) {
-  throw UnimplementedError();
-}
+external Isar appDatabase();
 
 Future<Isar> openIsar() async {
   final Directory dir = await getApplicationSupportDirectory();

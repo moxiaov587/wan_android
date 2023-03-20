@@ -32,7 +32,7 @@ class CheckOtherCaches extends _$CheckOtherCaches
   bool build() => true;
 }
 
-@riverpod
+@Riverpod(dependencies: <Object>[OtherCacheSize])
 bool disableCheckOtherCaches(DisableCheckOtherCachesRef ref) => ref.watch(
       otherCacheSizeProvider.select(
         (AsyncValue<int> value) =>
@@ -40,12 +40,12 @@ bool disableCheckOtherCaches(DisableCheckOtherCachesRef ref) => ref.watch(
       ),
     );
 
-@riverpod
+@Riverpod(dependencies: <Object>[disableCheckOtherCaches])
 bool cleanableOtherCaches(CleanableOtherCachesRef ref) =>
     ref.watch(checkOtherCachesProvider) &&
     !ref.watch(disableCheckOtherCachesProvider);
 
-@riverpod
+@Riverpod(dependencies: <Object>[appDatabase])
 class OtherCacheSize extends _$OtherCacheSize {
   late Isar isar;
 
@@ -75,7 +75,7 @@ class CheckResponseDataCaches extends _$CheckResponseDataCaches
   bool build() => true;
 }
 
-@riverpod
+@Riverpod(dependencies: <Object>[ResponseDataCacheSize])
 bool disableCheckResponseDataCaches(DisableCheckResponseDataCachesRef ref) =>
     ref.watch(
       responseDataCacheSizeProvider.select(
@@ -84,12 +84,12 @@ bool disableCheckResponseDataCaches(DisableCheckResponseDataCachesRef ref) =>
       ),
     );
 
-@riverpod
+@Riverpod(dependencies: <Object>[disableCheckResponseDataCaches])
 bool cleanableResponseDataCaches(CleanableResponseDataCachesRef ref) =>
     ref.watch(checkResponseDataCachesProvider) &&
     !ref.watch(disableCheckResponseDataCachesProvider);
 
-@riverpod
+@Riverpod(dependencies: <Object>[appDatabase])
 class ResponseDataCacheSize extends _$ResponseDataCacheSize {
   late Isar isar;
 
@@ -114,7 +114,7 @@ class CheckPreferencesCaches extends _$CheckPreferencesCaches
   bool build() => true;
 }
 
-@riverpod
+@Riverpod(dependencies: <Object>[PreferencesCacheSize])
 bool disableCheckPreferencesCaches(DisableCheckPreferencesCachesRef ref) =>
     ref.watch(
       preferencesCacheSizeProvider.select(
@@ -123,12 +123,12 @@ bool disableCheckPreferencesCaches(DisableCheckPreferencesCachesRef ref) =>
       ),
     );
 
-@riverpod
+@Riverpod(dependencies: <Object>[disableCheckPreferencesCaches])
 bool cleanablePreferencesCaches(CleanablePreferencesCachesRef ref) =>
     ref.watch(checkPreferencesCachesProvider) &&
     !ref.watch(disableCheckPreferencesCachesProvider);
 
-@riverpod
+@Riverpod(dependencies: <Object>[appDatabase])
 class PreferencesCacheSize extends _$PreferencesCacheSize {
   late Isar isar;
 
@@ -151,7 +151,11 @@ bool checkAllCaches(CheckAllCachesRef ref) =>
     ref.watch(checkResponseDataCachesProvider) &&
     ref.watch(checkPreferencesCachesProvider);
 
-@riverpod
+@Riverpod(dependencies: <Object>[
+  cleanableOtherCaches,
+  cleanableResponseDataCaches,
+  cleanablePreferencesCaches,
+])
 bool cleanable(CleanableRef ref) =>
     ref.watch(cleanableOtherCachesProvider) ||
     ref.watch(cleanableResponseDataCachesProvider) ||

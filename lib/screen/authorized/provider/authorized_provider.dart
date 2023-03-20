@@ -20,7 +20,7 @@ const Map<int, int> _kEncryptOffset = <int, int>{
   4: 0,
 };
 
-@Riverpod(keepAlive: true)
+@Riverpod(keepAlive: true, dependencies: <Object>[appDatabase])
 class Authorized extends _$Authorized {
   late Http http;
   late Isar isar;
@@ -42,7 +42,7 @@ class Authorized extends _$Authorized {
   void _handleCacheByLogin(
     int userId, {
     required String username,
-    required String? password,
+    required String password,
     required bool rememberPassword,
   }) {
     final AccountCache accountCache = AccountCache()
@@ -51,7 +51,7 @@ class Authorized extends _$Authorized {
       ..updateTime = DateTime.now();
 
     if (rememberPassword) {
-      accountCache.password = _encryptString(password!);
+      accountCache.password = _encryptString(password);
     }
 
     final UserSettings userSettings = isar.writeUniqueUserSettings(
