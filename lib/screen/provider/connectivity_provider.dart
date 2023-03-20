@@ -1,8 +1,9 @@
 part of 'common_provider.dart';
 
-final StreamProvider<ConnectivityResult> connectivityStreamProvider =
-    StreamProvider<ConnectivityResult>(
-  (StreamProviderRef<ConnectivityResult> ref) async* {
+@Riverpod(keepAlive: true, dependencies: <Object>[])
+class ConnectivityStream extends _$ConnectivityStream {
+  @override
+  Stream<ConnectivityResult> build() async* {
     await for (final ConnectivityResult result
         in Connectivity().onConnectivityChanged) {
       if (result == ConnectivityResult.mobile) {
@@ -11,5 +12,5 @@ final StreamProvider<ConnectivityResult> connectivityStreamProvider =
 
       yield result;
     }
-  },
-);
+  }
+}
