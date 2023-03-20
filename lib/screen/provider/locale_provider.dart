@@ -34,15 +34,10 @@ class AppLanguage extends _$AppLanguage {
 }
 
 enum Language {
-  en,
-  zh;
+  en(Locale('en')),
+  zh(Locale('zh'));
 
-  Locale get toLocale {
-    switch (this) {
-      case Language.en:
-        return const Locale('en');
-      case Language.zh:
-        return const Locale('zh');
-    }
-  }
+  const Language(this.locale);
+
+  final Locale locale;
 }
