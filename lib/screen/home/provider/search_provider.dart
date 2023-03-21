@@ -45,15 +45,14 @@ class SearchNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
   Future<RefreshListViewStateData<ArticleModel>> loadData({
     required int pageNum,
     required int pageSize,
-  }) async {
-    return (await http.fetchSearchArticles(
-      pageNum,
-      pageSize,
-      keyword: keyword,
-      cancelToken: cancelToken,
-    ))
-        .toRefreshListViewStateData();
-  }
+  }) async =>
+      (await http.fetchSearchArticles(
+        pageNum,
+        pageSize,
+        keyword: keyword,
+        cancelToken: cancelToken,
+      ))
+          .toRefreshListViewStateData();
 }
 
 @riverpod

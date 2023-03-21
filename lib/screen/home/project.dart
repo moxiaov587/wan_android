@@ -19,11 +19,11 @@ class _ProjectState extends ConsumerState<_Project>
   ProjectArticleProvider get provider => projectArticleProvider;
 
   @override
-  void onRetry() {
+  FutureOr<void> onRetry() {
     if (ref.read(projectTypeProvider).hasError) {
       ref.invalidate(projectTypeProvider);
     } else {
-      super.onRetry();
+      return super.onRetry();
     }
   }
 
@@ -84,43 +84,41 @@ class _ProjectTypeSwitch extends StatelessWidget {
   const _ProjectTypeSwitch();
 
   @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: context.theme.scaffoldBackgroundColor,
-      child: Padding(
-        padding: AppTheme.bodyPaddingOnlyHorizontal,
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: Consumer(
-            builder: (_, WidgetRef ref, __) =>
-                ref.watch(currentProjectTypeProvider).when(
-                      data: (ProjectTypeModel value) => CapsuleInk(
-                        onTap: () {
-                          const ProjectTypeRoute().push(context);
-                        },
-                        child: Text(value.name),
-                      ),
-                      error: (_, __) => CapsuleInk(
-                        onTap: () {
-                          ref.invalidate(projectTypeProvider);
-                        },
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            const Icon(IconFontIcons.refreshLine, size: 14.0),
-                            const Gap.hs(),
-                            Text(S.of(context).retry),
-                          ],
+  Widget build(BuildContext context) => Material(
+        color: context.theme.scaffoldBackgroundColor,
+        child: Padding(
+          padding: AppTheme.bodyPaddingOnlyHorizontal,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Consumer(
+              builder: (_, WidgetRef ref, __) =>
+                  ref.watch(currentProjectTypeProvider).when(
+                        data: (ProjectTypeModel value) => CapsuleInk(
+                          onTap: () {
+                            const ProjectTypeRoute().push(context);
+                          },
+                          child: Text(value.name),
                         ),
+                        error: (_, __) => CapsuleInk(
+                          onTap: () {
+                            ref.invalidate(projectTypeProvider);
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              const Icon(IconFontIcons.refreshLine, size: 14.0),
+                              const Gap.hs(),
+                              Text(S.of(context).retry),
+                            ],
+                          ),
+                        ),
+                        loading: () =>
+                            const CapsuleInk(child: LoadingWidget.capsuleInk()),
                       ),
-                      loading: () =>
-                          const CapsuleInk(child: LoadingWidget.capsuleInk()),
-                    ),
+            ),
           ),
         ),
-      ),
-    );
-  }
+      );
 }
 
 class _FloatingHeaderSnapDelegate extends SliverPersistentHeaderDelegate {
@@ -150,9 +148,8 @@ class _FloatingHeaderSnapDelegate extends SliverPersistentHeaderDelegate {
     BuildContext context,
     double shrinkOffset,
     bool overlapsContent,
-  ) {
-    return const _ProjectTypeSwitch();
-  }
+  ) =>
+      const _ProjectTypeSwitch();
 
   @override
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
@@ -178,14 +175,12 @@ class _FloatingHeaderState extends State<_FloatingHeader>
       const PersistentHeaderShowOnScreenConfiguration();
 
   @override
-  Widget build(BuildContext context) {
-    return SliverPersistentHeader(
-      delegate: _FloatingHeaderSnapDelegate(
-        vsync: this,
-        snapConfiguration: _snapConfiguration,
-        showOnScreenConfiguration: _showOnScreenConfiguration,
-      ),
-      floating: true,
-    );
-  }
+  Widget build(BuildContext context) => SliverPersistentHeader(
+        delegate: _FloatingHeaderSnapDelegate(
+          vsync: this,
+          snapConfiguration: _snapConfiguration,
+          showOnScreenConfiguration: _showOnScreenConfiguration,
+        ),
+        floating: true,
+      );
 }

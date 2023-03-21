@@ -20,8 +20,14 @@ extension FileSizeExtension on int? {
 
     final int i = (math.log(this!) / math.log(1024)).floor();
 
-    return '${(this! / math.pow(1024, i)).toStringAsFixed(2)} ${_kFileSizeSuffixes[i]}';
+    return '${(this! / math.pow(1024, i)).toStringAsFixed(2)} '
+        '${_kFileSizeSuffixes[i]}';
   }
+}
+
+mixin CacheSizeProviderMixin on AutoDisposeAsyncNotifier<int> {
+  @protected
+  List<AsyncCallback> get clearTask;
 }
 
 // OtherCaches START
@@ -46,12 +52,13 @@ bool cleanableOtherCaches(CleanableOtherCachesRef ref) =>
     !ref.watch(disableCheckOtherCachesProvider);
 
 @Riverpod(dependencies: <Object>[appDatabase])
-class OtherCacheSize extends _$OtherCacheSize {
+class OtherCacheSize extends _$OtherCacheSize with CacheSizeProviderMixin {
   late Isar isar;
 
-  List<Future<void>> get clearTask => <Future<void>>[
-        isar.homeBannerCaches.clear(),
-        isar.searchHistoryCaches.clear(),
+  @override
+  List<AsyncCallback> get clearTask => <AsyncCallback>[
+        isar.homeBannerCaches.clear,
+        isar.searchHistoryCaches.clear,
       ];
 
   @override
@@ -90,11 +97,13 @@ bool cleanableResponseDataCaches(CleanableResponseDataCachesRef ref) =>
     !ref.watch(disableCheckResponseDataCachesProvider);
 
 @Riverpod(dependencies: <Object>[appDatabase])
-class ResponseDataCacheSize extends _$ResponseDataCacheSize {
+class ResponseDataCacheSize extends _$ResponseDataCacheSize
+    with CacheSizeProviderMixin {
   late Isar isar;
 
-  List<Future<void>> get clearTask => <Future<void>>[
-        isar.responseCaches.clear(),
+  @override
+  List<AsyncCallback> get clearTask => <AsyncCallback>[
+        isar.responseCaches.clear,
       ];
 
   @override
@@ -129,11 +138,13 @@ bool cleanablePreferencesCaches(CleanablePreferencesCachesRef ref) =>
     !ref.watch(disableCheckPreferencesCachesProvider);
 
 @Riverpod(dependencies: <Object>[appDatabase])
-class PreferencesCacheSize extends _$PreferencesCacheSize {
+class PreferencesCacheSize extends _$PreferencesCacheSize
+    with CacheSizeProviderMixin {
   late Isar isar;
 
-  List<Future<void>> get clearTask => <Future<void>>[
-        isar.userSettingsCache.clear(),
+  @override
+  List<AsyncCallback> get clearTask => <AsyncCallback>[
+        isar.userSettingsCache.clear,
       ];
 
   @override
@@ -151,11 +162,13 @@ bool checkAllCaches(CheckAllCachesRef ref) =>
     ref.watch(checkResponseDataCachesProvider) &&
     ref.watch(checkPreferencesCachesProvider);
 
-@Riverpod(dependencies: <Object>[
-  cleanableOtherCaches,
-  cleanableResponseDataCaches,
-  cleanablePreferencesCaches,
-])
+@Riverpod(
+  dependencies: <Object>[
+    cleanableOtherCaches,
+    cleanableResponseDataCaches,
+    cleanablePreferencesCaches,
+  ],
+)
 bool cleanable(CleanableRef ref) =>
     ref.watch(cleanableOtherCachesProvider) ||
     ref.watch(cleanableResponseDataCachesProvider) ||

@@ -2,8 +2,8 @@ part of 'article.dart';
 
 class ArticleTile extends StatelessWidget {
   const ArticleTile({
-    super.key,
     required this.article,
+    super.key,
     this.query,
     this.authorTextOrShareUserTextCanOnTap = true,
   });
@@ -144,8 +144,8 @@ class ArticleTile extends StatelessWidget {
 
 class _TagTile extends StatelessWidget {
   const _TagTile({
-    super.key,
     required this.text,
+    super.key,
     this.color,
     this.marginRight = false,
   });

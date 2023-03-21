@@ -5,9 +5,11 @@ typedef PointsRankProvider = AutoDisposeStateNotifierProvider<
 
 final PointsRankProvider pointsRankProvider = StateNotifierProvider.autoDispose<
     PointsRankNotifier, RefreshListViewState<UserPointsModel>>(
-  (AutoDisposeStateNotifierProviderRef<PointsRankNotifier,
-          RefreshListViewState<UserPointsModel>>
-      ref) {
+  (
+    AutoDisposeStateNotifierProviderRef<PointsRankNotifier,
+            RefreshListViewState<UserPointsModel>>
+        ref,
+  ) {
     final CancelToken cancelToken = ref.cancelToken();
 
     final Http http = ref.watch(networkProvider);
@@ -35,11 +37,10 @@ class PointsRankNotifier extends BaseRefreshListViewNotifier<UserPointsModel> {
   Future<RefreshListViewStateData<UserPointsModel>> loadData({
     required int pageNum,
     required int pageSize,
-  }) async {
-    return (await http.fetchPointsRank(
-      pageNum,
-      cancelToken: cancelToken,
-    ))
-        .toRefreshListViewStateData();
-  }
+  }) async =>
+      (await http.fetchPointsRank(
+        pageNum,
+        cancelToken: cancelToken,
+      ))
+          .toRefreshListViewStateData();
 }

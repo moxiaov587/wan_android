@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart'
     hide RefreshIndicator, RefreshIndicatorState;
 import 'package:nil/nil.dart';
@@ -11,14 +12,14 @@ import '../provider.dart';
 
 class LoadingMoreIndicator extends StatelessWidget {
   const LoadingMoreIndicator({
-    super.key,
     required this.status,
     required this.onRetry,
+    super.key,
   });
 
   final LoadingMoreStatus status;
 
-  final Future<void> Function() onRetry;
+  final AsyncCallback onRetry;
 
   @override
   Widget build(BuildContext context) {

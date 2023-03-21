@@ -102,8 +102,10 @@ extension CollectAPI on Http {
     );
 
     return response.data!
-        .map((dynamic e) =>
-            CollectedWebsiteModel.fromJson(e as Map<String, dynamic>))
+        .map(
+          (dynamic e) =>
+              CollectedWebsiteModel.fromJson(e as Map<String, dynamic>),
+        )
         .toList();
   }
 

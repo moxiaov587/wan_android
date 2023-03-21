@@ -1,4 +1,4 @@
-import 'dart:async' show FutureOr;
+import 'dart:async' show FutureOr, unawaited;
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -46,13 +46,15 @@ Future<void> main() async {
         : AppTheme.light.appBarTheme.systemOverlayStyle!,
   );
 
-  runApp(ProviderScope(
-    overrides: <Override>[
-      appTemporaryDirectoryProvider.overrideWithValue(temporaryDirectory),
-      appDatabaseProvider.overrideWithValue(isar),
-    ],
-    child: const MyApp(),
-  ));
+  runApp(
+    ProviderScope(
+      overrides: <Override>[
+        appTemporaryDirectoryProvider.overrideWithValue(temporaryDirectory),
+        appDatabaseProvider.overrideWithValue(isar),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends ConsumerStatefulWidget {
@@ -68,7 +70,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
     super.initState();
 
     WidgetsBinding.instance.addObserver(this);
-    closeSplash();
+    unawaited(closeSplash());
   }
 
   @override
@@ -79,7 +81,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
   }
 
   @override
-  void didChangePlatformBrightness() {
+  Future<void> didChangePlatformBrightness() async {
     requestResetThemeMode();
   }
 

@@ -14,7 +14,6 @@ class CacheInterceptor extends Interceptor {
       LinkedHashMap<String, ResponseCache>();
 
   @override
-  // ignore: long-method
   void onRequest(
     RequestOptions options,
     RequestInterceptorHandler handler,
@@ -25,17 +24,19 @@ class CacheInterceptor extends Interceptor {
       if (options.isDiskCache) {
         final Isar isar = ref.read(appDatabaseProvider);
 
-        isar.writeTxnSync(() {
-          final int? id = isar.responseCaches
-              .filter()
-              .uriEqualTo(uriString)
-              .idProperty()
-              .findFirstSync();
+        unawaited(
+          isar.writeTxn(() async {
+            final int? id = await isar.responseCaches
+                .filter()
+                .uriEqualTo(uriString)
+                .idProperty()
+                .findFirst();
 
-          if (id != null) {
-            isar.responseCaches.delete(id);
-          }
-        });
+            if (id != null) {
+              await isar.responseCaches.delete(id);
+            }
+          }),
+        );
       } else {
         _cache.remove(uriString);
       }
@@ -83,7 +84,7 @@ class CacheInterceptor extends Interceptor {
 
           return;
         } else {
-          isar.writeTxnSync(() => queryBuilder.deleteFirstSync());
+          unawaited(isar.writeTxn(queryBuilder.deleteFirst));
         }
       }
     }
@@ -109,7 +110,9 @@ class CacheInterceptor extends Interceptor {
       final Isar isar = ref.read(appDatabaseProvider);
 
       if (options.isDiskCache) {
-        isar.writeTxnSync(() => isar.responseCaches.putSync(responseCache));
+        unawaited(
+          isar.writeTxn(() async => isar.responseCaches.put(responseCache)),
+        );
       } else {
         if (_cache.length == _kMaxNumOfCacheForMemory) {
           _cache.remove(_cache.keys.first);

@@ -4,9 +4,9 @@ part of 'models.dart';
 class PointsModel with _$PointsModel {
   factory PointsModel({
     required int coinCount,
+    required int id,
     int? date,
     String? desc,
-    required int id,
     String? reason,
     int? type,
     int? userId,

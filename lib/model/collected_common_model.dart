@@ -4,9 +4,9 @@ part of 'models.dart';
 class CollectedCommonModel with _$CollectedCommonModel {
   factory CollectedCommonModel({
     required int id,
-    String? author,
     required String title,
     required String link,
+    String? author,
   }) = _CollectedCommonModel;
 
   factory CollectedCommonModel.fromJson(Map<String, dynamic> json) =>

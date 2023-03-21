@@ -83,10 +83,12 @@ class _RankScreenState extends ConsumerState<RankScreen>
               bottom: 0.0,
               child: Consumer(
                 builder: (_, WidgetRef ref, __) {
-                  final bool showUserRank = ref.watch(pointsRankProvider.select(
-                    (RefreshListViewState<UserPointsModel> vm) =>
-                        vm.whenOrNull((_, __, ___) => true) ?? false,
-                  ));
+                  final bool showUserRank = ref.watch(
+                    pointsRankProvider.select(
+                      (RefreshListViewState<UserPointsModel> vm) =>
+                          vm.whenOrNull((_, __, ___) => true) ?? false,
+                    ),
+                  );
 
                   final String? fullName =
                       ref.read(authorizedProvider).valueOrNull?.user.nickname;
@@ -117,11 +119,11 @@ class _RankScreenState extends ConsumerState<RankScreen>
 
 class _RankTile extends StatelessWidget {
   const _RankTile({
-    super.key,
     required this.rank,
     required this.nickname,
     required this.level,
     required this.totalPoints,
+    super.key,
     this.isSelf = false,
   });
 
@@ -139,60 +141,59 @@ class _RankTile extends StatelessWidget {
   final bool isSelf;
 
   @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: isSelf ? null : context.theme.colorScheme.background,
-        border: Border(
-          top: isSelf ? Divider.createBorderSide(context) : BorderSide.none,
-          bottom: isSelf ? BorderSide.none : Divider.createBorderSide(context),
-        ),
-        boxShadow: isSelf
-            ? <BoxShadow>[
-                BoxShadow(
-                  color: context.theme.colorScheme.background,
-                  blurRadius: _kCurrentUserRankTileHeight / 2,
-                  blurStyle: BlurStyle.inner,
-                ),
-              ]
-            : null,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(kStyleUint4).copyWith(
-          bottom: isSelf ? kStyleUint4 + ScreenUtils.bottomSafeHeight : null,
-        ),
-        child: Row(
-          children: <Widget>[
-            Text(
-              rank ?? '',
-              style: context.theme.textTheme.titleLarge,
-            ),
-            const Gap.hn(),
-            Expanded(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Flexible(
-                    child: Text(
-                      nickname.strictValue ?? '',
-                      style: context.theme.textTheme.titleMedium,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+  Widget build(BuildContext context) => DecoratedBox(
+        decoration: BoxDecoration(
+          color: isSelf ? null : context.theme.colorScheme.background,
+          border: Border(
+            top: isSelf ? Divider.createBorderSide(context) : BorderSide.none,
+            bottom:
+                isSelf ? BorderSide.none : Divider.createBorderSide(context),
+          ),
+          boxShadow: isSelf
+              ? <BoxShadow>[
+                  BoxShadow(
+                    color: context.theme.colorScheme.background,
+                    blurRadius: _kCurrentUserRankTileHeight / 2,
+                    blurStyle: BlurStyle.inner,
                   ),
-                  const Gap.hn(),
-                  LevelTag(level: level),
-                ],
-              ),
-            ),
-            const Gap.hn(),
-            Text(
-              totalPoints.toString(),
-              style: context.theme.textTheme.titleMedium,
-            ),
-          ],
+                ]
+              : null,
         ),
-      ),
-    );
-  }
+        child: Padding(
+          padding: const EdgeInsets.all(kStyleUint4).copyWith(
+            bottom: isSelf ? kStyleUint4 + ScreenUtils.bottomSafeHeight : null,
+          ),
+          child: Row(
+            children: <Widget>[
+              Text(
+                rank ?? '',
+                style: context.theme.textTheme.titleLarge,
+              ),
+              const Gap.hn(),
+              Expanded(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Flexible(
+                      child: Text(
+                        nickname.strictValue ?? '',
+                        style: context.theme.textTheme.titleMedium,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const Gap.hn(),
+                    LevelTag(level: level),
+                  ],
+                ),
+              ),
+              const Gap.hn(),
+              Text(
+                totalPoints.toString(),
+                style: context.theme.textTheme.titleMedium,
+              ),
+            ],
+          ),
+        ),
+      );
 }

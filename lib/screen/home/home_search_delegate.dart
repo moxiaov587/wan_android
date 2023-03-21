@@ -4,30 +4,26 @@ const int _kMaxNumOfSearchHistory = 8;
 
 class HomeSearchDelegate extends CustomSearchDelegate<void> {
   @override
-  List<Widget>? buildActions(BuildContext context) {
-    return <Widget>[
-      Padding(
-        padding: const EdgeInsets.symmetric(vertical: kToolbarPadding),
-        child: TextButton(
-          child: Text(
-            S.of(context).cancel,
-            style: context.theme.textTheme.titleLarge!.copyWith(
-              color: context.theme.primaryColor,
-              fontSize: 16.0,
+  List<Widget>? buildActions(BuildContext context) => <Widget>[
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: kToolbarPadding),
+          child: TextButton(
+            child: Text(
+              S.of(context).cancel,
+              style: context.theme.textTheme.titleLarge!.copyWith(
+                color: context.theme.primaryColor,
+                fontSize: 16.0,
+              ),
             ),
+            onPressed: () {
+              close(context, null);
+            },
           ),
-          onPressed: () {
-            close(context, null);
-          },
         ),
-      ),
-    ];
-  }
+      ];
 
   @override
-  Widget? buildLeading(BuildContext context) {
-    return null;
-  }
+  Widget? buildLeading(BuildContext context) => null;
 
   @override
   void showResults(BuildContext context) {
@@ -39,19 +35,15 @@ class HomeSearchDelegate extends CustomSearchDelegate<void> {
   }
 
   @override
-  Widget buildResults(BuildContext context) {
-    return _Results(query: query);
-  }
+  Widget buildResults(BuildContext context) => _Results(query: query);
 
   @override
-  Widget buildSuggestions(BuildContext context) {
-    return _Suggestions(
-      onTap: (String keyword) {
-        query = keyword;
-        showResults(context);
-      },
-    );
-  }
+  Widget buildSuggestions(BuildContext context) => _Suggestions(
+        onTap: (String keyword) {
+          query = keyword;
+          showResults(context);
+        },
+      );
 }
 
 class _Results extends ConsumerStatefulWidget {
@@ -118,49 +110,50 @@ class __ResultsState extends ConsumerState<_Results>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return NotificationListener<ScrollNotification>(
-      onNotification: onScrollNotification,
-      child: CustomScrollView(
-        slivers: <Widget>[
-          pullDownIndicator,
-          Consumer(
-            builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-              (_, __, List<ArticleModel> list) {
-                if (list.isEmpty) {
-                  return const SliverFillRemaining(child: EmptyWidget.search());
-                }
+  Widget build(BuildContext context) =>
+      NotificationListener<ScrollNotification>(
+        onNotification: onScrollNotification,
+        child: CustomScrollView(
+          slivers: <Widget>[
+            pullDownIndicator,
+            Consumer(
+              builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
+                (_, __, List<ArticleModel> list) {
+                  if (list.isEmpty) {
+                    return const SliverFillRemaining(
+                      child: EmptyWidget.search(),
+                    );
+                  }
 
-                return SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (_, int index) {
-                      final ArticleModel article = list[index];
+                  return SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (_, int index) {
+                        final ArticleModel article = list[index];
 
-                      return ArticleTile(
-                        key: Key('search_article_${article.id}'),
-                        article: article,
-                        query: widget.query,
-                      );
-                    },
-                    childCount: list.length,
-                  ),
-                );
-              },
-              loading: loadingIndicatorBuilder,
-              error: errorIndicatorBuilder,
+                        return ArticleTile(
+                          key: Key('search_article_${article.id}'),
+                          article: article,
+                          query: widget.query,
+                        );
+                      },
+                      childCount: list.length,
+                    ),
+                  );
+                },
+                loading: loadingIndicatorBuilder,
+                error: errorIndicatorBuilder,
+              ),
             ),
-          ),
-          SliverPadding(
-            padding: EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
-            sliver: loadMoreIndicator,
-          ),
-        ],
-      ),
-    );
-  }
+            SliverPadding(
+              padding: EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
+              sliver: loadMoreIndicator,
+            ),
+          ],
+        ),
+      );
 }
 
-typedef SearchHistoryCallback = Function(String keyword);
+typedef SearchHistoryCallback = void Function(String keyword);
 
 class _Suggestions extends ConsumerStatefulWidget {
   const _Suggestions({required this.onTap});

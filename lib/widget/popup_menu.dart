@@ -9,16 +9,16 @@ import '../widget/gap.dart';
 
 class PopupMenu extends StatefulWidget {
   const PopupMenu({
-    super.key,
     required this.iconData,
     required this.children,
+    super.key,
   });
 
   final IconData iconData;
   final List<PopupMenuItemConfig> children;
 
   @override
-  _PopupMenuState createState() => _PopupMenuState();
+  State<PopupMenu> createState() => _PopupMenuState();
 }
 
 class _PopupMenuState extends State<PopupMenu> {
@@ -55,9 +55,7 @@ class _PopupMenuState extends State<PopupMenu> {
                   if (index.isEven)
                     _PopupMenuItem(
                       config: widget.children[index ~/ 2],
-                      hideMenu: () {
-                        _controller.hideMenu();
-                      },
+                      hideMenu: _controller.hideMenu,
                     )
                   else
                     const Divider(),
@@ -102,32 +100,30 @@ class _PopupMenuItem extends StatelessWidget {
   final VoidCallback hideMenu;
 
   @override
-  Widget build(BuildContext context) {
-    return Ink(
-      child: InkWell(
-        onTap: () {
-          hideMenu();
-          config.onTap();
-        },
-        child: Padding(
-          padding: AppTheme.bodyPadding,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Icon(config.iconData),
-              const Gap.h(value: kStyleUint2),
-              Expanded(
-                child: Text(
-                  config.label,
-                  style: TextStyle(
-                    color: context.theme.iconTheme.color,
+  Widget build(BuildContext context) => Ink(
+        child: InkWell(
+          onTap: () {
+            hideMenu();
+            config.onTap();
+          },
+          child: Padding(
+            padding: AppTheme.bodyPadding,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Icon(config.iconData),
+                const Gap.h(value: kStyleUint2),
+                Expanded(
+                  child: Text(
+                    config.label,
+                    style: TextStyle(
+                      color: context.theme.iconTheme.color,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-    );
-  }
+      );
 }

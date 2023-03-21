@@ -3,18 +3,18 @@ part of '../app_router.dart';
 @immutable
 class AppPage<T> extends Page<T> {
   const AppPage({
+    required WidgetBuilder this.builder,
     super.key,
     super.name,
-    required WidgetBuilder this.builder,
     bool this.fullScreenDialog = false,
     bool this.maintainState = false,
   }) : routeBuilder = null;
 
   const AppPage.routeBuilder({
-    super.key,
-    super.name,
     required Route<T> Function(BuildContext context, RouteSettings settings)
         this.routeBuilder,
+    super.key,
+    super.name,
   })  : builder = null,
         fullScreenDialog = null,
         maintainState = null;
@@ -60,8 +60,8 @@ class AppPage<T> extends Page<T> {
 @immutable
 class AppModalBottomSheetPage<T> extends Page<T> {
   const AppModalBottomSheetPage({
-    this.useRootNavigator = false,
     required this.builder,
+    this.useRootNavigator = false,
     this.backgroundColor,
     this.elevation,
     this.shape,

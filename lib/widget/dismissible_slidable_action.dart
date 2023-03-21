@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
@@ -6,12 +8,12 @@ import '../app/l10n/generated/l10n.dart';
 
 class DismissibleSlidableAction extends StatefulWidget {
   const DismissibleSlidableAction({
-    super.key,
     required this.slidableExtentRatio,
     required this.dismissiblePaneThreshold,
     required this.label,
-    this.color,
     required this.onTap,
+    super.key,
+    this.color,
   });
 
   final double slidableExtentRatio;
@@ -21,7 +23,7 @@ class DismissibleSlidableAction extends StatefulWidget {
   final VoidCallback onTap;
 
   @override
-  _DismissibleSlidableActionState createState() =>
+  State<DismissibleSlidableAction> createState() =>
       _DismissibleSlidableActionState();
 }
 
@@ -46,8 +48,9 @@ class _DismissibleSlidableActionState extends State<DismissibleSlidableAction> {
   void initState() {
     super.initState();
 
-    slidableAnimation.addListener(handleValueChanged);
-    slidableAnimation.addStatusListener(handleStatusChanged);
+    slidableAnimation
+      ..addListener(handleValueChanged)
+      ..addStatusListener(handleStatusChanged);
   }
 
   void handleValueChanged() {
@@ -91,25 +94,24 @@ class _DismissibleSlidableActionState extends State<DismissibleSlidableAction> {
   @override
   void dispose() {
     _actionLabelNotifier.dispose();
-    slidableAnimation.removeListener(handleValueChanged);
-    slidableAnimation.removeStatusListener(handleStatusChanged);
+    slidableAnimation
+      ..removeListener(handleValueChanged)
+      ..removeStatusListener(handleStatusChanged);
 
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder<ActionLabel>(
-      valueListenable: _actionLabelNotifier,
-      builder: (_, ActionLabel actionLabel, __) {
-        return Expanded(
+  Widget build(BuildContext context) => ValueListenableBuilder<ActionLabel>(
+        valueListenable: _actionLabelNotifier,
+        builder: (_, ActionLabel actionLabel, __) => Expanded(
           child: Material(
             child: SizedBox.expand(
               child: Ink(
                 color: actionLabel.color,
                 child: InkWell(
                   onTap: () {
-                    slidable.close();
+                    unawaited(slidable.close());
                     widget.onTap();
                   },
                   child: Center(
@@ -125,10 +127,8 @@ class _DismissibleSlidableActionState extends State<DismissibleSlidableAction> {
               ),
             ),
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
 }
 
 @immutable

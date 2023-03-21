@@ -19,12 +19,12 @@ const double _kSlidableTileItemExtent = 94.0;
 
 class SlidableTile extends StatelessWidget {
   const SlidableTile.collectedArticle({
-    super.key,
     required CollectedArticleModel this.collectedArticle,
     required this.onDismissed,
     required this.confirmCallback,
     required this.onTap,
     required VoidCallback this.onEditTap,
+    super.key,
   })  : collectedWebsite = null,
         article = null,
         isCollectedArticle = true,
@@ -32,12 +32,12 @@ class SlidableTile extends StatelessWidget {
         isShareArticle = false;
 
   const SlidableTile.collectedWebsite({
-    super.key,
     required CollectedWebsiteModel this.collectedWebsite,
     required this.onDismissed,
     required this.confirmCallback,
     required this.onTap,
     required VoidCallback this.onEditTap,
+    super.key,
   })  : collectedArticle = null,
         article = null,
         isCollectedArticle = false,
@@ -45,10 +45,10 @@ class SlidableTile extends StatelessWidget {
         isShareArticle = false;
 
   const SlidableTile.shareArticle({
-    super.key,
     required ArticleModel this.article,
     required this.onDismissed,
     required this.confirmCallback,
+    super.key,
   })  : collectedArticle = null,
         collectedWebsite = null,
         onTap = null,
@@ -179,9 +179,7 @@ class SlidableTile extends StatelessWidget {
           confirmDismiss: () async {
             final bool? result = await DialogUtils.confirm<bool>(
               isDanger: true,
-              builder: (BuildContext context) {
-                return Text(removeTips);
-              },
+              builder: (BuildContext context) => Text(removeTips),
               confirmCallback: confirmCallback,
             );
 

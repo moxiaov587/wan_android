@@ -1,29 +1,28 @@
-/// https://github.com/openjmu/OpenJMU/blob/master/lib/utils/log_utils.dart
-
 import 'dart:developer' as dev;
 
 import 'package:logging/logging.dart';
 
+/// https://github.com/openjmu/OpenJMU/blob/master/lib/utils/log_utils.dart
 class LogUtils {
   const LogUtils._();
 
-  static const String _TAG = 'LOG';
+  static const String _tag = 'LOG';
 
-  static void i(dynamic message, {String tag = _TAG, StackTrace? stackTrace}) {
+  static void i(dynamic message, {String tag = _tag, StackTrace? stackTrace}) {
     _printLog(message, '$tag ❕', stackTrace, level: Level.CONFIG);
   }
 
-  static void d(dynamic message, {String tag = _TAG, StackTrace? stackTrace}) {
+  static void d(dynamic message, {String tag = _tag, StackTrace? stackTrace}) {
     _printLog(message, '$tag 📣', stackTrace, level: Level.INFO);
   }
 
-  static void w(dynamic message, {String tag = _TAG, StackTrace? stackTrace}) {
+  static void w(dynamic message, {String tag = _tag, StackTrace? stackTrace}) {
     _printLog(message, '$tag ⚠️', stackTrace, level: Level.WARNING);
   }
 
   static void e(
     dynamic message, {
-    String tag = _TAG,
+    String tag = _tag,
     StackTrace? stackTrace,
     bool withStackTrace = true,
   }) {
@@ -39,13 +38,12 @@ class LogUtils {
 
   static void json(
     dynamic message, {
-    String tag = _TAG,
+    String tag = _tag,
     StackTrace? stackTrace,
   }) {
     _printLog(message, '$tag 💠', stackTrace);
   }
 
-  // ignore: long-parameter-list
   static void _printLog(
     dynamic message,
     String? tag,
@@ -58,7 +56,7 @@ class LogUtils {
       dev.log(
         '${DateTime.now().millisecondsSinceEpoch} - An error occurred.',
         time: DateTime.now(),
-        name: tag ?? _TAG,
+        name: tag ?? _tag,
         level: level.value,
         error: message,
         stackTrace: stackTrace ??
@@ -68,7 +66,7 @@ class LogUtils {
       dev.log(
         '${DateTime.now().millisecondsSinceEpoch} - $message',
         time: DateTime.now(),
-        name: tag ?? _TAG,
+        name: tag ?? _tag,
         level: level.value,
         stackTrace: stackTrace ??
             (isError && withStackTrace ? StackTrace.current : null),

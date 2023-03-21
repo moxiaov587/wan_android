@@ -1,24 +1,20 @@
 part of 'home_provider.dart';
 
 @riverpod
-Future<List<ProjectTypeModel>> projectType(ProjectTypeRef ref) {
-  return ref.watch(networkProvider).fetchProjectTypes();
-}
+Future<List<ProjectTypeModel>> projectType(ProjectTypeRef ref) =>
+    ref.watch(networkProvider).fetchProjectTypes();
 
 @riverpod
 class CurrentProjectType extends _$CurrentProjectType
     with AutoDisposeNotifierUpdateMixin<AsyncValue<ProjectTypeModel>> {
   @override
-  AsyncValue<ProjectTypeModel> build() {
-    return ref.watch(projectTypeProvider).when(
-          skipLoadingOnRefresh: false,
-          data: (List<ProjectTypeModel> data) =>
-              AsyncValue<ProjectTypeModel>.data(data.first),
-          error: (Object e, StackTrace s) =>
-              AsyncValue<ProjectTypeModel>.error(e, s),
-          loading: () => const AsyncValue<ProjectTypeModel>.loading(),
-        );
-  }
+  AsyncValue<ProjectTypeModel> build() => ref.watch(projectTypeProvider).when(
+        skipLoadingOnRefresh: false,
+        data: (List<ProjectTypeModel> data) =>
+            AsyncValue<ProjectTypeModel>.data(data.first),
+        error: AsyncValue<ProjectTypeModel>.error,
+        loading: () => const AsyncValue<ProjectTypeModel>.loading(),
+      );
 }
 
 typedef ProjectArticleProvider = AutoDisposeStateNotifierProvider<
@@ -26,9 +22,11 @@ typedef ProjectArticleProvider = AutoDisposeStateNotifierProvider<
 
 final ProjectArticleProvider projectArticleProvider = StateNotifierProvider
     .autoDispose<ProjectNotifier, RefreshListViewState<ArticleModel>>(
-  (AutoDisposeStateNotifierProviderRef<ProjectNotifier,
-          RefreshListViewState<ArticleModel>>
-      ref) {
+  (
+    AutoDisposeStateNotifierProviderRef<ProjectNotifier,
+            RefreshListViewState<ArticleModel>>
+        ref,
+  ) {
     final CancelToken cancelToken = ref.cancelToken();
 
     final Http http = ref.read(networkProvider);
@@ -73,13 +71,12 @@ class ProjectNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
   Future<RefreshListViewStateData<ArticleModel>> loadData({
     required int pageNum,
     required int pageSize,
-  }) async {
-    return (await http.fetchProjectArticles(
-      pageNum,
-      pageSize,
-      categoryId: categoryId!,
-      cancelToken: cancelToken,
-    ))
-        .toRefreshListViewStateData();
-  }
+  }) async =>
+      (await http.fetchProjectArticles(
+        pageNum,
+        pageSize,
+        categoryId: categoryId!,
+        cancelToken: cancelToken,
+      ))
+          .toRefreshListViewStateData();
 }

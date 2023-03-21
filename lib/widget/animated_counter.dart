@@ -11,8 +11,8 @@ const Duration _kCountAnimatedDuration = Duration(milliseconds: 400);
 
 class AnimatedCounter extends StatefulWidget {
   const AnimatedCounter({
-    super.key,
     required this.count,
+    super.key,
     this.duration = const Duration(milliseconds: 1400),
   });
 
@@ -20,7 +20,7 @@ class AnimatedCounter extends StatefulWidget {
   final Duration duration;
 
   @override
-  _AnimatedCounterState createState() => _AnimatedCounterState();
+  State<AnimatedCounter> createState() => _AnimatedCounterState();
 }
 
 class _AnimatedCounterState extends State<AnimatedCounter> {
@@ -63,12 +63,10 @@ class _AnimatedCounterState extends State<AnimatedCounter> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return AnimatedFlipCounter(
-      thousandSeparator: ',',
-      duration: _kCountAnimatedDuration,
-      value: _count,
-      textStyle: context.theme.textTheme.displaySmall,
-    );
-  }
+  Widget build(BuildContext context) => AnimatedFlipCounter(
+        thousandSeparator: ',',
+        duration: _kCountAnimatedDuration,
+        value: _count,
+        textStyle: context.theme.textTheme.displaySmall,
+      );
 }

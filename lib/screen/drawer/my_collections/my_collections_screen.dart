@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -24,8 +26,8 @@ part 'website.dart';
 
 class MyCollectionsScreen extends StatefulWidget {
   const MyCollectionsScreen({
-    super.key,
     required this.type,
+    super.key,
   });
 
   final CollectionType type;
@@ -49,56 +51,54 @@ class _MyCollectionsScreenState extends State<MyCollectionsScreen>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(S.of(context).myCollections),
-        actions: <Widget>[
-          Consumer(
-            builder: (_, WidgetRef ref, __) => IconButton(
-              onPressed: () {
-                AddCollectedArticleOrWebsiteRoute(
-                  type: CollectionType.values[_tabController.index],
-                ).push(context);
-              },
-              icon: const Icon(IconFontIcons.addLine, size: 30.0),
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: Text(S.of(context).myCollections),
+          actions: <Widget>[
+            Consumer(
+              builder: (_, WidgetRef ref, __) => IconButton(
+                onPressed: () {
+                  AddCollectedArticleOrWebsiteRoute(
+                    type: CollectionType.values[_tabController.index],
+                  ).push(context);
+                },
+                icon: const Icon(IconFontIcons.addLine, size: 30.0),
+              ),
             ),
-          ),
-        ],
-      ),
-      body: Column(
-        children: <Widget>[
-          Material(
-            color: context.theme.appBarTheme.backgroundColor,
-            child: TabBar(
-              controller: _tabController,
-              indicatorSize: TabBarIndicatorSize.label,
-              labelPadding: AppTheme.bodyPaddingOnlyVertical,
-              labelStyle: context.theme.textTheme.titleMedium,
-              labelColor: context.theme.textTheme.titleMedium!.color,
-              unselectedLabelStyle: context.theme.textTheme.titleMedium,
-              tabs: CollectionType.values
-                  .map((CollectionType type) =>
-                      Text(S.of(context).collectionType(type.name)))
-                  .toList(),
-              onTap: (int index) {
-                _tabController.animateTo(index);
-              },
+          ],
+        ),
+        body: Column(
+          children: <Widget>[
+            Material(
+              color: context.theme.appBarTheme.backgroundColor,
+              child: TabBar(
+                controller: _tabController,
+                indicatorSize: TabBarIndicatorSize.label,
+                labelPadding: AppTheme.bodyPaddingOnlyVertical,
+                labelStyle: context.theme.textTheme.titleMedium,
+                labelColor: context.theme.textTheme.titleMedium!.color,
+                unselectedLabelStyle: context.theme.textTheme.titleMedium,
+                tabs: CollectionType.values
+                    .map(
+                      (CollectionType type) =>
+                          Text(S.of(context).collectionType(type.name)),
+                    )
+                    .toList(),
+                onTap: _tabController.animateTo,
+              ),
             ),
-          ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: const <Widget>[
-                _Article(),
-                _Website(),
-              ],
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: const <Widget>[
+                  _Article(),
+                  _Website(),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+      );
 }
 
 enum CollectionType {

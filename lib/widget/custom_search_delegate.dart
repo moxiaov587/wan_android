@@ -12,15 +12,15 @@ abstract class CustomSearchDelegate<T> {
     this.searchFieldDecorationTheme,
     this.keyboardType,
     this.textInputAction = TextInputAction.search,
-  }) : assert(searchFieldStyle == null || searchFieldDecorationTheme == null);
+  });
 
   /// Suggestions shown in the body of the search page while the user types a
   /// query into the search field.
   ///
   /// The delegate method is called whenever the content of [query] changes.
-  /// The suggestions should be based on the current [query] string. If the query
-  /// string is empty, it is good practice to show suggested queries based on
-  /// past queries or the current context.
+  /// The suggestions should be based on the current [query] string. If the
+  /// query string is empty, it is good practice to show suggested queries
+  /// based on past queries or the current context.
   ///
   /// Usually, this method will return a [ListView] with one [ListTile] per
   /// suggestion. When [ListTile.onTap] is called, [query] should be updated
@@ -87,9 +87,9 @@ abstract class CustomSearchDelegate<T> {
   /// theme properties.
   ///
   /// Unless overridden, the default theme will configure the AppBar containing
-  /// the search input text field with a white background and black text on light
-  /// themes. For dark themes the default is a dark grey background with light
-  /// color text.
+  /// the search input text field with a white background and black text on
+  /// light themes. For dark themes the default is a dark grey background
+  /// with light color text.
   ///
   /// See also:
   ///
@@ -108,15 +108,16 @@ abstract class CustomSearchDelegate<T> {
 
   /// Changes the current query string.
   ///
-  /// Setting the query string programmatically moves the cursor to the end of the text field.
+  /// Setting the query string programmatically moves the cursor to the end of
+  /// the text field.
   set query(String value) {
-    assert(query != null);
-    _queryTextController.text = value;
-    _queryTextController.selection = TextSelection.fromPosition(
-      TextPosition(
-        offset: _queryTextController.text.length,
-      ),
-    );
+    _queryTextController
+      ..text = value
+      ..selection = TextSelection.fromPosition(
+        TextPosition(
+          offset: _queryTextController.text.length,
+        ),
+      );
   }
 
   /// Transition from the suggestions returned by [buildSuggestions] to the
@@ -148,8 +149,10 @@ abstract class CustomSearchDelegate<T> {
   ///
   ///  * [showResults] to show the search results.
   void showSuggestions(BuildContext context) {
-    assert(_focusNode != null,
-        '_focusNode must be set by route before showSuggestions is called.');
+    assert(
+      _focusNode != null,
+      '_focusNode must be set by route before showSuggestions is called.',
+    );
     _focusNode!.requestFocus();
     _currentBody = _SearchBody.suggestions;
   }

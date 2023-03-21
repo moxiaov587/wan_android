@@ -2,10 +2,10 @@ part of '../utils/dialog_utils.dart';
 
 class BaseToast extends StatelessWidget {
   const BaseToast({
-    super.key,
     required this.type,
     required this.alignment,
     required this.msg,
+    super.key,
   });
 
   final ToastType type;

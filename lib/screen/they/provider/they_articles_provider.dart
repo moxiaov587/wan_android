@@ -40,13 +40,11 @@ class TheyArticlesNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
   Future<RefreshListViewStateData<ArticleModel>> loadData({
     required int pageNum,
     required int pageSize,
-  }) async {
-    return (await http.fetchArticlesByAuthor(
+  }) async => (await http.fetchArticlesByAuthor(
       pageNum,
       pageSize,
       author: author,
       cancelToken: cancelToken,
     ))
         .toRefreshListViewStateData();
-  }
 }

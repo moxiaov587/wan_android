@@ -36,7 +36,7 @@ abstract class BaseRefreshListViewNotifier<T>
       );
 
       return true;
-    } catch (e, s) {
+    } on Exception catch (e, s) {
       onError(e, s);
 
       return false;
@@ -50,42 +50,41 @@ abstract class BaseRefreshListViewNotifier<T>
 
   void onCompleted(List<T> data) {}
 
-  Future<LoadingMoreStatus?> loadMore() {
-    return state.whenOrNull<Future<LoadingMoreStatus?>>(
-          (int pageNum, bool isLastPage, List<T> list) async {
-            try {
-              /// Prevent no data state not being set on initialization
-              if (isLastPage) {
-                return LoadingMoreStatus.noData;
-              }
-
-              /// Some api's pageNum will be self-increasing, some won't, so here
-              /// it's handled internally.
-              pageNum++;
-
-              final RefreshListViewStateData<T> data = await loadData(
-                pageNum: pageNum,
-                pageSize: pageSize,
-              );
-
-              onCompleted(data.list);
-
-              state = RefreshListViewState<T>(
-                pageNum: pageNum,
-                isLastPage: data.isLastPage,
-                list: <T>[...list, ...data.list],
-              );
-
-              return data.isLastPage
-                  ? LoadingMoreStatus.noData
-                  : LoadingMoreStatus.completed;
-            } catch (e) {
-              return LoadingMoreStatus.failed;
+  Future<LoadingMoreStatus?> loadMore() =>
+      state.whenOrNull<Future<LoadingMoreStatus?>>(
+        (int pageNum, bool isLastPage, List<T> list) async {
+          try {
+            /// Prevent no data state not being set on initialization
+            if (isLastPage) {
+              return LoadingMoreStatus.noData;
             }
-          },
-        ) ??
-        Future<LoadingMoreStatus?>.value();
-  }
+
+            /// Some api's pageNum will be self-increasing, some won't, so here
+            /// it's handled internally.
+            pageNum++;
+
+            final RefreshListViewStateData<T> data = await loadData(
+              pageNum: pageNum,
+              pageSize: pageSize,
+            );
+
+            onCompleted(data.list);
+
+            state = RefreshListViewState<T>(
+              pageNum: pageNum,
+              isLastPage: data.isLastPage,
+              list: <T>[...list, ...data.list],
+            );
+
+            return data.isLastPage
+                ? LoadingMoreStatus.noData
+                : LoadingMoreStatus.completed;
+          } on Exception catch (_) {
+            return LoadingMoreStatus.failed;
+          }
+        },
+      ) ??
+      Future<LoadingMoreStatus?>.value();
 
   @override
   ErrorListener get onError => (Object e, StackTrace? s) {

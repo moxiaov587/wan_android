@@ -3,14 +3,14 @@ part of 'models.dart';
 @freezed
 class CollectedArticleModel with _$CollectedArticleModel {
   factory CollectedArticleModel({
+    required int id,
+    required String link,
     String? author,
     int? chapterId,
     String? chapterName,
     int? courseId,
     String? desc,
     String? envelopePic,
-    required int id,
-    required String link,
     String? niceDate,
     String? origin,
     int? originId,

@@ -1,6 +1,3 @@
-/// by zhangxinxu(.com)，可免费商用，保留此注释即可
-
-// ignore_for_file: long-method
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/widgets.dart';
 
@@ -9,10 +6,11 @@ import '../extensions/extensions.dart' show BuildContextExtension;
 
 const double _kCharacterSize = 16.0;
 
+/// by zhangxinxu(.com)，可免费商用，保留此注释即可
 class LevelTag extends StatelessWidget {
   const LevelTag({
-    super.key,
     required int? level,
+    super.key,
     this.scaleFactor = 1,
     this.isOutlined = false,
   }) : level = level ?? 1;
@@ -202,8 +200,10 @@ class LevelPainter extends CustomPainter {
             Offset(thickness, height),
             Offset(0, height * 0.6),
           ]
-              .map((Offset offset) =>
-                  offset.translate(word + padding.dx, padding.dy))
+              .map(
+                (Offset offset) =>
+                    offset.translate(word + padding.dx, padding.dy),
+              )
               .toList(),
           true,
         )
@@ -214,18 +214,22 @@ class LevelPainter extends CustomPainter {
             Offset(thickness, height),
             Offset(0, height),
           ]
-              .map((Offset offset) =>
-                  offset.translate(word + word + padding.dx, padding.dy))
+              .map(
+                (Offset offset) =>
+                    offset.translate(word + word + padding.dx, padding.dy),
+              )
               .toList(),
           true,
         ),
       (int index, Path path, String integer) => path
         ..addPolygon(
           _getIntegerPoints(integer, Size(unitWidth * 0.8, height))
-              .map((Offset offset) => offset.translate(
-                    word + word + dot + padding.dx + (index + 0.2) * unitWidth,
-                    padding.dy,
-                  ))
+              .map(
+                (Offset offset) => offset.translate(
+                  word + word + dot + padding.dx + (index + 0.2) * unitWidth,
+                  padding.dy,
+                ),
+              )
               .toList(),
           true,
         ),

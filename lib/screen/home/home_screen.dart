@@ -34,7 +34,7 @@ part 'qa.dart';
 part 'square.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required this.initialPath});
+  const HomeScreen({required this.initialPath, super.key});
 
   final HomePath initialPath;
 
@@ -65,62 +65,57 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: const HomeDrawer(),
-      drawerScrimColor: context.theme.colorScheme.scrim,
-      body: PageView.builder(
-        controller: _pageController,
-        itemCount: _pages.length,
-        itemBuilder: (_, int index) => Material(
-          color: context.theme.scaffoldBackgroundColor,
-          child: _pages[index],
-        ),
-        onPageChanged: (int index) {
-          _currentIndexNotifier.value = index;
-        },
-      ),
-      bottomNavigationBar: ValueListenableBuilder<int>(
-        valueListenable: _currentIndexNotifier,
-        builder: (BuildContext context, int index, _) => BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          currentIndex: index,
-          onTap: (int value) {
-            /// The [jumpToPage] will trigger [onPageChanged]
-            _pageController.jumpToPage(value);
+  Widget build(BuildContext context) => Scaffold(
+        drawer: const HomeDrawer(),
+        drawerScrimColor: context.theme.colorScheme.scrim,
+        body: PageView.builder(
+          controller: _pageController,
+          itemCount: _pages.length,
+          itemBuilder: (_, int index) => Material(
+            color: context.theme.scaffoldBackgroundColor,
+            child: _pages[index],
+          ),
+          onPageChanged: (int index) {
+            _currentIndexNotifier.value = index;
           },
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              label: S.of(context).home,
-              icon: const Icon(IconFontIcons.homeLine),
-              activeIcon: const Icon(IconFontIcons.homeFill),
-              tooltip: S.of(context).home,
-            ),
-            BottomNavigationBarItem(
-              label: S.of(context).square,
-              icon: const Icon(IconFontIcons.seedlingLine),
-              activeIcon: const Icon(IconFontIcons.seedlingFill),
-              tooltip: S.of(context).square,
-            ),
-            BottomNavigationBarItem(
-              label: S.of(context).question,
-              icon: const Icon(IconFontIcons.questionnaireLine),
-              activeIcon: const Icon(IconFontIcons.questionnaireFill),
-              tooltip: S.of(context).question,
-            ),
-            BottomNavigationBarItem(
-              label: S.of(context).project,
-              icon: const Icon(IconFontIcons.androidLine),
-              activeIcon: const Icon(IconFontIcons.androidFill),
-              tooltip: S.of(context).project,
-            ),
-          ],
         ),
-      ),
-    );
-  }
+        bottomNavigationBar: ValueListenableBuilder<int>(
+          valueListenable: _currentIndexNotifier,
+          builder: (BuildContext context, int index, _) => BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            showSelectedLabels: false,
+            showUnselectedLabels: false,
+            currentIndex: index,
+            onTap: _pageController.jumpToPage,
+            items: <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                label: S.of(context).home,
+                icon: const Icon(IconFontIcons.homeLine),
+                activeIcon: const Icon(IconFontIcons.homeFill),
+                tooltip: S.of(context).home,
+              ),
+              BottomNavigationBarItem(
+                label: S.of(context).square,
+                icon: const Icon(IconFontIcons.seedlingLine),
+                activeIcon: const Icon(IconFontIcons.seedlingFill),
+                tooltip: S.of(context).square,
+              ),
+              BottomNavigationBarItem(
+                label: S.of(context).question,
+                icon: const Icon(IconFontIcons.questionnaireLine),
+                activeIcon: const Icon(IconFontIcons.questionnaireFill),
+                tooltip: S.of(context).question,
+              ),
+              BottomNavigationBarItem(
+                label: S.of(context).project,
+                icon: const Icon(IconFontIcons.androidLine),
+                activeIcon: const Icon(IconFontIcons.androidFill),
+                tooltip: S.of(context).project,
+              ),
+            ],
+          ),
+        ),
+      );
 }
 
 enum HomePath {
@@ -149,11 +144,11 @@ class _HomeState extends ConsumerState<_Home>
   HomeArticleProvider get provider => homeArticleProvider;
 
   @override
-  void onRetry() {
+  FutureOr<void> onRetry() {
     if (ref.read(homeTopArticlesProvider).hasError) {
       ref.invalidate(homeTopArticlesProvider);
     } else {
-      super.onRetry();
+      return super.onRetry();
     }
   }
 
@@ -209,16 +204,14 @@ class _HomeAppBar extends StatefulWidget {
 class __HomeAppBarState extends State<_HomeAppBar>
     with SingleTickerProviderStateMixin {
   @override
-  Widget build(BuildContext context) {
-    return SliverPersistentHeader(
-      pinned: true,
-      delegate: _HomeAppBarDelegate(
-        this,
-        minHeight: kToolbarHeight,
-        maxHeight: kToolbarHeight + 200.0,
-      ),
-    );
-  }
+  Widget build(BuildContext context) => SliverPersistentHeader(
+        pinned: true,
+        delegate: _HomeAppBarDelegate(
+          this,
+          minHeight: kToolbarHeight,
+          maxHeight: kToolbarHeight + 200.0,
+        ),
+      );
 }
 
 class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
@@ -272,9 +265,11 @@ class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
               padding: EdgeInsets.only(top: ScreenUtils.topSafeHeight),
               child: Consumer(
                 builder: (_, WidgetRef ref, __) {
-                  final UserInfoModel? userInfo = ref.watch(authorizedProvider
-                      .select((AsyncValue<UserInfoModel?> data) =>
-                          data.valueOrNull));
+                  final UserInfoModel? userInfo = ref.watch(
+                    authorizedProvider.select(
+                      (AsyncValue<UserInfoModel?> data) => data.valueOrNull,
+                    ),
+                  );
 
                   if (userInfo == null) {
                     return Center(
@@ -302,7 +297,7 @@ class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
               builder: (_, WidgetRef ref, Widget? child) {
                 final Color color = ref
                         .watch(currentHomeBannerBackgroundColorValueProvider)
-                        ?.toColor ??
+                        .toColor ??
                     context.theme.primaryColor;
 
                 return AnimatedContainer(
@@ -337,11 +332,10 @@ class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
   double get minExtent => minHeight + ScreenUtils.topSafeHeight;
 
   @override
-  bool shouldRebuild(covariant _HomeAppBarDelegate oldDelegate) {
-    return vsync != oldDelegate.vsync ||
-        minHeight != oldDelegate.minHeight ||
-        maxHeight != oldDelegate.maxHeight;
-  }
+  bool shouldRebuild(covariant _HomeAppBarDelegate oldDelegate) =>
+      vsync != oldDelegate.vsync ||
+      minHeight != oldDelegate.minHeight ||
+      maxHeight != oldDelegate.maxHeight;
 }
 
 class _HomeAppBarUserInfo extends StatelessWidget {
@@ -354,210 +348,204 @@ class _HomeAppBarUserInfo extends StatelessWidget {
       userInfo.user.publicName.strictValue;
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: kStyleUint4),
-      child: Row(
-        children: <Widget>[
-          Material(
-            shape: const StadiumBorder(),
-            child: Ink(
-              decoration: BoxDecoration(
-                color: context.theme.cardColor,
-                shape: BoxShape.circle,
-              ),
-              child: InkWell(
-                onTap: () {
-                  Scaffold.of(context).openDrawer();
-                },
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints.tightFor(
-                    width: kStyleUint * 10,
-                    height: kStyleUint * 10,
-                  ),
-                  child: Center(
-                    child: Text(
-                      name?.substring(0, 1).toUpperCase() ?? '-',
-                      style: context.theme.textTheme.titleLarge,
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: kStyleUint4),
+        child: Row(
+          children: <Widget>[
+            Material(
+              shape: const StadiumBorder(),
+              child: Ink(
+                decoration: BoxDecoration(
+                  color: context.theme.cardColor,
+                  shape: BoxShape.circle,
+                ),
+                child: InkWell(
+                  onTap: () {
+                    Scaffold.of(context).openDrawer();
+                  },
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints.tightFor(
+                      width: kStyleUint * 10,
+                      height: kStyleUint * 10,
+                    ),
+                    child: Center(
+                      child: Text(
+                        name?.substring(0, 1).toUpperCase() ?? '-',
+                        style: context.theme.textTheme.titleLarge,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-          const Gap.hn(),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                name ?? '',
-                style: context.theme.textTheme.titleSmall,
-              ),
-              LevelTag(
-                level: userInfo.userPoints.level,
-                scaleFactor: 0.9,
-                isOutlined: true,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+            const Gap.hn(),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  name ?? '',
+                  style: context.theme.textTheme.titleSmall,
+                ),
+                LevelTag(
+                  level: userInfo.userPoints.level,
+                  scaleFactor: 0.9,
+                  isOutlined: true,
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
 }
 
 class _BannerCarousel extends StatelessWidget {
   const _BannerCarousel();
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Expanded(
-          child: ClipRRect(
-            clipBehavior: Clip.antiAliasWithSaveLayer,
-            borderRadius: const BorderRadius.only(
-              topLeft: AppTheme.radius,
-              topRight: AppTheme.radius,
-            ),
-            child: ColoredBox(
-              color: context.theme.cardColor,
-              child: Consumer(
-                builder: (_, WidgetRef ref, __) => ref
-                    .watch(homeBannerProvider)
-                    .when(
-                      skipLoadingOnRefresh: false,
-                      data: (List<HomeBannerCache> list) => PageView.builder(
-                        onPageChanged: ref
-                            .read(
-                              currentHomeBannerBackgroundColorValueProvider
-                                  .notifier,
-                            )
-                            .onPageChanged,
-                        itemBuilder: (BuildContext context, int index) {
-                          return _BannerCarouselItem(
+  Widget build(BuildContext context) => Column(
+        children: <Widget>[
+          Expanded(
+            child: ClipRRect(
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              borderRadius: const BorderRadius.only(
+                topLeft: AppTheme.radius,
+                topRight: AppTheme.radius,
+              ),
+              child: ColoredBox(
+                color: context.theme.cardColor,
+                child: Consumer(
+                  builder: (_, WidgetRef ref, __) => ref
+                      .watch(homeBannerProvider)
+                      .when(
+                        skipLoadingOnRefresh: false,
+                        data: (List<HomeBannerCache> list) => PageView.builder(
+                          onPageChanged: ref
+                              .read(
+                                currentHomeBannerBackgroundColorValueProvider
+                                    .notifier,
+                              )
+                              .onPageChanged,
+                          itemBuilder: (BuildContext context, int index) =>
+                              _BannerCarouselItem(
                             key: Key(
                               'home_banner_${list[index].id}',
                             ),
                             homeBanner: list[index],
-                          );
-                        },
-                        itemCount: list.length,
-                      ),
-                      loading: () => const LoadingWidget.listView(),
-                      error: (Object e, StackTrace s) {
-                        final ViewError error = ViewError.create(e, s);
+                          ),
+                          itemCount: list.length,
+                        ),
+                        loading: () => const LoadingWidget.listView(),
+                        error: (Object e, StackTrace s) {
+                          final ViewError error = ViewError.create(e, s);
 
-                        return Material(
-                          child: Ink(
-                            width: ScreenUtils.width,
-                            child: InkWell(
-                              onTap: () {
-                                ref.invalidate(homeBannerProvider);
-                              },
-                              child: Padding(
-                                padding: AppTheme.bodyPaddingOnlyHorizontal,
-                                child: Column(
-                                  children: <Widget>[
-                                    const Gap.v(value: kStyleUint4 * 3),
-                                    Icon(
-                                      IconFontIcons.refreshLine,
-                                      color: context
-                                          .theme.textTheme.bodySmall!.color,
-                                      size: 36.0,
-                                    ),
-                                    const Gap.vn(),
-                                    Text(
-                                      '${error.message ?? error.detail ?? S.of(context).unknownError}(${error.statusCode ?? -1})',
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const Gap.vs(),
-                                    Text(S.of(context).tapToRetry),
-                                  ],
+                          return Material(
+                            child: Ink(
+                              width: ScreenUtils.width,
+                              child: InkWell(
+                                onTap: () {
+                                  ref.invalidate(homeBannerProvider);
+                                },
+                                child: Padding(
+                                  padding: AppTheme.bodyPaddingOnlyHorizontal,
+                                  child: Column(
+                                    children: <Widget>[
+                                      const Gap.v(value: kStyleUint4 * 3),
+                                      Icon(
+                                        IconFontIcons.refreshLine,
+                                        color: context
+                                            .theme.textTheme.bodySmall!.color,
+                                        size: 36.0,
+                                      ),
+                                      const Gap.vn(),
+                                      Text(
+                                        // ignore: lines_longer_than_80_chars
+                                        '${error.message ?? error.detail ?? S.of(context).unknownError}(${error.statusCode ?? -1})',
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const Gap.vs(),
+                                      Text(S.of(context).tapToRetry),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
+                          );
+                        },
+                      ),
+                ),
               ),
             ),
           ),
-        ),
-        Material(
-          color: context.theme.cardColor,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              bottomLeft: AppTheme.radius,
-              bottomRight: AppTheme.radius,
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(kStyleUint2),
-            child: CapsuleInk(
-              color: context.theme.bottomNavigationBarTheme.backgroundColor,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(right: kStyleUint),
-                    child: Icon(
-                      IconFontIcons.searchEyeLine,
-                      color: context.theme.textTheme.bodyMedium!.color,
-                      size: AppTextTheme.body1,
-                    ),
-                  ),
-                  Text(S.of(context).searchForSomething),
-                ],
+          Material(
+            color: context.theme.cardColor,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                bottomLeft: AppTheme.radius,
+                bottomRight: AppTheme.radius,
               ),
-              onTap: () {
-                const SearchRoute().push(context);
-              },
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(kStyleUint2),
+              child: CapsuleInk(
+                color: context.theme.bottomNavigationBarTheme.backgroundColor,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(right: kStyleUint),
+                      child: Icon(
+                        IconFontIcons.searchEyeLine,
+                        color: context.theme.textTheme.bodyMedium!.color,
+                        size: AppTextTheme.body1,
+                      ),
+                    ),
+                    Text(S.of(context).searchForSomething),
+                  ],
+                ),
+                onTap: () {
+                  const SearchRoute().push(context);
+                },
+              ),
             ),
           ),
-        ),
-      ],
-    );
-  }
+        ],
+      );
 }
 
 class _BannerCarouselItem extends StatelessWidget {
-  const _BannerCarouselItem({super.key, required this.homeBanner});
+  const _BannerCarouselItem({required this.homeBanner, super.key});
 
   final HomeBannerCache homeBanner;
 
   @override
-  Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.expand,
-      children: <Widget>[
-        ExtendedImage.network(homeBanner.imageUrl, fit: BoxFit.fill),
-        Positioned(
-          left: 0.0,
-          right: 0.0,
-          bottom: 0.0,
-          child: Container(
-            padding: EdgeInsets.only(
-              right: AppTheme.contentPadding.right,
-            ),
-            alignment: Alignment.centerRight,
-            width: ScreenUtils.width,
-            height: 50.0,
-            color: (homeBanner.primaryColorValue.toColor ??
-                    context.theme.colorScheme.background)
-                .withOpacity(0.2),
-            child: Text(
-              homeBanner.title,
-              style: context.theme.textTheme.titleMedium!.copyWith(
-                color: homeBanner.textColorValue.toColor,
+  Widget build(BuildContext context) => Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          ExtendedImage.network(homeBanner.imageUrl, fit: BoxFit.fill),
+          Positioned(
+            left: 0.0,
+            right: 0.0,
+            bottom: 0.0,
+            child: Container(
+              padding: EdgeInsets.only(
+                right: AppTheme.contentPadding.right,
+              ),
+              alignment: Alignment.centerRight,
+              width: ScreenUtils.width,
+              height: 50.0,
+              color: (homeBanner.primaryColorValue.toColor ??
+                      context.theme.colorScheme.background)
+                  .withOpacity(0.2),
+              child: Text(
+                homeBanner.title,
+                style: context.theme.textTheme.titleMedium!.copyWith(
+                  color: homeBanner.textColorValue.toColor,
+                ),
               ),
             ),
           ),
-        ),
-      ],
-    );
-  }
+        ],
+      );
 }

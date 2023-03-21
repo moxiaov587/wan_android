@@ -5,9 +5,11 @@ typedef QuestionArticleProvider = AutoDisposeStateNotifierProvider<
 
 final QuestionArticleProvider questionArticleProvider = StateNotifierProvider
     .autoDispose<QuestionNotifier, RefreshListViewState<ArticleModel>>(
-  (AutoDisposeStateNotifierProviderRef<QuestionNotifier,
-          RefreshListViewState<ArticleModel>>
-      ref) {
+  (
+    AutoDisposeStateNotifierProviderRef<QuestionNotifier,
+            RefreshListViewState<ArticleModel>>
+        ref,
+  ) {
     final CancelToken cancelToken = ref.cancelToken();
 
     final Http http = ref.watch(networkProvider);
@@ -35,11 +37,10 @@ class QuestionNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
   Future<RefreshListViewStateData<ArticleModel>> loadData({
     required int pageNum,
     required int pageSize,
-  }) async {
-    return (await http.fetchQuestionArticles(
-      pageNum,
-      pageSize,
-    ))
-        .toRefreshListViewStateData();
-  }
+  }) async =>
+      (await http.fetchQuestionArticles(
+        pageNum,
+        pageSize,
+      ))
+          .toRefreshListViewStateData();
 }

@@ -12,8 +12,8 @@ const double _kContentPaddingLeft =
 
 class CustomTextFormField extends StatefulWidget {
   const CustomTextFormField({
-    super.key,
     required this.controller,
+    super.key,
     this.focusNode,
     this.decoration = const InputDecoration(),
     this.keyboardType,
@@ -103,14 +103,13 @@ class CustomTextFormField extends StatefulWidget {
   static Widget _defaultContextMenuBuilder(
     BuildContext _,
     EditableTextState editableTextState,
-  ) {
-    return AdaptiveTextSelectionToolbar.editableText(
-      editableTextState: editableTextState,
-    );
-  }
+  ) =>
+      AdaptiveTextSelectionToolbar.editableText(
+        editableTextState: editableTextState,
+      );
 
   @override
-  _CustomTextFormFieldState createState() => _CustomTextFormFieldState();
+  State<CustomTextFormField> createState() => _CustomTextFormFieldState();
 }
 
 class _CustomTextFormFieldState extends State<CustomTextFormField> {
@@ -141,22 +140,20 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: widget.controller,
-      focusNode: widget.focusNode,
-      decoration: widget.decoration.copyWith(
-        contentPadding: widget.decoration.prefixIcon != null
-            ? EdgeInsets.zero
-            : const EdgeInsets.only(left: _kContentPaddingLeft),
-        prefixIconConstraints: const BoxConstraints(
-          minWidth: kMinInteractiveDimension,
-          minHeight: kMinInteractiveDimension,
-        ),
-        suffixIcon: ValueListenableBuilder<bool>(
-          valueListenable: _showCleanButtonNotifier,
-          builder: (_, bool value, __) {
-            return value
+  Widget build(BuildContext context) => TextFormField(
+        controller: widget.controller,
+        focusNode: widget.focusNode,
+        decoration: widget.decoration.copyWith(
+          contentPadding: widget.decoration.prefixIcon != null
+              ? EdgeInsets.zero
+              : const EdgeInsets.only(left: _kContentPaddingLeft),
+          prefixIconConstraints: const BoxConstraints(
+            minWidth: kMinInteractiveDimension,
+            minHeight: kMinInteractiveDimension,
+          ),
+          suffixIcon: ValueListenableBuilder<bool>(
+            valueListenable: _showCleanButtonNotifier,
+            builder: (_, bool value, __) => value
                 ? IconButton(
                     icon: const Icon(
                       IconFontIcons.closeCircleLine,
@@ -166,51 +163,49 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                       widget.controller.text = '';
                     },
                   )
-                : nil;
-          },
+                : nil,
+          ),
         ),
-      ),
-      keyboardType: widget.keyboardType,
-      textCapitalization: widget.textCapitalization,
-      textInputAction: widget.textInputAction,
-      style: widget.style,
-      strutStyle: widget.strutStyle,
-      textDirection: widget.textDirection,
-      textAlign: widget.textAlign,
-      textAlignVertical: widget.textAlignVertical,
-      autofocus: widget.autofocus,
-      readOnly: widget.readOnly,
-      showCursor: widget.showCursor,
-      obscuringCharacter: widget.obscuringCharacter,
-      obscureText: widget.obscureText,
-      autocorrect: widget.autocorrect,
-      smartDashesType: widget.smartDashesType,
-      smartQuotesType: widget.smartQuotesType,
-      enableSuggestions: widget.enableSuggestions,
-      maxLengthEnforcement: widget.maxLengthEnforcement,
-      maxLines: widget.maxLines,
-      minLines: widget.minLines,
-      expands: widget.expands,
-      maxLength: widget.maxLength,
-      onChanged: widget.onChanged,
-      onTap: widget.onTap,
-      onEditingComplete: widget.onEditingComplete,
-      onFieldSubmitted: widget.onFieldSubmitted,
-      onSaved: widget.onSaved,
-      validator: widget.validator,
-      inputFormatters: widget.inputFormatters,
-      cursorColor: context.theme.primaryColor,
-      keyboardAppearance: context.theme.brightness,
-      enableInteractiveSelection: widget.enableInteractiveSelection,
-      selectionControls: widget.selectionControls,
-      buildCounter: widget.buildCounter,
-      scrollPhysics: widget.scrollPhysics,
-      autofillHints: widget.autofillHints,
-      autovalidateMode: widget.autovalidateMode,
-      scrollController: widget.scrollController,
-      restorationId: widget.restorationId,
-      enableIMEPersonalizedLearning: widget.enableIMEPersonalizedLearning,
-      contextMenuBuilder: widget.contextMenuBuilder,
-    );
-  }
+        keyboardType: widget.keyboardType,
+        textCapitalization: widget.textCapitalization,
+        textInputAction: widget.textInputAction,
+        style: widget.style,
+        strutStyle: widget.strutStyle,
+        textDirection: widget.textDirection,
+        textAlign: widget.textAlign,
+        textAlignVertical: widget.textAlignVertical,
+        autofocus: widget.autofocus,
+        readOnly: widget.readOnly,
+        showCursor: widget.showCursor,
+        obscuringCharacter: widget.obscuringCharacter,
+        obscureText: widget.obscureText,
+        autocorrect: widget.autocorrect,
+        smartDashesType: widget.smartDashesType,
+        smartQuotesType: widget.smartQuotesType,
+        enableSuggestions: widget.enableSuggestions,
+        maxLengthEnforcement: widget.maxLengthEnforcement,
+        maxLines: widget.maxLines,
+        minLines: widget.minLines,
+        expands: widget.expands,
+        maxLength: widget.maxLength,
+        onChanged: widget.onChanged,
+        onTap: widget.onTap,
+        onEditingComplete: widget.onEditingComplete,
+        onFieldSubmitted: widget.onFieldSubmitted,
+        onSaved: widget.onSaved,
+        validator: widget.validator,
+        inputFormatters: widget.inputFormatters,
+        cursorColor: context.theme.primaryColor,
+        keyboardAppearance: context.theme.brightness,
+        enableInteractiveSelection: widget.enableInteractiveSelection,
+        selectionControls: widget.selectionControls,
+        buildCounter: widget.buildCounter,
+        scrollPhysics: widget.scrollPhysics,
+        autofillHints: widget.autofillHints,
+        autovalidateMode: widget.autovalidateMode,
+        scrollController: widget.scrollController,
+        restorationId: widget.restorationId,
+        enableIMEPersonalizedLearning: widget.enableIMEPersonalizedLearning,
+        contextMenuBuilder: widget.contextMenuBuilder,
+      );
 }

@@ -33,82 +33,80 @@ class _MyShareScreenState extends ConsumerState<MyShareScreen>
   MyShareArticlesProvider get provider => myShareArticlesProvider;
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(S.of(context).myShare),
-        actions: <Widget>[
-          IconButton(
-            onPressed: () {
-              const HandleSharedBottomSheetRoute().push(context);
-            },
-            icon: const Icon(IconFontIcons.addLine, size: 30.0),
-          ),
-        ],
-      ),
-      body: NotificationListener<ScrollNotification>(
-        onNotification: onScrollNotification,
-        child: CustomScrollView(
-          slivers: <Widget>[
-            pullDownIndicator,
-            Consumer(
-              builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-                (_, __, List<ArticleModel> list) {
-                  if (list.isEmpty) {
-                    return const SliverFillRemaining(child: EmptyWidget());
-                  }
-
-                  return SlidableAutoCloseBehavior(
-                    child: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (_, int index) {
-                          final ArticleModel article = list[index];
-
-                          return SlidableTile.shareArticle(
-                            key: Key('my_share_article_${article.id}'),
-                            article: article,
-                            onDismissed: () {
-                              ref
-                                  .read(myShareArticlesProvider.notifier)
-                                  .destroy(article.id);
-                            },
-                            confirmCallback: () async {
-                              final bool result = await ref
-                                  .read(myShareArticlesProvider.notifier)
-                                  .requestDeleteShare(articleId: article.id);
-
-                              return result;
-                            },
-                          );
-                        },
-                        findChildIndexCallback: (Key key) {
-                          final int index = list.indexWhere(
-                            (ArticleModel article) =>
-                                key == Key('my_share_article_${article.id}'),
-                          );
-
-                          if (index == -1) {
-                            return null;
-                          }
-
-                          return index;
-                        },
-                        childCount: list.length,
-                      ),
-                    ),
-                  );
-                },
-                loading: loadingIndicatorBuilder,
-                error: errorIndicatorBuilder,
-              ),
-            ),
-            SliverPadding(
-              padding: EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
-              sliver: loadMoreIndicator,
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: Text(S.of(context).myShare),
+          actions: <Widget>[
+            IconButton(
+              onPressed: () {
+                const HandleSharedBottomSheetRoute().push(context);
+              },
+              icon: const Icon(IconFontIcons.addLine, size: 30.0),
             ),
           ],
         ),
-      ),
-    );
-  }
+        body: NotificationListener<ScrollNotification>(
+          onNotification: onScrollNotification,
+          child: CustomScrollView(
+            slivers: <Widget>[
+              pullDownIndicator,
+              Consumer(
+                builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
+                  (_, __, List<ArticleModel> list) {
+                    if (list.isEmpty) {
+                      return const SliverFillRemaining(child: EmptyWidget());
+                    }
+
+                    return SlidableAutoCloseBehavior(
+                      child: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (_, int index) {
+                            final ArticleModel article = list[index];
+
+                            return SlidableTile.shareArticle(
+                              key: Key('my_share_article_${article.id}'),
+                              article: article,
+                              onDismissed: () async {
+                                await ref
+                                    .read(myShareArticlesProvider.notifier)
+                                    .destroy(article.id);
+                              },
+                              confirmCallback: () async {
+                                final bool result = await ref
+                                    .read(myShareArticlesProvider.notifier)
+                                    .requestDeleteShare(articleId: article.id);
+
+                                return result;
+                              },
+                            );
+                          },
+                          findChildIndexCallback: (Key key) {
+                            final int index = list.indexWhere(
+                              (ArticleModel article) =>
+                                  key == Key('my_share_article_${article.id}'),
+                            );
+
+                            if (index == -1) {
+                              return null;
+                            }
+
+                            return index;
+                          },
+                          childCount: list.length,
+                        ),
+                      ),
+                    );
+                  },
+                  loading: loadingIndicatorBuilder,
+                  error: errorIndicatorBuilder,
+                ),
+              ),
+              SliverPadding(
+                padding: EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
+                sliver: loadMoreIndicator,
+              ),
+            ],
+          ),
+        ),
+      );
 }

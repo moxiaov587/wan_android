@@ -22,7 +22,7 @@ abstract class BaseListViewNotifier<T> extends StateNotifier<ListViewState<T>> {
       );
 
       return true;
-    } catch (e, s) {
+    } on Exception catch (e, s) {
       onError(e, s);
 
       return false;

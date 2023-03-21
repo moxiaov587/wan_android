@@ -3,10 +3,10 @@ part of 'models.dart';
 @freezed
 class CollectedWebsiteModel with _$CollectedWebsiteModel {
   factory CollectedWebsiteModel({
-    String? desc,
-    String? icon,
     required int id,
     required String link,
+    String? desc,
+    String? icon,
     String? name,
     int? order,
     int? userId,

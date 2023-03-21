@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui' as ui show Image;
 
 import 'package:flutter/rendering.dart' show decodeImageFromList;
@@ -79,10 +80,12 @@ class HomeBanner extends _$HomeBanner {
 
       final List<HomeBannerCache> banners = await Future.wait(futures);
 
-      isar.writeTxn<void>(() async {
-        await isar.homeBannerCaches.clear();
-        isar.homeBannerCaches.putAll(banners);
-      });
+      unawaited(
+        isar.writeTxn(() async {
+          await isar.homeBannerCaches.clear();
+          await isar.homeBannerCaches.putAll(banners);
+        }),
+      );
 
       return banners;
     }
@@ -147,9 +150,11 @@ typedef HomeArticleProvider = AutoDisposeStateNotifierProvider<ArticleNotifier,
 
 final HomeArticleProvider homeArticleProvider = StateNotifierProvider
     .autoDispose<ArticleNotifier, RefreshListViewState<ArticleModel>>(
-  (AutoDisposeStateNotifierProviderRef<ArticleNotifier,
-          RefreshListViewState<ArticleModel>>
-      ref) {
+  (
+    AutoDisposeStateNotifierProviderRef<ArticleNotifier,
+            RefreshListViewState<ArticleModel>>
+        ref,
+  ) {
     final CancelToken cancelToken = ref.cancelToken();
 
     final Http http = ref.read(networkProvider);
@@ -180,8 +185,8 @@ final HomeArticleProvider homeArticleProvider = StateNotifierProvider
 class ArticleNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
   ArticleNotifier(
     super.state, {
-    this.topArticles,
     required this.http,
+    this.topArticles,
     this.cancelToken,
   }) : super(initialPageNum: 0);
 

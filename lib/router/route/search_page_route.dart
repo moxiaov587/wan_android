@@ -5,19 +5,19 @@ const double kSearchTextFieldHeight = kToolbarHeight - kToolbarPadding * 2;
 
 class SearchPageRoute<T> extends PageRoute<T> {
   SearchPageRoute({
-    super.settings,
     required this.delegate,
-  }) : assert(delegate != null) {
+    super.settings,
+  }) {
     assert(
       delegate._route == null,
-      'The ${delegate.runtimeType} instance is currently used by another active '
-      'search. Please close that search by calling close() on the SearchDelegate '
-      'before opening another search with the same delegate instance.',
+      'The ${delegate.runtimeType} instance is currently used by another '
+      'active search. Please close that search by calling close() on the '
+      'SearchDelegate before opening another search with the same '
+      'delegate instance.',
     );
-    delegate._route = this;
-
-    /// initial currentBody
-    delegate._currentBody = _SearchBody.suggestions;
+    delegate
+      .._route = this
+      .._currentBody = _SearchBody.suggestions;
   }
 
   final CustomSearchDelegate<T> delegate;
@@ -40,12 +40,11 @@ class SearchPageRoute<T> extends PageRoute<T> {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
     Widget child,
-  ) {
-    return FadeTransition(
-      opacity: animation,
-      child: child,
-    );
-  }
+  ) =>
+      FadeTransition(
+        opacity: animation,
+        child: child,
+      );
 
   @override
   Animation<double> createAnimation() {
@@ -60,19 +59,19 @@ class SearchPageRoute<T> extends PageRoute<T> {
     BuildContext context,
     Animation<double> animation,
     Animation<double> secondaryAnimation,
-  ) {
-    return _SearchPage<T>(
-      delegate: delegate,
-      animation: animation,
-    );
-  }
+  ) =>
+      _SearchPage<T>(
+        delegate: delegate,
+        animation: animation,
+      );
 
   @override
   void didComplete(T? result) {
     super.didComplete(result);
-    assert(delegate._route == this);
-    delegate._route = null;
-    delegate._currentBody = null;
+    assert(delegate._route == this, '');
+    delegate
+      .._route = null
+      .._currentBody = null;
   }
 }
 
@@ -166,7 +165,7 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
 
   @override
   Widget build(BuildContext context) {
-    assert(debugCheckHasMaterialLocalizations(context));
+    assert(debugCheckHasMaterialLocalizations(context), '');
     final ThemeData theme = widget.delegate.appBarTheme(context);
     final String searchFieldLabel = widget.delegate.searchFieldLabel ??
         MaterialLocalizations.of(context).searchFieldLabel;
@@ -242,19 +241,17 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
                   ),
                   suffixIcon: ValueListenableBuilder<bool>(
                     valueListenable: _showClearButtonNotifier,
-                    builder: (_, bool value, __) {
-                      return value
-                          ? IconButton(
-                              icon: const Icon(
-                                IconFontIcons.closeCircleLine,
-                                size: 18.0,
-                              ),
-                              onPressed: () {
-                                widget.delegate.query = '';
-                              },
-                            )
-                          : nil;
-                    },
+                    builder: (_, bool value, __) => value
+                        ? IconButton(
+                            icon: const Icon(
+                              IconFontIcons.closeCircleLine,
+                              size: 18.0,
+                            ),
+                            onPressed: () {
+                              widget.delegate.query = '';
+                            },
+                          )
+                        : nil,
                   ),
                 ),
               ),

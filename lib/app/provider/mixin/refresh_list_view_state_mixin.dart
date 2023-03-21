@@ -2,11 +2,14 @@ import 'package:flutter/cupertino.dart' show CupertinoSliverRefreshControl;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nil/nil.dart' show nil;
+import 'package:riverpod_annotation/riverpod_annotation.dart' show FutureOr;
 
 import '../../../widget/view_state_widget.dart';
 import '../provider.dart';
 import '../view_state.dart';
 import '../widget/pull_to_refresh_widgets.dart';
+
+export 'package:riverpod_annotation/riverpod_annotation.dart' show FutureOr;
 
 mixin RefreshListViewStateMixin<
         ProviderType extends StateNotifierProvider<
@@ -24,11 +27,11 @@ mixin RefreshListViewStateMixin<
         builder: (BuildContext context, WidgetRef ref, _) =>
             ref.watch(provider).whenOrNull(
                   (_, __, ___) => CupertinoSliverRefreshControl(
-                    onRefresh: () {
+                    onRefresh: () async {
                       _loadingMoreStatusNotifier.value =
                           LoadingMoreStatus.completed;
 
-                      return ref.watch(provider.notifier).refresh();
+                      await ref.watch(provider.notifier).refresh();
                     },
                   ),
                 ) ??
@@ -41,16 +44,17 @@ mixin RefreshListViewStateMixin<
           builder: (_, LoadingMoreStatus status, __) => LoadingMoreIndicator(
             status: status,
             onRetry: () async {
-              _loadingMoreStatusNotifier.value = LoadingMoreStatus.loading;
-              _loadingMoreStatusNotifier.value =
-                  (await ref.read(provider.notifier).loadMore())!;
+              _loadingMoreStatusNotifier
+                ..value = LoadingMoreStatus.loading
+                ..value = (await ref.read(provider.notifier).loadMore()) ??
+                    LoadingMoreStatus.completed;
             },
           ),
         ),
       );
 
-  void onRetry() {
-    ref.read(provider.notifier).initData();
+  FutureOr<void> onRetry() async {
+    await ref.read(provider.notifier).initData();
   }
 
   @mustCallSuper
@@ -78,7 +82,8 @@ mixin RefreshListViewStateMixin<
 
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           _loadingMoreStatusNotifier.value =
-              (await ref.read(provider.notifier).loadMore())!;
+              (await ref.read(provider.notifier).loadMore()) ??
+                  LoadingMoreStatus.completed;
         });
       }
     }
@@ -114,11 +119,11 @@ mixin AutoDisposeRefreshListViewStateMixin<
         builder: (BuildContext context, WidgetRef ref, _) =>
             ref.watch(provider).whenOrNull(
                   (_, __, ___) => CupertinoSliverRefreshControl(
-                    onRefresh: () {
+                    onRefresh: () async {
                       _loadingMoreStatusNotifier.value =
                           LoadingMoreStatus.completed;
 
-                      return ref.watch(provider.notifier).refresh();
+                      await ref.watch(provider.notifier).refresh();
                     },
                   ),
                 ) ??
@@ -131,16 +136,17 @@ mixin AutoDisposeRefreshListViewStateMixin<
           builder: (_, LoadingMoreStatus status, __) => LoadingMoreIndicator(
             status: status,
             onRetry: () async {
-              _loadingMoreStatusNotifier.value = LoadingMoreStatus.loading;
-              _loadingMoreStatusNotifier.value =
-                  (await ref.read(provider.notifier).loadMore())!;
+              _loadingMoreStatusNotifier
+                ..value = LoadingMoreStatus.loading
+                ..value = (await ref.read(provider.notifier).loadMore()) ??
+                    LoadingMoreStatus.completed;
             },
           ),
         ),
       );
 
-  void onRetry() {
-    ref.read(provider.notifier).initData();
+  FutureOr<void> onRetry() async {
+    await ref.read(provider.notifier).initData();
   }
 
   @mustCallSuper
@@ -168,7 +174,8 @@ mixin AutoDisposeRefreshListViewStateMixin<
 
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           _loadingMoreStatusNotifier.value =
-              (await ref.read(provider.notifier).loadMore())!;
+              (await ref.read(provider.notifier).loadMore()) ??
+                  LoadingMoreStatus.completed;
         });
       }
     }

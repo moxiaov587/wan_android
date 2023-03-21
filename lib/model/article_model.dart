@@ -3,6 +3,9 @@ part of 'models.dart';
 @freezed
 class ArticleModel with _$ArticleModel {
   factory ArticleModel({
+    required int id,
+    required String link,
+    required String title,
     String? apkLink,
     int? audit,
     String? author,
@@ -16,8 +19,6 @@ class ArticleModel with _$ArticleModel {
     String? envelopePic,
     @Default(false) bool fresh,
     String? host,
-    required int id,
-    required String link,
     String? niceDate,
     String? niceShareDate,
     String? origin,
@@ -31,7 +32,6 @@ class ArticleModel with _$ArticleModel {
     int? superChapterId,
     String? superChapterName,
     List<TagModel>? tags,
-    required String title,
     int? type,
     int? userId,
     int? visible,

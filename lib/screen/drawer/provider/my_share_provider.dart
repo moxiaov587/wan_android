@@ -7,9 +7,11 @@ typedef MyShareArticlesProvider = AutoDisposeStateNotifierProvider<
 
 final MyShareArticlesProvider myShareArticlesProvider = StateNotifierProvider
     .autoDispose<MyShareArticlesNotifier, RefreshListViewState<ArticleModel>>(
-  (AutoDisposeStateNotifierProviderRef<MyShareArticlesNotifier,
-          RefreshListViewState<ArticleModel>>
-      ref) {
+  (
+    AutoDisposeStateNotifierProviderRef<MyShareArticlesNotifier,
+            RefreshListViewState<ArticleModel>>
+        ref,
+  ) {
     final CancelToken cancelToken = ref.cancelToken();
 
     final Http http = ref.watch(networkProvider);
@@ -39,15 +41,14 @@ class MyShareArticlesNotifier
   Future<RefreshListViewStateData<ArticleModel>> loadData({
     required int pageNum,
     required int pageSize,
-  }) async {
-    return (await http.fetchShareArticles(
-      pageNum,
-      pageSize,
-      cancelToken: cancelToken,
-    ))
-        .shareArticles
-        .toRefreshListViewStateData();
-  }
+  }) async =>
+      (await http.fetchShareArticles(
+        pageNum,
+        pageSize,
+        cancelToken: cancelToken,
+      ))
+          .shareArticles
+          .toRefreshListViewStateData();
 
   Future<bool> add({
     required String title,
@@ -61,10 +62,10 @@ class MyShareArticlesNotifier
         link: link,
       );
 
-      initData();
+      await initData();
 
       return true;
-    } catch (e, s) {
+    } on Exception catch (e, s) {
       DialogUtils.danger(ViewError.create(e, s).errorMessage(S.current.failed));
 
       return false;
@@ -82,28 +83,31 @@ class MyShareArticlesNotifier
       );
 
       return true;
-    } catch (e, s) {
+    } on Exception catch (e, s) {
       DialogUtils.danger(ViewError.create(e, s).errorMessage(S.current.failed));
 
       return false;
     }
   }
 
-  void destroy(int id) {
-    state.whenOrNull((int pageNum, bool isLastPage, List<ArticleModel> list) {
-      final List<ArticleModel> filterList =
-          list.where((ArticleModel article) => article.id != id).toList();
-      state = RefreshListViewStateData<ArticleModel>(
-        pageNum: pageNum,
-        isLastPage: isLastPage,
-        list: filterList,
-      );
+  Future<void>? destroy(int id) => state.whenOrNull((
+        int pageNum,
+        bool isLastPage,
+        List<ArticleModel> list,
+      ) async {
+        final List<ArticleModel> filterList =
+            list.where((ArticleModel article) => article.id != id).toList();
 
-      if (filterList.isEmpty) {
-        if (!isLastPage) {
-          initData();
+        state = RefreshListViewStateData<ArticleModel>(
+          pageNum: pageNum,
+          isLastPage: isLastPage,
+          list: filterList,
+        );
+
+        if (filterList.isEmpty) {
+          if (!isLastPage) {
+            await initData();
+          }
         }
-      }
-    });
-  }
+      });
 }

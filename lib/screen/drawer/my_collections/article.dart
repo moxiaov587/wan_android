@@ -30,7 +30,9 @@ class __ArticleState extends ConsumerState<_Article>
   void didPopNext() {
     super.didPopNext();
 
-    ref.read(myCollectedArticleProvider.notifier).onSwitchCollectComplete();
+    unawaited(
+      ref.read(myCollectedArticleProvider.notifier).onSwitchCollectComplete(),
+    );
   }
 
   @override
@@ -71,8 +73,8 @@ class __ArticleState extends ConsumerState<_Article>
                         return SlidableTile.collectedArticle(
                           key: Key('my_collections_article_${article.id}'),
                           collectedArticle: article,
-                          onDismissed: () {
-                            ref
+                          onDismissed: () async {
+                            await ref
                                 .read(myCollectedArticleProvider.notifier)
                                 .switchCollect(
                                   article.id,

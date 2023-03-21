@@ -28,38 +28,36 @@ class EmptyWidget extends StatelessWidget {
   final VoidCallback? onRetry;
 
   @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Image.asset(
-            _assets,
-            width: 180,
-          ),
-          Text(
-            message ?? S.of(context).empty,
-            style: context.theme.textTheme.titleSmall,
-          ),
-          const Gap.vs(),
-          Text(
-            detail ?? S.of(context).emptyMsg,
-            style: context.theme.textTheme.bodyMedium,
-          ),
-          if (onRetry != null) ...<Widget>[
-            const Gap.vn(),
-            ElevatedButton(
-              onPressed: onRetry,
-              style: const ButtonStyle(
-                padding: MaterialStatePropertyAll<EdgeInsetsGeometry>(
-                  EdgeInsets.symmetric(horizontal: 32.0),
-                ),
-              ),
-              child: Text(S.of(context).retry),
+  Widget build(BuildContext context) => Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Image.asset(
+              _assets,
+              width: 180,
             ),
+            Text(
+              message ?? S.of(context).empty,
+              style: context.theme.textTheme.titleSmall,
+            ),
+            const Gap.vs(),
+            Text(
+              detail ?? S.of(context).emptyMsg,
+              style: context.theme.textTheme.bodyMedium,
+            ),
+            if (onRetry != null) ...<Widget>[
+              const Gap.vn(),
+              ElevatedButton(
+                onPressed: onRetry,
+                style: const ButtonStyle(
+                  padding: MaterialStatePropertyAll<EdgeInsetsGeometry>(
+                    EdgeInsets.symmetric(horizontal: 32.0),
+                  ),
+                ),
+                child: Text(S.of(context).retry),
+              ),
+            ],
           ],
-        ],
-      ),
-    );
-  }
+        ),
+      );
 }

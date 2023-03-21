@@ -6,10 +6,10 @@ class PaginationData<T> with _$PaginationData<T> {
     required int curPage,
     required List<T> datas,
     required int offset,
-    @Default(false) bool over,
     required int pageCount,
     required int size,
     required int total,
+    @Default(false) bool over,
   }) = _PaginationData<T>;
 
   /// Define a private empty constructor to make custom methods work.
@@ -21,13 +21,12 @@ class PaginationData<T> with _$PaginationData<T> {
   ) =>
       _$PaginationDataFromJson(json, fromJsonT);
 
-  RefreshListViewStateData<T> toRefreshListViewStateData() {
-    return RefreshListViewStateData<T>(
-      pageNum: curPage,
-      isLastPage: over,
-      list: datas,
-    );
-  }
+  RefreshListViewStateData<T> toRefreshListViewStateData() =>
+      RefreshListViewStateData<T>(
+        pageNum: curPage,
+        isLastPage: over,
+        list: datas,
+      );
 }
 
 class PaginationDataConverter

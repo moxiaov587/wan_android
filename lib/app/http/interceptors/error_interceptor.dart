@@ -28,7 +28,6 @@ class ErrorInterceptor extends Interceptor {
   }
 
   @override
-  // ignore: long-method
   Future<void> onError(DioError err, ErrorInterceptorHandler handler) async {
     if (err.response?.isRedirect ??
         false ||

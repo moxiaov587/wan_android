@@ -7,11 +7,10 @@ class SearchRoute extends GoRouteData {
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) =>
       AppPage<void>.routeBuilder(
-        routeBuilder: (BuildContext context, RouteSettings settings) {
-          return SearchPageRoute<void>(
-            delegate: HomeSearchDelegate(),
-            settings: settings,
-          );
-        },
+        routeBuilder: (BuildContext context, RouteSettings settings) =>
+            SearchPageRoute<void>(
+          delegate: HomeSearchDelegate(),
+          settings: settings,
+        ),
       );
 }

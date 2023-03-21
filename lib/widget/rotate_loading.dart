@@ -20,7 +20,7 @@ class RotateLoading extends StatefulWidget {
   final double size;
 
   @override
-  _RotateLoadingState createState() => _RotateLoadingState();
+  State<RotateLoading> createState() => _RotateLoadingState();
 }
 
 class _RotateLoadingState extends State<RotateLoading>
@@ -44,49 +44,47 @@ class _RotateLoadingState extends State<RotateLoading>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return ConstrainedBox(
-      constraints: BoxConstraints.tightFor(
-        width: widget.size,
-        height: widget.size,
-      ),
-      child: Material(
-        color: context.theme.colorScheme.background,
-        borderRadius: AppTheme.borderRadius,
-        child: Padding(
-          padding: AppTheme.bodyPadding,
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                child: CustomPaint(
-                  size: Size(
-                    widget.size * 0.75,
-                    widget.size * 0.75,
-                  ),
-                  painter: RotateLoadingPainter(
-                    _animationController,
-                    colors: <Color>[
-                      context.theme.primaryColor,
-                      context.theme.colorScheme.secondary,
-                      context.theme.colorScheme.error,
-                      context.theme.colorScheme.tertiary,
-                    ],
-                    width: widget.width,
-                    space: widget.space,
+  Widget build(BuildContext context) => ConstrainedBox(
+        constraints: BoxConstraints.tightFor(
+          width: widget.size,
+          height: widget.size,
+        ),
+        child: Material(
+          color: context.theme.colorScheme.background,
+          borderRadius: AppTheme.borderRadius,
+          child: Padding(
+            padding: AppTheme.bodyPadding,
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  child: CustomPaint(
+                    size: Size(
+                      widget.size * 0.75,
+                      widget.size * 0.75,
+                    ),
+                    painter: RotateLoadingPainter(
+                      _animationController,
+                      colors: <Color>[
+                        context.theme.primaryColor,
+                        context.theme.colorScheme.secondary,
+                        context.theme.colorScheme.error,
+                        context.theme.colorScheme.tertiary,
+                      ],
+                      width: widget.width,
+                      space: widget.space,
+                    ),
                   ),
                 ),
-              ),
-              const Gap.vn(),
-              Text(
-                S.of(context).loading,
-                style: context.theme.textTheme.bodyLarge,
-              ),
-            ],
+                const Gap.vn(),
+                Text(
+                  S.of(context).loading,
+                  style: context.theme.textTheme.bodyLarge,
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
-  }
+      );
 }
 
 class RotateLoadingPainter extends CustomPainter {
@@ -128,40 +126,38 @@ class RotateLoadingPainter extends CustomPainter {
     final Paint paint = Paint();
     final int colorsCount = colors.length;
 
-    canvas.save();
-    canvas.translate(
-      size.width / 2,
-      size.height / 2,
-    );
-
-    canvas.rotate(animation.value * 2.0 * math.pi);
+    canvas
+      ..save()
+      ..translate(
+        size.width / 2,
+        size.height / 2,
+      )
+      ..rotate(animation.value * 2.0 * math.pi);
 
     for (int index = 0; index < colorsCount; index++) {
-      canvas.save();
-      canvas.translate(offsets[index].dx, offsets[index].dy);
-      canvas.rotate(rotateTween.evaluate(animation));
-      canvas.translate(-offsets[index].dx, -offsets[index].dy);
-
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromCenter(
-            center: offsets[index],
-            width: width,
-            height: width,
+      canvas
+        ..save()
+        ..translate(offsets[index].dx, offsets[index].dy)
+        ..rotate(rotateTween.evaluate(animation))
+        ..translate(-offsets[index].dx, -offsets[index].dy)
+        ..drawRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromCenter(
+              center: offsets[index],
+              width: width,
+              height: width,
+            ),
+            AppTheme.adornmentRadius,
           ),
-          AppTheme.adornmentRadius,
-        ),
-        paint..color = colors[index],
-      );
-
-      canvas.restore();
+          paint..color = colors[index],
+        )
+        ..restore();
     }
 
     canvas.restore();
   }
 
   @override
-  bool shouldRepaint(covariant RotateLoadingPainter oldDelegate) {
-    return oldDelegate.width != width || oldDelegate.space != space;
-  }
+  bool shouldRepaint(covariant RotateLoadingPainter oldDelegate) =>
+      oldDelegate.width != width || oldDelegate.space != space;
 }

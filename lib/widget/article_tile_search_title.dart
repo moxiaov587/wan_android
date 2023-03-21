@@ -2,9 +2,9 @@ part of 'article.dart';
 
 class ArticleTileSearchTitle extends StatelessWidget {
   const ArticleTileSearchTitle({
-    super.key,
     required this.title,
     required this.textStyle,
+    super.key,
     this.query,
     this.prefixesChildren = const <InlineSpan>[],
   });

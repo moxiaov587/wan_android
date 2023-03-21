@@ -67,15 +67,13 @@ class Authorized extends _$Authorized {
   }
 
   /// by https://github.com/fluttercandies/flutter_juejin/blob/main/lib/extensions/string_extension.dart
-  String _encryptString(String text) {
-    return text.split('').map((String w) {
-      final int ascii = w.codeUnitAt(0);
-      final int remainder = ascii % 8;
-      final int offset = _kEncryptOffset[remainder]!;
+  String _encryptString(String text) => text.split('').map((String w) {
+        final int ascii = w.codeUnitAt(0);
+        final int remainder = ascii % 8;
+        final int offset = _kEncryptOffset[remainder]!;
 
-      return (ascii + offset - remainder).toRadixString(16);
-    }).join();
-  }
+        return (ascii + offset - remainder).toRadixString(16);
+      }).join();
 
   String decryptString(String text) {
     final Map<int, int> decryptOffset =
@@ -120,8 +118,10 @@ class Authorized extends _$Authorized {
     });
 
     if (state.hasError) {
-      DialogUtils.danger(ViewError.create(state.error!, state.stackTrace)
-          .errorMessage(S.current.loginFailed));
+      DialogUtils.danger(
+        ViewError.create(state.error!, state.stackTrace)
+            .errorMessage(S.current.loginFailed),
+      );
     }
     DialogUtils.dismiss();
 
@@ -159,14 +159,16 @@ class Authorized extends _$Authorized {
     DialogUtils.loading();
     state = await AsyncValue.guard<UserInfoModel?>(() async {
       await http.logout();
-      http.cookieJar.deleteAll();
+      await http.cookieJar.deleteAll();
 
       return null;
     });
 
     if (state.hasError) {
-      DialogUtils.danger(ViewError.create(state.error!, state.stackTrace)
-          .errorMessage(S.current.unknownError));
+      DialogUtils.danger(
+        ViewError.create(state.error!, state.stackTrace)
+            .errorMessage(S.current.unknownError),
+      );
     }
 
     DialogUtils.dismiss();
@@ -197,7 +199,7 @@ class Authorized extends _$Authorized {
       DialogUtils.success(S.current.registerSuccess);
 
       return true;
-    } catch (e, s) {
+    } on Exception catch (e, s) {
       DialogUtils.danger(
         ViewError.create(e, s).errorMessage(S.current.registerFailed),
       );

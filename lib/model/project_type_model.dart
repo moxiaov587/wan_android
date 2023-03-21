@@ -3,7 +3,7 @@ part of 'models.dart';
 @freezed
 class ProjectTypeModel with _$ProjectTypeModel {
   factory ProjectTypeModel({
-    @Default(<ProjectTypeModel>[]) final List<ProjectTypeModel> children,
+    @Default(<ProjectTypeModel>[]) List<ProjectTypeModel> children,
     @Default(0) int courseId,
     @Default(0) int id,
     @Default('') String name,

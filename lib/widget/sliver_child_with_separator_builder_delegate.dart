@@ -11,16 +11,16 @@ int _kDefaultSemanticIndexCallback(Widget _, int localIndex) => localIndex;
 class SliverChildWithSeparatorBuilderDelegate extends SliverChildDelegate {
   const SliverChildWithSeparatorBuilderDelegate(
     this.builder, {
+    required this.childCount,
     this.separatorBuilder,
     this.findChildIndexCallback,
-    required this.childCount,
     this.addAutomaticKeepAlives = true,
     this.addRepaintBoundaries = true,
     this.addSemanticIndexes = true,
     this.semanticIndexCallback = _kDefaultSemanticIndexCallback,
     this.semanticIndexOffset = 0,
     this.ignoreSeparatorBuilderForPenultimateChild = false,
-  }) : assert(childCount >= 1);
+  }) : assert(childCount >= 1, '');
 
   final NullableIndexedWidgetBuilder builder;
   final NullableIndexedWidgetBuilder? separatorBuilder;
@@ -43,7 +43,6 @@ class SliverChildWithSeparatorBuilderDelegate extends SliverChildDelegate {
     if (findChildIndexCallback == null) {
       return null;
     }
-    assert(key != null);
     final Key childKey;
     if (key is _SaltedValueKey) {
       final _SaltedValueKey saltedValueKey = key;
@@ -75,7 +74,7 @@ class SliverChildWithSeparatorBuilderDelegate extends SliverChildDelegate {
               ? builder(context, itemIndex)
               : separatorBuilder?.call(context, itemIndex) ??
                   const IndentDivider();
-    } catch (exception, stackTrace) {
+    } on Exception catch (exception, stackTrace) {
       child = _createErrorWidget(exception, stackTrace);
     }
 
@@ -92,11 +91,12 @@ class SliverChildWithSeparatorBuilderDelegate extends SliverChildDelegate {
     if (index.isEven && addSemanticIndexes) {
       final int? semanticIndex = semanticIndexCallback(child, itemIndex);
 
-      if (semanticIndex != null)
+      if (semanticIndex != null) {
         child = IndexedSemantics(
           index: semanticIndex + semanticIndexOffset,
           child: child,
         );
+      }
     }
 
     if (addAutomaticKeepAlives) {
@@ -119,7 +119,7 @@ class SliverChildWithSeparatorBuilderDelegate extends SliverChildDelegate {
 }
 
 class _SaltedValueKey extends ValueKey<Key> {
-  const _SaltedValueKey(super.key) : assert(key != null);
+  const _SaltedValueKey(super.key);
 }
 
 // Return a Widget for the given Exception

@@ -43,49 +43,47 @@ class CustomErrorWidget extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: kStyleUint4,
-          vertical: kStyleUint4 * 2,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Image.asset(
-              errorImage,
-              width: 120,
-            ),
-            Text(
-              isDisconnected
-                  ? S.of(context).networkException
-                  : message ?? S.of(context).unknownError,
-              style: context.theme.textTheme.titleSmall,
-            ),
-            const Gap.vs(),
-            Text(
-              isDisconnected
-                  ? S.of(context).networkExceptionMsg
-                  : detail ?? S.of(context).unknownErrorMsg,
-              textAlign: TextAlign.center,
-              style: context.theme.textTheme.bodyMedium,
-            ),
-            if (onRetry != null) ...<Widget>[
-              const Gap.vn(),
-              ElevatedButton(
-                onPressed: onRetry,
-                style: const ButtonStyle(
-                  padding: MaterialStatePropertyAll<EdgeInsetsGeometry>(
-                    EdgeInsets.symmetric(horizontal: 32.0),
-                  ),
-                ),
-                child: Text(S.of(context).retry),
+  Widget build(BuildContext context) => Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: kStyleUint4,
+            vertical: kStyleUint4 * 2,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Image.asset(
+                errorImage,
+                width: 120,
               ),
+              Text(
+                isDisconnected
+                    ? S.of(context).networkException
+                    : message ?? S.of(context).unknownError,
+                style: context.theme.textTheme.titleSmall,
+              ),
+              const Gap.vs(),
+              Text(
+                isDisconnected
+                    ? S.of(context).networkExceptionMsg
+                    : detail ?? S.of(context).unknownErrorMsg,
+                textAlign: TextAlign.center,
+                style: context.theme.textTheme.bodyMedium,
+              ),
+              if (onRetry != null) ...<Widget>[
+                const Gap.vn(),
+                ElevatedButton(
+                  onPressed: onRetry,
+                  style: const ButtonStyle(
+                    padding: MaterialStatePropertyAll<EdgeInsetsGeometry>(
+                      EdgeInsets.symmetric(horizontal: 32.0),
+                    ),
+                  ),
+                  child: Text(S.of(context).retry),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
-      ),
-    );
-  }
+      );
 }

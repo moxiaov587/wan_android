@@ -75,8 +75,8 @@ class Http {
       final List<Cookie> cookies =
           await cookieJar.loadForRequest(uri ?? Uri.parse(kBaseUrl));
 
-      Future.forEach<Cookie>(cookies, _setCookie);
-    } catch (e) {
+      await Future.forEach<Cookie>(cookies, _setCookie);
+    } on Exception catch (e) {
       LogUtils.e("Error when sync WebView's cookies: $e");
     }
   }
@@ -84,25 +84,22 @@ class Http {
   Future<bool> get isLogin async =>
       (await cookieJar.loadForRequest(Uri.parse(kBaseUrl))).length > 1;
 
-  BaseOptions get _options {
-    return BaseOptions(
-      connectTimeout: const Duration(seconds: 60),
-      sendTimeout: const Duration(seconds: 60),
-      receiveTimeout: const Duration(seconds: 60),
-    );
-  }
+  BaseOptions get _options => BaseOptions(
+        connectTimeout: const Duration(seconds: 60),
+        sendTimeout: const Duration(seconds: 60),
+        receiveTimeout: const Duration(seconds: 60),
+      );
 
   Map<String, dynamic> buildMethodGetCacheOptionsExtra({
     bool needCache = false,
     bool needRefresh = false,
     bool isDiskCache = false,
-  }) {
-    return <String, dynamic>{
-      CacheOption.needCache.name: needCache,
-      CacheOption.needRefresh.name: needRefresh,
-      CacheOption.isDiskCache.name: isDiskCache,
-    };
-  }
+  }) =>
+      <String, dynamic>{
+        CacheOption.needCache.name: needCache,
+        CacheOption.needRefresh.name: needRefresh,
+        CacheOption.isDiskCache.name: isDiskCache,
+      };
 }
 
 extension CancelTokenX on Ref {
@@ -139,7 +136,5 @@ class AppCookieJar extends _$AppCookieJar {
 @Riverpod(keepAlive: true)
 class Network extends _$Network {
   @override
-  Http build() {
-    return Http()..initConfig(ref: ref);
-  }
+  Http build() => Http()..initConfig(ref: ref);
 }

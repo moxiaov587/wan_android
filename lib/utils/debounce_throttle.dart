@@ -7,7 +7,7 @@ VoidCallback debounce(
   Duration duration = const Duration(seconds: 1),
   bool triggerNow = true,
 }) {
-  assert(duration > Duration.zero);
+  assert(duration > Duration.zero, '');
   Timer? debounce;
 
   return () {
@@ -37,8 +37,7 @@ VoidCallback throttle(
   VoidCallback callback, [
   Duration duration = const Duration(seconds: 1),
 ]) {
-  assert(callback != null);
-  assert(duration != null && duration > Duration.zero);
+  assert(duration > Duration.zero, '');
   Timer? throttle;
 
   return () {

@@ -5,9 +5,11 @@ typedef SquareArticleProvider = AutoDisposeStateNotifierProvider<SquareNotifier,
 
 final SquareArticleProvider squareArticleProvider = StateNotifierProvider
     .autoDispose<SquareNotifier, RefreshListViewState<ArticleModel>>(
-  (AutoDisposeStateNotifierProviderRef<SquareNotifier,
-          RefreshListViewState<ArticleModel>>
-      ref) {
+  (
+    AutoDisposeStateNotifierProviderRef<SquareNotifier,
+            RefreshListViewState<ArticleModel>>
+        ref,
+  ) {
     final CancelToken cancelToken = ref.cancelToken();
 
     final Http http = ref.watch(networkProvider);
@@ -35,11 +37,10 @@ class SquareNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
   Future<RefreshListViewStateData<ArticleModel>> loadData({
     required int pageNum,
     required int pageSize,
-  }) async {
-    return (await http.fetchSquareArticles(
-      pageNum,
-      pageSize,
-    ))
-        .toRefreshListViewStateData();
-  }
+  }) async =>
+      (await http.fetchSquareArticles(
+        pageNum,
+        pageSize,
+      ))
+          .toRefreshListViewStateData();
 }

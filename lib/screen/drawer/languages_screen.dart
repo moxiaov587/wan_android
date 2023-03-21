@@ -4,14 +4,12 @@ class LanguagesScreen extends StatelessWidget {
   const LanguagesScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(S.of(context).languages),
-      ),
-      body: ListView.separated(
-        itemBuilder: (_, int index) {
-          return Consumer(
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: Text(S.of(context).languages),
+        ),
+        body: ListView.separated(
+          itemBuilder: (_, int index) => Consumer(
             builder: (_, WidgetRef ref, __) {
               final Language? value = AppLanguage.languages[index];
 
@@ -29,11 +27,9 @@ class LanguagesScreen extends StatelessWidget {
                 },
               );
             },
-          );
-        },
-        separatorBuilder: (_, __) => const IndentDivider.listTile(),
-        itemCount: AppLanguage.languages.length,
-      ),
-    );
-  }
+          ),
+          separatorBuilder: (_, __) => const IndentDivider.listTile(),
+          itemCount: AppLanguage.languages.length,
+        ),
+      );
 }

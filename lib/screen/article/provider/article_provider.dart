@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../app/http/http.dart';
-
 import '../../../app/l10n/generated/l10n.dart';
 import '../../../app/provider/provider.dart';
 import '../../../model/models.dart'
@@ -13,6 +12,7 @@ import '../../../model/models.dart'
         CollectedWebsiteModel,
         WebViewModel;
 import '../../../utils/dialog_utils.dart';
+import '../../drawer/home_drawer.dart' show MyCollectionsScreen;
 import '../../drawer/provider/drawer_provider.dart'
     show
         MyCollectedArticleProvider,
@@ -186,15 +186,17 @@ class AppArticle extends _$AppArticle {
   }) async {
     final MyCollectedArticleProvider realProvider =
         provider as MyCollectedArticleProvider;
+
     if (value) {
       await http.addCollectedArticleByArticleId(articleId: webView.id);
     } else {
-      ref.read(realProvider.notifier).requestCancelCollect(
+      await ref.read(realProvider.notifier).requestCancelCollect(
             collectId: webView.id,
             articleId: webView.originId,
           );
     }
-    ref
+
+    await ref
         .read(realProvider.notifier)
         .switchCollect(webView.id, changedValue: value);
   }
@@ -214,10 +216,12 @@ class AppArticle extends _$AppArticle {
               );
 
       if (newCollectedWebsite != null) {
-        state = AsyncValue<WebViewModel>.data(webView.copyWith(
-          id: newCollectedWebsite.id,
-          collect: true,
-        ));
+        state = AsyncValue<WebViewModel>.data(
+          webView.copyWith(
+            id: newCollectedWebsite.id,
+            collect: true,
+          ),
+        );
       }
     } else {
       await ref
@@ -241,31 +245,32 @@ class AppArticle extends _$AppArticle {
     }
   }
 
-  void collect(bool value) {
-    state.whenOrNull(data: (WebViewModel? webView) async {
-      if (webView != null) {
-        state = AsyncValue<WebViewModel>.data(webView.copyWith(collect: value));
-        try {
-          if (webView.originId != null) {
-            /// from MyCollectionsScreen
-            if (webView.originId == -2) {
-              /// from MyCollectionsScreen - website
-              await collectCollectedWebsite(webView, value: value);
-            } else {
-              /// from MyCollectionsScreen - article
-              await collectCollectedArticle(webView, value: value);
+  Future<void>? collect({required bool value}) => state.whenOrNull(
+        data: (WebViewModel? webView) async {
+          if (webView != null) {
+            state =
+                AsyncValue<WebViewModel>.data(webView.copyWith(collect: value));
+            try {
+              if (webView.originId != null) {
+                /// from MyCollectionsScreen
+                if (webView.originId == -2) {
+                  /// from MyCollectionsScreen - website
+                  await collectCollectedWebsite(webView, value: value);
+                } else {
+                  /// from MyCollectionsScreen - article
+                  await collectCollectedArticle(webView, value: value);
+                }
+              } else {
+                /// from other article screen
+                /// eg. HomeArticleScreen, SearchScreen
+                await collectArticle(value: value, id: webView.id);
+              }
+            } on Exception catch (e, s) {
+              DialogUtils.danger(
+                ViewError.create(e, s).errorMessage(S.current.failed),
+              );
             }
-          } else {
-            /// from other article screen
-            /// eg. HomeArticleScreen, SearchScreen
-            await collectArticle(value: value, id: webView.id);
           }
-        } catch (e, s) {
-          DialogUtils.danger(
-            ViewError.create(e, s).errorMessage(S.current.failed),
-          );
-        }
-      }
-    });
-  }
+        },
+      );
 }

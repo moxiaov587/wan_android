@@ -2,10 +2,13 @@ import 'package:flutter/cupertino.dart' show CupertinoSliverRefreshControl;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nil/nil.dart' show nil;
+import 'package:riverpod_annotation/riverpod_annotation.dart' show FutureOr;
 
 import '../../../widget/view_state_widget.dart';
 import '../provider.dart';
 import '../view_state.dart';
+
+export 'package:riverpod_annotation/riverpod_annotation.dart' show FutureOr;
 
 mixin ListViewStateMixin<
         ProviderType extends StateNotifierProvider<BaseListViewNotifier<T>,
@@ -26,8 +29,8 @@ mixin ListViewStateMixin<
             const SliverToBoxAdapter(child: nil),
       );
 
-  void onRetry() {
-    ref.read(provider.notifier).initData();
+  FutureOr<void> onRetry() async {
+    await ref.read(provider.notifier).initData();
   }
 
   Widget loadingIndicatorBuilder() => const SliverFillRemaining(
@@ -61,8 +64,8 @@ mixin AutoDisposeListViewStateMixin<
             const SliverToBoxAdapter(child: nil),
       );
 
-  void onRetry() {
-    ref.read(provider.notifier).initData();
+  FutureOr<void> onRetry() async {
+    await ref.read(provider.notifier).initData();
   }
 
   Widget loadingIndicatorBuilder() => const SliverFillRemaining(
