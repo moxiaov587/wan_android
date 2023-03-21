@@ -91,9 +91,9 @@ class MyShareArticlesNotifier
   }
 
   Future<void>? destroy(int id) => state.whenOrNull((
+        List<ArticleModel> list,
         int pageNum,
         bool isLastPage,
-        List<ArticleModel> list,
       ) async {
         final List<ArticleModel> filterList =
             list.where((ArticleModel article) => article.id != id).toList();

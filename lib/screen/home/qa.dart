@@ -37,7 +37,7 @@ class _QAState extends ConsumerState<_QA>
                 pullDownIndicator,
                 Consumer(
                   builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-                    (_, __, List<ArticleModel> list) {
+                    (List<ArticleModel> list, _, __) {
                       if (list.isEmpty) {
                         return const SliverFillRemaining(child: EmptyWidget());
                       }

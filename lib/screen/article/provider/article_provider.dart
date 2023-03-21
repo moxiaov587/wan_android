@@ -108,7 +108,7 @@ class AppArticle extends _$AppArticle {
 
     final CollectedArticleModel? collectedArticle = ref
         .read(realProvider)
-        .whenOrNull((_, __, List<CollectedArticleModel> list) => list)
+        .whenOrNull((List<CollectedArticleModel> list, _, __) => list)
         ?.firstWhereOrNull((CollectedArticleModel e) => e.id == articleId);
 
     if (collectedArticle != null) {

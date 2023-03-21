@@ -37,7 +37,7 @@ class _RankScreenState extends ConsumerState<RankScreen>
                 pullDownIndicator,
                 Consumer(
                   builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-                    (_, __, List<UserPointsModel> list) {
+                    (List<UserPointsModel> list, _, __) {
                       if (list.isEmpty) {
                         return const SliverFillRemaining(child: EmptyWidget());
                       }

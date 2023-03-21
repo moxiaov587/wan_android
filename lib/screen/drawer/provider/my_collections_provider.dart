@@ -95,9 +95,9 @@ class MyCollectedArticleNotifier
     required String link,
   }) async =>
       await state.whenOrNull<Future<bool>?>((
+        List<CollectedArticleModel> list,
         int pageNum,
         bool isLastPage,
-        List<CollectedArticleModel> list,
       ) async {
         try {
           DialogUtils.loading();
@@ -163,9 +163,9 @@ class MyCollectedArticleNotifier
   }) =>
       state.whenOrNull(
         (
+          List<CollectedArticleModel> list,
           int pageNum,
           bool isLastPage,
-          List<CollectedArticleModel> list,
         ) async {
           final List<CollectedArticleModel> changedList = list
               .map(
@@ -191,7 +191,7 @@ class MyCollectedArticleNotifier
       );
 
   Future<void>? onSwitchCollectComplete() => state.whenOrNull(
-        (int pageNum, bool isLastPage, List<CollectedArticleModel> list) async {
+        (List<CollectedArticleModel> list, int pageNum, bool isLastPage) async {
           if (list.none((CollectedArticleModel collect) => collect.collect)) {
             if (isLastPage) {
               state = RefreshListViewStateData<CollectedArticleModel>(
@@ -379,7 +379,7 @@ class HandleCollected extends _$HandleCollected {
         final CollectedArticleModel? articleModel = ref
             .read(myCollectedArticleProvider)
             .whenOrNull<CollectedArticleModel?>(
-              (_, __, List<CollectedArticleModel> list) =>
+              (List<CollectedArticleModel> list, _, __) =>
                   list.firstWhereOrNull(
                 (CollectedArticleModel article) => article.id == id,
               ),

@@ -53,7 +53,7 @@ class __ArticleState extends ConsumerState<_Article>
           pullDownIndicator,
           Consumer(
             builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-              (_, __, List<CollectedArticleModel> list) {
+              (List<CollectedArticleModel> list, _, __) {
                 list = list
                     .where((CollectedArticleModel article) => article.collect)
                     .toList();

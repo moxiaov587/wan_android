@@ -52,7 +52,7 @@ abstract class BaseRefreshListViewNotifier<T>
 
   Future<LoadingMoreStatus?> loadMore() =>
       state.whenOrNull<Future<LoadingMoreStatus?>>(
-        (int pageNum, bool isLastPage, List<T> list) async {
+        (List<T> list, int pageNum, bool isLastPage) async {
           try {
             /// Prevent no data state not being set on initialization
             if (isLastPage) {

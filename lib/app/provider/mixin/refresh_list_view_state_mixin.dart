@@ -75,7 +75,7 @@ mixin RefreshListViewStateMixin<
         notification.metrics.pixels >= notification.metrics.maxScrollExtent) {
       if ((ref
                   .read(provider)
-                  .whenOrNull((_, __, List<T> list) => list.isNotEmpty) ??
+                  .whenOrNull((List<T> list, _, __) => list.isNotEmpty) ??
               false) &&
           _loadingMoreStatusNotifier.value == LoadingMoreStatus.completed) {
         _loadingMoreStatusNotifier.value = LoadingMoreStatus.loading;
@@ -167,7 +167,7 @@ mixin AutoDisposeRefreshListViewStateMixin<
         notification.metrics.pixels >= notification.metrics.maxScrollExtent) {
       if ((ref
                   .read(provider)
-                  .whenOrNull((_, __, List<T> list) => list.isNotEmpty) ??
+                  .whenOrNull((List<T> list, _, __) => list.isNotEmpty) ??
               false) &&
           _loadingMoreStatusNotifier.value == LoadingMoreStatus.completed) {
         _loadingMoreStatusNotifier.value = LoadingMoreStatus.loading;

@@ -55,7 +55,7 @@ class _MyPointsScreenState extends ConsumerState<MyPointsScreen>
                 ),
                 Consumer(
                   builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-                    (_, __, List<PointsModel> list) {
+                    (List<PointsModel> list, _, __) {
                       if (list.isEmpty) {
                         return const SliverFillRemaining(child: EmptyWidget());
                       }
