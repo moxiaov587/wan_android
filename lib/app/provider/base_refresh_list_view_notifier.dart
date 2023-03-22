@@ -73,7 +73,7 @@ abstract class BaseRefreshListViewNotifier<T>
             state = RefreshListViewState<T>(
               pageNum: pageNum,
               isLastPage: data.isLastPage,
-              list: <T>[...list, ...data.list],
+              list: list..addAll(data.list),
             );
 
             return data.isLastPage

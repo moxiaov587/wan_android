@@ -2,7 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'view_state.freezed.dart';
 
-@freezed
+@Freezed(makeCollectionsUnmodifiable: false)
 class ListViewState<T> with _$ListViewState<T> {
   const factory ListViewState({
     required List<T> list,
@@ -12,7 +12,7 @@ class ListViewState<T> with _$ListViewState<T> {
       ListViewStateError<T>;
 }
 
-@freezed
+@Freezed(makeCollectionsUnmodifiable: false)
 class RefreshListViewState<T> with _$RefreshListViewState<T> {
   const factory RefreshListViewState({
     required List<T> list,

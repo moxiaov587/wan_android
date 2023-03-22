@@ -1,6 +1,9 @@
 part of 'models.dart';
 
-@Freezed(genericArgumentFactories: true)
+@Freezed(
+  makeCollectionsUnmodifiable: false,
+  genericArgumentFactories: true,
+)
 class PaginationData<T> with _$PaginationData<T> {
   const factory PaginationData({
     required int curPage,
