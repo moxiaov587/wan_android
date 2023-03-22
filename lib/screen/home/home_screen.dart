@@ -1,4 +1,3 @@
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -523,7 +522,7 @@ class _BannerCarouselItem extends StatelessWidget {
   Widget build(BuildContext context) => Stack(
         fit: StackFit.expand,
         children: <Widget>[
-          ExtendedImage.network(homeBanner.imageUrl, fit: BoxFit.fill),
+          Image.network(homeBanner.imageUrl, fit: BoxFit.fill),
           Positioned(
             left: 0.0,
             right: 0.0,

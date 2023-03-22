@@ -17,7 +17,6 @@ dependencies:
   custom_pop_up_menu: ^1.2.4
   dio: ^5.0.0
   dio_cookie_manager: ^2.1.0
-  extended_image: ^6.2.0
   flutter:
     sdk: flutter
   flutter_inappwebview: ^5.7.2+3
