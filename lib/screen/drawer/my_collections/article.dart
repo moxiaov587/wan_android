@@ -77,7 +77,7 @@ class __ArticleState extends ConsumerState<_Article>
                             await ref
                                 .read(myCollectedArticleProvider.notifier)
                                 .switchCollect(
-                                  article.id,
+                                  index,
                                   changedValue: false,
                                   triggerCompleteCallback: true,
                                 );

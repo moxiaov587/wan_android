@@ -90,21 +90,18 @@ class MyShareArticlesNotifier
     }
   }
 
-  Future<void>? destroy(int id) => state.whenOrNull((
+  Future<void>? destroy(int index) => state.whenOrNull((
         List<ArticleModel> list,
         int pageNum,
         bool isLastPage,
       ) async {
-        final List<ArticleModel> filterList =
-            list.where((ArticleModel article) => article.id != id).toList();
-
         state = RefreshListViewStateData<ArticleModel>(
           pageNum: pageNum,
           isLastPage: isLastPage,
-          list: filterList,
+          list: list..removeAt(index),
         );
 
-        if (filterList.isEmpty) {
+        if (list.length == 1) {
           if (!isLastPage) {
             await initData();
           }

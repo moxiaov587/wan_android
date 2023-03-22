@@ -157,7 +157,7 @@ class MyCollectedArticleNotifier
   }
 
   Future<void>? switchCollect(
-    int id, {
+    int index, {
     required bool changedValue,
     bool triggerCompleteCallback = false,
   }) =>
@@ -167,21 +167,20 @@ class MyCollectedArticleNotifier
           int pageNum,
           bool isLastPage,
         ) async {
-          final List<CollectedArticleModel> changedList = list
-              .map(
-                (CollectedArticleModel collectedArticle) =>
-                    collectedArticle.id == id
-                        ? collectedArticle.copyWith(
-                            collect: changedValue,
-                          )
-                        : collectedArticle,
-              )
-              .toList();
+          if (index == -1) {
+            return;
+          }
 
           state = RefreshListViewStateData<CollectedArticleModel>(
             pageNum: pageNum,
             isLastPage: isLastPage,
-            list: changedList,
+            list: list
+              ..setAll(
+                index,
+                <CollectedArticleModel>[
+                  list[index].copyWith(collect: changedValue)
+                ],
+              ),
           );
 
           if (triggerCompleteCallback) {
@@ -331,20 +330,23 @@ class MyCollectedWebsiteNotifier
   }
 
   void switchCollect(
-    int id, {
+    int index, {
     required bool changedValue,
     bool triggerCompleteCallback = false,
   }) {
     state.whenOrNull((List<CollectedWebsiteModel> list) {
+      if (index == -1) {
+        return;
+      }
+
       state = ListViewStateData<CollectedWebsiteModel>(
         list: list
-            .map(
-              (CollectedWebsiteModel collectedWebsite) =>
-                  collectedWebsite.id == id
-                      ? collectedWebsite.copyWith(collect: changedValue)
-                      : collectedWebsite,
-            )
-            .toList(),
+          ..setAll(
+            index,
+            <CollectedWebsiteModel>[
+              list[index].copyWith(collect: changedValue)
+            ],
+          ),
       );
 
       if (triggerCompleteCallback) {

@@ -73,7 +73,7 @@ class __WebsiteState extends ConsumerState<_Website>
                           ref
                               .read(myCollectedWebsiteProvider.notifier)
                               .switchCollect(
-                                website.id,
+                                index,
                                 changedValue: false,
                                 triggerCompleteCallback: true,
                               );

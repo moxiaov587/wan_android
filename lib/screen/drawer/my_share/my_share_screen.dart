@@ -69,7 +69,7 @@ class _MyShareScreenState extends ConsumerState<MyShareScreen>
                               onDismissed: () async {
                                 await ref
                                     .read(myShareArticlesProvider.notifier)
-                                    .destroy(article.id);
+                                    .destroy(index);
                               },
                               confirmCallback: () async {
                                 final bool result = await ref

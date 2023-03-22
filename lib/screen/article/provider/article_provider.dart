@@ -196,9 +196,15 @@ class AppArticle extends _$AppArticle {
           );
     }
 
+    final int? index = ref.read(realProvider).whenOrNull(
+          (List<CollectedArticleModel> list, _, __) => list.indexWhere(
+            (CollectedArticleModel e) => e.id == webView.id,
+          ),
+        );
+
     await ref
         .read(realProvider.notifier)
-        .switchCollect(webView.id, changedValue: value);
+        .switchCollect(index ?? -1, changedValue: value);
   }
 
   Future<void> collectCollectedWebsite(
@@ -229,9 +235,15 @@ class AppArticle extends _$AppArticle {
           .requestCancelCollect(collectId: webView.id);
     }
 
+    final int? index = ref.read(realProvider).whenOrNull(
+          (List<CollectedWebsiteModel> list) => list.indexWhere(
+            (CollectedWebsiteModel e) => e.id == webView.id,
+          ),
+        );
+
     ref
         .read(realProvider.notifier)
-        .switchCollect(webView.id, changedValue: value);
+        .switchCollect(index ?? -1, changedValue: value);
   }
 
   Future<void> collectArticle({
