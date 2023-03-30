@@ -1,77 +1,35 @@
 import 'package:collection/collection.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../app/http/http.dart';
 import '../../../app/l10n/generated/l10n.dart';
 import '../../../app/provider/provider.dart';
-import '../../../model/models.dart'
-    show
-        ArticleModel,
-        CollectedArticleModel,
-        CollectedWebsiteModel,
-        WebViewModel;
+import '../../../model/models.dart';
 import '../../../utils/dialog_utils.dart';
 import '../../drawer/home_drawer.dart' show MyCollectionsScreen;
 import '../../drawer/provider/drawer_provider.dart'
-    show
-        MyCollectedArticleProvider,
-        MyCollectedWebsiteProvider,
-        kMyCollectedArticleProvider,
-        kMyCollectedWebsiteProvider;
+    show myCollectedArticleProvider, myCollectedWebsiteProvider;
 
 part 'article_provider.g.dart';
-
-const List<String> collects = <String>[
-  kMyCollectedArticleProvider,
-  kMyCollectedWebsiteProvider,
-];
 
 @riverpod
 class AppArticle extends _$AppArticle {
   late Http http;
-  late String from;
-  late ProviderBase<dynamic> provider;
 
-  Map<String, ProviderBase<dynamic>> getProvidersJson() =>
-      ref.container.getAllProviderElements().fold(
-        <String, ProviderBase<dynamic>>{},
-        (
-          Map<String, ProviderBase<dynamic>> previousValue,
-          ProviderElementBase<dynamic> e,
-        ) {
-          if (collects.contains(e.provider.name)) {
-            return <String, ProviderBase<dynamic>>{
-              ...previousValue,
-              e.provider.name!: e.provider,
-            };
-          }
-
-          return previousValue;
-        },
-      );
-
-  /// [kMyCollectedArticleProvider] and [kMyCollectedWebsiteProvider] is
+  /// [myCollectedArticleProvider] and [myCollectedWebsiteProvider] is
   /// autoDispose provider, So if they exist, it can be considered to be
-  /// currently in the [MyCollectionsScreen]
-  /// that is, they can be searched first from them
-  WebViewModel? findCollectedWebsite(
-    Map<String, ProviderBase<dynamic>> providers, {
+  /// currently in the [MyCollectionsScreen] that is, they can be searched
+  /// first from them.
+  WebViewModel? findCollectedWebsite({
     required int articleId,
   }) {
-    if (!providers.keys.contains(kMyCollectedWebsiteProvider)) {
+    if (!ref.container.exists(myCollectedWebsiteProvider)) {
       return null;
     }
 
-    from = kMyCollectedWebsiteProvider;
-    provider = providers[kMyCollectedWebsiteProvider]!;
-
-    final MyCollectedWebsiteProvider realProvider =
-        provider as MyCollectedWebsiteProvider;
-
     final CollectedWebsiteModel? collectedWebsite = ref
-        .read(realProvider)
-        .whenOrNull((List<CollectedWebsiteModel> list) => list)
+        .read(myCollectedWebsiteProvider)
+        .whenOrNull(data: (List<CollectedWebsiteModel> list) => list)
         ?.firstWhereOrNull((CollectedWebsiteModel e) => e.id == articleId);
 
     if (collectedWebsite != null) {
@@ -92,23 +50,18 @@ class AppArticle extends _$AppArticle {
     return null;
   }
 
-  WebViewModel? findCollectedArticle(
-    Map<String, ProviderBase<dynamic>> providers, {
+  WebViewModel? findCollectedArticle({
     required int articleId,
   }) {
-    if (!providers.keys.contains(kMyCollectedArticleProvider)) {
+    if (!ref.container.exists(myCollectedArticleProvider())) {
       return null;
     }
 
-    from = kMyCollectedArticleProvider;
-    provider = providers[kMyCollectedArticleProvider]!;
-
-    final MyCollectedArticleProvider realProvider =
-        provider as MyCollectedArticleProvider;
-
     final CollectedArticleModel? collectedArticle = ref
-        .read(realProvider)
-        .whenOrNull((List<CollectedArticleModel> list, _, __) => list)
+        .read(myCollectedArticleProvider())
+        .whenOrNull(
+          data: (PaginationData<CollectedArticleModel> data) => data.datas,
+        )
         ?.firstWhereOrNull((CollectedArticleModel e) => e.id == articleId);
 
     if (collectedArticle != null) {
@@ -160,11 +113,9 @@ class AppArticle extends _$AppArticle {
   Future<WebViewModel> build(int articleId) async {
     http = ref.watch(networkProvider);
 
-    final Map<String, ProviderBase<dynamic>> providers = getProvidersJson();
-
     final WebViewModel? webViewModel =
-        findCollectedWebsite(providers, articleId: articleId) ??
-            findCollectedArticle(providers, articleId: articleId) ??
+        findCollectedWebsite(articleId: articleId) ??
+            findCollectedArticle(articleId: articleId) ??
             await findArticle(articleId);
 
     if (webViewModel != null) {
@@ -184,26 +135,26 @@ class AppArticle extends _$AppArticle {
     WebViewModel webView, {
     required bool value,
   }) async {
-    final MyCollectedArticleProvider realProvider =
-        provider as MyCollectedArticleProvider;
-
     if (value) {
       await http.addCollectedArticleByArticleId(articleId: webView.id);
     } else {
-      await ref.read(realProvider.notifier).requestCancelCollect(
+      await ref
+          .read(myCollectedArticleProvider().notifier)
+          .requestCancelCollect(
             collectId: webView.id,
             articleId: webView.originId,
           );
     }
 
-    final int? index = ref.read(realProvider).whenOrNull(
-          (List<CollectedArticleModel> list, _, __) => list.indexWhere(
+    final int? index = ref.read(myCollectedArticleProvider()).whenOrNull(
+          data: (PaginationData<CollectedArticleModel> data) =>
+              data.datas.indexWhere(
             (CollectedArticleModel e) => e.id == webView.id,
           ),
         );
 
-    await ref
-        .read(realProvider.notifier)
+    ref
+        .read(myCollectedArticleProvider().notifier)
         .switchCollect(index ?? -1, changedValue: value);
   }
 
@@ -211,11 +162,9 @@ class AppArticle extends _$AppArticle {
     WebViewModel webView, {
     required bool value,
   }) async {
-    final MyCollectedWebsiteProvider realProvider =
-        provider as MyCollectedWebsiteProvider;
     if (value) {
       final CollectedWebsiteModel? newCollectedWebsite =
-          await ref.read(realProvider.notifier).add(
+          await ref.read(myCollectedWebsiteProvider.notifier).add(
                 title: webView.title ?? '',
                 link: webView.link,
                 needLoading: false,
@@ -231,18 +180,18 @@ class AppArticle extends _$AppArticle {
       }
     } else {
       await ref
-          .read(realProvider.notifier)
+          .read(myCollectedWebsiteProvider.notifier)
           .requestCancelCollect(collectId: webView.id);
     }
 
-    final int? index = ref.read(realProvider).whenOrNull(
-          (List<CollectedWebsiteModel> list) => list.indexWhere(
+    final int? index = ref.read(myCollectedWebsiteProvider).whenOrNull(
+          data: (List<CollectedWebsiteModel> list) => list.indexWhere(
             (CollectedWebsiteModel e) => e.id == webView.id,
           ),
         );
 
     ref
-        .read(realProvider.notifier)
+        .read(myCollectedWebsiteProvider.notifier)
         .switchCollect(index ?? -1, changedValue: value);
   }
 

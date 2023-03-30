@@ -10,20 +10,27 @@ class _Project extends ConsumerStatefulWidget {
 class _ProjectState extends ConsumerState<_Project>
     with
         AutomaticKeepAliveClientMixin,
-        AutoDisposeRefreshListViewStateMixin<ProjectArticleProvider,
-            ArticleModel, _Project> {
+        RefreshListViewStateMixin<ProjectArticleProvider, ArticleModel,
+            _Project> {
   @override
   bool get wantKeepAlive => true;
 
   @override
-  ProjectArticleProvider get provider => projectArticleProvider;
+  ProjectArticleProvider get provider => projectArticleProvider();
 
   @override
-  FutureOr<void> onRetry() {
+  Refreshable<Future<PaginationData<ArticleModel>>> get refreshable =>
+      provider.future;
+
+  @override
+  OnLoadMoreCallback get loadMore => ref.read(provider.notifier).loadMore;
+
+  @override
+  FutureOr<void> onRetry() async {
     if (ref.read(projectTypeProvider).hasError) {
       ref.invalidate(projectTypeProvider);
     } else {
-      return super.onRetry();
+      await super.onRetry();
     }
   }
 
@@ -47,28 +54,32 @@ class _ProjectState extends ConsumerState<_Project>
                 pullDownIndicator,
                 Consumer(
                   builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-                    (List<ArticleModel> list, _, __) {
-                      if (list.isEmpty) {
-                        return const SliverFillRemaining(child: EmptyWidget());
-                      }
+                        data: (PaginationData<ArticleModel> data) {
+                          final List<ArticleModel> list = data.datas;
 
-                      return SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (_, int index) {
-                            final ArticleModel article = list[index];
-
-                            return ArticleTile(
-                              key: Key('project_article_${article.id}'),
-                              article: article,
+                          if (list.isEmpty) {
+                            return const SliverFillRemaining(
+                              child: EmptyWidget(),
                             );
-                          },
-                          childCount: list.length,
-                        ),
-                      );
-                    },
-                    loading: loadingIndicatorBuilder,
-                    error: errorIndicatorBuilder,
-                  ),
+                          }
+
+                          return SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (_, int index) {
+                                final ArticleModel article = list[index];
+
+                                return ArticleTile(
+                                  key: Key('project_article_${article.id}'),
+                                  article: article,
+                                );
+                              },
+                              childCount: list.length,
+                            ),
+                          );
+                        },
+                        loading: loadingIndicatorBuilder,
+                        error: errorIndicatorBuilder,
+                      ),
                 ),
                 loadMoreIndicator,
               ],

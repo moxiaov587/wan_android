@@ -27,10 +27,17 @@ class MyShareScreen extends ConsumerStatefulWidget {
 
 class _MyShareScreenState extends ConsumerState<MyShareScreen>
     with
-        AutoDisposeRefreshListViewStateMixin<MyShareArticlesProvider,
-            ArticleModel, MyShareScreen> {
+        RefreshListViewStateMixin<MyShareArticleProvider, ArticleModel,
+            MyShareScreen> {
   @override
-  MyShareArticlesProvider get provider => myShareArticlesProvider;
+  MyShareArticleProvider get provider => myShareArticleProvider();
+
+  @override
+  Refreshable<Future<PaginationData<ArticleModel>>> get refreshable =>
+      provider.future;
+
+  @override
+  OnLoadMoreCallback get loadMore => ref.read(provider.notifier).loadMore;
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -52,54 +59,61 @@ class _MyShareScreenState extends ConsumerState<MyShareScreen>
               pullDownIndicator,
               Consumer(
                 builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-                  (List<ArticleModel> list, _, __) {
-                    if (list.isEmpty) {
-                      return const SliverFillRemaining(child: EmptyWidget());
-                    }
+                      data: (PaginationData<ArticleModel> data) {
+                        final List<ArticleModel> list = data.datas;
 
-                    return SlidableAutoCloseBehavior(
-                      child: SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (_, int index) {
-                            final ArticleModel article = list[index];
+                        if (list.isEmpty) {
+                          return const SliverFillRemaining(
+                            child: EmptyWidget(),
+                          );
+                        }
 
-                            return SlidableTile.shareArticle(
-                              key: Key('my_share_article_${article.id}'),
-                              article: article,
-                              onDismissed: () async {
-                                await ref
-                                    .read(myShareArticlesProvider.notifier)
-                                    .destroy(index);
+                        return SlidableAutoCloseBehavior(
+                          child: SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (_, int index) {
+                                final ArticleModel article = list[index];
+
+                                return SlidableTile.shareArticle(
+                                  key: Key('my_share_article_${article.id}'),
+                                  article: article,
+                                  onDismissed: () async {
+                                    await ref
+                                        .read(provider.notifier)
+                                        .destroy(index);
+                                  },
+                                  confirmCallback: () async {
+                                    final bool result = await ref
+                                        .read(provider.notifier)
+                                        .requestDeleteShare(
+                                          articleId: article.id,
+                                        );
+
+                                    return result;
+                                  },
+                                );
                               },
-                              confirmCallback: () async {
-                                final bool result = await ref
-                                    .read(myShareArticlesProvider.notifier)
-                                    .requestDeleteShare(articleId: article.id);
+                              findChildIndexCallback: (Key key) {
+                                final int index = list.indexWhere(
+                                  (ArticleModel article) =>
+                                      key ==
+                                      Key('my_share_article_${article.id}'),
+                                );
 
-                                return result;
+                                if (index == -1) {
+                                  return null;
+                                }
+
+                                return index;
                               },
-                            );
-                          },
-                          findChildIndexCallback: (Key key) {
-                            final int index = list.indexWhere(
-                              (ArticleModel article) =>
-                                  key == Key('my_share_article_${article.id}'),
-                            );
-
-                            if (index == -1) {
-                              return null;
-                            }
-
-                            return index;
-                          },
-                          childCount: list.length,
-                        ),
-                      ),
-                    );
-                  },
-                  loading: loadingIndicatorBuilder,
-                  error: errorIndicatorBuilder,
-                ),
+                              childCount: list.length,
+                            ),
+                          ),
+                        );
+                      },
+                      loading: loadingIndicatorBuilder,
+                      error: errorIndicatorBuilder,
+                    ),
               ),
               SliverPadding(
                 padding: EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),

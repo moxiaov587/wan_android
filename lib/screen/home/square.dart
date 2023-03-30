@@ -10,13 +10,20 @@ class _Square extends ConsumerStatefulWidget {
 class _SquareState extends ConsumerState<_Square>
     with
         AutomaticKeepAliveClientMixin,
-        AutoDisposeRefreshListViewStateMixin<SquareArticleProvider,
-            ArticleModel, _Square> {
+        RefreshListViewStateMixin<SquareArticleProvider, ArticleModel,
+            _Square> {
   @override
   bool get wantKeepAlive => true;
 
   @override
-  SquareArticleProvider get provider => squareArticleProvider;
+  SquareArticleProvider get provider => squareArticleProvider();
+
+  @override
+  Refreshable<Future<PaginationData<ArticleModel>>> get refreshable =>
+      provider.future;
+
+  @override
+  OnLoadMoreCallback get loadMore => ref.read(provider.notifier).loadMore;
 
   @override
   Widget build(BuildContext context) {
@@ -37,28 +44,32 @@ class _SquareState extends ConsumerState<_Square>
                 pullDownIndicator,
                 Consumer(
                   builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-                    (List<ArticleModel> list, _, __) {
-                      if (list.isEmpty) {
-                        return const SliverFillRemaining(child: EmptyWidget());
-                      }
+                        data: (PaginationData<ArticleModel> data) {
+                          final List<ArticleModel> list = data.datas;
 
-                      return SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (_, int index) {
-                            final ArticleModel article = list[index];
-
-                            return ArticleTile(
-                              key: Key('square_article_${article.id}'),
-                              article: article,
+                          if (list.isEmpty) {
+                            return const SliverFillRemaining(
+                              child: EmptyWidget(),
                             );
-                          },
-                          childCount: list.length,
-                        ),
-                      );
-                    },
-                    loading: loadingIndicatorBuilder,
-                    error: errorIndicatorBuilder,
-                  ),
+                          }
+
+                          return SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (_, int index) {
+                                final ArticleModel article = list[index];
+
+                                return ArticleTile(
+                                  key: Key('square_article_${article.id}'),
+                                  article: article,
+                                );
+                              },
+                              childCount: list.length,
+                            ),
+                          );
+                        },
+                        loading: loadingIndicatorBuilder,
+                        error: errorIndicatorBuilder,
+                      ),
                 ),
                 loadMoreIndicator,
               ],

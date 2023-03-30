@@ -14,11 +14,17 @@ class TheyArticlesScreen extends ConsumerStatefulWidget {
 
 class _TheyArticlesScreenState extends ConsumerState<TheyArticlesScreen>
     with
-        AutoDisposeRefreshListViewStateMixin<TheyArticlesProvider, ArticleModel,
+        RefreshListViewStateMixin<TheyArticleProvider, ArticleModel,
             TheyArticlesScreen> {
   @override
-  late final TheyArticlesProvider provider =
-      theyArticlesProvider(widget.author);
+  late final TheyArticleProvider provider = theyArticleProvider(widget.author);
+
+  @override
+  Refreshable<Future<PaginationData<ArticleModel>>> get refreshable =>
+      provider.future;
+
+  @override
+  OnLoadMoreCallback get loadMore => ref.read(provider.notifier).loadMore;
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -32,29 +38,33 @@ class _TheyArticlesScreenState extends ConsumerState<TheyArticlesScreen>
               pullDownIndicator,
               Consumer(
                 builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-                  (List<ArticleModel> list, _, __) {
-                    if (list.isEmpty) {
-                      return const SliverFillRemaining(child: EmptyWidget());
-                    }
+                      data: (PaginationData<ArticleModel> data) {
+                        final List<ArticleModel> list = data.datas;
 
-                    return SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (_, int index) {
-                          final ArticleModel article = list[index];
-
-                          return ArticleTile(
-                            key: Key('they_article_${article.id}'),
-                            authorTextOrShareUserTextCanOnTap: false,
-                            article: article,
+                        if (list.isEmpty) {
+                          return const SliverFillRemaining(
+                            child: EmptyWidget(),
                           );
-                        },
-                        childCount: list.length,
-                      ),
-                    );
-                  },
-                  loading: loadingIndicatorBuilder,
-                  error: errorIndicatorBuilder,
-                ),
+                        }
+
+                        return SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (_, int index) {
+                              final ArticleModel article = list[index];
+
+                              return ArticleTile(
+                                key: Key('they_article_${article.id}'),
+                                authorTextOrShareUserTextCanOnTap: false,
+                                article: article,
+                              );
+                            },
+                            childCount: list.length,
+                          ),
+                        );
+                      },
+                      loading: loadingIndicatorBuilder,
+                      error: errorIndicatorBuilder,
+                    ),
               ),
               SliverPadding(
                 padding: EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),

@@ -1,60 +1,37 @@
 part of 'drawer_provider.dart';
 
-const List<String> articles = <String>[
-  kHomeArticleProvider,
-  kSquareArticleProvider,
-  kQuestionArticleProvider,
-  kProjectArticleProvider,
-];
+@riverpod
+class MyCollectedArticle extends _$MyCollectedArticle
+    with LoadMoreMixin<CollectedArticleModel> {
+  @override
+  int get initialPageNum => 0;
 
-const String kMyCollectedArticleProvider = 'kMyCollectedArticleProvider';
-const String kMyCollectedWebsiteProvider = 'kMyCollectedWebsiteProvider';
-
-typedef MyCollectedArticleProvider = AutoDisposeStateNotifierProvider<
-    MyCollectedArticleNotifier, RefreshListViewState<CollectedArticleModel>>;
-
-typedef MyCollectedArticleProviderRef = AutoDisposeStateNotifierProviderRef<
-    MyCollectedArticleNotifier, RefreshListViewState<CollectedArticleModel>>;
-
-final MyCollectedArticleProvider myCollectedArticleProvider =
-    StateNotifierProvider.autoDispose<MyCollectedArticleNotifier,
-        RefreshListViewState<CollectedArticleModel>>(
-  (MyCollectedArticleProviderRef ref) {
-    final CancelToken cancelToken = ref.cancelToken();
-
-    final Http http = ref.watch(networkProvider);
-
-    return MyCollectedArticleNotifier(
-      const RefreshListViewState<CollectedArticleModel>.loading(),
-      http: http,
-      cancelToken: cancelToken,
-    )..initData();
-  },
-  name: kMyCollectedArticleProvider,
-);
-
-class MyCollectedArticleNotifier
-    extends BaseRefreshListViewNotifier<CollectedArticleModel> {
-  MyCollectedArticleNotifier(
-    super.state, {
-    required this.http,
-    this.cancelToken,
-  }) : super(initialPageNum: 0);
-  final Http http;
-
-  final CancelToken? cancelToken;
+  late Http http;
 
   @override
-  Future<RefreshListViewStateData<CollectedArticleModel>> loadData({
-    required int pageNum,
-    required int pageSize,
-  }) async =>
-      (await http.fetchCollectedArticles(
-        pageNum,
-        pageSize,
-        cancelToken: cancelToken,
-      ))
-          .toRefreshListViewStateData();
+  Future<PaginationData<CollectedArticleModel>> build({
+    int? pageNum,
+    int? pageSize,
+  }) {
+    final CancelToken cancelToken = ref.cancelToken();
+
+    http = ref.watch(networkProvider);
+
+    return http.fetchCollectedArticles(
+      pageNum ?? initialPageNum,
+      pageSize ?? initialPageSize,
+      cancelToken: cancelToken,
+    );
+  }
+
+  @override
+  Future<PaginationData<CollectedArticleModel>> Function(
+    int pageNum,
+    int pageSize,
+  ) get buildMore => (int pageNum, int pageSize) => build(
+        pageNum: pageNum,
+        pageSize: pageSize,
+      );
 
   Future<bool> add({
     required String title,
@@ -71,7 +48,7 @@ class MyCollectedArticleNotifier
       );
 
       if (data != null) {
-        await initData();
+        ref.invalidateSelf();
 
         return true;
       } else {
@@ -88,55 +65,57 @@ class MyCollectedArticleNotifier
     }
   }
 
-  Future<bool> update({
+  Future<bool> edit({
     required int collectId,
     required String title,
     required String author,
     required String link,
-  }) async =>
-      await state.whenOrNull<Future<bool>?>((
-        List<CollectedArticleModel> list,
-        int pageNum,
-        bool isLastPage,
-      ) async {
-        try {
-          DialogUtils.loading();
+  }) =>
+      state.whenOrNull<Future<bool>>(
+        data: (PaginationData<CollectedArticleModel> data) async {
+          final int index = data.datas
+              .indexWhere((CollectedArticleModel e) => e.id == collectId);
 
-          await http.updateCollectedArticle(
-            id: collectId,
-            title: title,
-            author: author,
-            link: link,
-          );
+          if (index == -1) {
+            return false;
+          }
 
-          state = RefreshListViewStateData<CollectedArticleModel>(
-            pageNum: pageNum,
-            isLastPage: isLastPage,
-            list: list
-                .map(
-                  (CollectedArticleModel article) => article.id == collectId
-                      ? article.copyWith(
+          try {
+            DialogUtils.loading();
+
+            await http.updateCollectedArticle(
+              id: collectId,
+              title: title,
+              author: author,
+              link: link,
+            );
+
+            state = AsyncData<PaginationData<CollectedArticleModel>>(
+              data.copyWith(
+                datas: data.datas
+                  ..setAll(index, <CollectedArticleModel>[
+                    data.datas.elementAt(index).copyWith(
                           title: title,
                           author: author,
                           link: link,
-                        )
-                      : article,
-                )
-                .toList(),
-          );
+                        ),
+                  ]),
+              ),
+            );
 
-          return true;
-        } on Exception catch (e, s) {
-          DialogUtils.danger(
-            ViewError.create(e, s).errorMessage(S.current.failed),
-          );
+            return true;
+          } on Exception catch (e, s) {
+            DialogUtils.danger(
+              ViewError.create(e, s).errorMessage(S.current.failed),
+            );
 
-          return false;
-        } finally {
-          DialogUtils.dismiss();
-        }
-      }) ??
-      false;
+            return false;
+          } finally {
+            DialogUtils.dismiss();
+          }
+        },
+      ) ??
+      Future<bool>.value(false);
 
   Future<bool> requestCancelCollect({
     required int collectId,
@@ -156,93 +135,66 @@ class MyCollectedArticleNotifier
     }
   }
 
-  Future<void>? switchCollect(
+  void switchCollect(
     int index, {
     required bool changedValue,
     bool triggerCompleteCallback = false,
   }) =>
       state.whenOrNull(
-        (
-          List<CollectedArticleModel> list,
-          int pageNum,
-          bool isLastPage,
-        ) async {
+        data: (PaginationData<CollectedArticleModel> data) {
           if (index == -1) {
             return;
           }
 
-          state = RefreshListViewStateData<CollectedArticleModel>(
-            pageNum: pageNum,
-            isLastPage: isLastPage,
-            list: list
-              ..setAll(
-                index,
-                <CollectedArticleModel>[
-                  list[index].copyWith(collect: changedValue)
-                ],
-              ),
+          state = AsyncData<PaginationData<CollectedArticleModel>>(
+            data.copyWith(
+              datas: data.datas
+                ..setAll(
+                  index,
+                  <CollectedArticleModel>[
+                    data.datas[index].copyWith(collect: changedValue)
+                  ],
+                ),
+            ),
           );
 
           if (triggerCompleteCallback) {
-            await onSwitchCollectComplete();
+            onSwitchCollectComplete();
           }
         },
       );
 
-  Future<void>? onSwitchCollectComplete() => state.whenOrNull(
-        (List<CollectedArticleModel> list, int pageNum, bool isLastPage) async {
-          if (list.none((CollectedArticleModel collect) => collect.collect)) {
-            if (isLastPage) {
-              state = RefreshListViewStateData<CollectedArticleModel>(
-                pageNum: pageNum,
-                isLastPage: isLastPage,
-                list: <CollectedArticleModel>[],
+  void onSwitchCollectComplete() => state.whenOrNull(
+        data: (PaginationData<CollectedArticleModel> data) {
+          if (data.datas
+              .none((CollectedArticleModel collect) => collect.collect)) {
+            if (data.over) {
+              state = AsyncData<PaginationData<CollectedArticleModel>>(
+                data.copyWith(datas: <CollectedArticleModel>[]),
               );
             } else {
-              await initData();
+              ref.invalidateSelf();
             }
           }
         },
       );
 }
 
-typedef MyCollectedWebsiteProvider = AutoDisposeStateNotifierProvider<
-    MyCollectedWebsiteNotifier, ListViewState<CollectedWebsiteModel>>;
+typedef MyCollectedWebsiteProvider = AutoDisposeAsyncNotifierProvider<
+    MyCollectedWebsite, List<CollectedWebsiteModel>>;
 
-typedef MyCollectedWebsiteProviderRef = AutoDisposeStateNotifierProviderRef<
-    MyCollectedWebsiteNotifier, ListViewState<CollectedWebsiteModel>>;
-
-final MyCollectedWebsiteProvider myCollectedWebsiteProvider =
-    StateNotifierProvider.autoDispose<MyCollectedWebsiteNotifier,
-        ListViewState<CollectedWebsiteModel>>(
-  (MyCollectedWebsiteProviderRef ref) {
-    final CancelToken cancelToken = ref.cancelToken();
-
-    final Http http = ref.watch(networkProvider);
-
-    return MyCollectedWebsiteNotifier(
-      const ListViewState<CollectedWebsiteModel>.loading(),
-      http: http,
-      cancelToken: cancelToken,
-    )..initData();
-  },
-  name: kMyCollectedWebsiteProvider,
-);
-
-class MyCollectedWebsiteNotifier
-    extends BaseListViewNotifier<CollectedWebsiteModel> {
-  MyCollectedWebsiteNotifier(
-    super.state, {
-    required this.http,
-    this.cancelToken,
-  });
-  final Http http;
-
-  final CancelToken? cancelToken;
+@riverpod
+class MyCollectedWebsite extends _$MyCollectedWebsite {
+  late Http http;
 
   @override
-  Future<List<CollectedWebsiteModel>> loadData() =>
-      http.fetchCollectedWebsites();
+  Future<List<CollectedWebsiteModel>> build() {
+    final CancelToken cancelToken = ref.cancelToken();
+
+    http = ref.watch(networkProvider);
+
+    return http.fetchCollectedWebsites(cancelToken: cancelToken);
+  }
 
   Future<CollectedWebsiteModel?> add({
     required String title,
@@ -260,7 +212,7 @@ class MyCollectedWebsiteNotifier
       );
 
       if (data != null) {
-        await initData();
+        ref.invalidateSelf();
       } else {
         DialogUtils.danger(S.current.failed);
       }
@@ -277,13 +229,20 @@ class MyCollectedWebsiteNotifier
     }
   }
 
-  Future<bool> update({
+  Future<bool> edit({
     required int collectId,
     required String title,
     required String link,
-  }) async =>
-      await state.whenOrNull<Future<bool>?>(
-        (List<CollectedWebsiteModel> list) async {
+  }) =>
+      state.whenOrNull<Future<bool>>(
+        data: (List<CollectedWebsiteModel> list) async {
+          final int index =
+              list.indexWhere((CollectedWebsiteModel e) => e.id == collectId);
+
+          if (index == -1) {
+            return false;
+          }
+
           try {
             DialogUtils.loading();
 
@@ -293,14 +252,11 @@ class MyCollectedWebsiteNotifier
               link: link,
             );
 
-            state = ListViewStateData<CollectedWebsiteModel>(
-              list: list
-                  .map(
-                    (CollectedWebsiteModel website) => website.id == collectId
-                        ? website.copyWith(name: title, link: link)
-                        : website,
-                  )
-                  .toList(),
+            state = AsyncData<List<CollectedWebsiteModel>>(
+              list
+                ..setAll(index, <CollectedWebsiteModel>[
+                  list.elementAt(index).copyWith(name: title, link: link),
+                ]),
             );
 
             return true;
@@ -315,7 +271,7 @@ class MyCollectedWebsiteNotifier
           }
         },
       ) ??
-      false;
+      Future<bool>.value(false);
 
   Future<bool> requestCancelCollect({required int collectId}) async {
     try {
@@ -334,35 +290,39 @@ class MyCollectedWebsiteNotifier
     required bool changedValue,
     bool triggerCompleteCallback = false,
   }) {
-    state.whenOrNull((List<CollectedWebsiteModel> list) {
-      if (index == -1) {
-        return;
-      }
+    state.whenOrNull(
+      data: (List<CollectedWebsiteModel> list) {
+        if (index == -1) {
+          return;
+        }
 
-      state = ListViewStateData<CollectedWebsiteModel>(
-        list: list
-          ..setAll(
-            index,
-            <CollectedWebsiteModel>[
-              list[index].copyWith(collect: changedValue)
-            ],
-          ),
-      );
+        state = AsyncData<List<CollectedWebsiteModel>>(
+          list
+            ..setAll(
+              index,
+              <CollectedWebsiteModel>[
+                list[index].copyWith(collect: changedValue)
+              ],
+            ),
+        );
 
-      if (triggerCompleteCallback) {
-        onSwitchCollectComplete();
-      }
-    });
+        if (triggerCompleteCallback) {
+          onSwitchCollectComplete();
+        }
+      },
+    );
   }
 
   void onSwitchCollectComplete() {
-    state.whenOrNull((List<CollectedWebsiteModel> list) {
-      if (list.none((CollectedWebsiteModel collect) => collect.collect)) {
-        state = const ListViewStateData<CollectedWebsiteModel>(
-          list: <CollectedWebsiteModel>[],
-        );
-      }
-    });
+    state.whenOrNull(
+      data: (List<CollectedWebsiteModel> list) {
+        if (list.none((CollectedWebsiteModel collect) => collect.collect)) {
+          state = const AsyncData<List<CollectedWebsiteModel>>(
+            <CollectedWebsiteModel>[],
+          );
+        }
+      },
+    );
   }
 }
 
@@ -379,10 +339,10 @@ class HandleCollected extends _$HandleCollected {
     switch (type) {
       case CollectionType.article:
         final CollectedArticleModel? articleModel = ref
-            .read(myCollectedArticleProvider)
+            .read(myCollectedArticleProvider())
             .whenOrNull<CollectedArticleModel?>(
-              (List<CollectedArticleModel> list, _, __) =>
-                  list.firstWhereOrNull(
+              data: (PaginationData<CollectedArticleModel> data) =>
+                  data.datas.firstWhereOrNull(
                 (CollectedArticleModel article) => article.id == id,
               ),
             );
@@ -400,7 +360,7 @@ class HandleCollected extends _$HandleCollected {
         final CollectedWebsiteModel? websiteModel = ref
             .read(myCollectedWebsiteProvider)
             .whenOrNull<CollectedWebsiteModel?>(
-              (List<CollectedWebsiteModel> list) => list.firstWhereOrNull(
+              data: (List<CollectedWebsiteModel> list) => list.firstWhereOrNull(
                 (CollectedWebsiteModel website) => website.id == id,
               ),
             );

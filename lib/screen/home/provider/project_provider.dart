@@ -1,82 +1,52 @@
 part of 'home_provider.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<List<ProjectTypeModel>> projectType(ProjectTypeRef ref) =>
     ref.watch(networkProvider).fetchProjectTypes();
 
 @riverpod
-class CurrentProjectType extends _$CurrentProjectType
-    with AutoDisposeNotifierUpdateMixin<AsyncValue<ProjectTypeModel>> {
+class CurrentProjectType extends _$CurrentProjectType {
   @override
-  AsyncValue<ProjectTypeModel> build() => ref.watch(projectTypeProvider).when(
-        skipLoadingOnRefresh: false,
-        data: (List<ProjectTypeModel> data) =>
-            AsyncValue<ProjectTypeModel>.data(data.first),
-        error: AsyncValue<ProjectTypeModel>.error,
-        loading: () => const AsyncValue<ProjectTypeModel>.loading(),
-      );
+  Future<ProjectTypeModel> build() async {
+    final List<ProjectTypeModel> types =
+        ref.read(projectTypeProvider).valueOrNull ??
+            await ref.watch(projectTypeProvider.future);
+
+    return types.first;
+  }
+
+  Future<void> onSelect(ProjectTypeModel type) => update((_) => type);
 }
 
-typedef ProjectArticleProvider = AutoDisposeStateNotifierProvider<
-    ProjectNotifier, RefreshListViewState<ArticleModel>>;
-
-final ProjectArticleProvider projectArticleProvider = StateNotifierProvider
-    .autoDispose<ProjectNotifier, RefreshListViewState<ArticleModel>>(
-  (
-    AutoDisposeStateNotifierProviderRef<ProjectNotifier,
-            RefreshListViewState<ArticleModel>>
-        ref,
-  ) {
-    final CancelToken cancelToken = ref.cancelToken();
-
-    final Http http = ref.read(networkProvider);
-
-    return ref.watch(currentProjectTypeProvider).when(
-          data: (ProjectTypeModel value) => ProjectNotifier(
-            const RefreshListViewState<ArticleModel>.loading(),
-            categoryId: value.id,
-            http: http,
-            cancelToken: cancelToken,
-          )..initData(),
-          loading: () => ProjectNotifier(
-            const RefreshListViewState<ArticleModel>.loading(),
-            categoryId: null,
-            http: http,
-            cancelToken: cancelToken,
-          ),
-          error: (Object e, StackTrace s) => ProjectNotifier(
-            RefreshListViewState<ArticleModel>.error(e, s),
-            categoryId: null,
-            http: http,
-            cancelToken: cancelToken,
-          ),
-        );
-  },
-  name: kProjectArticleProvider,
-);
-
-class ProjectNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
-  ProjectNotifier(
-    super.state, {
-    required this.categoryId,
-    required this.http,
-    this.cancelToken,
-  }) : super(initialPageNum: 1);
-
-  final int? categoryId;
-  final Http http;
-  final CancelToken? cancelToken;
+@riverpod
+class ProjectArticle extends _$ProjectArticle with LoadMoreMixin<ArticleModel> {
+  late Http http;
 
   @override
-  Future<RefreshListViewStateData<ArticleModel>> loadData({
-    required int pageNum,
-    required int pageSize,
-  }) async =>
-      (await http.fetchProjectArticles(
-        pageNum,
-        pageSize,
-        categoryId: categoryId!,
-        cancelToken: cancelToken,
-      ))
-          .toRefreshListViewStateData();
+  Future<PaginationData<ArticleModel>> build({
+    int? pageNum,
+    int? pageSize,
+  }) async {
+    final CancelToken cancelToken = ref.cancelToken();
+
+    http = ref.watch(networkProvider);
+
+    final ProjectTypeModel type =
+        ref.read(currentProjectTypeProvider).valueOrNull ??
+            await ref.watch(currentProjectTypeProvider.future);
+
+    return http.fetchProjectArticles(
+      pageNum ?? initialPageNum,
+      pageSize ?? initialPageSize,
+      categoryId: type.id,
+      cancelToken: cancelToken,
+    );
+  }
+
+  @override
+  Future<PaginationData<ArticleModel>> Function(int pageNum, int pageSize)
+      get buildMore => (int pageNum, int pageSize) => build(
+            pageNum: pageNum,
+            pageSize: pageSize,
+          );
 }

@@ -11,13 +11,20 @@ class __ArticleState extends ConsumerState<_Article>
     with
         AutomaticKeepAliveClientMixin,
         RouteAware,
-        AutoDisposeRefreshListViewStateMixin<MyCollectedArticleProvider,
+        RefreshListViewStateMixin<MyCollectedArticleProvider,
             CollectedArticleModel, _Article> {
   @override
   bool get wantKeepAlive => true;
 
   @override
-  MyCollectedArticleProvider get provider => myCollectedArticleProvider;
+  MyCollectedArticleProvider get provider => myCollectedArticleProvider();
+
+  @override
+  Refreshable<Future<PaginationData<CollectedArticleModel>>> get refreshable =>
+      provider.future;
+
+  @override
+  OnLoadMoreCallback get loadMore => ref.read(provider.notifier).loadMore;
 
   @override
   void didChangeDependencies() {
@@ -30,9 +37,7 @@ class __ArticleState extends ConsumerState<_Article>
   void didPopNext() {
     super.didPopNext();
 
-    unawaited(
-      ref.read(myCollectedArticleProvider.notifier).onSwitchCollectComplete(),
-    );
+    ref.read(provider.notifier).onSwitchCollectComplete();
   }
 
   @override
@@ -53,77 +58,78 @@ class __ArticleState extends ConsumerState<_Article>
           pullDownIndicator,
           Consumer(
             builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-              (List<CollectedArticleModel> list, _, __) {
-                list = list
-                    .where((CollectedArticleModel article) => article.collect)
-                    .toList();
+                  skipLoadingOnRefresh: false,
+                  data: (PaginationData<CollectedArticleModel> data) {
+                    final List<CollectedArticleModel> list = data.datas
+                        .where(
+                          (CollectedArticleModel article) => article.collect,
+                        )
+                        .toList();
 
-                if (list.isEmpty) {
-                  return const SliverFillRemaining(
-                    child: EmptyWidget.favorites(),
-                  );
-                }
+                    if (list.isEmpty) {
+                      return const SliverFillRemaining(
+                        child: EmptyWidget.favorites(),
+                      );
+                    }
 
-                return SlidableAutoCloseBehavior(
-                  child: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (_, int index) {
-                        final CollectedArticleModel article = list[index];
+                    return SlidableAutoCloseBehavior(
+                      child: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (_, int index) {
+                            final CollectedArticleModel article = list[index];
 
-                        return SlidableTile.collectedArticle(
-                          key: Key('my_collections_article_${article.id}'),
-                          collectedArticle: article,
-                          onDismissed: () async {
-                            await ref
-                                .read(myCollectedArticleProvider.notifier)
-                                .switchCollect(
-                                  index,
-                                  changedValue: false,
-                                  triggerCompleteCallback: true,
-                                );
+                            return SlidableTile.collectedArticle(
+                              key: Key('my_collections_article_${article.id}'),
+                              collectedArticle: article,
+                              onDismissed: () {
+                                ref.read(provider.notifier).switchCollect(
+                                      index,
+                                      changedValue: false,
+                                      triggerCompleteCallback: true,
+                                    );
+                              },
+                              confirmCallback: () async {
+                                final bool result = await ref
+                                    .read(provider.notifier)
+                                    .requestCancelCollect(
+                                      collectId: article.id,
+                                      articleId: article.originId,
+                                    );
+
+                                return result;
+                              },
+                              onTap: () {
+                                ArticleRoute(id: article.id).push(context);
+                              },
+                              onEditTap: () {
+                                EditCollectedArticleOrWebsiteRoute(
+                                  type: CollectionType.article,
+                                  id: article.id,
+                                ).push(context);
+                              },
+                            );
                           },
-                          confirmCallback: () async {
-                            final bool result = await ref
-                                .read(myCollectedArticleProvider.notifier)
-                                .requestCancelCollect(
-                                  collectId: article.id,
-                                  articleId: article.originId,
-                                );
+                          findChildIndexCallback: (Key key) {
+                            final int index = list.indexWhere(
+                              (CollectedArticleModel article) =>
+                                  key ==
+                                  Key('my_collections_article_${article.id}'),
+                            );
 
-                            return result;
-                          },
-                          onTap: () {
-                            ArticleRoute(id: article.id).push(context);
-                          },
-                          onEditTap: () {
-                            EditCollectedArticleOrWebsiteRoute(
-                              type: CollectionType.article,
-                              id: article.id,
-                            ).push(context);
-                          },
-                        );
-                      },
-                      findChildIndexCallback: (Key key) {
-                        final int index = list.indexWhere(
-                          (CollectedArticleModel article) =>
-                              key ==
-                              Key('my_collections_article_${article.id}'),
-                        );
+                            if (index == -1) {
+                              return null;
+                            }
 
-                        if (index == -1) {
-                          return null;
-                        }
-
-                        return index;
-                      },
-                      childCount: list.length,
-                    ),
-                  ),
-                );
-              },
-              loading: loadingIndicatorBuilder,
-              error: errorIndicatorBuilder,
-            ),
+                            return index;
+                          },
+                          childCount: list.length,
+                        ),
+                      ),
+                    );
+                  },
+                  loading: loadingIndicatorBuilder,
+                  error: errorIndicatorBuilder,
+                ),
           ),
           SliverPadding(
             padding: EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),

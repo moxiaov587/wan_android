@@ -3,15 +3,12 @@ import 'dart:ui' as ui show Image;
 
 import 'package:flutter/rendering.dart' show decodeImageFromList;
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../app/http/http.dart';
 
-import '../../../app/provider/mixin/notifier_update_mixin.dart';
-import '../../../app/provider/provider.dart';
-import '../../../app/provider/view_state.dart';
+import '../../../app/provider/mixin/refresh_list_view_state_mixin.dart';
 import '../../../database/app_database.dart';
 import '../../../model/models.dart';
 
@@ -20,12 +17,6 @@ part 'question_provider.dart';
 part 'search_provider.dart';
 part 'square_provider.dart';
 part 'home_provider.g.dart';
-
-const String kHomeArticleProvider = 'kHomeArticleProvider';
-const String kSquareArticleProvider = 'kSquareArticleProvider';
-const String kSearchArticleProvider = 'kSearchArticleProvider';
-const String kQuestionArticleProvider = 'kQuestionArticleProvider';
-const String kProjectArticleProvider = 'kProjectArticleProvider';
 
 @Riverpod(dependencies: <Object>[appDatabase])
 class HomeBanner extends _$HomeBanner {
@@ -136,8 +127,8 @@ class CurrentHomeBannerBackgroundColorValue
   }
 }
 
-@riverpod
-Future<List<ArticleModel>> homeTopArticles(HomeTopArticlesRef ref) {
+@Riverpod(keepAlive: true)
+Future<List<ArticleModel>> homeTopArticles(HomeTopArticlesRef ref) async {
   final CancelToken cancelToken = ref.cancelToken();
 
   return ref
@@ -145,78 +136,61 @@ Future<List<ArticleModel>> homeTopArticles(HomeTopArticlesRef ref) {
       .fetchHomeTopArticles(cancelToken: cancelToken);
 }
 
-typedef HomeArticleProvider = AutoDisposeStateNotifierProvider<ArticleNotifier,
-    RefreshListViewState<ArticleModel>>;
+@riverpod
+class HomeArticle extends _$HomeArticle with LoadMoreMixin<ArticleModel> {
+  @override
+  int get initialPageNum => 0;
 
-final HomeArticleProvider homeArticleProvider = StateNotifierProvider
-    .autoDispose<ArticleNotifier, RefreshListViewState<ArticleModel>>(
-  (
-    AutoDisposeStateNotifierProviderRef<ArticleNotifier,
-            RefreshListViewState<ArticleModel>>
-        ref,
-  ) {
-    final CancelToken cancelToken = ref.cancelToken();
-
-    final Http http = ref.read(networkProvider);
-
-    return ref.watch(homeTopArticlesProvider).when(
-          skipLoadingOnRefresh: false,
-          data: (List<ArticleModel> list) => ArticleNotifier(
-            const RefreshListViewState<ArticleModel>.loading(),
-            topArticles: list,
-            http: http,
-            cancelToken: cancelToken,
-          )..initData(),
-          loading: () => ArticleNotifier(
-            const RefreshListViewState<ArticleModel>.loading(),
-            http: http,
-            cancelToken: cancelToken,
-          ),
-          error: (Object e, StackTrace s) => ArticleNotifier(
-            RefreshListViewState<ArticleModel>.error(e, s),
-            http: http,
-            cancelToken: cancelToken,
-          ),
-        );
-  },
-  name: kHomeArticleProvider,
-);
-
-class ArticleNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
-  ArticleNotifier(
-    super.state, {
-    required this.http,
-    this.topArticles,
-    this.cancelToken,
-  }) : super(initialPageNum: 0);
-
-  final List<ArticleModel>? topArticles;
-
-  final Http http;
-
-  final CancelToken? cancelToken;
+  late Http http;
 
   @override
-  Future<RefreshListViewStateData<ArticleModel>> loadData({
-    required int pageNum,
-    required int pageSize,
+  Future<PaginationData<ArticleModel>> build({
+    int? pageNum,
+    int? pageSize,
   }) async {
-    RefreshListViewStateData<ArticleModel> data = (await http.fetchHomeArticles(
-      pageNum,
-      pageSize,
-      cancelToken: cancelToken,
-    ))
-        .toRefreshListViewStateData();
+    final CancelToken cancelToken = ref.cancelToken();
 
-    if (pageNum == initialPageNum && topArticles != null) {
-      data = data.copyWith(
-        list: topArticles!
-            .map((ArticleModel article) => article.copyWith(isTop: true))
+    http = ref.watch(networkProvider);
+
+    final List<ArticleModel> topArticles =
+        ref.read(homeTopArticlesProvider).valueOrNull ??
+            await ref.watch(homeTopArticlesProvider.future);
+
+    final PaginationData<ArticleModel> data = await http.fetchHomeArticles(
+      pageNum ?? initialPageNum,
+      pageSize ?? initialPageSize,
+      cancelToken: cancelToken,
+    );
+
+    if (pageNum == null || pageNum == initialPageNum) {
+      return data.copyWith(
+        datas: topArticles
+            .map(
+              (ArticleModel e) => e.copyWith(isTop: true),
+            )
             .toList()
-          ..addAll(data.list),
+          ..addAll(data.datas),
       );
     }
 
     return data;
   }
+
+  @override
+  Future<PaginationData<ArticleModel>> Function(int pageNum, int pageSize)
+      get buildMore => (int pageNum, int pageSize) => build(
+            pageNum: pageNum,
+            pageSize: pageSize,
+          );
+
+  @override
+  int getNextPageNum(PaginationData<ArticleModel> data) =>
+      ((data.datas.length -
+                  (ref.read(homeTopArticlesProvider).whenOrNull(
+                            data: (List<ArticleModel> data) => data.length,
+                          ) ??
+                      0)) /
+              data.size)
+          .ceil() +
+      initialPageNum;
 }

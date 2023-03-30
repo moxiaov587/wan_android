@@ -2,6 +2,10 @@ part of 'provider.dart';
 
 abstract class BaseRefreshListViewNotifier<T>
     extends StateNotifier<RefreshListViewState<T>> {
+  @Deprecated(
+    'use Buildless(AutoDispose)AsyncNotifier<PaginationData<T>> with '
+    'LoadMoreMixin<T> instead.',
+  )
   BaseRefreshListViewNotifier(
     super.state, {
     this.initialPageNum = 1,
@@ -90,11 +94,4 @@ abstract class BaseRefreshListViewNotifier<T>
   ErrorListener get onError => (Object e, StackTrace? s) {
         state = RefreshListViewState<T>.error(e, s ?? StackTrace.current);
       };
-}
-
-enum LoadingMoreStatus {
-  loading,
-  completed,
-  noData,
-  failed,
 }

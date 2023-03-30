@@ -4,6 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../http/interceptors/interceptors.dart' show ResponseData;
 import 'view_state.dart';
+import 'widget/pull_to_refresh_widgets.dart';
 
 part 'base_list_view_notifier.dart';
 part 'base_refresh_list_view_notifier.dart';

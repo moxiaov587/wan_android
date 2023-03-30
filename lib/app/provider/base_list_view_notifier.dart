@@ -1,6 +1,7 @@
 part of 'provider.dart';
 
 abstract class BaseListViewNotifier<T> extends StateNotifier<ListViewState<T>> {
+  @Deprecated('use (AutoDispose)AsyncNotifier<List<T>> instead.')
   BaseListViewNotifier(super.state);
 
   Future<bool> initData() async {

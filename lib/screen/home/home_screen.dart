@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -134,20 +137,26 @@ class _Home extends ConsumerStatefulWidget {
 class _HomeState extends ConsumerState<_Home>
     with
         AutomaticKeepAliveClientMixin,
-        AutoDisposeRefreshListViewStateMixin<HomeArticleProvider, ArticleModel,
-            _Home> {
+        RefreshListViewStateMixin<HomeArticleProvider, ArticleModel, _Home> {
   @override
   bool get wantKeepAlive => true;
 
   @override
-  HomeArticleProvider get provider => homeArticleProvider;
+  HomeArticleProvider get provider => homeArticleProvider();
 
   @override
-  FutureOr<void> onRetry() {
+  Refreshable<Future<PaginationData<ArticleModel>>> get refreshable =>
+      provider.future;
+
+  @override
+  OnLoadMoreCallback get loadMore => ref.read(provider.notifier).loadMore;
+
+  @override
+  FutureOr<void> onRetry() async {
     if (ref.read(homeTopArticlesProvider).hasError) {
       ref.invalidate(homeTopArticlesProvider);
     } else {
-      return super.onRetry();
+      await super.onRetry();
     }
   }
 
@@ -163,28 +172,30 @@ class _HomeState extends ConsumerState<_Home>
           pullDownIndicator,
           Consumer(
             builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-              (List<ArticleModel> list, _, __) {
-                if (list.isEmpty) {
-                  return const SliverFillRemaining(child: EmptyWidget());
-                }
+                  data: (PaginationData<ArticleModel> data) {
+                    final List<ArticleModel> list = data.datas;
 
-                return SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (_, int index) {
-                      final ArticleModel article = list[index];
+                    if (list.isEmpty) {
+                      return const SliverFillRemaining(child: EmptyWidget());
+                    }
 
-                      return ArticleTile(
-                        key: Key('home_article_${article.id}'),
-                        article: article,
-                      );
-                    },
-                    childCount: list.length,
-                  ),
-                );
-              },
-              loading: loadingIndicatorBuilder,
-              error: errorIndicatorBuilder,
-            ),
+                    return SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (_, int index) {
+                          final ArticleModel article = list[index];
+
+                          return ArticleTile(
+                            key: Key('home_article_${article.id}'),
+                            article: article,
+                          );
+                        },
+                        childCount: list.length,
+                      ),
+                    );
+                  },
+                  loading: loadingIndicatorBuilder,
+                  error: errorIndicatorBuilder,
+                ),
           ),
           loadMoreIndicator,
         ],
@@ -449,7 +460,7 @@ class _BannerCarousel extends StatelessWidget {
                                   padding: AppTheme.bodyPaddingOnlyHorizontal,
                                   child: Column(
                                     children: <Widget>[
-                                      const Gap.v(value: kStyleUint4 * 3),
+                                      const Gap.v(value: kStyleUint4 * 2),
                                       Icon(
                                         IconFontIcons.refreshLine,
                                         color: context
@@ -522,7 +533,44 @@ class _BannerCarouselItem extends StatelessWidget {
   Widget build(BuildContext context) => Stack(
         fit: StackFit.expand,
         children: <Widget>[
-          Image.network(homeBanner.imageUrl, fit: BoxFit.fill),
+          Image.network(
+            homeBanner.imageUrl,
+            fit: BoxFit.fill,
+            loadingBuilder: (
+              BuildContext context,
+              Widget child,
+              ImageChunkEvent? loadingProgress,
+            ) {
+              if (loadingProgress == null) {
+                return child;
+              }
+
+              final double? progress =
+                  loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes!
+                      : null;
+              return Center(
+                child: progress != null
+                    ? CupertinoActivityIndicator.partiallyRevealed(
+                        progress: progress,
+                      )
+                    : const CupertinoActivityIndicator(),
+              );
+            },
+            errorBuilder: (
+              BuildContext context,
+              Object error,
+              StackTrace? stackTrace,
+            ) =>
+                Center(
+              child: Icon(
+                Icons.broken_image_rounded,
+                color: context.theme.dividerColor,
+                size: kStyleUint4 * 2,
+              ),
+            ),
+          ),
           Positioned(
             left: 0.0,
             right: 0.0,

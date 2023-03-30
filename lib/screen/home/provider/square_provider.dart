@@ -1,46 +1,32 @@
 part of 'home_provider.dart';
 
-typedef SquareArticleProvider = AutoDisposeStateNotifierProvider<SquareNotifier,
-    RefreshListViewState<ArticleModel>>;
+@riverpod
+class SquareArticle extends _$SquareArticle with LoadMoreMixin<ArticleModel> {
+  @override
+  int get initialPageNum => 0;
 
-final SquareArticleProvider squareArticleProvider = StateNotifierProvider
-    .autoDispose<SquareNotifier, RefreshListViewState<ArticleModel>>(
-  (
-    AutoDisposeStateNotifierProviderRef<SquareNotifier,
-            RefreshListViewState<ArticleModel>>
-        ref,
-  ) {
-    final CancelToken cancelToken = ref.cancelToken();
-
-    final Http http = ref.watch(networkProvider);
-
-    return SquareNotifier(
-      const RefreshListViewState<ArticleModel>.loading(),
-      http: http,
-      cancelToken: cancelToken,
-    )..initData();
-  },
-  name: kSquareArticleProvider,
-);
-
-class SquareNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
-  SquareNotifier(
-    super.state, {
-    required this.http,
-    this.cancelToken,
-  }) : super(initialPageNum: 0);
-
-  final Http http;
-  final CancelToken? cancelToken;
+  late Http http;
 
   @override
-  Future<RefreshListViewStateData<ArticleModel>> loadData({
-    required int pageNum,
-    required int pageSize,
-  }) async =>
-      (await http.fetchSquareArticles(
-        pageNum,
-        pageSize,
-      ))
-          .toRefreshListViewStateData();
+  Future<PaginationData<ArticleModel>> build({
+    int? pageNum,
+    int? pageSize,
+  }) {
+    final CancelToken cancelToken = ref.cancelToken();
+
+    http = ref.watch(networkProvider);
+
+    return http.fetchSquareArticles(
+      pageNum ?? initialPageNum,
+      pageSize ?? initialPageSize,
+      cancelToken: cancelToken,
+    );
+  }
+
+  @override
+  Future<PaginationData<ArticleModel>> Function(int pageNum, int pageSize)
+      get buildMore => (int pageNum, int pageSize) => build(
+            pageNum: pageNum,
+            pageSize: pageSize,
+          );
 }

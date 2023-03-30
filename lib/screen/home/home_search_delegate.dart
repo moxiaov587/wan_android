@@ -57,11 +57,18 @@ class _Results extends ConsumerStatefulWidget {
 
 class __ResultsState extends ConsumerState<_Results>
     with
-        AutoDisposeRefreshListViewStateMixin<SearchArticlesProvider,
-            ArticleModel, _Results> {
+        RefreshListViewStateMixin<SearchArticleProvider, ArticleModel,
+            _Results> {
   @override
-  late final SearchArticlesProvider provider =
-      searchArticlesProvider(widget.query);
+  late final SearchArticleProvider provider =
+      searchArticleProvider(widget.query);
+
+  @override
+  Refreshable<Future<PaginationData<ArticleModel>>> get refreshable =>
+      provider.future;
+
+  @override
+  OnLoadMoreCallback get loadMore => ref.read(provider.notifier).loadMore;
 
   Isar get isar => ref.read(appDatabaseProvider);
 
@@ -118,31 +125,33 @@ class __ResultsState extends ConsumerState<_Results>
             pullDownIndicator,
             Consumer(
               builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-                (List<ArticleModel> list, _, __) {
-                  if (list.isEmpty) {
-                    return const SliverFillRemaining(
-                      child: EmptyWidget.search(),
-                    );
-                  }
+                    data: (PaginationData<ArticleModel> data) {
+                      final List<ArticleModel> list = data.datas;
 
-                  return SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (_, int index) {
-                        final ArticleModel article = list[index];
-
-                        return ArticleTile(
-                          key: Key('search_article_${article.id}'),
-                          article: article,
-                          query: widget.query,
+                      if (list.isEmpty) {
+                        return const SliverFillRemaining(
+                          child: EmptyWidget.search(),
                         );
-                      },
-                      childCount: list.length,
-                    ),
-                  );
-                },
-                loading: loadingIndicatorBuilder,
-                error: errorIndicatorBuilder,
-              ),
+                      }
+
+                      return SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (_, int index) {
+                            final ArticleModel article = list[index];
+
+                            return ArticleTile(
+                              key: Key('search_article_${article.id}'),
+                              article: article,
+                              query: widget.query,
+                            );
+                          },
+                          childCount: list.length,
+                        ),
+                      );
+                    },
+                    loading: loadingIndicatorBuilder,
+                    error: errorIndicatorBuilder,
+                  ),
             ),
             SliverPadding(
               padding: EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
