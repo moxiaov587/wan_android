@@ -22,7 +22,9 @@ class AppThemeMode extends _$AppThemeMode {
       themeMode: themeMode,
     );
 
-    isar.writeTxnSync<int>(() => isar.userSettingsCache.putSync(userSettings));
+    unawaited(
+      isar.writeTxn<int>(() async => isar.userSettingsCache.put(userSettings)),
+    );
   }
 }
 

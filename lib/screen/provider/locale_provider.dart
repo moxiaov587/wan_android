@@ -29,7 +29,9 @@ class AppLanguage extends _$AppLanguage {
               enforceWriteLanguage: true,
             );
 
-    isar.writeTxnSync<int>(() => isar.userSettingsCache.putSync(userSettings));
+    unawaited(
+      isar.writeTxn<int>(() async => isar.userSettingsCache.put(userSettings)),
+    );
   }
 }
 

@@ -105,14 +105,16 @@ class __ResultsState extends ConsumerState<_Results>
       searchHistory.id = duplicateSearchHistory.id;
     }
 
-    isar.writeTxnSync<void>(
-      () {
-        if (id != null) {
-          isar.searchHistoryCaches.deleteSync(id);
-        }
+    unawaited(
+      isar.writeTxn<dynamic>(
+        () async {
+          if (id != null) {
+            await isar.searchHistoryCaches.delete(id);
+          }
 
-        isar.searchHistoryCaches.putSync(searchHistory);
-      },
+          await isar.searchHistoryCaches.put(searchHistory);
+        },
+      ),
     );
   }
 
@@ -176,6 +178,16 @@ class _Suggestions extends ConsumerStatefulWidget {
 class __SuggestionsState extends ConsumerState<_Suggestions> {
   Isar get isar => ref.read(appDatabaseProvider);
 
+  final ValueNotifier<bool> _loadingClearBtnNotifier =
+      ValueNotifier<bool>(false);
+
+  @override
+  void dispose() {
+    _loadingClearBtnNotifier.dispose();
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final double wrapSpace = AppTheme.bodyPadding.top;
@@ -210,16 +222,31 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
                           style: context.theme.textTheme.titleSmall,
                         ),
                       ),
-                      IconButton(
-                        padding: AppTheme.bodyPaddingOnlyHorizontal,
-                        onPressed: () {
-                          isar.writeTxnSync(
-                            () => isar.searchHistoryCaches.clearSync(),
-                          );
-                        },
-                        icon: const Icon(
-                          IconFontIcons.deleteLine,
+                      ValueListenableBuilder<bool>(
+                        valueListenable: _loadingClearBtnNotifier,
+                        builder: (
+                          BuildContext context,
+                          bool loading,
+                          Widget? child,
+                        ) =>
+                            IconButton(
+                          padding: AppTheme.bodyPaddingOnlyHorizontal,
+                          tooltip: S.of(context).clear,
+                          onPressed: loading
+                              ? null
+                              : () async {
+                                  _loadingClearBtnNotifier.value = true;
+                                  try {
+                                    await isar.writeTxn(
+                                      isar.searchHistoryCaches.clear,
+                                    );
+                                  } finally {
+                                    _loadingClearBtnNotifier.value = false;
+                                  }
+                                },
+                          icon: child!,
                         ),
+                        child: const Icon(IconFontIcons.deleteLine),
                       ),
                     ],
                   ),

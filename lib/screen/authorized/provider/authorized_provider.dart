@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../app/http/http.dart';
@@ -39,7 +41,7 @@ class Authorized extends _$Authorized {
     return null;
   }
 
-  void _handleCacheByLogin(
+  Future<List<int>> _handleCacheByLogin(
     int userId, {
     required String username,
     required String password,
@@ -58,11 +60,13 @@ class Authorized extends _$Authorized {
       rememberPassword: rememberPassword,
     );
 
-    isar.writeTxnSync<void>(
-      () {
-        isar.accountCaches.putSync(accountCache);
-        isar.userSettingsCache.putSync(userSettings);
-      },
+    return isar.writeTxn(
+      () async => Future.wait<int>(
+        <Future<int>>[
+          isar.accountCaches.put(accountCache),
+          isar.userSettingsCache.put(userSettings),
+        ],
+      ),
     );
   }
 
@@ -107,11 +111,13 @@ class Authorized extends _$Authorized {
 
       final UserInfoModel userInfo = await http.fetchUserInfo();
 
-      _handleCacheByLogin(
-        user.id,
-        username: username,
-        password: password,
-        rememberPassword: rememberPassword,
+      unawaited(
+        _handleCacheByLogin(
+          user.id,
+          username: username,
+          password: password,
+          rememberPassword: rememberPassword,
+        ),
       );
 
       return userInfo;
@@ -142,11 +148,13 @@ class Authorized extends _$Authorized {
 
       final UserInfoModel userInfo = await http.silentFetchUserInfo();
 
-      _handleCacheByLogin(
-        user.id,
-        username: username,
-        password: password,
-        rememberPassword: true,
+      unawaited(
+        _handleCacheByLogin(
+          user.id,
+          username: username,
+          password: password,
+          rememberPassword: true,
+        ),
       );
 
       return userInfo;
@@ -194,7 +202,7 @@ class Authorized extends _$Authorized {
         ..username = username
         ..updateTime = DateTime.now();
 
-      isar.writeTxnSync(() => isar.accountCaches.putSync(accountCache));
+      unawaited(isar.writeTxn(() => isar.accountCaches.put(accountCache)));
 
       DialogUtils.success(S.current.registerSuccess);
 
