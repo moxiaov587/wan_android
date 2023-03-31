@@ -125,7 +125,11 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
   }
 
   Future<void> closeSplash() async {
-    await ref.read(authorizedProvider.future);
+    try {
+      await ref.read(authorizedProvider.future);
+    } on Exception catch (_) {
+      /// Ignore exceptions to avoid application blocking.
+    }
 
     final AsyncValue<UserInfoModel?> auth = ref.read(authorizedProvider);
 
