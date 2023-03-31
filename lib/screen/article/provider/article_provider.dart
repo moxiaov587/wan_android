@@ -2,8 +2,8 @@ import 'package:collection/collection.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../app/http/http.dart';
+import '../../../app/http/interceptors/interceptors.dart';
 import '../../../app/l10n/generated/l10n.dart';
-import '../../../app/provider/provider.dart';
 import '../../../model/models.dart';
 import '../../../utils/dialog_utils.dart';
 import '../../drawer/home_drawer.dart' show MyCollectionsScreen;
@@ -20,9 +20,7 @@ class AppArticle extends _$AppArticle {
   /// autoDispose provider, So if they exist, it can be considered to be
   /// currently in the [MyCollectionsScreen] that is, they can be searched
   /// first from them.
-  WebViewModel? findCollectedWebsite({
-    required int articleId,
-  }) {
+  WebViewModel? findCollectedWebsite(int websiteId) {
     if (!ref.container.exists(myCollectedWebsiteProvider)) {
       return null;
     }
@@ -30,7 +28,7 @@ class AppArticle extends _$AppArticle {
     final CollectedWebsiteModel? collectedWebsite = ref
         .read(myCollectedWebsiteProvider)
         .whenOrNull(data: (List<CollectedWebsiteModel> list) => list)
-        ?.firstWhereOrNull((CollectedWebsiteModel e) => e.id == articleId);
+        ?.firstWhereOrNull((CollectedWebsiteModel e) => e.id == websiteId);
 
     if (collectedWebsite != null) {
       return WebViewModel(
@@ -50,9 +48,7 @@ class AppArticle extends _$AppArticle {
     return null;
   }
 
-  WebViewModel? findCollectedArticle({
-    required int articleId,
-  }) {
+  WebViewModel? findCollectedArticle(int articleId) {
     if (!ref.container.exists(myCollectedArticleProvider())) {
       return null;
     }
@@ -113,17 +109,16 @@ class AppArticle extends _$AppArticle {
   Future<WebViewModel> build(int articleId) async {
     http = ref.watch(networkProvider);
 
-    final WebViewModel? webViewModel =
-        findCollectedWebsite(articleId: articleId) ??
-            findCollectedArticle(articleId: articleId) ??
-            await findArticle(articleId);
+    final WebViewModel? webViewModel = findCollectedWebsite(articleId) ??
+        findCollectedArticle(articleId) ??
+        await findArticle(articleId);
 
     if (webViewModel != null) {
       return webViewModel.copyWith(
         withCookie: webViewModel.link.startsWith(kBaseUrl),
       );
     } else {
-      throw ViewError(
+      throw AppException(
         statusCode: 404,
         message: S.current.articleNotFound,
         detail: S.current.articleNotFoundMsg,
@@ -228,7 +223,7 @@ class AppArticle extends _$AppArticle {
               }
             } on Exception catch (e, s) {
               DialogUtils.danger(
-                ViewError.create(e, s).errorMessage(S.current.failed),
+                AppException.create(e, s).errorMessage(S.current.failed),
               );
             }
           }

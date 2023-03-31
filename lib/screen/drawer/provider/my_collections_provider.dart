@@ -57,7 +57,9 @@ class MyCollectedArticle extends _$MyCollectedArticle
         return false;
       }
     } on Exception catch (e, s) {
-      DialogUtils.danger(ViewError.create(e, s).errorMessage(S.current.failed));
+      DialogUtils.danger(
+        AppException.create(e, s).errorMessage(S.current.failed),
+      );
 
       return false;
     } finally {
@@ -106,7 +108,7 @@ class MyCollectedArticle extends _$MyCollectedArticle
             return true;
           } on Exception catch (e, s) {
             DialogUtils.danger(
-              ViewError.create(e, s).errorMessage(S.current.failed),
+              AppException.create(e, s).errorMessage(S.current.failed),
             );
 
             return false;
@@ -129,7 +131,9 @@ class MyCollectedArticle extends _$MyCollectedArticle
 
       return true;
     } on Exception catch (e, s) {
-      DialogUtils.danger(ViewError.create(e, s).errorMessage(S.current.failed));
+      DialogUtils.danger(
+        AppException.create(e, s).errorMessage(S.current.failed),
+      );
 
       return false;
     }
@@ -219,7 +223,9 @@ class MyCollectedWebsite extends _$MyCollectedWebsite {
 
       return data;
     } on Exception catch (e, s) {
-      DialogUtils.danger(ViewError.create(e, s).errorMessage(S.current.failed));
+      DialogUtils.danger(
+        AppException.create(e, s).errorMessage(S.current.failed),
+      );
 
       return null;
     } finally {
@@ -262,7 +268,7 @@ class MyCollectedWebsite extends _$MyCollectedWebsite {
             return true;
           } on Exception catch (e, s) {
             DialogUtils.danger(
-              ViewError.create(e, s).errorMessage(S.current.failed),
+              AppException.create(e, s).errorMessage(S.current.failed),
             );
 
             return false;
@@ -279,7 +285,9 @@ class MyCollectedWebsite extends _$MyCollectedWebsite {
 
       return true;
     } on Exception catch (e, s) {
-      DialogUtils.danger(ViewError.create(e, s).errorMessage(S.current.failed));
+      DialogUtils.danger(
+        AppException.create(e, s).errorMessage(S.current.failed),
+      );
 
       return false;
     }

@@ -1,8 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../app/http/http.dart';
+import '../../../app/http/interceptors/interceptors.dart';
 import '../../../app/l10n/generated/l10n.dart';
-import '../../../app/provider/provider.dart';
 import '../../../database/app_database.dart';
 import '../../../model/models.dart';
 import '../../../utils/dialog_utils.dart' show DialogUtils;
@@ -119,7 +119,7 @@ class Authorized extends _$Authorized {
 
     if (state.hasError) {
       DialogUtils.danger(
-        ViewError.create(state.error!, state.stackTrace)
+        AppException.create(state.error!, state.stackTrace)
             .errorMessage(S.current.loginFailed),
       );
     }
@@ -166,7 +166,7 @@ class Authorized extends _$Authorized {
 
     if (state.hasError) {
       DialogUtils.danger(
-        ViewError.create(state.error!, state.stackTrace)
+        AppException.create(state.error!, state.stackTrace)
             .errorMessage(S.current.unknownError),
       );
     }
@@ -201,7 +201,7 @@ class Authorized extends _$Authorized {
       return true;
     } on Exception catch (e, s) {
       DialogUtils.danger(
-        ViewError.create(e, s).errorMessage(S.current.registerFailed),
+        AppException.create(e, s).errorMessage(S.current.registerFailed),
       );
 
       return false;

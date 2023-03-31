@@ -7,9 +7,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nil/nil.dart' show nil;
 
 import '../../../widget/view_state_widget.dart';
+import '../../app/http/interceptors/interceptors.dart';
 import '../../app/l10n/generated/l10n.dart';
 import '../../app/provider/mixin/refresh_list_view_state_mixin.dart';
-import '../../app/provider/provider.dart';
 import '../../app/theme/app_theme.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../database/app_database.dart';
@@ -447,7 +447,7 @@ class _BannerCarousel extends StatelessWidget {
                         ),
                         loading: () => const LoadingWidget.listView(),
                         error: (Object e, StackTrace s) {
-                          final ViewError error = ViewError.create(e, s);
+                          final AppException error = AppException.create(e, s);
 
                           return Material(
                             child: Ink(

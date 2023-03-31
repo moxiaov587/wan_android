@@ -12,8 +12,8 @@ import 'package:flutter_web_plugins/url_strategy.dart' show usePathUrlStrategy;
 import 'package:path_provider/path_provider.dart';
 
 import 'app/http/http.dart';
+import 'app/http/interceptors/interceptors.dart';
 import 'app/l10n/generated/l10n.dart';
-import 'app/provider/provider.dart';
 import 'app/theme/app_theme.dart' show AppTextTheme, AppTheme;
 import 'database/app_database.dart';
 import 'extensions/extensions.dart' show BuildContextExtension;
@@ -134,7 +134,8 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
     await requestResetThemeMode();
 
     if (auth.hasError) {
-      final ViewError error = ViewError.create(auth.error!, auth.stackTrace);
+      final AppException error =
+          AppException.create(auth.error!, auth.stackTrace);
 
       Future<void>.delayed(const Duration(seconds: 3), () {
         DialogUtils.tips(

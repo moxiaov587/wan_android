@@ -8,7 +8,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart' show FutureOr;
 
 import '../../../model/models.dart' show PaginationData;
 import '../../../widget/view_state_widget.dart';
-import '../provider.dart';
+import '../../http/interceptors/interceptors.dart';
 import '../widget/pull_to_refresh_widgets.dart';
 
 export 'package:riverpod_annotation/riverpod_annotation.dart' show FutureOr;
@@ -113,8 +113,8 @@ mixin RefreshListViewStateMixin<
       );
 
   Widget errorIndicatorBuilder(Object e, StackTrace s) => SliverFillRemaining(
-        child: CustomErrorWidget.withViewError(
-          ViewError.create(e, s),
+        child: CustomErrorWidget.withAppException(
+          AppException.create(e, s),
           onRetry: onRetry,
         ),
       );

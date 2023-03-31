@@ -15,21 +15,11 @@ class PaginationData<T> with _$PaginationData<T> {
     @Default(false) bool over,
   }) = _PaginationData<T>;
 
-  /// Define a private empty constructor to make custom methods work.
-  const PaginationData._();
-
   factory PaginationData.fromJson(
     Map<String, dynamic> json,
     T Function(Object?) fromJsonT,
   ) =>
       _$PaginationDataFromJson(json, fromJsonT);
-
-  RefreshListViewStateData<T> toRefreshListViewStateData() =>
-      RefreshListViewStateData<T>(
-        pageNum: curPage,
-        isLastPage: over,
-        list: datas,
-      );
 }
 
 class PaginationDataConverter

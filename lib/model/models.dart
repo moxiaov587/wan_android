@@ -1,7 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../app/provider/view_state.dart' show RefreshListViewStateData;
-
 part 'article_model.dart';
 part 'banner_model.dart';
 part 'collected_article_model.dart';

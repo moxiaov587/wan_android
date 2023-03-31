@@ -46,7 +46,9 @@ class MyShareArticle extends _$MyShareArticle with LoadMoreMixin<ArticleModel> {
 
       return true;
     } on Exception catch (e, s) {
-      DialogUtils.danger(ViewError.create(e, s).errorMessage(S.current.failed));
+      DialogUtils.danger(
+        AppException.create(e, s).errorMessage(S.current.failed),
+      );
 
       return false;
     } finally {
@@ -64,7 +66,9 @@ class MyShareArticle extends _$MyShareArticle with LoadMoreMixin<ArticleModel> {
 
       return true;
     } on Exception catch (e, s) {
-      DialogUtils.danger(ViewError.create(e, s).errorMessage(S.current.failed));
+      DialogUtils.danger(
+        AppException.create(e, s).errorMessage(S.current.failed),
+      );
 
       return false;
     }

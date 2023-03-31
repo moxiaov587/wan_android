@@ -5,7 +5,7 @@ import 'package:nil/nil.dart' show nil;
 import 'package:riverpod_annotation/riverpod_annotation.dart' show FutureOr;
 
 import '../../../widget/view_state_widget.dart';
-import '../provider.dart';
+import '../../http/interceptors/interceptors.dart';
 
 export 'package:riverpod_annotation/riverpod_annotation.dart' show FutureOr;
 
@@ -37,8 +37,8 @@ mixin ListViewStateMixin<ProviderType extends ProviderBase<AsyncValue<List<T>>>,
       );
 
   Widget errorIndicatorBuilder(Object e, StackTrace s) => SliverFillRemaining(
-        child: CustomErrorWidget.withViewError(
-          ViewError.create(e, s),
+        child: CustomErrorWidget.withAppException(
+          AppException.create(e, s),
           onRetry: onRetry,
         ),
       );

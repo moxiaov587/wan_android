@@ -15,7 +15,6 @@ import '../../../screen/authorized/provider/authorized_provider.dart';
 import '../../../screen/provider/common_provider.dart';
 import '../../../utils/log_utils.dart';
 import '../../l10n/generated/l10n.dart';
-import '../../provider/provider.dart';
 import '../http.dart';
 
 part 'cache_interceptor.dart';

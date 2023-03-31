@@ -74,8 +74,8 @@ class _ProjectTypeBottomSheetState
                       ),
                       loading: () => const LoadingWidget.listView(),
                       error: (Object e, StackTrace s) =>
-                          CustomErrorWidget.withViewError(
-                        ViewError.create(e, s),
+                          CustomErrorWidget.withAppException(
+                        AppException.create(e, s),
                         onRetry: () {
                           ref.invalidate(projectTypeProvider);
                         },
