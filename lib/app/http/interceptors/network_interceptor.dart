@@ -10,9 +10,30 @@ class NetWorkInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    final ConnectivityResult? status =
-        ref.read(connectivityStreamProvider).valueOrNull ??
-            await ref.read(connectivityStreamProvider.future);
+    ConnectivityResult? status =
+        ref.read(connectivityStreamProvider).valueOrNull;
+
+    if (status == null) {
+      final List<ConnectivityResult?> result = await Future.wait(
+        <Future<ConnectivityResult?>>[
+          ref.read(connectivityStreamProvider.future),
+          Future<ConnectivityResult?>.delayed(
+            const Duration(seconds: 2), // Set check connectivity timeout
+            () => throw const AppException(
+              statusCode: kNetworkExceptionStatusCode,
+            ),
+          ),
+        ],
+        eagerError: true,
+      ).catchError(
+        (_) => <ConnectivityResult?>[
+          ref.read(connectivityStreamProvider).valueOrNull,
+          null,
+        ],
+      );
+
+      status = result.first ?? result.last;
+    }
 
     LogUtils.w('Network Connectivity: $status');
 
