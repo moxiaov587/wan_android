@@ -140,6 +140,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
                             _passwordTextEditingController.text = ref
                                 .read(authorizedProvider.notifier)
                                 .decryptString(option.password!);
+                          } else {
+                            _passwordTextEditingController.text = '';
                           }
                         },
                         optionsBuilder: (TextEditingValue value) async => isar
