@@ -10,8 +10,13 @@ class NetWorkInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    if (await ref.read(connectivityStreamProvider.future) ==
-        ConnectivityResult.none) {
+    final ConnectivityResult? status =
+        ref.read(connectivityStreamProvider).valueOrNull ??
+            await ref.read(connectivityStreamProvider.future);
+
+    LogUtils.w('Network Connectivity: $status');
+
+    if (status == null || status == ConnectivityResult.none) {
       // Add a random delay of 500 ms to 1000 ms to "comfort" the user.
       await Future<void>.delayed(
         Duration(milliseconds: Random().nextInt(500) + 500),
