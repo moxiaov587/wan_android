@@ -12,11 +12,6 @@ class ArticleTile extends StatelessWidget {
   final String? query;
   final bool authorTextOrShareUserTextCanOnTap;
 
-  TextSpan get _textSpace => const TextSpan(
-        text: '${Unicode.halfWidthSpace}•${Unicode.halfWidthSpace}',
-        style: TextStyle(wordSpacing: kStyleUint / 2),
-      );
-
   @override
   Widget build(BuildContext context) {
     final bool isShare = article.author.strictValue == null;
@@ -24,6 +19,11 @@ class ArticleTile extends StatelessWidget {
     final double titleVerticalGap = AppTheme.bodyPadding.top;
 
     final TextStyle titleStyle = context.theme.textTheme.titleSmall!;
+
+    const TextSpan textSpace = TextSpan(
+      text: '${Unicode.halfWidthSpace}•${Unicode.halfWidthSpace}',
+      style: TextStyle(wordSpacing: kStyleUint / 2),
+    );
 
     return Material(
       child: Ink(
@@ -72,19 +72,19 @@ class ArticleTile extends StatelessWidget {
                                 })
                               : null,
                         ),
-                      if (article.author.strictValue == null ||
-                          article.shareUser.strictValue == null)
-                        _textSpace,
                       TextSpan(
                         text: article.publishTime
                                 .toDateTimeTranslation(context) ??
                             '',
                       ),
-                      _textSpace,
                       TextSpan(
                         text: '${article.chapterName}',
                       ),
-                    ],
+                    ].fold<List<TextSpan>>(
+                      <TextSpan>[],
+                      (List<TextSpan> children, TextSpan child) =>
+                          <TextSpan>[...children, child, textSpace],
+                    )..removeLast(),
                   ),
                 ),
                 Gap.v(value: titleVerticalGap),

@@ -10,12 +10,9 @@ import '../model/models.dart';
 import '../screen/drawer/home_drawer.dart';
 import '../utils/dialog_utils.dart';
 import '../utils/html_parse_utils.dart';
-import '../utils/screen_utils.dart';
 import 'article.dart';
 import 'dismissible_slidable_action.dart';
 import 'gap.dart';
-
-const double _kSlidableTileItemExtent = 94.0;
 
 class SlidableTile extends StatelessWidget {
   const SlidableTile.collectedArticle({
@@ -68,13 +65,6 @@ class SlidableTile extends StatelessWidget {
   final bool isCollectedWebsite;
   final bool isShareArticle;
 
-  TextSpan get _textSpace => const TextSpan(
-        text: '${Unicode.halfWidthSpace}•${Unicode.halfWidthSpace}',
-        style: TextStyle(
-          wordSpacing: kStyleUint / 2,
-        ),
-      );
-
   @override
   Widget build(BuildContext context) {
     late String groupTag;
@@ -87,13 +77,20 @@ class SlidableTile extends StatelessWidget {
       removeTips = S.of(context).removeShareTips;
 
       child = ConstrainedBox(
-        constraints: BoxConstraints.tightFor(width: ScreenUtils.width),
+        constraints: const BoxConstraints(minWidth: double.infinity),
         child: ArticleTile(
           article: article!,
           authorTextOrShareUserTextCanOnTap: false,
         ),
       );
     } else {
+      const TextSpan textSpace = TextSpan(
+        text: '${Unicode.halfWidthSpace}•${Unicode.halfWidthSpace}',
+        style: TextStyle(
+          wordSpacing: kStyleUint / 2,
+        ),
+      );
+
       groupTag = isCollectedArticle
           ? CollectionType.article.name
           : CollectionType.website.name;
@@ -112,16 +109,16 @@ class SlidableTile extends StatelessWidget {
                     children: <TextSpan>[
                       if (collectedArticle!.author.strictValue != null)
                         TextSpan(text: collectedArticle!.author.strictValue),
-                      if (collectedArticle!.author.strictValue != null)
-                        _textSpace,
                       TextSpan(text: collectedArticle!.niceDate),
-                      if (collectedArticle!.chapterName.strictValue != null)
-                        _textSpace,
                       if (collectedArticle!.chapterName.strictValue != null)
                         TextSpan(
                           text: collectedArticle!.chapterName.strictValue,
                         ),
-                    ],
+                    ].fold<List<TextSpan>>(
+                      <TextSpan>[],
+                      (List<TextSpan> children, TextSpan child) =>
+                          <TextSpan>[...children, child, textSpace],
+                    )..removeLast(),
                   ),
                 ),
                 Gap.v(value: AppTheme.bodyPadding.top),
@@ -143,9 +140,9 @@ class SlidableTile extends StatelessWidget {
             );
 
       child = ConstrainedBox(
-        constraints: BoxConstraints.tightFor(
-          width: ScreenUtils.width,
-          height: _kSlidableTileItemExtent,
+        constraints: const BoxConstraints(
+          minWidth: double.infinity,
+          minHeight: 76.0,
         ),
         child: Material(
           child: Ink(
