@@ -20,7 +20,6 @@ class HandleSharedBottomSheetRoute extends GoRouteData {
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) =>
       AppModalBottomSheetPage<void>(
-        useRootNavigator: true,
         builder: (_) => const HandleSharedBottomSheet(),
         isScrollControlled: true,
         constraints: BoxConstraints.tightFor(
