@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart';
 
 import '../../extensions/extensions.dart' show BuildContextExtension;
+import '../app/http/interceptors/interceptors.dart';
 import '../app/l10n/generated/l10n.dart';
-import '../app/provider/provider.dart';
 import '../app/theme/app_theme.dart';
 import '../contacts/assets.dart';
 import 'gap.dart';

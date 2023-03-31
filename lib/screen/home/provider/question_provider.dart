@@ -1,46 +1,33 @@
 part of 'home_provider.dart';
 
-typedef QuestionArticleProvider = AutoDisposeStateNotifierProvider<
-    QuestionNotifier, RefreshListViewState<ArticleModel>>;
+@riverpod
+class QuestionArticle extends _$QuestionArticle
+    with LoadMoreMixin<ArticleModel> {
+  @override
+  int get initialPageNum => 0;
 
-final QuestionArticleProvider questionArticleProvider = StateNotifierProvider
-    .autoDispose<QuestionNotifier, RefreshListViewState<ArticleModel>>(
-  (
-    AutoDisposeStateNotifierProviderRef<QuestionNotifier,
-            RefreshListViewState<ArticleModel>>
-        ref,
-  ) {
-    final CancelToken cancelToken = ref.cancelToken();
-
-    final Http http = ref.watch(networkProvider);
-
-    return QuestionNotifier(
-      const RefreshListViewState<ArticleModel>.loading(),
-      http: http,
-      cancelToken: cancelToken,
-    )..initData();
-  },
-  name: kQuestionArticleProvider,
-);
-
-class QuestionNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
-  QuestionNotifier(
-    super.state, {
-    required this.http,
-    this.cancelToken,
-  }) : super(initialPageNum: 0);
-
-  final Http http;
-  final CancelToken? cancelToken;
+  late Http http;
 
   @override
-  Future<RefreshListViewStateData<ArticleModel>> loadData({
-    required int pageNum,
-    required int pageSize,
-  }) async =>
-      (await http.fetchQuestionArticles(
-        pageNum,
-        pageSize,
-      ))
-          .toRefreshListViewStateData();
+  Future<PaginationData<ArticleModel>> build({
+    int? pageNum,
+    int? pageSize,
+  }) {
+    final CancelToken cancelToken = ref.cancelToken();
+
+    http = ref.watch(networkProvider);
+
+    return http.fetchQuestionArticles(
+      pageNum ?? initialPageNum,
+      pageSize ?? initialPageSize,
+      cancelToken: cancelToken,
+    );
+  }
+
+  @override
+  Future<PaginationData<ArticleModel>> Function(int pageNum, int pageSize)
+      get buildMore => (int pageNum, int pageSize) => build(
+            pageNum: pageNum,
+            pageSize: pageSize,
+          );
 }

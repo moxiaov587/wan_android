@@ -11,10 +11,17 @@ class RankScreen extends ConsumerStatefulWidget {
 
 class _RankScreenState extends ConsumerState<RankScreen>
     with
-        AutoDisposeRefreshListViewStateMixin<PointsRankProvider,
-            UserPointsModel, RankScreen> {
+        RefreshListViewStateMixin<PointsRankProvider, UserPointsModel,
+            RankScreen> {
   @override
-  PointsRankProvider get provider => pointsRankProvider;
+  PointsRankProvider get provider => pointsRankProvider();
+
+  @override
+  Refreshable<Future<PaginationData<UserPointsModel>>> get refreshable =>
+      provider.future;
+
+  @override
+  OnLoadMoreCallback get loadMore => ref.read(provider.notifier).loadMore;
 
   @override
   Widget build(BuildContext context) {
@@ -37,34 +44,38 @@ class _RankScreenState extends ConsumerState<RankScreen>
                 pullDownIndicator,
                 Consumer(
                   builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-                    (List<UserPointsModel> list, _, __) {
-                      if (list.isEmpty) {
-                        return const SliverFillRemaining(child: EmptyWidget());
-                      }
+                        data: (PaginationData<UserPointsModel> data) {
+                          final List<UserPointsModel> list = data.datas;
 
-                      return SliverPrototypeExtentList(
-                        delegate: SliverChildBuilderDelegate(
-                          (_, int index) {
-                            final UserPointsModel points = list[index];
-
-                            return _RankTile(
-                              key: Key('rank_${points.userId}'),
-                              rank: points.rank,
-                              level: points.level,
-                              nickname: points.nickname.strictValue ??
-                                  points.username.strictValue ??
-                                  '',
-                              totalPoints: points.coinCount,
+                          if (list.isEmpty) {
+                            return const SliverFillRemaining(
+                              child: EmptyWidget(),
                             );
-                          },
-                          childCount: list.length,
-                        ),
-                        prototypeItem: const _RankTile.prototypeItem(),
-                      );
-                    },
-                    loading: loadingIndicatorBuilder,
-                    error: errorIndicatorBuilder,
-                  ),
+                          }
+
+                          return SliverPrototypeExtentList(
+                            delegate: SliverChildBuilderDelegate(
+                              (_, int index) {
+                                final UserPointsModel points = list[index];
+
+                                return _RankTile(
+                                  key: Key('rank_${points.userId}'),
+                                  rank: points.rank,
+                                  level: points.level,
+                                  nickname: points.nickname.strictValue ??
+                                      points.username.strictValue ??
+                                      '',
+                                  totalPoints: points.coinCount,
+                                );
+                              },
+                              childCount: list.length,
+                            ),
+                            prototypeItem: const _RankTile.prototypeItem(),
+                          );
+                        },
+                        loading: loadingIndicatorBuilder,
+                        error: errorIndicatorBuilder,
+                      ),
                 ),
                 SliverPadding(
                   padding: EdgeInsets.only(
@@ -84,9 +95,12 @@ class _RankScreenState extends ConsumerState<RankScreen>
               child: Consumer(
                 builder: (_, WidgetRef ref, __) {
                   final bool showUserRank = ref.watch(
-                    pointsRankProvider.select(
-                      (RefreshListViewState<UserPointsModel> vm) =>
-                          vm.whenOrNull((_, __, ___) => true) ?? false,
+                    provider.select(
+                      (AsyncValue<PaginationData<UserPointsModel>> vm) =>
+                          vm.whenOrNull(
+                            data: (_) => true,
+                          ) ??
+                          false,
                     ),
                   );
 

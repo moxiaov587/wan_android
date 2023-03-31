@@ -1,50 +1,32 @@
 part of 'they_provider.dart';
 
-typedef TheyArticlesProvider = AutoDisposeStateNotifierProvider<
-    TheyArticlesNotifier, RefreshListViewState<ArticleModel>>;
-
-final AutoDisposeStateNotifierProviderFamily<TheyArticlesNotifier,
-        RefreshListViewState<ArticleModel>, String> theyArticlesProvider =
-    StateNotifierProvider.family.autoDispose<TheyArticlesNotifier,
-        RefreshListViewState<ArticleModel>, String>((
-  AutoDisposeStateNotifierProviderRef<TheyArticlesNotifier,
-          RefreshListViewState<ArticleModel>>
-      ref,
-  String author,
-) {
-  final CancelToken cancelToken = ref.cancelToken();
-
-  final Http http = ref.watch(networkProvider);
-
-  return TheyArticlesNotifier(
-    const RefreshListViewState<ArticleModel>.loading(),
-    author: author,
-    http: http,
-    cancelToken: cancelToken,
-  )..initData();
-});
-
-class TheyArticlesNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
-  TheyArticlesNotifier(
-    super.state, {
-    required this.author,
-    required this.http,
-    this.cancelToken,
-  });
-
-  final String author;
-  final Http http;
-  final CancelToken? cancelToken;
+@riverpod
+class TheyArticle extends _$TheyArticle with LoadMoreMixin<ArticleModel> {
+  late Http http;
 
   @override
-  Future<RefreshListViewStateData<ArticleModel>> loadData({
-    required int pageNum,
-    required int pageSize,
-  }) async => (await http.fetchArticlesByAuthor(
-      pageNum,
-      pageSize,
+  Future<PaginationData<ArticleModel>> build(
+    String author, {
+    int? pageNum,
+    int? pageSize,
+  }) {
+    final CancelToken cancelToken = ref.cancelToken();
+
+    http = ref.watch(networkProvider);
+
+    return http.fetchArticlesByAuthor(
+      pageNum ?? initialPageNum,
+      pageSize ?? initialPageSize,
       author: author,
       cancelToken: cancelToken,
-    ))
-        .toRefreshListViewStateData();
+    );
+  }
+
+  @override
+  Future<PaginationData<ArticleModel>> Function(int pageNum, int pageSize)
+      get buildMore => (int pageNum, int pageSize) => build(
+            author,
+            pageNum: pageNum,
+            pageSize: pageSize,
+          );
 }

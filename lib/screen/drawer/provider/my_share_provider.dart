@@ -1,54 +1,34 @@
 part of 'drawer_provider.dart';
 
-const String kMyShareProvider = 'kMyShareProvider';
-
-typedef MyShareArticlesProvider = AutoDisposeStateNotifierProvider<
-    MyShareArticlesNotifier, RefreshListViewState<ArticleModel>>;
-
-final MyShareArticlesProvider myShareArticlesProvider = StateNotifierProvider
-    .autoDispose<MyShareArticlesNotifier, RefreshListViewState<ArticleModel>>(
-  (
-    AutoDisposeStateNotifierProviderRef<MyShareArticlesNotifier,
-            RefreshListViewState<ArticleModel>>
-        ref,
-  ) {
-    final CancelToken cancelToken = ref.cancelToken();
-
-    final Http http = ref.watch(networkProvider);
-
-    return MyShareArticlesNotifier(
-      const RefreshListViewState<ArticleModel>.loading(),
-      http: http,
-      cancelToken: cancelToken,
-    )..initData();
-  },
-  name: kMyShareProvider,
-);
-
-class MyShareArticlesNotifier
-    extends BaseRefreshListViewNotifier<ArticleModel> {
-  MyShareArticlesNotifier(
-    super.state, {
-    required this.http,
-    this.cancelToken,
-  });
-
-  final Http http;
-
-  final CancelToken? cancelToken;
+@riverpod
+class MyShareArticle extends _$MyShareArticle with LoadMoreMixin<ArticleModel> {
+  late Http http;
 
   @override
-  Future<RefreshListViewStateData<ArticleModel>> loadData({
-    required int pageNum,
-    required int pageSize,
-  }) async =>
-      (await http.fetchShareArticles(
-        pageNum,
-        pageSize,
-        cancelToken: cancelToken,
-      ))
-          .shareArticles
-          .toRefreshListViewStateData();
+  Future<PaginationData<ArticleModel>> build({
+    int? pageNum,
+    int? pageSize,
+  }) async {
+    final CancelToken cancelToken = ref.cancelToken();
+
+    http = ref.watch(networkProvider);
+
+    return (await http.fetchShareArticles(
+      pageNum ?? initialPageNum,
+      pageSize ?? initialPageSize,
+      cancelToken: cancelToken,
+    ))
+        .shareArticles;
+  }
+
+  @override
+  Future<PaginationData<ArticleModel>> Function(
+    int pageNum,
+    int pageSize,
+  ) get buildMore => (int pageNum, int pageSize) => build(
+        pageNum: pageNum,
+        pageSize: pageSize,
+      );
 
   Future<bool> add({
     required String title,
@@ -62,11 +42,13 @@ class MyShareArticlesNotifier
         link: link,
       );
 
-      await initData();
+      ref.invalidateSelf();
 
       return true;
     } on Exception catch (e, s) {
-      DialogUtils.danger(ViewError.create(e, s).errorMessage(S.current.failed));
+      DialogUtils.danger(
+        AppException.create(e, s).errorMessage(S.current.failed),
+      );
 
       return false;
     } finally {
@@ -84,27 +66,25 @@ class MyShareArticlesNotifier
 
       return true;
     } on Exception catch (e, s) {
-      DialogUtils.danger(ViewError.create(e, s).errorMessage(S.current.failed));
+      DialogUtils.danger(
+        AppException.create(e, s).errorMessage(S.current.failed),
+      );
 
       return false;
     }
   }
 
-  Future<void>? destroy(int index) => state.whenOrNull((
-        List<ArticleModel> list,
-        int pageNum,
-        bool isLastPage,
-      ) async {
-        state = RefreshListViewStateData<ArticleModel>(
-          pageNum: pageNum,
-          isLastPage: isLastPage,
-          list: list..removeAt(index),
-        );
+  Future<void>? destroy(int index) => state.whenOrNull(
+        data: (PaginationData<ArticleModel> data) async {
+          await update(
+            (_) => data.copyWith(datas: data.datas..removeAt(index)),
+          );
 
-        if (list.length == 1) {
-          if (!isLastPage) {
-            await initData();
+          if (data.datas.length == 1) {
+            if (!data.over) {
+              ref.invalidateSelf();
+            }
           }
-        }
-      });
+        },
+      );
 }

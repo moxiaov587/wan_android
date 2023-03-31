@@ -90,13 +90,13 @@ class _HandleCollectedBottomSheetState
       switch (widget.type) {
         case CollectionType.article:
           result = isEdit
-              ? await ref.read(myCollectedArticleProvider.notifier).update(
+              ? await ref.read(myCollectedArticleProvider().notifier).edit(
                     collectId: collectId!,
                     title: _titleTextEditingController.text,
                     author: _authorTextEditingController.text,
                     link: _linkTextEditingController.text,
                   )
-              : await ref.read(myCollectedArticleProvider.notifier).add(
+              : await ref.read(myCollectedArticleProvider().notifier).add(
                     title: _titleTextEditingController.text,
                     author: _authorTextEditingController.text,
                     link: _linkTextEditingController.text,
@@ -104,7 +104,7 @@ class _HandleCollectedBottomSheetState
           break;
         case CollectionType.website:
           result = isEdit
-              ? await ref.read(myCollectedWebsiteProvider.notifier).update(
+              ? await ref.read(myCollectedWebsiteProvider.notifier).edit(
                     collectId: collectId!,
                     title: _titleTextEditingController.text,
                     link: _linkTextEditingController.text,

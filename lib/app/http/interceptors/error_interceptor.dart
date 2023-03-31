@@ -20,7 +20,7 @@ class ErrorInterceptor extends Interceptor {
       handler.reject(
         DioError(
           requestOptions: response.requestOptions,
-          error: ViewError.fromResponseData(responseData),
+          error: AppException.fromResponseData(responseData),
         ),
         true,
       );
@@ -45,7 +45,7 @@ class ErrorInterceptor extends Interceptor {
       );
 
       final dynamic error = err.error;
-      if (error is ViewError) {
+      if (error is AppException) {
         if (error.isUnAuthorized) {
           LogUtils.e(
             'Session is outdated, calling updater...',
@@ -108,3 +108,97 @@ class ResponseData with _$ResponseData {
 
   bool get success => code == 0;
 }
+
+extension AppExceptionExtension on AppException {
+  String Function(String defaultMessage) get errorMessage =>
+      (String defaultMessage) =>
+          '${message ?? detail ?? defaultMessage}(${statusCode ?? -1})';
+}
+
+@freezed
+class AppException with _$AppException implements Exception {
+  const factory AppException({
+    int? statusCode,
+    String? message,
+    String? detail,
+  }) = _AppException;
+
+  /// Define a private empty constructor to make custom methods work.
+  const AppException._();
+
+  factory AppException.networkException({
+    String? message,
+    String? detail,
+  }) =>
+      AppException(
+        statusCode: kNetworkExceptionStatusCode,
+        message: message,
+        detail: detail,
+      );
+
+  factory AppException.fromResponseData(ResponseData data) => AppException(
+        statusCode: data.code,
+        message: data.message,
+      );
+
+  factory AppException.create(Object e, StackTrace? _) {
+    int? statusCode;
+    String? message;
+    String? detail;
+
+    if (e is DioError) {
+      switch (e.type) {
+        case DioErrorType.connectionTimeout:
+        case DioErrorType.sendTimeout:
+        case DioErrorType.receiveTimeout:
+          // timeout
+          statusCode = kTimeoutStatusCode;
+          message = e.message;
+          break;
+        case DioErrorType.badCertificate:
+        case DioErrorType.badResponse:
+        case DioErrorType.connectionError:
+          // incorrect status, such as 404, 503...
+          final Response<dynamic>? response = e.response;
+          if (response != null) {
+            statusCode = response.statusCode;
+          }
+          message = e.message;
+          break;
+        case DioErrorType.cancel:
+        case DioErrorType.unknown:
+          if (e.type == DioErrorType.cancel) {
+            statusCode = kCancelRequestStatusCode;
+            message = e.message;
+          }
+          final dynamic error = e.error;
+          if (error is AppException) {
+            return error;
+          } else {
+            message ??= e.message;
+            detail = e.error?.toString();
+          }
+          break;
+      }
+    } else if (e is AppException) {
+      return e;
+    } else {
+      detail = e.toString();
+    }
+
+    return AppException(
+      statusCode: statusCode,
+      message: message,
+      detail: detail,
+    );
+  }
+
+  bool get isUnAuthorized => statusCode == kUnAuthorizedStatusCode;
+
+  bool get isNetworkException => statusCode == kNetworkExceptionStatusCode;
+}
+
+const int kUnAuthorizedStatusCode = -1001;
+const int kTimeoutStatusCode = -1;
+const int kNetworkExceptionStatusCode = -2;
+const int kCancelRequestStatusCode = -3;

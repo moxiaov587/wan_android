@@ -9,8 +9,8 @@ class CustomErrorWidget extends StatelessWidget {
     this.onRetry,
   });
 
-  CustomErrorWidget.withViewError(
-    ViewError viewError, {
+  CustomErrorWidget.withAppException(
+    AppException viewError, {
     super.key,
     this.onRetry,
   })  : statusCode = viewError.statusCode,

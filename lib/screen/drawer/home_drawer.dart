@@ -7,7 +7,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../app/l10n/generated/l10n.dart';
 import '../../app/provider/mixin/refresh_list_view_state_mixin.dart';
-import '../../app/provider/view_state.dart';
 import '../../app/theme/app_theme.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../database/app_database.dart';

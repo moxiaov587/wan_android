@@ -53,16 +53,14 @@ class _ProjectTypeBottomSheetState
                                 selected: selected,
                                 title: title,
                                 onTap: () async {
-                                  ref
-                                      .read(currentProjectTypeProvider.notifier)
-                                      .update(
-                                        (_) =>
-                                            AsyncValue<ProjectTypeModel>.data(
-                                          projectType,
-                                        ),
-                                      );
+                                  final NavigatorState navigator =
+                                      Navigator.of(context);
 
-                                  await Navigator.of(context).maybePop();
+                                  await ref
+                                      .read(currentProjectTypeProvider.notifier)
+                                      .onSelect(projectType);
+
+                                  await navigator.maybePop();
                                 },
                               );
                             },
@@ -76,8 +74,8 @@ class _ProjectTypeBottomSheetState
                       ),
                       loading: () => const LoadingWidget.listView(),
                       error: (Object e, StackTrace s) =>
-                          CustomErrorWidget.withViewError(
-                        ViewError.create(e, s),
+                          CustomErrorWidget.withAppException(
+                        AppException.create(e, s),
                         onRetry: () {
                           ref.invalidate(projectTypeProvider);
                         },

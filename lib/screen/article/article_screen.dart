@@ -8,8 +8,8 @@ import 'package:nil/nil.dart' show nil;
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/http/http.dart';
+import '../../app/http/interceptors/interceptors.dart';
 import '../../app/l10n/generated/l10n.dart';
-import '../../app/provider/provider.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../extensions/extensions.dart' show BuildContextExtension;
 import '../../model/models.dart' show WebViewModel;
@@ -316,8 +316,8 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                     ),
                     loading: () => const LoadingWidget.listView(),
                     error: (Object e, StackTrace s) =>
-                        CustomErrorWidget.withViewError(
-                      ViewError.create(e, s),
+                        CustomErrorWidget.withAppException(
+                      AppException.create(e, s),
                       onRetry: () {
                         ref.invalidate(provider);
                       },

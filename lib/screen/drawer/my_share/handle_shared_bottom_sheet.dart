@@ -44,7 +44,7 @@ class _HandleSharedBottomSheetState
 
   Future<void> onSubmitted() async {
     if (_formKey.currentState!.validate()) {
-      final bool result = await ref.read(myShareArticlesProvider.notifier).add(
+      final bool result = await ref.read(myShareArticleProvider().notifier).add(
             title: _titleTextEditingController.text,
             link: _linkTextEditingController.text,
           );

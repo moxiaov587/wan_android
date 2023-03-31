@@ -5,32 +5,31 @@ import 'package:nil/nil.dart' show nil;
 import 'package:riverpod_annotation/riverpod_annotation.dart' show FutureOr;
 
 import '../../../widget/view_state_widget.dart';
-import '../provider.dart';
-import '../view_state.dart';
+import '../../http/interceptors/interceptors.dart';
 
 export 'package:riverpod_annotation/riverpod_annotation.dart' show FutureOr;
 
-mixin ListViewStateMixin<
-        ProviderType extends StateNotifierProvider<BaseListViewNotifier<T>,
-            ListViewState<T>>,
-        T,
-        ConsumerStatefulWidgetType extends ConsumerStatefulWidget>
+mixin ListViewStateMixin<ProviderType extends ProviderBase<AsyncValue<List<T>>>,
+        T, ConsumerStatefulWidgetType extends ConsumerStatefulWidget>
     on ConsumerState<ConsumerStatefulWidgetType> {
   @protected
   ProviderType get provider;
 
+  @protected
+  Refreshable<Future<List<T>>> get refreshable;
+
   Widget get pullDownIndicator => Consumer(
         builder: (BuildContext context, WidgetRef ref, _) =>
             ref.watch(provider).whenOrNull(
-                  (_) => CupertinoSliverRefreshControl(
-                    onRefresh: ref.watch(provider.notifier).refresh,
+                  data: (_) => CupertinoSliverRefreshControl(
+                    onRefresh: () async => ref.refresh(refreshable),
                   ),
                 ) ??
             const SliverToBoxAdapter(child: nil),
       );
 
-  FutureOr<void> onRetry() async {
-    await ref.read(provider.notifier).initData();
+  FutureOr<void> onRetry() {
+    ref.invalidate(provider);
   }
 
   Widget loadingIndicatorBuilder() => const SliverFillRemaining(
@@ -38,43 +37,8 @@ mixin ListViewStateMixin<
       );
 
   Widget errorIndicatorBuilder(Object e, StackTrace s) => SliverFillRemaining(
-        child: CustomErrorWidget.withViewError(
-          ViewError.create(e, s),
-          onRetry: onRetry,
-        ),
-      );
-}
-
-mixin AutoDisposeListViewStateMixin<
-        ProviderType extends AutoDisposeStateNotifierProvider<
-            BaseListViewNotifier<T>, ListViewState<T>>,
-        T,
-        ConsumerStatefulWidgetType extends ConsumerStatefulWidget>
-    on ConsumerState<ConsumerStatefulWidgetType> {
-  @protected
-  ProviderType get provider;
-
-  Widget get pullDownIndicator => Consumer(
-        builder: (BuildContext context, WidgetRef ref, _) =>
-            ref.watch(provider).whenOrNull(
-                  (_) => CupertinoSliverRefreshControl(
-                    onRefresh: ref.watch(provider.notifier).refresh,
-                  ),
-                ) ??
-            const SliverToBoxAdapter(child: nil),
-      );
-
-  FutureOr<void> onRetry() async {
-    await ref.read(provider.notifier).initData();
-  }
-
-  Widget loadingIndicatorBuilder() => const SliverFillRemaining(
-        child: LoadingWidget.listView(),
-      );
-
-  Widget errorIndicatorBuilder(Object e, StackTrace s) => SliverFillRemaining(
-        child: CustomErrorWidget.withViewError(
-          ViewError.create(e, s),
+        child: CustomErrorWidget.withAppException(
+          AppException.create(e, s),
           onRetry: onRetry,
         ),
       );

@@ -8,7 +8,13 @@ import '../../../widget/gap.dart';
 import '../../../widget/view_state_widget.dart';
 import '../../l10n/generated/l10n.dart';
 import '../../theme/app_theme.dart';
-import '../provider.dart';
+
+enum LoadingMoreStatus {
+  loading,
+  completed,
+  noData,
+  failed,
+}
 
 class LoadingMoreIndicator extends StatelessWidget {
   const LoadingMoreIndicator({

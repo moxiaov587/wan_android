@@ -9,10 +9,17 @@ class MyPointsScreen extends ConsumerStatefulWidget {
 
 class _MyPointsScreenState extends ConsumerState<MyPointsScreen>
     with
-        AutoDisposeRefreshListViewStateMixin<MyPointsProvider, PointsModel,
+        RefreshListViewStateMixin<MyPointsProvider, PointsModel,
             MyPointsScreen> {
   @override
-  MyPointsProvider get provider => myPointsProvider;
+  MyPointsProvider get provider => myPointsProvider();
+
+  @override
+  Refreshable<Future<PaginationData<PointsModel>>> get refreshable =>
+      provider.future;
+
+  @override
+  OnLoadMoreCallback get loadMore => ref.read(provider.notifier).loadMore;
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -55,46 +62,53 @@ class _MyPointsScreenState extends ConsumerState<MyPointsScreen>
                 ),
                 Consumer(
                   builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-                    (List<PointsModel> list, _, __) {
-                      if (list.isEmpty) {
-                        return const SliverFillRemaining(child: EmptyWidget());
-                      }
+                        data: (PaginationData<PointsModel> data) {
+                          final List<PointsModel> list = data.datas;
 
-                      return SliverPrototypeExtentList(
-                        delegate: SliverChildBuilderDelegate(
-                          (_, int index) {
-                            final PointsModel points = list[index];
-
-                            final bool isIncrease = points.coinCount > 0;
-
-                            return ListTile(
-                              key: Key('my_points_record_${points.id}'),
-                              title: Text(points.desc ?? ''),
-                              trailing: RichText(
-                                text: TextSpan(
-                                  style: context
-                                      .theme.textTheme.titleMedium!.semiBold
-                                      .copyWith(
-                                    color: isIncrease
-                                        ? context.theme.colorScheme.secondary
-                                        : context.theme.colorScheme.error,
-                                  ),
-                                  text: isIncrease ? '+' : '-',
-                                  children: <TextSpan>[
-                                    TextSpan(text: points.coinCount.toString()),
-                                  ],
-                                ),
-                              ),
+                          if (list.isEmpty) {
+                            return const SliverFillRemaining(
+                              child: EmptyWidget(),
                             );
-                          },
-                          childCount: list.length,
-                        ),
-                        prototypeItem: const ListTile(),
-                      );
-                    },
-                    loading: loadingIndicatorBuilder,
-                    error: errorIndicatorBuilder,
-                  ),
+                          }
+
+                          return SliverPrototypeExtentList(
+                            delegate: SliverChildBuilderDelegate(
+                              (_, int index) {
+                                final PointsModel points = list[index];
+
+                                final bool isIncrease = points.coinCount > 0;
+
+                                return ListTile(
+                                  key: Key('my_points_record_${points.id}'),
+                                  title: Text(points.desc ?? ''),
+                                  trailing: RichText(
+                                    text: TextSpan(
+                                      style: context
+                                          .theme.textTheme.titleMedium!.semiBold
+                                          .copyWith(
+                                        color: isIncrease
+                                            ? context
+                                                .theme.colorScheme.secondary
+                                            : context.theme.colorScheme.error,
+                                      ),
+                                      text: isIncrease ? '+' : '-',
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                          text: points.coinCount.toString(),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                              childCount: list.length,
+                            ),
+                            prototypeItem: const ListTile(),
+                          );
+                        },
+                        loading: loadingIndicatorBuilder,
+                        error: errorIndicatorBuilder,
+                      ),
                 ),
                 SliverPadding(
                   padding:

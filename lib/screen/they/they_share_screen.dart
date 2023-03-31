@@ -14,10 +14,17 @@ class TheyShareScreen extends ConsumerStatefulWidget {
 
 class _TheyShareScreenState extends ConsumerState<TheyShareScreen>
     with
-        AutoDisposeRefreshListViewStateMixin<TheyShareProvider, ArticleModel,
+        RefreshListViewStateMixin<TheyShareProvider, ArticleModel,
             TheyShareScreen> {
   @override
   late final TheyShareProvider provider = theyShareProvider(widget.userId);
+
+  @override
+  Refreshable<Future<PaginationData<ArticleModel>>> get refreshable =>
+      provider.future;
+
+  @override
+  OnLoadMoreCallback get loadMore => ref.read(provider.notifier).loadMore;
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -42,7 +49,7 @@ class _TheyShareScreenState extends ConsumerState<TheyShareScreen>
                       builder: (_, WidgetRef ref, __) {
                         final UserPointsModel? userPoints =
                             ref.watch(provider).whenOrNull<UserPointsModel?>(
-                                  (_, __, ___) =>
+                                  data: (PaginationData<ArticleModel> data) =>
                                       ref.read(provider.notifier).userPoints,
                                 );
 
@@ -167,29 +174,33 @@ class _TheyShareScreenState extends ConsumerState<TheyShareScreen>
               ),
               Consumer(
                 builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-                  (List<ArticleModel> list, _, __) {
-                    if (list.isEmpty) {
-                      return const SliverFillRemaining(child: EmptyWidget());
-                    }
+                      data: (PaginationData<ArticleModel> data) {
+                        final List<ArticleModel> list = data.datas;
 
-                    return SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (_, int index) {
-                          final ArticleModel article = list[index];
-
-                          return ArticleTile(
-                            key: Key('they_share_article_${article.id}'),
-                            authorTextOrShareUserTextCanOnTap: false,
-                            article: article,
+                        if (list.isEmpty) {
+                          return const SliverFillRemaining(
+                            child: EmptyWidget(),
                           );
-                        },
-                        childCount: list.length,
-                      ),
-                    );
-                  },
-                  loading: loadingIndicatorBuilder,
-                  error: errorIndicatorBuilder,
-                ),
+                        }
+
+                        return SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (_, int index) {
+                              final ArticleModel article = list[index];
+
+                              return ArticleTile(
+                                key: Key('they_share_article_${article.id}'),
+                                authorTextOrShareUserTextCanOnTap: false,
+                                article: article,
+                              );
+                            },
+                            childCount: list.length,
+                          ),
+                        );
+                      },
+                      loading: loadingIndicatorBuilder,
+                      error: errorIndicatorBuilder,
+                    ),
               ),
               SliverPadding(
                 padding: EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),

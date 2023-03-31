@@ -1,59 +1,39 @@
 part of 'they_provider.dart';
 
-typedef TheyShareProvider = AutoDisposeStateNotifierProvider<TheyShareNotifier,
-    RefreshListViewState<ArticleModel>>;
-
-final AutoDisposeStateNotifierProviderFamily<TheyShareNotifier,
-        RefreshListViewState<ArticleModel>, int> theyShareProvider =
-    StateNotifierProvider.family.autoDispose<TheyShareNotifier,
-        RefreshListViewState<ArticleModel>, int>((
-  AutoDisposeStateNotifierProviderRef<TheyShareNotifier,
-          RefreshListViewState<ArticleModel>>
-      ref,
-  int userId,
-) {
-  final CancelToken cancelToken = ref.cancelToken();
-
-  final Http http = ref.watch(networkProvider);
-
-  return TheyShareNotifier(
-    const RefreshListViewState<ArticleModel>.loading(),
-    userId: userId,
-    http: http,
-    cancelToken: cancelToken,
-  )..initData();
-});
-
-class TheyShareNotifier extends BaseRefreshListViewNotifier<ArticleModel> {
-  TheyShareNotifier(
-    super.state, {
-    required this.userId,
-    required this.http,
-    this.cancelToken,
-  });
-
-  final int userId;
-  final Http http;
-  final CancelToken? cancelToken;
+@riverpod
+class TheyShare extends _$TheyShare with LoadMoreMixin<ArticleModel> {
+  late Http http;
 
   UserPointsModel? _userPoints;
   UserPointsModel? get userPoints => _userPoints;
 
   @override
-  Future<RefreshListViewStateData<ArticleModel>> loadData({
-    required int pageNum,
-    required int pageSize,
+  Future<PaginationData<ArticleModel>> build(
+    int userId, {
+    int? pageNum,
+    int? pageSize,
   }) async {
-    final TheyShareModel userShareArticleModel =
-        await http.fetchShareArticlesByUserId(
-      pageNum,
-      pageSize,
+    final CancelToken cancelToken = ref.cancelToken();
+
+    http = ref.watch(networkProvider);
+
+    final TheyShareModel data = await http.fetchShareArticlesByUserId(
+      pageNum ?? initialPageNum,
+      pageSize ?? initialPageSize,
       userId: userId,
       cancelToken: cancelToken,
     );
 
-    _userPoints = userShareArticleModel.userPoints;
+    _userPoints = data.userPoints;
 
-    return userShareArticleModel.shareArticles.toRefreshListViewStateData();
+    return data.shareArticles;
   }
+
+  @override
+  Future<PaginationData<ArticleModel>> Function(int pageNum, int pageSize)
+      get buildMore => (int pageNum, int pageSize) => build(
+            userId,
+            pageNum: pageNum,
+            pageSize: pageSize,
+          );
 }
