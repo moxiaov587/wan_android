@@ -22,7 +22,7 @@ dependencies:
   flutter_inappwebview: ^5.7.2+3
   flutter_localizations:
     sdk: flutter
-  flutter_native_splash: ^2.2.16
+  flutter_native_splash: ^2.2.19
   flutter_riverpod: ^2.3.5
   flutter_slidable: ^2.0.0
   flutter_smart_dialog: ^4.8.2+4
