@@ -20,11 +20,12 @@ class __ArticleState extends ConsumerState<_Article>
   MyCollectedArticleProvider get provider => myCollectedArticleProvider();
 
   @override
-  Refreshable<Future<PaginationData<CollectedArticleModel>>> get refreshable =>
+  PaginationDataRefreshable<CollectedArticleModel> get refreshable =>
       provider.future;
 
   @override
-  OnLoadMoreCallback get loadMore => ref.read(provider.notifier).loadMore;
+  Future<LoadingMoreStatus?> loadMore() =>
+      ref.read(provider.notifier).loadMore();
 
   @override
   void didChangeDependencies() {
@@ -58,7 +59,6 @@ class __ArticleState extends ConsumerState<_Article>
           pullDownIndicator,
           Consumer(
             builder: (_, WidgetRef ref, __) => ref.watch(provider).when(
-                  skipLoadingOnRefresh: false,
                   data: (PaginationData<CollectedArticleModel> data) {
                     final List<CollectedArticleModel> list = data.datas
                         .where(

@@ -2,29 +2,27 @@ part of 'drawer_provider.dart';
 
 @riverpod
 class PointsRank extends _$PointsRank with LoadMoreMixin<UserPointsModel> {
-  late Http http;
+  late Http _http;
 
   @override
   Future<PaginationData<UserPointsModel>> build({
-    int? pageNum,
-    int? pageSize,
+    int pageNum = kDefaultPageNum,
+    int pageSize = kDefaultPageSize,
   }) {
     final CancelToken cancelToken = ref.cancelToken();
 
-    http = ref.watch(networkProvider);
+    _http = ref.watch(networkProvider);
 
-    return http.fetchPointsRank(
-      pageNum ?? initialPageNum,
+    return _http.fetchPointsRank(
+      pageNum,
       cancelToken: cancelToken,
     );
   }
 
   @override
-  Future<PaginationData<UserPointsModel>> Function(
+  Future<PaginationData<UserPointsModel>> buildMore(
     int pageNum,
     int pageSize,
-  ) get buildMore => (int pageNum, int pageSize) => build(
-        pageNum: pageNum,
-        pageSize: pageSize,
-      );
+  ) =>
+      build(pageNum: pageNum, pageSize: pageSize);
 }

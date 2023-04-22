@@ -2,36 +2,37 @@ part of 'home_provider.dart';
 
 @riverpod
 class SearchArticle extends _$SearchArticle with LoadMoreMixin<ArticleModel> {
-  late Http http;
-
-  @override
-  int get initialPageNum => 0;
+  late Http _http;
 
   @override
   Future<PaginationData<ArticleModel>> build(
     String keyword, {
-    int? pageNum,
-    int? pageSize,
-  }) {
+    int pageNum = 0,
+    int pageSize = kDefaultPageSize,
+  }) async {
     final CancelToken cancelToken = ref.cancelToken();
 
-    http = ref.watch(networkProvider);
+    _http = ref.watch(networkProvider);
 
-    return http.fetchSearchArticles(
-      pageNum ?? initialPageNum,
-      pageSize ?? initialPageSize,
+    final PaginationData<ArticleModel> data = await _http.fetchSearchArticles(
+      pageNum,
+      pageSize,
       keyword: keyword,
       cancelToken: cancelToken,
     );
+
+    if (pageNum == 0) {
+      return data.copyWith(
+        curPage: 0, // Fix curPage.
+      );
+    }
+
+    return data;
   }
 
   @override
-  Future<PaginationData<ArticleModel>> Function(int pageNum, int pageSize)
-      get buildMore => (int pageNum, int pageSize) => build(
-            keyword,
-            pageNum: pageNum,
-            pageSize: pageSize,
-          );
+  Future<PaginationData<ArticleModel>> buildMore(int pageNum, int pageSize) =>
+      build(keyword, pageNum: pageNum, pageSize: pageSize);
 }
 
 @riverpod

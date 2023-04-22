@@ -20,33 +20,30 @@ class CurrentProjectType extends _$CurrentProjectType {
 
 @riverpod
 class ProjectArticle extends _$ProjectArticle with LoadMoreMixin<ArticleModel> {
-  late Http http;
+  late Http _http;
 
   @override
   Future<PaginationData<ArticleModel>> build({
-    int? pageNum,
-    int? pageSize,
+    int pageNum = kDefaultPageNum,
+    int pageSize = kDefaultPageSize,
   }) async {
     final CancelToken cancelToken = ref.cancelToken();
 
-    http = ref.watch(networkProvider);
+    _http = ref.watch(networkProvider);
 
     final ProjectTypeModel type =
         ref.read(currentProjectTypeProvider).valueOrNull ??
             await ref.watch(currentProjectTypeProvider.future);
 
-    return http.fetchProjectArticles(
-      pageNum ?? initialPageNum,
-      pageSize ?? initialPageSize,
+    return _http.fetchProjectArticles(
+      pageNum,
+      pageSize,
       categoryId: type.id,
       cancelToken: cancelToken,
     );
   }
 
   @override
-  Future<PaginationData<ArticleModel>> Function(int pageNum, int pageSize)
-      get buildMore => (int pageNum, int pageSize) => build(
-            pageNum: pageNum,
-            pageSize: pageSize,
-          );
+  Future<PaginationData<ArticleModel>> buildMore(int pageNum, int pageSize) =>
+      build(pageNum: pageNum, pageSize: pageSize);
 }

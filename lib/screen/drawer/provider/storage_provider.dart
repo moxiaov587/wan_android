@@ -27,7 +27,7 @@ extension FileSizeExtension on int? {
 
 mixin CacheSizeProviderMixin on AutoDisposeAsyncNotifier<int> {
   @protected
-  List<AsyncCallback> get clearTask;
+  List<AsyncCallback> getClearTxn();
 }
 
 // OtherCaches START
@@ -53,21 +53,21 @@ bool cleanableOtherCaches(CleanableOtherCachesRef ref) =>
 
 @Riverpod(dependencies: <Object>[appDatabase])
 class OtherCacheSize extends _$OtherCacheSize with CacheSizeProviderMixin {
-  late Isar isar;
+  late Isar _isar;
 
   @override
-  List<AsyncCallback> get clearTask => <AsyncCallback>[
-        isar.homeBannerCaches.clear,
-        isar.searchHistoryCaches.clear,
+  List<AsyncCallback> getClearTxn() => <AsyncCallback>[
+        _isar.homeBannerCaches.clear,
+        _isar.searchHistoryCaches.clear,
       ];
 
   @override
   Future<int> build() async {
-    isar = ref.read(appDatabaseProvider);
+    _isar = ref.read(appDatabaseProvider);
 
     return (await Future.wait<int>(<Future<int>>[
-      isar.homeBannerCaches.getSize(),
-      isar.searchHistoryCaches.getSize(),
+      _isar.homeBannerCaches.getSize(),
+      _isar.searchHistoryCaches.getSize(),
     ]))
         .reduce((int total, int size) => total += size);
   }
@@ -99,18 +99,18 @@ bool cleanableResponseDataCaches(CleanableResponseDataCachesRef ref) =>
 @Riverpod(dependencies: <Object>[appDatabase])
 class ResponseDataCacheSize extends _$ResponseDataCacheSize
     with CacheSizeProviderMixin {
-  late Isar isar;
+  late Isar _isar;
 
   @override
-  List<AsyncCallback> get clearTask => <AsyncCallback>[
-        isar.responseCaches.clear,
+  List<AsyncCallback> getClearTxn() => <AsyncCallback>[
+        _isar.responseCaches.clear,
       ];
 
   @override
   Future<int> build() {
-    isar = ref.read(appDatabaseProvider);
+    _isar = ref.read(appDatabaseProvider);
 
-    return isar.responseCaches.getSize();
+    return _isar.responseCaches.getSize();
   }
 }
 // ResponseDataCaches END
@@ -140,18 +140,18 @@ bool cleanablePreferencesCaches(CleanablePreferencesCachesRef ref) =>
 @Riverpod(dependencies: <Object>[appDatabase])
 class PreferencesCacheSize extends _$PreferencesCacheSize
     with CacheSizeProviderMixin {
-  late Isar isar;
+  late Isar _isar;
 
   @override
-  List<AsyncCallback> get clearTask => <AsyncCallback>[
-        isar.userSettingsCache.clear,
+  List<AsyncCallback> getClearTxn() => <AsyncCallback>[
+        _isar.userSettingsCache.clear,
       ];
 
   @override
   Future<int> build() {
-    isar = ref.read(appDatabaseProvider);
+    _isar = ref.read(appDatabaseProvider);
 
-    return isar.userSettingsCache.getSize();
+    return _isar.userSettingsCache.getSize();
   }
 }
 // PreferencesCaches END

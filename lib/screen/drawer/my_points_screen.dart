@@ -15,11 +15,11 @@ class _MyPointsScreenState extends ConsumerState<MyPointsScreen>
   MyPointsProvider get provider => myPointsProvider();
 
   @override
-  Refreshable<Future<PaginationData<PointsModel>>> get refreshable =>
-      provider.future;
+  PaginationDataRefreshable<PointsModel> get refreshable => provider.future;
 
   @override
-  OnLoadMoreCallback get loadMore => ref.read(provider.notifier).loadMore;
+  Future<LoadingMoreStatus?> loadMore() =>
+      ref.read(provider.notifier).loadMore();
 
   @override
   Widget build(BuildContext context) => Scaffold(

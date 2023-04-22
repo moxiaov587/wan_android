@@ -17,11 +17,11 @@ class _RankScreenState extends ConsumerState<RankScreen>
   PointsRankProvider get provider => pointsRankProvider();
 
   @override
-  Refreshable<Future<PaginationData<UserPointsModel>>> get refreshable =>
-      provider.future;
+  PaginationDataRefreshable<UserPointsModel> get refreshable => provider.future;
 
   @override
-  OnLoadMoreCallback get loadMore => ref.read(provider.notifier).loadMore;
+  Future<LoadingMoreStatus?> loadMore() =>
+      ref.read(provider.notifier).loadMore();
 
   @override
   Widget build(BuildContext context) {

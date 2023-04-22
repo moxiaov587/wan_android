@@ -267,7 +267,7 @@ class _BottomActionBar extends StatelessWidget {
                                   task.addAll(
                                     ref
                                         .read(otherCacheSizeProvider.notifier)
-                                        .clearTask,
+                                        .getClearTxn(),
                                   );
                                 }
 
@@ -280,7 +280,7 @@ class _BottomActionBar extends StatelessWidget {
                                           responseDataCacheSizeProvider
                                               .notifier,
                                         )
-                                        .clearTask,
+                                        .getClearTxn(),
                                   );
                                 }
                                 if (ref.read(
@@ -291,12 +291,12 @@ class _BottomActionBar extends StatelessWidget {
                                         .read(
                                           preferencesCacheSizeProvider.notifier,
                                         )
-                                        .clearTask,
+                                        .getClearTxn(),
                                   );
                                 }
                                 await ref.read(appDatabaseProvider).writeTxn(
                                       () => Future.wait<void>(
-                                        task.map((AsyncCallback f) => f.call()),
+                                        task.map((AsyncCallback f) => f()),
                                       ),
                                     );
 

@@ -20,7 +20,7 @@ part 'home_provider.g.dart';
 
 @Riverpod(dependencies: <Object>[appDatabase])
 class HomeBanner extends _$HomeBanner {
-  late Isar isar;
+  late Isar _isar;
 
   final NetworkAssetBundle _networkAssetBundle =
       NetworkAssetBundle(Uri.parse(kBaseUrl));
@@ -29,14 +29,14 @@ class HomeBanner extends _$HomeBanner {
   Future<List<HomeBannerCache>> build() async {
     final CancelToken cancelToken = ref.cancelToken();
 
-    isar = ref.read(appDatabaseProvider);
+    _isar = ref.read(appDatabaseProvider);
 
     final List<BannerModel> homeBanners = await ref
         .watch(networkProvider)
         .fetchHomeBanners(cancelToken: cancelToken);
 
     final List<HomeBannerCache> homeBannersFromCache =
-        isar.homeBannerCaches.where().sortByOrderDesc().findAllSync();
+        _isar.homeBannerCaches.where().sortByOrderDesc().findAllSync();
 
     if (_compareRequestAndCache(homeBanners, homeBannersFromCache)) {
       final Iterable<Future<HomeBannerCache>> futures =
@@ -72,9 +72,9 @@ class HomeBanner extends _$HomeBanner {
       final List<HomeBannerCache> banners = await Future.wait(futures);
 
       unawaited(
-        isar.writeTxn(() async {
-          await isar.homeBannerCaches.clear();
-          await isar.homeBannerCaches.putAll(banners);
+        _isar.writeTxn(() async {
+          await _isar.homeBannerCaches.clear();
+          await _isar.homeBannerCaches.putAll(banners);
         }),
       );
 
@@ -109,21 +109,21 @@ extension Int2ColorExtension on int? {
 @Riverpod(dependencies: <Object>[HomeBanner])
 class CurrentHomeBannerBackgroundColorValue
     extends _$CurrentHomeBannerBackgroundColorValue {
-  late Iterable<int?>? colors;
+  late Iterable<int?>? _colors;
 
   @override
   int? build() {
     final AsyncValue<List<HomeBannerCache>> homeBanner =
         ref.watch(homeBannerProvider);
 
-    colors = homeBanner.valueOrNull
+    _colors = homeBanner.valueOrNull
         ?.map((HomeBannerCache banner) => banner.primaryColorValue);
 
-    return colors?.first;
+    return _colors?.first;
   }
 
   void onPageChanged(int index) {
-    state = colors?.elementAt(index);
+    state = _colors?.elementAt(index);
   }
 }
 
@@ -138,32 +138,30 @@ Future<List<ArticleModel>> homeTopArticles(HomeTopArticlesRef ref) async {
 
 @riverpod
 class HomeArticle extends _$HomeArticle with LoadMoreMixin<ArticleModel> {
-  @override
-  int get initialPageNum => 0;
-
-  late Http http;
+  late Http _http;
 
   @override
   Future<PaginationData<ArticleModel>> build({
-    int? pageNum,
-    int? pageSize,
+    int pageNum = 0,
+    int pageSize = kDefaultPageSize,
   }) async {
     final CancelToken cancelToken = ref.cancelToken();
 
-    http = ref.watch(networkProvider);
+    _http = ref.watch(networkProvider);
 
     final List<ArticleModel> topArticles =
         ref.read(homeTopArticlesProvider).valueOrNull ??
             await ref.watch(homeTopArticlesProvider.future);
 
-    final PaginationData<ArticleModel> data = await http.fetchHomeArticles(
-      pageNum ?? initialPageNum,
-      pageSize ?? initialPageSize,
+    final PaginationData<ArticleModel> data = await _http.fetchHomeArticles(
+      pageNum,
+      pageSize,
       cancelToken: cancelToken,
     );
 
-    if (pageNum == null || pageNum == initialPageNum) {
+    if (pageNum == 0) {
       return data.copyWith(
+        curPage: 0, // Fix curPage.
         datas: topArticles
             .map(
               (ArticleModel e) => e.copyWith(isTop: true),
@@ -177,20 +175,6 @@ class HomeArticle extends _$HomeArticle with LoadMoreMixin<ArticleModel> {
   }
 
   @override
-  Future<PaginationData<ArticleModel>> Function(int pageNum, int pageSize)
-      get buildMore => (int pageNum, int pageSize) => build(
-            pageNum: pageNum,
-            pageSize: pageSize,
-          );
-
-  @override
-  int getNextPageNum(PaginationData<ArticleModel> data) =>
-      ((data.datas.length -
-                  (ref.read(homeTopArticlesProvider).whenOrNull(
-                            data: (List<ArticleModel> data) => data.length,
-                          ) ??
-                      0)) /
-              data.size)
-          .ceil() +
-      initialPageNum;
+  Future<PaginationData<ArticleModel>> buildMore(int pageNum, int pageSize) =>
+      build(pageNum: pageNum, pageSize: pageSize);
 }

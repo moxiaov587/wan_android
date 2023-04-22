@@ -3,35 +3,39 @@ part of 'drawer_provider.dart';
 @riverpod
 class MyCollectedArticle extends _$MyCollectedArticle
     with LoadMoreMixin<CollectedArticleModel> {
-  @override
-  int get initialPageNum => 0;
-
-  late Http http;
+  late Http _http;
 
   @override
   Future<PaginationData<CollectedArticleModel>> build({
-    int? pageNum,
-    int? pageSize,
-  }) {
+    int pageNum = 0,
+    int pageSize = kDefaultPageSize,
+  }) async {
     final CancelToken cancelToken = ref.cancelToken();
 
-    http = ref.watch(networkProvider);
+    _http = ref.watch(networkProvider);
 
-    return http.fetchCollectedArticles(
-      pageNum ?? initialPageNum,
-      pageSize ?? initialPageSize,
+    final PaginationData<CollectedArticleModel> data =
+        await _http.fetchCollectedArticles(
+      pageNum,
+      pageSize,
       cancelToken: cancelToken,
     );
+
+    if (pageNum == 0) {
+      return data.copyWith(
+        curPage: 0, // Fix curPage.
+      );
+    }
+
+    return data;
   }
 
   @override
-  Future<PaginationData<CollectedArticleModel>> Function(
+  Future<PaginationData<CollectedArticleModel>> buildMore(
     int pageNum,
     int pageSize,
-  ) get buildMore => (int pageNum, int pageSize) => build(
-        pageNum: pageNum,
-        pageSize: pageSize,
-      );
+  ) =>
+      build(pageNum: pageNum, pageSize: pageSize);
 
   Future<bool> add({
     required String title,
@@ -41,7 +45,7 @@ class MyCollectedArticle extends _$MyCollectedArticle
     try {
       DialogUtils.loading();
 
-      final CollectedArticleModel? data = await http.addCollectedArticle(
+      final CollectedArticleModel? data = await _http.addCollectedArticle(
         title: title,
         author: author,
         link: link,
@@ -85,7 +89,7 @@ class MyCollectedArticle extends _$MyCollectedArticle
           try {
             DialogUtils.loading();
 
-            await http.updateCollectedArticle(
+            await _http.updateCollectedArticle(
               id: collectId,
               title: title,
               author: author,
@@ -124,7 +128,7 @@ class MyCollectedArticle extends _$MyCollectedArticle
     required int? articleId,
   }) async {
     try {
-      await http.deleteCollectedArticleByCollectId(
+      await _http.deleteCollectedArticleByCollectId(
         collectId: collectId,
         articleId: articleId,
       );
@@ -189,15 +193,15 @@ typedef MyCollectedWebsiteProvider = AutoDisposeAsyncNotifierProvider<
 
 @riverpod
 class MyCollectedWebsite extends _$MyCollectedWebsite {
-  late Http http;
+  late Http _http;
 
   @override
   Future<List<CollectedWebsiteModel>> build() {
     final CancelToken cancelToken = ref.cancelToken();
 
-    http = ref.watch(networkProvider);
+    _http = ref.watch(networkProvider);
 
-    return http.fetchCollectedWebsites(cancelToken: cancelToken);
+    return _http.fetchCollectedWebsites(cancelToken: cancelToken);
   }
 
   Future<CollectedWebsiteModel?> add({
@@ -210,7 +214,7 @@ class MyCollectedWebsite extends _$MyCollectedWebsite {
         DialogUtils.loading();
       }
 
-      final CollectedWebsiteModel? data = await http.addCollectedWebsite(
+      final CollectedWebsiteModel? data = await _http.addCollectedWebsite(
         title: title,
         link: link,
       );
@@ -252,7 +256,7 @@ class MyCollectedWebsite extends _$MyCollectedWebsite {
           try {
             DialogUtils.loading();
 
-            await http.updateCollectedWebsite(
+            await _http.updateCollectedWebsite(
               id: collectId,
               title: title,
               link: link,
@@ -281,7 +285,7 @@ class MyCollectedWebsite extends _$MyCollectedWebsite {
 
   Future<bool> requestCancelCollect({required int collectId}) async {
     try {
-      await http.deleteCollectedWebsite(id: collectId);
+      await _http.deleteCollectedWebsite(id: collectId);
 
       return true;
     } on Exception catch (e, s) {

@@ -1,8 +1,8 @@
 part of 'common_provider.dart';
 
-@Riverpod(keepAlive: true, dependencies: <Object>[appDatabase])
+@Riverpod(dependencies: <Object>[appDatabase])
 class AppLanguage extends _$AppLanguage {
-  late Isar isar;
+  late Isar _isar;
 
   static const List<Language?> languages = <Language?>[
     null,
@@ -11,9 +11,9 @@ class AppLanguage extends _$AppLanguage {
 
   @override
   Language? build() {
-    isar = ref.read(appDatabaseProvider);
+    _isar = ref.read(appDatabaseProvider);
 
-    return isar.uniqueUserSettings?.language;
+    return _isar.uniqueUserSettings?.language;
   }
 
   void switchLocale(Language? language) {
@@ -30,7 +30,8 @@ class AppLanguage extends _$AppLanguage {
             );
 
     unawaited(
-      isar.writeTxn<int>(() async => isar.userSettingsCache.put(userSettings)),
+      _isar
+          .writeTxn<int>(() async => _isar.userSettingsCache.put(userSettings)),
     );
   }
 }

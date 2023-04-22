@@ -24,18 +24,18 @@ const Map<int, int> _kEncryptOffset = <int, int>{
 
 @Riverpod(keepAlive: true, dependencies: <Object>[appDatabase])
 class Authorized extends _$Authorized {
-  late Http http;
-  late Isar isar;
+  late Http _http;
+  late Isar _isar;
 
   @override
   Future<UserInfoModel?> build() async {
     final CancelToken cancelToken = ref.cancelToken();
 
-    http = ref.watch(networkProvider);
-    isar = ref.read(appDatabaseProvider);
+    _http = ref.watch(networkProvider);
+    _isar = ref.read(appDatabaseProvider);
 
-    if (await http.isLogin) {
-      return http.fetchUserInfo(cancelToken: cancelToken);
+    if (await _http.isLogin) {
+      return _http.fetchUserInfo(cancelToken: cancelToken);
     }
 
     return null;
@@ -56,15 +56,15 @@ class Authorized extends _$Authorized {
       accountCache.password = _encryptString(password);
     }
 
-    final UserSettings userSettings = isar.writeUniqueUserSettings(
+    final UserSettings userSettings = _isar.writeUniqueUserSettings(
       rememberPassword: rememberPassword,
     );
 
-    return isar.writeTxn(
+    return _isar.writeTxn(
       () async => Future.wait<int>(
         <Future<int>>[
-          isar.accountCaches.put(accountCache),
-          isar.userSettingsCache.put(userSettings),
+          _isar.accountCaches.put(accountCache),
+          _isar.userSettingsCache.put(userSettings),
         ],
       ),
     );
@@ -104,12 +104,12 @@ class Authorized extends _$Authorized {
     DialogUtils.loading();
 
     state = await AsyncValue.guard<UserInfoModel?>(() async {
-      final UserModel user = await http.login(
+      final UserModel user = await _http.login(
         username: username,
         password: password,
       );
 
-      final UserInfoModel userInfo = await http.fetchUserInfo();
+      final UserInfoModel userInfo = await _http.fetchUserInfo();
 
       unawaited(
         _handleCacheByLogin(
@@ -141,12 +141,12 @@ class Authorized extends _$Authorized {
     password = decryptString(password);
 
     state = await AsyncValue.guard<UserInfoModel?>(() async {
-      final UserModel user = await http.silentLogin(
+      final UserModel user = await _http.silentLogin(
         username: username,
         password: password,
       );
 
-      final UserInfoModel userInfo = await http.silentFetchUserInfo();
+      final UserInfoModel userInfo = await _http.silentFetchUserInfo();
 
       unawaited(
         _handleCacheByLogin(
@@ -166,8 +166,8 @@ class Authorized extends _$Authorized {
   Future<bool> logout() async {
     DialogUtils.loading();
     state = await AsyncValue.guard<UserInfoModel?>(() async {
-      await http.logout();
-      await http.cookieJar.deleteAll();
+      await _http.logout();
+      await _http.cookieJar.deleteAll();
 
       return null;
     });
@@ -191,7 +191,7 @@ class Authorized extends _$Authorized {
   }) async {
     DialogUtils.loading();
     try {
-      final UserModel model = await http.register(
+      final UserModel model = await _http.register(
         username: username,
         password: password,
         repassword: repassword,
@@ -202,7 +202,7 @@ class Authorized extends _$Authorized {
         ..username = username
         ..updateTime = DateTime.now();
 
-      unawaited(isar.writeTxn(() => isar.accountCaches.put(accountCache)));
+      unawaited(_isar.writeTxn(() => _isar.accountCaches.put(accountCache)));
 
       DialogUtils.success(S.current.registerSuccess);
 

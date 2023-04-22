@@ -64,11 +64,11 @@ class __ResultsState extends ConsumerState<_Results>
       searchArticleProvider(widget.query);
 
   @override
-  Refreshable<Future<PaginationData<ArticleModel>>> get refreshable =>
-      provider.future;
+  PaginationDataRefreshable<ArticleModel> get refreshable => provider.future;
 
   @override
-  OnLoadMoreCallback get loadMore => ref.read(provider.notifier).loadMore;
+  Future<LoadingMoreStatus?> loadMore() =>
+      ref.read(provider.notifier).loadMore();
 
   Isar get isar => ref.read(appDatabaseProvider);
 

@@ -19,11 +19,7 @@ class _ProjectState extends ConsumerState<_Project>
   ProjectArticleProvider get provider => projectArticleProvider();
 
   @override
-  Refreshable<Future<PaginationData<ArticleModel>>> get refreshable =>
-      provider.future;
-
-  @override
-  OnLoadMoreCallback get loadMore => ref.read(provider.notifier).loadMore;
+  PaginationDataRefreshable<ArticleModel> get refreshable => provider.future;
 
   @override
   FutureOr<void> onRetry() async {
@@ -33,6 +29,10 @@ class _ProjectState extends ConsumerState<_Project>
       await super.onRetry();
     }
   }
+
+  @override
+  Future<LoadingMoreStatus?> loadMore() =>
+      ref.read(provider.notifier).loadMore();
 
   @override
   Widget build(BuildContext context) {

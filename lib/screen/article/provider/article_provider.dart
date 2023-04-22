@@ -14,7 +14,7 @@ part 'article_provider.g.dart';
 
 @riverpod
 class AppArticle extends _$AppArticle {
-  late Http http;
+  late Http _http;
 
   /// [myCollectedArticleProvider] and [myCollectedWebsiteProvider] is
   /// autoDispose provider, So if they exist, it can be considered to be
@@ -76,7 +76,7 @@ class AppArticle extends _$AppArticle {
   }
 
   Future<WebViewModel?> findArticle(int id) async {
-    final ArticleModel? article = await http.fetchArticleInfo(articleId: id);
+    final ArticleModel? article = await _http.fetchArticleInfo(articleId: id);
 
     if (article != null) {
       return WebViewModel(
@@ -107,7 +107,7 @@ class AppArticle extends _$AppArticle {
 
   @override
   Future<WebViewModel> build(int articleId) async {
-    http = ref.watch(networkProvider);
+    _http = ref.watch(networkProvider);
 
     final WebViewModel? webViewModel = findCollectedWebsite(articleId) ??
         findCollectedArticle(articleId) ??
@@ -131,7 +131,7 @@ class AppArticle extends _$AppArticle {
     required bool value,
   }) async {
     if (value) {
-      await http.addCollectedArticleByArticleId(articleId: webView.id);
+      await _http.addCollectedArticleByArticleId(articleId: webView.id);
     } else {
       await ref
           .read(myCollectedArticleProvider().notifier)
@@ -195,9 +195,9 @@ class AppArticle extends _$AppArticle {
     required int id,
   }) async {
     if (value) {
-      await http.addCollectedArticleByArticleId(articleId: id);
+      await _http.addCollectedArticleByArticleId(articleId: id);
     } else {
-      await http.deleteCollectedArticleByArticleId(articleId: id);
+      await _http.deleteCollectedArticleByArticleId(articleId: id);
     }
   }
 

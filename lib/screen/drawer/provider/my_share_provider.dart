@@ -2,33 +2,28 @@ part of 'drawer_provider.dart';
 
 @riverpod
 class MyShareArticle extends _$MyShareArticle with LoadMoreMixin<ArticleModel> {
-  late Http http;
+  late Http _http;
 
   @override
   Future<PaginationData<ArticleModel>> build({
-    int? pageNum,
-    int? pageSize,
+    int pageNum = kDefaultPageNum,
+    int pageSize = kDefaultPageSize,
   }) async {
     final CancelToken cancelToken = ref.cancelToken();
 
-    http = ref.watch(networkProvider);
+    _http = ref.watch(networkProvider);
 
-    return (await http.fetchShareArticles(
-      pageNum ?? initialPageNum,
-      pageSize ?? initialPageSize,
+    return (await _http.fetchShareArticles(
+      pageNum,
+      pageSize,
       cancelToken: cancelToken,
     ))
         .shareArticles;
   }
 
   @override
-  Future<PaginationData<ArticleModel>> Function(
-    int pageNum,
-    int pageSize,
-  ) get buildMore => (int pageNum, int pageSize) => build(
-        pageNum: pageNum,
-        pageSize: pageSize,
-      );
+  Future<PaginationData<ArticleModel>> buildMore(int pageNum, int pageSize) =>
+      build(pageNum: pageNum, pageSize: pageSize);
 
   Future<bool> add({
     required String title,
@@ -37,7 +32,7 @@ class MyShareArticle extends _$MyShareArticle with LoadMoreMixin<ArticleModel> {
     try {
       DialogUtils.loading();
 
-      await http.addShareArticle(
+      await _http.addShareArticle(
         title: title,
         link: link,
       );
@@ -60,7 +55,7 @@ class MyShareArticle extends _$MyShareArticle with LoadMoreMixin<ArticleModel> {
     required int articleId,
   }) async {
     try {
-      await http.deleteShareArticle(
+      await _http.deleteShareArticle(
         articleId: articleId,
       );
 

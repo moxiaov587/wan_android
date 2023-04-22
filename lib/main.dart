@@ -9,6 +9,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart'
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:flutter_web_plugins/url_strategy.dart' show usePathUrlStrategy;
+import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'app/http/http.dart';
@@ -151,12 +152,13 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final GoRouter goRouter = ref.watch(appRouterProvider);
     final ThemeMode themeMode = ref.watch(appThemeModeProvider);
     final Locale? locale = ref.watch(appLanguageProvider)?.locale;
 
     return MaterialApp.router(
       onGenerateTitle: (BuildContext context) => S.of(context).appName,
-      routerConfig: ref.read(appRouterProvider),
+      routerConfig: goRouter,
       builder: FlutterSmartDialog.init(
         builder: (_, Widget? child) => ScrollConfiguration(
           behavior: const AppScrollBehavior(),

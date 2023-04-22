@@ -20,11 +20,11 @@ class _TheyArticlesScreenState extends ConsumerState<TheyArticlesScreen>
   late final TheyArticleProvider provider = theyArticleProvider(widget.author);
 
   @override
-  Refreshable<Future<PaginationData<ArticleModel>>> get refreshable =>
-      provider.future;
+  PaginationDataRefreshable<ArticleModel> get refreshable => provider.future;
 
   @override
-  OnLoadMoreCallback get loadMore => ref.read(provider.notifier).loadMore;
+  Future<LoadingMoreStatus?> loadMore() =>
+      ref.read(provider.notifier).loadMore();
 
   @override
   Widget build(BuildContext context) => Scaffold(

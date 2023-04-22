@@ -18,11 +18,11 @@ class _QAState extends ConsumerState<_QA>
   QuestionArticleProvider get provider => questionArticleProvider();
 
   @override
-  Refreshable<Future<PaginationData<ArticleModel>>> get refreshable =>
-      provider.future;
+  PaginationDataRefreshable<ArticleModel> get refreshable => provider.future;
 
   @override
-  OnLoadMoreCallback get loadMore => ref.read(provider.notifier).loadMore;
+  Future<LoadingMoreStatus?> loadMore() =>
+      ref.read(provider.notifier).loadMore();
 
   @override
   Widget build(BuildContext context) {

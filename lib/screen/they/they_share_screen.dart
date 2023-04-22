@@ -16,15 +16,18 @@ class _TheyShareScreenState extends ConsumerState<TheyShareScreen>
     with
         RefreshListViewStateMixin<TheyShareProvider, ArticleModel,
             TheyShareScreen> {
+  late final TheyPointsProvider pointsProvider =
+      theyPointsProvider(widget.userId);
+
   @override
   late final TheyShareProvider provider = theyShareProvider(widget.userId);
 
   @override
-  Refreshable<Future<PaginationData<ArticleModel>>> get refreshable =>
-      provider.future;
+  PaginationDataRefreshable<ArticleModel> get refreshable => provider.future;
 
   @override
-  OnLoadMoreCallback get loadMore => ref.read(provider.notifier).loadMore;
+  Future<LoadingMoreStatus?> loadMore() =>
+      ref.read(provider.notifier).loadMore();
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -43,131 +46,165 @@ class _TheyShareScreenState extends ConsumerState<TheyShareScreen>
                   shape: RoundedRectangleBorder(
                     borderRadius: AppTheme.borderRadius,
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(kStyleUint4),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints.tightFor(height: 152.0),
                     child: Consumer(
-                      builder: (_, WidgetRef ref, __) {
-                        final UserPointsModel? userPoints =
-                            ref.watch(provider).whenOrNull<UserPointsModel?>(
-                                  data: (PaginationData<ArticleModel> data) =>
-                                      ref.read(provider.notifier).userPoints,
-                                );
-
-                        return ConstrainedBox(
-                          constraints:
-                              const BoxConstraints.tightFor(height: 120.0),
-                          child: userPoints != null
-                              ? Stack(
-                                  children: <Widget>[
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          userPoints.nickname.strictValue ??
-                                              userPoints.username.strictValue ??
-                                              '',
+                      builder: (_, WidgetRef ref, __) => ref
+                          .watch(pointsProvider)
+                          .when(
+                            skipLoadingOnRefresh: false,
+                            data: (UserPointsModel userPoints) => Padding(
+                              padding: const EdgeInsets.all(kStyleUint4),
+                              child: Stack(
+                                children: <Widget>[
+                                  Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(
+                                        userPoints.nickname.strictValue ??
+                                            userPoints.username.strictValue ??
+                                            '',
+                                        style:
+                                            context.theme.textTheme.titleLarge,
+                                      ),
+                                      RichText(
+                                        text: TextSpan(
                                           style: context
                                               .theme.textTheme.titleLarge,
+                                          children: <InlineSpan>[
+                                            const TextSpan(
+                                              text: 'No.',
+                                            ),
+                                            TextSpan(
+                                              text: userPoints.rank ?? '',
+                                            ),
+                                          ],
                                         ),
-                                        RichText(
-                                          text: TextSpan(
-                                            style: context
-                                                .theme.textTheme.titleLarge,
-                                            children: <InlineSpan>[
-                                              const TextSpan(
-                                                text: 'No.',
+                                      ),
+                                    ],
+                                  ),
+                                  Positioned.fill(
+                                    child: Align(
+                                      alignment: Alignment.bottomRight,
+                                      child: Text(
+                                        'Lv${userPoints.level}',
+                                        style: context
+                                            .theme.textTheme.displayLarge!
+                                            .copyWith(
+                                          color: context.theme.cardColor,
+                                          fontStyle: FontStyle.italic,
+                                          shadows: <Shadow>[
+                                            Shadow(
+                                              color: context.theme.textTheme
+                                                  .labelSmall!.color!,
+                                              offset: const Offset(
+                                                5.0,
+                                                5.0,
                                               ),
-                                              TextSpan(
-                                                text: userPoints.rank ?? '',
-                                              ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            error: (Object e, StackTrace s) {
+                              final AppException error =
+                                  AppException.create(e, s);
+
+                              return Ink(
+                                width: ScreenUtils.width,
+                                child: InkWell(
+                                  onTap: () {
+                                    ref.invalidate(pointsProvider);
+                                  },
+                                  child: Padding(
+                                    padding: AppTheme.bodyPaddingOnlyHorizontal,
+                                    child: Column(
+                                      children: <Widget>[
+                                        const Gap.v(value: kStyleUint4 * 2),
+                                        Icon(
+                                          IconFontIcons.refreshLine,
+                                          color: context
+                                              .theme.textTheme.bodySmall!.color,
+                                          size: 36.0,
+                                        ),
+                                        const Gap.vn(),
+                                        Text(
+                                          // ignore: lines_longer_than_80_chars
+                                          '${error.message ?? error.detail ?? S.of(context).unknownError}(${error.statusCode ?? -1})',
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const Gap.vs(),
+                                        Text(S.of(context).tapToRetry),
                                       ],
                                     ),
-                                    Positioned.fill(
-                                      child: Align(
-                                        alignment: Alignment.bottomRight,
-                                        child: Text(
-                                          'Lv${userPoints.level}',
-                                          style: context
-                                              .theme.textTheme.displayLarge!
-                                              .copyWith(
-                                            color: context.theme.cardColor,
-                                            fontStyle: FontStyle.italic,
-                                            shadows: <Shadow>[
-                                              Shadow(
-                                                color: context.theme.textTheme
-                                                    .labelSmall!.color!,
-                                                offset: const Offset(
-                                                  5.0,
-                                                  5.0,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Shimmer.fromColors(
-                                      baseColor: context.theme.focusColor,
-                                      highlightColor: context.theme.hoverColor,
-                                      child: ClipRRect(
-                                        borderRadius:
-                                            AppTheme.adornmentBorderRadius,
-                                        child: ColoredBox(
-                                          color: context.theme.focusColor,
-                                          child: const SizedBox(
-                                            width: 210.0,
-                                            height: 20.0,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    const Gap.vn(),
-                                    Shimmer.fromColors(
-                                      baseColor: context.theme.focusColor,
-                                      highlightColor: context.theme.hoverColor,
-                                      child: ClipRRect(
-                                        borderRadius:
-                                            AppTheme.adornmentBorderRadius,
-                                        child: ColoredBox(
-                                          color: context.theme.focusColor,
-                                          child: const SizedBox(
-                                            width: 140.0,
-                                            height: 20.0,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    const Gap.vn(),
-                                    Shimmer.fromColors(
-                                      baseColor: context.theme.focusColor,
-                                      highlightColor: context.theme.hoverColor,
-                                      child: ClipRRect(
-                                        borderRadius:
-                                            AppTheme.adornmentBorderRadius,
-                                        child: ColoredBox(
-                                          color: context.theme.focusColor,
-                                          child: const SizedBox(
-                                            width: 70.0,
-                                            height: 20.0,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
-                        );
-                      },
+                              );
+                            },
+                            loading: () => Padding(
+                              padding: const EdgeInsets.all(kStyleUint4),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Shimmer.fromColors(
+                                    baseColor: context.theme.focusColor,
+                                    highlightColor: context.theme.hoverColor,
+                                    child: ClipRRect(
+                                      borderRadius:
+                                          AppTheme.adornmentBorderRadius,
+                                      child: ColoredBox(
+                                        color: context.theme.focusColor,
+                                        child: const SizedBox(
+                                          width: 210.0,
+                                          height: 20.0,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const Gap.vn(),
+                                  Shimmer.fromColors(
+                                    baseColor: context.theme.focusColor,
+                                    highlightColor: context.theme.hoverColor,
+                                    child: ClipRRect(
+                                      borderRadius:
+                                          AppTheme.adornmentBorderRadius,
+                                      child: ColoredBox(
+                                        color: context.theme.focusColor,
+                                        child: const SizedBox(
+                                          width: 140.0,
+                                          height: 20.0,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const Gap.vn(),
+                                  Shimmer.fromColors(
+                                    baseColor: context.theme.focusColor,
+                                    highlightColor: context.theme.hoverColor,
+                                    child: ClipRRect(
+                                      borderRadius:
+                                          AppTheme.adornmentBorderRadius,
+                                      child: ColoredBox(
+                                        color: context.theme.focusColor,
+                                        child: const SizedBox(
+                                          width: 70.0,
+                                          height: 20.0,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                     ),
                   ),
                 ),

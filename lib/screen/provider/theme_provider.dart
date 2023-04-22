@@ -1,14 +1,14 @@
 part of 'common_provider.dart';
 
-@Riverpod(keepAlive: true, dependencies: <Object>[appDatabase])
+@Riverpod(dependencies: <Object>[appDatabase])
 class AppThemeMode extends _$AppThemeMode {
-  late Isar isar;
+  late Isar _isar;
 
   @override
   ThemeMode build() {
-    isar = ref.read(appDatabaseProvider);
+    _isar = ref.read(appDatabaseProvider);
 
-    return isar.uniqueUserSettings?.themeMode ?? ThemeMode.system;
+    return _isar.uniqueUserSettings?.themeMode ?? ThemeMode.system;
   }
 
   void switchThemeMode(ThemeMode themeMode) {
@@ -18,12 +18,13 @@ class AppThemeMode extends _$AppThemeMode {
 
     state = themeMode;
 
-    final UserSettings userSettings = isar.writeUniqueUserSettings(
+    final UserSettings userSettings = _isar.writeUniqueUserSettings(
       themeMode: themeMode,
     );
 
     unawaited(
-      isar.writeTxn<int>(() async => isar.userSettingsCache.put(userSettings)),
+      _isar
+          .writeTxn<int>(() async => _isar.userSettingsCache.put(userSettings)),
     );
   }
 }

@@ -1,39 +1,49 @@
 part of 'they_provider.dart';
 
 @riverpod
-class TheyShare extends _$TheyShare with LoadMoreMixin<ArticleModel> {
-  late Http http;
+class TheyPoints extends _$TheyPoints {
+  late Http _http;
 
-  UserPointsModel? _userPoints;
-  UserPointsModel? get userPoints => _userPoints;
+  @override
+  Future<UserPointsModel> build(int userId) async {
+    final CancelToken cancelToken = ref.cancelToken();
+
+    _http = ref.watch(networkProvider);
+
+    return (await _http.fetchShareArticlesByUserId(
+      1,
+      0,
+      userId: userId,
+      cancelToken: cancelToken,
+    ))
+        .userPoints;
+  }
+}
+
+@riverpod
+class TheyShare extends _$TheyShare with LoadMoreMixin<ArticleModel> {
+  late Http _http;
 
   @override
   Future<PaginationData<ArticleModel>> build(
     int userId, {
-    int? pageNum,
-    int? pageSize,
+    int pageNum = kDefaultPageNum,
+    int pageSize = kDefaultPageSize,
   }) async {
     final CancelToken cancelToken = ref.cancelToken();
 
-    http = ref.watch(networkProvider);
+    _http = ref.watch(networkProvider);
 
-    final TheyShareModel data = await http.fetchShareArticlesByUserId(
-      pageNum ?? initialPageNum,
-      pageSize ?? initialPageSize,
+    return (await _http.fetchShareArticlesByUserId(
+      pageNum,
+      pageSize,
       userId: userId,
       cancelToken: cancelToken,
-    );
-
-    _userPoints = data.userPoints;
-
-    return data.shareArticles;
+    ))
+        .shareArticles;
   }
 
   @override
-  Future<PaginationData<ArticleModel>> Function(int pageNum, int pageSize)
-      get buildMore => (int pageNum, int pageSize) => build(
-            userId,
-            pageNum: pageNum,
-            pageSize: pageSize,
-          );
+  Future<PaginationData<ArticleModel>> buildMore(int pageNum, int pageSize) =>
+      build(userId, pageNum: pageNum, pageSize: pageSize);
 }

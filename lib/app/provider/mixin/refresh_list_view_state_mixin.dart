@@ -12,8 +12,11 @@ import '../../http/interceptors/interceptors.dart';
 import '../widget/pull_to_refresh_widgets.dart';
 
 export 'package:riverpod_annotation/riverpod_annotation.dart' show FutureOr;
+export '../widget/pull_to_refresh_widgets.dart' show LoadingMoreStatus;
 
 part 'load_more_mixin.dart';
+
+typedef PaginationDataRefreshable<T> = Refreshable<Future<PaginationData<T>>>;
 
 mixin RefreshListViewStateMixin<
         ProviderType extends ProviderBase<AsyncValue<PaginationData<T>>>,
@@ -29,10 +32,7 @@ mixin RefreshListViewStateMixin<
   ProviderType get provider;
 
   @protected
-  Refreshable<Future<PaginationData<T>>> get refreshable;
-
-  @protected
-  OnLoadMoreCallback get loadMore;
+  PaginationDataRefreshable<T> get refreshable;
 
   Widget get pullDownIndicator => Consumer(
         builder: (BuildContext context, WidgetRef ref, _) =>
@@ -66,6 +66,9 @@ mixin RefreshListViewStateMixin<
   FutureOr<void> onRetry() {
     ref.invalidate(provider);
   }
+
+  @protected
+  Future<LoadingMoreStatus?> loadMore();
 
   @mustCallSuper
   @override

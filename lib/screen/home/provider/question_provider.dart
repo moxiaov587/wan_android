@@ -3,31 +3,25 @@ part of 'home_provider.dart';
 @riverpod
 class QuestionArticle extends _$QuestionArticle
     with LoadMoreMixin<ArticleModel> {
-  @override
-  int get initialPageNum => 0;
-
-  late Http http;
+  late Http _http;
 
   @override
   Future<PaginationData<ArticleModel>> build({
-    int? pageNum,
-    int? pageSize,
+    int pageNum = 0,
+    int pageSize = kDefaultPageSize,
   }) {
     final CancelToken cancelToken = ref.cancelToken();
 
-    http = ref.watch(networkProvider);
+    _http = ref.watch(networkProvider);
 
-    return http.fetchQuestionArticles(
-      pageNum ?? initialPageNum,
-      pageSize ?? initialPageSize,
+    return _http.fetchQuestionArticles(
+      pageNum,
+      pageSize,
       cancelToken: cancelToken,
     );
   }
 
   @override
-  Future<PaginationData<ArticleModel>> Function(int pageNum, int pageSize)
-      get buildMore => (int pageNum, int pageSize) => build(
-            pageNum: pageNum,
-            pageSize: pageSize,
-          );
+  Future<PaginationData<ArticleModel>> buildMore(int pageNum, int pageSize) =>
+      build(pageNum: pageNum, pageSize: pageSize);
 }

@@ -1,19 +1,16 @@
 part of 'refresh_list_view_state_mixin.dart';
 
-typedef OnLoadMoreCallback = Future<LoadingMoreStatus?> Function();
+const int kDefaultPageNum = 1;
+const int kDefaultPageSize = 20;
 
 mixin LoadMoreMixin<T> {
   AsyncValue<PaginationData<T>> get state;
   set state(AsyncValue<PaginationData<T>> value);
-
-  final int initialPageNum = 1;
-  final int initialPageSize = 20;
+  late final int pageNum;
+  late final int pageSize;
 
   @protected
-  Future<PaginationData<T>> Function(int pageNum, int pageSize) get buildMore;
-
-  int getNextPageNum(PaginationData<T> data) =>
-      (data.datas.length / data.size).ceil() + initialPageNum;
+  Future<PaginationData<T>> buildMore(int pageNum, int pageSize);
 
   Future<LoadingMoreStatus?> loadMore() =>
       state.whenOrNull<Future<LoadingMoreStatus?>>(
@@ -32,15 +29,17 @@ mixin LoadMoreMixin<T> {
           try {
             /// Some api's pageNum will be self-increasing, some won't, so here
             /// it's handled internally.
-            final int pageNum = getNextPageNum(data);
 
             final PaginationData<T> value = await buildMore(
-              pageNum,
-              initialPageSize,
+              data.curPage + 1,
+              pageSize,
             );
 
             state = AsyncData<PaginationData<T>>(
-              value.copyWith(datas: data.datas..addAll(value.datas)),
+              value.copyWith(
+                curPage: data.curPage + 1,
+                datas: data.datas..addAll(value.datas),
+              ),
             );
 
             return value.over
