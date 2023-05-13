@@ -10,7 +10,6 @@ class _Article extends ConsumerStatefulWidget {
 class __ArticleState extends ConsumerState<_Article>
     with
         AutomaticKeepAliveClientMixin,
-        RouteAware,
         RefreshListViewStateMixin<MyCollectedArticleProvider,
             CollectedArticleModel, _Article> {
   @override
@@ -26,27 +25,6 @@ class __ArticleState extends ConsumerState<_Article>
   @override
   Future<LoadingMoreStatus?> loadMore() =>
       ref.read(provider.notifier).loadMore();
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    Instances.routeObserver.subscribe(this, ModalRoute.of<dynamic>(context)!);
-  }
-
-  @override
-  void didPopNext() {
-    super.didPopNext();
-
-    ref.read(provider.notifier).onSwitchCollectComplete();
-  }
-
-  @override
-  void dispose() {
-    Instances.routeObserver.unsubscribe(this);
-
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,14 +76,21 @@ class __ArticleState extends ConsumerState<_Article>
 
                                 return result;
                               },
-                              onTap: () {
-                                ArticleRoute(id: article.id).push(context);
+                              onTap: () async {
+                                await ArticleRoute(id: article.id)
+                                    .push<void>(context);
+
+                                ref
+                                    .read(provider.notifier)
+                                    .onSwitchCollectComplete();
                               },
                               onEditTap: () {
-                                EditCollectedArticleOrWebsiteRoute(
-                                  type: CollectionType.article,
-                                  id: article.id,
-                                ).push(context);
+                                unawaited(
+                                  EditCollectedArticleOrWebsiteRoute(
+                                    type: CollectionType.article,
+                                    id: article.id,
+                                  ).push(context),
+                                );
                               },
                             );
                           },

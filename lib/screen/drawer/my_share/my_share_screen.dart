@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -46,7 +48,9 @@ class _MyShareScreenState extends ConsumerState<MyShareScreen>
           actions: <Widget>[
             IconButton(
               onPressed: () {
-                const HandleSharedBottomSheetRoute().push(context);
+                unawaited(
+                  const HandleSharedBottomSheetRoute().push(context),
+                );
               },
               icon: const Icon(IconFontIcons.addLine, size: 30.0),
             ),

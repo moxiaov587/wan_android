@@ -461,7 +461,9 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                                             .read(provider.notifier)
                                             .collect(value: !collect);
                                       } else {
-                                        const LoginRoute().push(context);
+                                        unawaited(
+                                          const LoginRoute().push(context),
+                                        );
                                       }
                                     }),
                                     icon: Icon(

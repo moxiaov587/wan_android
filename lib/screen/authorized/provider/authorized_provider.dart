@@ -202,7 +202,7 @@ class Authorized extends _$Authorized {
         ..username = username
         ..updateTime = DateTime.now();
 
-      unawaited(_isar.writeTxn(() => _isar.accountCaches.put(accountCache)));
+      await _isar.writeTxn(() => _isar.accountCaches.put(accountCache));
 
       DialogUtils.success(S.current.registerSuccess);
 

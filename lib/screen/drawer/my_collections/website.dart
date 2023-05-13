@@ -10,7 +10,6 @@ class _Website extends ConsumerStatefulWidget {
 class __WebsiteState extends ConsumerState<_Website>
     with
         AutomaticKeepAliveClientMixin,
-        RouteAware,
         ListViewStateMixin<MyCollectedWebsiteProvider, CollectedWebsiteModel,
             _Website> {
   @override
@@ -22,27 +21,6 @@ class __WebsiteState extends ConsumerState<_Website>
   @override
   Refreshable<Future<List<CollectedWebsiteModel>>> get refreshable =>
       provider.future;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    Instances.routeObserver.subscribe(this, ModalRoute.of<dynamic>(context)!);
-  }
-
-  @override
-  void didPopNext() {
-    super.didPopNext();
-
-    ref.read(provider.notifier).onSwitchCollectComplete();
-  }
-
-  @override
-  void dispose() {
-    Instances.routeObserver.unsubscribe(this);
-
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,14 +69,21 @@ class __WebsiteState extends ConsumerState<_Website>
 
                               return result;
                             },
-                            onTap: () {
-                              ArticleRoute(id: website.id).push(context);
+                            onTap: () async {
+                              await ArticleRoute(id: website.id)
+                                  .push<void>(context);
+
+                              ref
+                                  .read(provider.notifier)
+                                  .onSwitchCollectComplete();
                             },
                             onEditTap: () {
-                              EditCollectedArticleOrWebsiteRoute(
-                                type: CollectionType.website,
-                                id: website.id,
-                              ).push(context);
+                              unawaited(
+                                EditCollectedArticleOrWebsiteRoute(
+                                  type: CollectionType.website,
+                                  id: website.id,
+                                ).push(context),
+                              );
                             },
                           );
                         },

@@ -106,7 +106,7 @@ class _ProjectTypeSwitch extends StatelessWidget {
                   ref.watch(currentProjectTypeProvider).when(
                         data: (ProjectTypeModel value) => CapsuleInk(
                           onTap: () {
-                            const ProjectTypeRoute().push(context);
+                            unawaited(const ProjectTypeRoute().push(context));
                           },
                           child: Text(value.name),
                         ),

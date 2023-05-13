@@ -515,7 +515,7 @@ class _BannerCarousel extends StatelessWidget {
                   ],
                 ),
                 onTap: () {
-                  const SearchRoute().push(context);
+                  unawaited(const SearchRoute().push(context));
                 },
               ),
             ),

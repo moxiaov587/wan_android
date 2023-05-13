@@ -9,7 +9,6 @@ import '../../../app/provider/mixin/list_view_state_mixin.dart';
 import '../../../app/provider/mixin/refresh_list_view_state_mixin.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../contacts/icon_font_icons.dart';
-import '../../../contacts/instances.dart';
 import '../../../extensions/extensions.dart';
 import '../../../model/models.dart';
 import '../../../router/data/app_routes.dart';
@@ -58,9 +57,11 @@ class _MyCollectionsScreenState extends State<MyCollectionsScreen>
             Consumer(
               builder: (_, WidgetRef ref, __) => IconButton(
                 onPressed: () {
-                  AddCollectedArticleOrWebsiteRoute(
-                    type: CollectionType.values[_tabController.index],
-                  ).push(context);
+                  unawaited(
+                    AddCollectedArticleOrWebsiteRoute(
+                      type: CollectionType.values[_tabController.index],
+                    ).push(context),
+                  );
                 },
                 icon: const Icon(IconFontIcons.addLine, size: 30.0),
               ),

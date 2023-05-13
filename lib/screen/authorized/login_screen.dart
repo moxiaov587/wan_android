@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import '../../app/l10n/generated/l10n.dart';
 import '../../app/theme/app_theme.dart';
 import '../../contacts/icon_font_icons.dart';
-import '../../contacts/instances.dart';
 import '../../database/app_database.dart';
 import '../../extensions/extensions.dart' show BuildContextExtension;
 import '../../router/data/app_routes.dart';
@@ -25,7 +26,7 @@ class LoginScreen extends ConsumerStatefulWidget {
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final TextEditingController _usernameTextEditingController =
@@ -54,20 +55,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
   }
 
   @override
-  void didPopNext() {
-    super.didPopNext();
-
-    initTextEditingDefaultValue();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    Instances.routeObserver.subscribe(this, ModalRoute.of<dynamic>(context)!);
-  }
-
-  @override
   void dispose() {
     _usernameTextEditingController.dispose();
     _usernameFocusNode
@@ -78,7 +65,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
       ..unfocus()
       ..dispose();
     _rememberPasswordNotifier.dispose();
-    Instances.routeObserver.unsubscribe(this);
 
     super.dispose();
   }
@@ -94,6 +80,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
         _passwordTextEditingController.text = ref
             .read(authorizedProvider.notifier)
             .decryptString(_lastLoginAccountCache!.password!);
+      } else {
+        _passwordTextEditingController.clear();
       }
     }
   }
@@ -141,7 +129,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
                                 .read(authorizedProvider.notifier)
                                 .decryptString(option.password!);
                           } else {
-                            _passwordTextEditingController.text = '';
+                            _passwordTextEditingController.clear();
                           }
                         },
                         optionsBuilder: (TextEditingValue value) async => isar
@@ -243,8 +231,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with RouteAware {
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
-                          onPressed: () {
-                            const RegisterRoute(fromLogin: true).push(context);
+                          onPressed: () async {
+                            final bool? result =
+                                await const RegisterRoute(fromLogin: true)
+                                    .push<bool>(context);
+
+                            if (result ?? false) {
+                              initTextEditingDefaultValue();
+                            }
                           },
                           child: Text(S.of(context).register),
                         ),

@@ -19,14 +19,14 @@ class SettingsScreen extends StatelessWidget {
                       leading: const Icon(IconFontIcons.globalLine),
                       title: Text(S.of(context).languages),
                       onTap: () {
-                        const LanguagesRoute().push(context);
+                        unawaited(const LanguagesRoute().push(context));
                       },
                     ),
                     ListTile(
                       leading: const Icon(IconFontIcons.deleteLine),
                       title: Text(S.of(context).clearCache),
                       onTap: () {
-                        const StorageRoute().push(context);
+                        unawaited(const StorageRoute().push(context));
                       },
                     ),
                   ],

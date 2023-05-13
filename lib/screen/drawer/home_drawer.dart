@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -112,7 +114,7 @@ class HomeDrawer extends StatelessWidget {
                   alignment: Alignment.topRight,
                   child: IconButton(
                     onPressed: () {
-                      const RankRoute().push(context);
+                      unawaited(const RankRoute().push(context));
                     },
                     icon: const Icon(IconFontIcons.honourLine),
                   ),
@@ -127,30 +129,32 @@ class HomeDrawer extends StatelessWidget {
                   leading: const Icon(IconFontIcons.coinLine),
                   title: Text(S.of(context).myPoints),
                   onTap: () {
-                    const MyPointsRoute().push(context);
+                    unawaited(const MyPointsRoute().push(context));
                   },
                 ),
                 ListTile(
                   leading: const Icon(IconFontIcons.starLine),
                   title: Text(S.of(context).myCollections),
                   onTap: () {
-                    const MyCollectionsRoute(
-                      type: CollectionType.article,
-                    ).push(context);
+                    unawaited(
+                      const MyCollectionsRoute(
+                        type: CollectionType.article,
+                      ).push(context),
+                    );
                   },
                 ),
                 ListTile(
                   leading: const Icon(IconFontIcons.shareCircleLine),
                   title: Text(S.of(context).myShare),
                   onTap: () {
-                    const MyShareRoute().push(context);
+                    unawaited(const MyShareRoute().push(context));
                   },
                 ),
                 ListTile(
                   leading: const Icon(IconFontIcons.informationLine),
                   title: Text(S.of(context).about),
                   onTap: () {
-                    const AboutRoute().push(context);
+                    unawaited(const AboutRoute().push(context));
                   },
                 ),
               ],
@@ -192,7 +196,7 @@ class HomeDrawer extends StatelessWidget {
                     ),
                     IconButton(
                       onPressed: () {
-                        const SettingsRoute().push(context);
+                        unawaited(const SettingsRoute().push(context));
                       },
                       tooltip: S.of(context).settings,
                       icon: const Icon(IconFontIcons.settingsLine),

@@ -39,9 +39,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  void toLogin() {
+  void toLogin({bool result = false}) {
     if (widget.fromLogin) {
-      GoRouter.of(context).pop();
+      GoRouter.of(context).pop<bool>(result);
     } else {
       GoRouter.of(context).pushReplacement(const LoginRoute().location);
     }
@@ -58,7 +58,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           );
 
       if (result) {
-        toLogin();
+        toLogin(result: result);
       }
     }
   }
