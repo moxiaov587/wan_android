@@ -15,7 +15,7 @@
 
 # 使用
 
-当前使用的Flutter版本`3.7.3(stable)`
+当前使用的Flutter版本`3.10.0(stable)`
 
 > 国际化方案使用了[intl](https://pub.flutter-io.cn/packages/intl)，请确保在编辑器中已经安装Flutter Intl插件，笔者使用的是VSCode[插件下载地址](https://marketplace.visualstudio.com/items?itemName=localizely.flutter-intl)，其他IDE搜索`Flutter Intl`下载
 
