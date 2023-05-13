@@ -8,6 +8,6 @@ class WebViewModel with _$WebViewModel {
     required bool collect,
     int? originId,
     String? title,
-    @JsonKey(ignore: true) @Default(false) bool withCookie,
+    @JsonKey(includeFromJson: true) @Default(false) bool withCookie,
   }) = _WebViewModel;
 }

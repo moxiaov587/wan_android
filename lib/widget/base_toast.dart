@@ -21,17 +21,13 @@ class BaseToast extends StatelessWidget {
     switch (type) {
       case ToastType.success:
         background = context.theme.colorScheme.secondary;
-        break;
       case ToastType.danger:
         background = context.theme.colorScheme.error;
-        break;
       case ToastType.waring:
         background = context.theme.colorScheme.tertiary;
-        break;
       case ToastType.tips:
         background =
             (context.theme.tooltipTheme.decoration as BoxDecoration?)!.color!;
-        break;
     }
 
     return Align(

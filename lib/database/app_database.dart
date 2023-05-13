@@ -29,5 +29,6 @@ Future<Isar> openIsar() async {
       UserSettingsSchema,
     ],
     directory: dir.path,
+    inspector: false,
   );
 }

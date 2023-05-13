@@ -176,27 +176,23 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
           key: const ValueKey<_SearchBody>(_SearchBody.suggestions),
           child: widget.delegate.buildSuggestions(context),
         );
-        break;
       case _SearchBody.results:
         body = KeyedSubtree(
           key: const ValueKey<_SearchBody>(_SearchBody.results),
           child: widget.delegate.buildResults(context),
         );
-        break;
       case null:
         break;
     }
 
     late final String routeName;
     switch (theme.platform) {
-      case TargetPlatform.iOS:
-      case TargetPlatform.macOS:
+      case TargetPlatform.iOS || TargetPlatform.macOS:
         routeName = '';
-        break;
-      case TargetPlatform.android:
-      case TargetPlatform.fuchsia:
-      case TargetPlatform.linux:
-      case TargetPlatform.windows:
+      case TargetPlatform.android ||
+            TargetPlatform.fuchsia ||
+            TargetPlatform.linux ||
+            TargetPlatform.windows:
         routeName = searchFieldLabel;
     }
 

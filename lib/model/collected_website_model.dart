@@ -11,7 +11,7 @@ class CollectedWebsiteModel with _$CollectedWebsiteModel {
     int? order,
     int? userId,
     int? visible,
-    @JsonKey(ignore: true) @Default(true) bool collect,
+    @JsonKey(includeFromJson: true) @Default(true) bool collect,
   }) = _CollectedWebsiteModel;
 
   factory CollectedWebsiteModel.fromJson(Map<String, dynamic> json) =>

@@ -28,13 +28,10 @@ class IndentDivider extends StatelessWidget {
 
     if (backgroundColor == null) {
       switch (type) {
-        case null:
-        case IndentDividerType.canvas:
+        case null || IndentDividerType.canvas:
           color = context.theme.canvasColor;
-          break;
         case IndentDividerType.listTile:
           color = context.theme.listTileTheme.tileColor!;
-          break;
       }
     }
 

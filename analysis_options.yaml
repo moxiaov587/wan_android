@@ -41,7 +41,6 @@ linter:
     - empty_statements
     - hash_and_equals
     - invalid_case_patterns
-    - invariant_booleans
     - iterable_contains_unrelated_type
     - list_remove_unrelated_type
     - literal_only_boolean_expressions
@@ -66,7 +65,6 @@ linter:
     - always_specify_types
     - annotate_overrides
     # - avoid_annotating_with_dynamic
-    - avoid_as
     - avoid_bool_literals_in_conditional_expressions
     - avoid_catches_without_on_clauses
     - avoid_catching_errors
@@ -143,7 +141,6 @@ linter:
     - prefer_adjacent_string_concatenation
     - prefer_asserts_in_initializer_lists
     - prefer_asserts_with_message
-    - prefer_bool_in_asserts
     - prefer_collection_literals
     - prefer_conditional_assignment
     - prefer_const_constructors
@@ -153,7 +150,6 @@ linter:
     - prefer_constructors_over_static_methods
     - prefer_contains
     # - prefer_double_quotes
-    - prefer_equal_for_default_values
     - prefer_expression_function_bodies
     - prefer_final_fields
     - prefer_final_in_for_each
@@ -189,7 +185,6 @@ linter:
     - sort_child_properties_last
     - sort_constructors_first
     - sort_unnamed_constructors_first
-    - super_goes_last
     - tighten_type_of_initializing_formals
     - type_annotate_public_apis
     - type_init_formals

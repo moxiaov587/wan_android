@@ -101,7 +101,6 @@ class _HandleCollectedBottomSheetState
                     author: _authorTextEditingController.text,
                     link: _linkTextEditingController.text,
                   );
-          break;
         case CollectionType.website:
           result = isEdit
               ? await ref.read(myCollectedWebsiteProvider.notifier).edit(
@@ -114,7 +113,6 @@ class _HandleCollectedBottomSheetState
                         link: _linkTextEditingController.text,
                       ) !=
                   null;
-          break;
       }
 
       if (result) {

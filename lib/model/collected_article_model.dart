@@ -19,7 +19,7 @@ class CollectedArticleModel with _$CollectedArticleModel {
     int? userId,
     int? visible,
     @Default(0) int zan,
-    @JsonKey(ignore: true) @Default(true) bool collect,
+    @JsonKey(includeFromJson: true) @Default(true) bool collect,
   }) = _CollectedArticleModel;
 
   factory CollectedArticleModel.fromJson(Map<String, dynamic> json) =>

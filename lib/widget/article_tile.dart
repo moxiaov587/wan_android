@@ -170,6 +170,7 @@ class _TagTile extends StatelessWidget {
           style: context.theme.textTheme.bodySmall!.copyWith(
             color: color,
             fontSize: AppTextTheme.label3,
+            height: 1.4,
           ),
         ),
       ),
