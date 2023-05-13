@@ -131,7 +131,9 @@ class AppArticle extends _$AppArticle {
     required bool value,
   }) async {
     if (value) {
-      await _http.addCollectedArticleByArticleId(articleId: webView.id);
+      await _http.addCollectedArticleByArticleId(
+        articleId: webView.originId ?? -1,
+      );
     } else {
       await ref
           .read(myCollectedArticleProvider().notifier)
