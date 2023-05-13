@@ -44,14 +44,11 @@ class LoadingMoreIndicator extends StatelessWidget {
       case LoadingMoreStatus.loading:
         icon = const LoadingWidget.capsuleInk();
         tips = S.of(context).loadingMore;
-        break;
       case LoadingMoreStatus.noData:
         tips = S.of(context).noMore;
-        break;
       case LoadingMoreStatus.failed:
         icon = const Icon(IconFontIcons.errorWarningLine);
         tips = S.of(context).loadMoreFailed;
-        break;
     }
 
     final Widget child = Padding(

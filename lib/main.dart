@@ -1,6 +1,7 @@
 import 'dart:async' show FutureOr, unawaited;
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemChrome;
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -29,20 +30,16 @@ Future<void> main() async {
       WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  final List<dynamic> state = await Future.wait<dynamic>(
-    <Future<dynamic>>[getTemporaryDirectory(), openIsar()],
-  );
-
-  final Directory temporaryDirectory = state.first as Directory;
-  final Isar isar = state.last as Isar;
+  final (Directory, Isar) sources =
+      await (getTemporaryDirectory(), openIsar()).wait;
 
   // turn off the # in the URLs on the web
   usePathUrlStrategy();
 
   SystemChrome.setSystemUIOverlayStyle(
-    (isar.uniqueUserSettings?.themeMode?.brightness ??
-                widgetsBinding.window.platformBrightness) ==
-            ThemeMode.dark
+    (sources.$2.uniqueUserSettings?.themeMode?.brightness ??
+                PlatformDispatcher.instance.platformBrightness) ==
+            Brightness.dark
         ? AppTheme.dark.appBarTheme.systemOverlayStyle!
         : AppTheme.light.appBarTheme.systemOverlayStyle!,
   );
@@ -50,8 +47,8 @@ Future<void> main() async {
   runApp(
     ProviderScope(
       overrides: <Override>[
-        appTemporaryDirectoryProvider.overrideWithValue(temporaryDirectory),
-        appDatabaseProvider.overrideWithValue(isar),
+        appTemporaryDirectoryProvider.overrideWithValue(sources.$1),
+        appDatabaseProvider.overrideWithValue(sources.$2),
       ],
       child: const MyApp(),
     ),
@@ -91,7 +88,8 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
       final Brightness? brightness = ref.read(appThemeModeProvider).brightness;
 
       if (brightness != null &&
-          brightness != WidgetsBinding.instance.window.platformBrightness) {
+          brightness !=
+              View.of(context).platformDispatcher.platformBrightness) {
         return Future<void>.delayed(const Duration(seconds: 1), () async {
           final bool? data = await DialogUtils.confirm<bool>(
             builder: (BuildContext context) => RichText(
@@ -103,8 +101,10 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
                 children: <InlineSpan>[
                   TextSpan(
                     text: '${S.of(context).themeMode(
-                          WidgetsBinding
-                              .instance.window.platformBrightness.name,
+                          View.of(context)
+                              .platformDispatcher
+                              .platformBrightness
+                              .name,
                         )}\n',
                     style: const TextStyle(fontWeight: AppTextTheme.semiBold),
                   ),

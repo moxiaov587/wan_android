@@ -106,8 +106,10 @@ class _StorageListTile extends ConsumerWidget {
             builder: (_, WidgetRef ref, __) {
               final bool selected = ref.watch(checkProvider);
 
-              return Checkbox(
+              return CupertinoCheckbox(
                 value: selected,
+                activeColor: context.theme.primaryColor,
+                checkColor: context.theme.colorScheme.background,
                 onChanged: (bool? result) {
                   ref.read(sizeProvider).when(
                         data: (int data) {
@@ -125,8 +127,18 @@ class _StorageListTile extends ConsumerWidget {
             },
           ),
         ),
-        title: Text(title),
-        subtitle: Text(subtitle),
+        title: Text(
+          title,
+          style: TextStyle(
+            color: context.theme.textTheme.displayMedium!.color,
+          ),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: TextStyle(
+            color: context.theme.textTheme.bodyMedium!.color,
+          ),
+        ),
         trailing: Consumer(
           builder: (_, WidgetRef ref, __) => ref.watch(sizeProvider).when(
                 skipLoadingOnRefresh: false,

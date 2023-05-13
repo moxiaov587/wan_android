@@ -148,25 +148,22 @@ class AppException with _$AppException implements Exception {
 
     if (e is DioError) {
       switch (e.type) {
-        case DioErrorType.connectionTimeout:
-        case DioErrorType.sendTimeout:
-        case DioErrorType.receiveTimeout:
+        case DioErrorType.connectionTimeout ||
+              DioErrorType.sendTimeout ||
+              DioErrorType.receiveTimeout:
           // timeout
           statusCode = kTimeoutStatusCode;
           message = e.message;
-          break;
-        case DioErrorType.badCertificate:
-        case DioErrorType.badResponse:
-        case DioErrorType.connectionError:
+        case DioErrorType.badCertificate ||
+              DioErrorType.badResponse ||
+              DioErrorType.connectionError:
           // incorrect status, such as 404, 503...
           final Response<dynamic>? response = e.response;
           if (response != null) {
             statusCode = response.statusCode;
           }
           message = e.message;
-          break;
-        case DioErrorType.cancel:
-        case DioErrorType.unknown:
+        case DioErrorType.cancel || DioErrorType.unknown:
           if (e.type == DioErrorType.cancel) {
             statusCode = kCancelRequestStatusCode;
             message = e.message;
@@ -178,7 +175,6 @@ class AppException with _$AppException implements Exception {
             message ??= e.message;
             detail = e.error?.toString();
           }
-          break;
       }
     } else if (e is AppException) {
       return e;

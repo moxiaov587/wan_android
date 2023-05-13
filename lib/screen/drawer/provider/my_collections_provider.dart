@@ -367,7 +367,6 @@ class HandleCollected extends _$HandleCollected {
             link: articleModel.link,
           );
         }
-        break;
       case CollectionType.website:
         final CollectedWebsiteModel? websiteModel = ref
             .read(myCollectedWebsiteProvider)
@@ -384,7 +383,6 @@ class HandleCollected extends _$HandleCollected {
             link: websiteModel.link,
           );
         }
-        break;
     }
 
     return model;

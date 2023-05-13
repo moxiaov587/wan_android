@@ -69,8 +69,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
   void didChangeMetrics() {
     super.didChangeMetrics();
 
-    _showKeyboardNotifier.value =
-        WidgetsBinding.instance.window.viewInsets.bottom != 0;
+    _showKeyboardNotifier.value = View.of(context).viewInsets.bottom != 0;
   }
 
   @override

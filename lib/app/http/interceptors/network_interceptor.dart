@@ -33,9 +33,9 @@ class NetWorkInterceptor extends Interceptor {
       );
 
       status = result.first ?? result.last;
-    }
 
-    LogUtils.w('Network Connectivity: $status');
+      LogUtils.w('Network Connectivity: $status');
+    }
 
     if (status == null || status == ConnectivityResult.none) {
       // Add a random delay of 500 ms to 1000 ms to "comfort" the user.

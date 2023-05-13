@@ -6,7 +6,9 @@ import 'package:flutter/widgets.dart' show MediaQueryData;
 class ScreenUtils {
   const ScreenUtils._();
 
-  static MediaQueryData get mediaQuery => MediaQueryData.fromView(ui.window);
+  static MediaQueryData get mediaQuery => MediaQueryData.fromView(
+        ui.PlatformDispatcher.instance.views.first,
+      );
 
   static double fixedFontSize(double fontSize) => fontSize / textScaleFactor;
 
