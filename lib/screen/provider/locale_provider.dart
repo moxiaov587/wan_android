@@ -1,46 +1,26 @@
 part of 'common_provider.dart';
 
-@Riverpod(dependencies: <Object>[appDatabase])
+@Riverpod(dependencies: <Object>[UserSettings])
 class AppLanguage extends _$AppLanguage {
-  late Isar _isar;
-
-  static const List<Language?> languages = <Language?>[
-    null,
-    ...Language.values,
-  ];
-
   @override
-  Language? build() {
-    _isar = ref.read(appDatabaseProvider);
+  Language build() =>
+      ref.watch(userSettingsProvider)?.language ?? Language.system;
 
-    return _isar.uniqueUserSettings?.language;
-  }
-
-  void switchLocale(Language? language) {
-    if (!languages.contains(language)) {
-      return;
-    }
-
-    state = language;
-
-    final UserSettings userSettings =
-        ref.read(appDatabaseProvider).writeUniqueUserSettings(
-              language: language,
-              enforceWriteLanguage: true,
-            );
+  void switchLocale(Language language) {
+    // state = language;
 
     unawaited(
-      _isar
-          .writeTxn<int>(() async => _isar.userSettingsCache.put(userSettings)),
+      ref.read(userSettingsProvider.notifier).update(language: language),
     );
   }
 }
 
 enum Language {
+  system(null),
   en(Locale('en')),
   zh(Locale('zh'));
 
   const Language(this.locale);
 
-  final Locale locale;
+  final Locale? locale;
 }

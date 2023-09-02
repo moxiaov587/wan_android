@@ -1,7 +1,6 @@
 import 'dart:async' show FutureOr, unawaited;
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemChrome;
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -37,11 +36,7 @@ Future<void> main() async {
   usePathUrlStrategy();
 
   SystemChrome.setSystemUIOverlayStyle(
-    (sources.$2.uniqueUserSettings?.themeMode?.brightness ??
-                PlatformDispatcher.instance.platformBrightness) ==
-            Brightness.dark
-        ? AppTheme.dark.appBarTheme.systemOverlayStyle!
-        : AppTheme.light.appBarTheme.systemOverlayStyle!,
+    AppTheme.light.appBarTheme.systemOverlayStyle!,
   );
 
   runApp(
@@ -154,7 +149,7 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     final GoRouter goRouter = ref.watch(appRouterProvider);
     final ThemeMode themeMode = ref.watch(appThemeModeProvider);
-    final Locale? locale = ref.watch(appLanguageProvider)?.locale;
+    final Locale? locale = ref.watch(appLanguageProvider).locale;
 
     return MaterialApp.router(
       onGenerateTitle: (BuildContext context) => S.of(context).appName,

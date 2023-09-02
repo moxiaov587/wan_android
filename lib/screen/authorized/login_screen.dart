@@ -14,6 +14,7 @@ import '../../router/data/app_routes.dart';
 import '../../screen/authorized/provider/authorized_provider.dart';
 import '../../widget/custom_text_form_field.dart';
 import '../../widget/gap.dart';
+import '../provider/common_provider.dart';
 
 part 'register_screen.dart';
 
@@ -45,7 +46,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Isar get isar => ref.read(appDatabaseProvider);
 
   bool get rememberPassword =>
-      isar.uniqueUserSettings?.rememberPassword ?? false;
+      ref.read(userSettingsProvider)?.rememberPassword ?? false;
 
   @override
   void initState() {
@@ -71,7 +72,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   void initTextEditingDefaultValue() {
     _lastLoginAccountCache =
-        isar.accountCaches.where().sortByUpdateTimeDesc().findFirstSync();
+        isar.accountCaches.where().sortByUpdateTimeDesc().findFirst();
 
     if (_lastLoginAccountCache != null) {
       _usernameTextEditingController.text = _lastLoginAccountCache!.username;
@@ -132,9 +133,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             _passwordTextEditingController.clear();
                           }
                         },
-                        optionsBuilder: (TextEditingValue value) async => isar
+                        optionsBuilder: (TextEditingValue value) => isar
                             .accountCaches
-                            .filter()
+                            .where()
                             .usernameStartsWith(value.text)
                             .sortByUpdateTimeDesc()
                             .findAll(),

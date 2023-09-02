@@ -7,9 +7,12 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../app/l10n/generated/l10n.dart';
 import '../../database/app_database.dart';
+import '../../model/models.dart';
 import '../../utils/dialog_utils.dart';
+import '../authorized/provider/authorized_provider.dart';
 
 part 'common_provider.g.dart';
 part 'connectivity_provider.dart';
 part 'locale_provider.dart';
 part 'theme_provider.dart';
+part 'user_settings_provider.dart';
