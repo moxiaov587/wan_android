@@ -110,8 +110,8 @@ class CurrentHomeBannerBackgroundColorValue
   }
 }
 
-@Riverpod(keepAlive: true)
-Future<List<ArticleModel>> homeTopArticles(HomeTopArticlesRef ref) async {
+@riverpod
+Future<List<ArticleModel>> homeTopArticles(HomeTopArticlesRef ref) {
   final CancelToken cancelToken = ref.cancelToken();
 
   return ref
@@ -132,9 +132,9 @@ class HomeArticle extends _$HomeArticle with LoadMoreMixin<ArticleModel> {
 
     _http = ref.watch(networkProvider);
 
-    final List<ArticleModel> topArticles =
-        ref.read(homeTopArticlesProvider).valueOrNull ??
-            await ref.watch(homeTopArticlesProvider.future);
+    final List<ArticleModel> topArticles = await ref.watch(
+      homeTopArticlesProvider.selectAsync((List<ArticleModel> data) => data),
+    );
 
     final PaginationData<ArticleModel> data = await _http.fetchHomeArticles(
       pageNum,

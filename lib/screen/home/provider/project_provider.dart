@@ -1,6 +1,6 @@
 part of 'home_provider.dart';
 
-@Riverpod(keepAlive: true)
+@riverpod
 Future<List<ProjectTypeModel>> projectType(ProjectTypeRef ref) =>
     ref.watch(networkProvider).fetchProjectTypes();
 
@@ -8,9 +8,9 @@ Future<List<ProjectTypeModel>> projectType(ProjectTypeRef ref) =>
 class CurrentProjectType extends _$CurrentProjectType {
   @override
   Future<ProjectTypeModel> build() async {
-    final List<ProjectTypeModel> types =
-        ref.read(projectTypeProvider).valueOrNull ??
-            await ref.watch(projectTypeProvider.future);
+    final List<ProjectTypeModel> types = await ref.watch(
+      projectTypeProvider.selectAsync((List<ProjectTypeModel> data) => data),
+    );
 
     return types.first;
   }
@@ -31,9 +31,9 @@ class ProjectArticle extends _$ProjectArticle with LoadMoreMixin<ArticleModel> {
 
     _http = ref.watch(networkProvider);
 
-    final ProjectTypeModel type =
-        ref.read(currentProjectTypeProvider).valueOrNull ??
-            await ref.watch(currentProjectTypeProvider.future);
+    final ProjectTypeModel type = await ref.watch(
+      currentProjectTypeProvider.selectAsync((ProjectTypeModel data) => data),
+    );
 
     return _http.fetchProjectArticles(
       pageNum,
