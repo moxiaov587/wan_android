@@ -15,7 +15,7 @@ dependencies:
   cookie_jar: ^4.0.2
   cupertino_icons: ^1.0.2
   custom_pop_up_menu: ^1.2.4
-  dio: ^5.0.0
+  dio: ^5.3.2
   dio_cookie_manager: ^3.0.0
   flutter:
     sdk: flutter

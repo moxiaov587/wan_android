@@ -43,7 +43,7 @@ class NetWorkInterceptor extends Interceptor {
         Duration(milliseconds: Random().nextInt(500) + 500),
       );
       handler.reject(
-        DioError(
+        DioException(
           requestOptions: options,
           error: AppException.networkException(
             message: S.current.networkException,

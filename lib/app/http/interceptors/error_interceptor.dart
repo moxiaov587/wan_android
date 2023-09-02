@@ -18,7 +18,7 @@ class ErrorInterceptor extends Interceptor {
       handler.next(response);
     } else {
       handler.reject(
-        DioError(
+        DioException(
           requestOptions: response.requestOptions,
           error: AppException.fromResponseData(responseData),
         ),
@@ -28,7 +28,10 @@ class ErrorInterceptor extends Interceptor {
   }
 
   @override
-  Future<void> onError(DioError err, ErrorInterceptorHandler handler) async {
+  Future<void> onError(
+    DioException err,
+    ErrorInterceptorHandler handler,
+  ) async {
     if (err.response?.isRedirect ??
         false ||
             err.response?.statusCode == HttpStatus.movedPermanently ||
@@ -77,7 +80,7 @@ class ErrorInterceptor extends Interceptor {
                 handler.resolve(response);
               } on Exception catch (_) {
                 handler.reject(
-                  DioError(
+                  DioException(
                     requestOptions: err.requestOptions,
                     error: error,
                   ),
@@ -148,25 +151,25 @@ class AppException with _$AppException implements Exception {
     String? message;
     String? detail;
 
-    if (e is DioError) {
+    if (e is DioException) {
       switch (e.type) {
-        case DioErrorType.connectionTimeout ||
-              DioErrorType.sendTimeout ||
-              DioErrorType.receiveTimeout:
+        case DioExceptionType.connectionTimeout ||
+              DioExceptionType.sendTimeout ||
+              DioExceptionType.receiveTimeout:
           // timeout
           statusCode = kTimeoutStatusCode;
           message = e.message;
-        case DioErrorType.badCertificate ||
-              DioErrorType.badResponse ||
-              DioErrorType.connectionError:
+        case DioExceptionType.badCertificate ||
+              DioExceptionType.badResponse ||
+              DioExceptionType.connectionError:
           // incorrect status, such as 404, 503...
           final Response<dynamic>? response = e.response;
           if (response != null) {
             statusCode = response.statusCode;
           }
           message = e.message;
-        case DioErrorType.cancel || DioErrorType.unknown:
-          if (e.type == DioErrorType.cancel) {
+        case DioExceptionType.cancel || DioExceptionType.unknown:
+          if (e.type == DioExceptionType.cancel) {
             statusCode = kCancelRequestStatusCode;
             message = e.message;
           }
