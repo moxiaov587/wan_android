@@ -70,7 +70,7 @@ class __ResultsState extends ConsumerState<_Results>
   Future<LoadingMoreStatus?> loadMore() =>
       ref.read(provider.notifier).loadMore();
 
-  Isar get isar => ref.read(appDatabaseProvider);
+  Isar get _isar => ref.read(appDatabaseProvider);
 
   @override
   void initState() {
@@ -80,39 +80,34 @@ class __ResultsState extends ConsumerState<_Results>
   }
 
   void addSearchHistory() {
-    final int length = isar.searchHistoryCaches.countSync();
+    final int length = _isar.searchHistoryCaches.count();
 
-    final SearchHistory? duplicateSearchHistory = isar.searchHistoryCaches
-        .filter()
+    final SearchHistoryCache? duplicateSearchHistory = _isar.searchHistoryCaches
+        .where()
         .keywordEqualTo(widget.query)
-        .findFirstSync();
+        .findFirst();
 
     int? id;
 
     if (length == _kMaxNumOfSearchHistory) {
-      id = isar.searchHistoryCaches
-          .where()
-          .sortByUpdateTime()
-          .findFirstSync()
-          ?.id;
+      id = _isar.searchHistoryCaches.where().sortByUpdateTime().findFirst()?.id;
     }
 
-    final SearchHistory searchHistory = SearchHistory()
-      ..keyword = widget.query
-      ..updateTime = DateTime.now();
-
-    if (duplicateSearchHistory != null) {
-      searchHistory.id = duplicateSearchHistory.id;
-    }
+    final SearchHistoryCache searchHistory = SearchHistoryCache(
+      id: duplicateSearchHistory?.id ??
+          _isar.searchHistoryCaches.autoIncrement(),
+      keyword: widget.query,
+      updateTime: DateTime.now(),
+    );
 
     unawaited(
-      isar.writeTxn<dynamic>(
-        () async {
+      _isar.writeAsync<void>(
+        (Isar isar) async {
           if (id != null) {
-            await isar.searchHistoryCaches.delete(id);
+            isar.searchHistoryCaches.delete(id);
           }
 
-          await isar.searchHistoryCaches.put(searchHistory);
+          isar.searchHistoryCaches.put(searchHistory);
         },
       ),
     );
@@ -195,15 +190,15 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
     return CustomScrollView(
       slivers: <Widget>[
         SliverToBoxAdapter(
-          child: StreamBuilder<List<SearchHistory>>(
+          child: StreamBuilder<List<SearchHistoryCache>>(
             stream: isar.searchHistoryCaches
                 .where()
                 .sortByUpdateTimeDesc()
                 .build()
                 .watch(fireImmediately: true),
-            builder: (_, AsyncSnapshot<List<SearchHistory>> snapshot) {
-              final List<SearchHistory> keywords =
-                  snapshot.data ?? <SearchHistory>[];
+            builder: (_, AsyncSnapshot<List<SearchHistoryCache>> snapshot) {
+              final List<SearchHistoryCache> keywords =
+                  snapshot.data ?? <SearchHistoryCache>[];
 
               if (keywords.isEmpty) {
                 return nil;
@@ -237,8 +232,9 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
                               : () async {
                                   _loadingClearBtnNotifier.value = true;
                                   try {
-                                    await isar.writeTxn(
-                                      isar.searchHistoryCaches.clear,
+                                    await isar.writeAsync<void>(
+                                      (Isar isar) async =>
+                                          isar.searchHistoryCaches.clear(),
                                     );
                                   } finally {
                                     _loadingClearBtnNotifier.value = false;
@@ -257,7 +253,7 @@ class __SuggestionsState extends ConsumerState<_Suggestions> {
                       runSpacing: wrapSpace,
                       children: keywords
                           .map(
-                            (SearchHistory e) => CapsuleInk(
+                            (SearchHistoryCache e) => CapsuleInk(
                               child: Text(e.keyword),
                               onTap: () {
                                 widget.onTap.call(e.keyword);

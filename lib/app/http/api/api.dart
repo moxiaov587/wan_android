@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 
+import '../../../database/app_database.dart' show BannerCache;
 import '../../../model/models.dart';
 import '../api.dart';
 import '../http.dart';

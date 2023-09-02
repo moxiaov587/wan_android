@@ -81,8 +81,7 @@ class _StorageListTile extends ConsumerWidget {
   final AutoDisposeProvider<bool> disableProvider;
   final AutoDisposeNotifierProvider<AutoDisposeNotifier<bool>, bool>
       checkProvider;
-  final AutoDisposeAsyncNotifierProvider<AutoDisposeAsyncNotifier<int>, int>
-      sizeProvider;
+  final AutoDisposeNotifierProvider<AutoDisposeNotifier<int>, int> sizeProvider;
   final String title;
   final String subtitle;
   final void Function(WidgetRef) onChanged;
@@ -110,18 +109,10 @@ class _StorageListTile extends ConsumerWidget {
                 value: selected,
                 activeColor: context.theme.primaryColor,
                 checkColor: context.theme.colorScheme.background,
-                onChanged: (bool? result) {
-                  ref.read(sizeProvider).when(
-                        data: (int data) {
-                          if (data > 0) {
-                            onChanged.call(ref);
-                          }
-                        },
-                        loading: () {},
-                        error: (_, __) {
-                          ref.invalidate(sizeProvider);
-                        },
-                      );
+                onChanged: (_) {
+                  if (ref.read(sizeProvider) > 0) {
+                    onChanged.call(ref);
+                  }
                 },
               );
             },
@@ -140,25 +131,13 @@ class _StorageListTile extends ConsumerWidget {
           ),
         ),
         trailing: Consumer(
-          builder: (_, WidgetRef ref, __) => ref.watch(sizeProvider).when(
-                skipLoadingOnRefresh: false,
-                data: (int data) => Text(data.fileSize),
-                loading: () => const LoadingWidget.capsuleInk(),
-                error: (_, __) => const Icon(IconFontIcons.refreshLine),
-              ),
+          builder: (_, WidgetRef ref, __) =>
+              Text(ref.watch(sizeProvider).fileSize),
         ),
         onTap: () {
-          ref.read(sizeProvider).when(
-                data: (int data) {
-                  if (data > 0) {
-                    onChanged.call(ref);
-                  }
-                },
-                loading: () {},
-                error: (_, __) {
-                  ref.invalidate(otherCacheSizeProvider);
-                },
-              );
+          if (ref.read(sizeProvider) > 0) {
+            onChanged.call(ref);
+          }
         },
       );
 }
@@ -223,18 +202,12 @@ class _BottomActionBar extends StatelessWidget {
                       final bool checkPreferences =
                           ref.watch(checkPreferencesCachesProvider);
 
-                      final int otherCacheSize = ref
-                              .watch(otherCacheSizeProvider)
-                              .whenOrNull(data: (int data) => data) ??
-                          0;
-                      final int responseDataCacheSize = ref
-                              .watch(responseDataCacheSizeProvider)
-                              .whenOrNull(data: (int data) => data) ??
-                          0;
-                      final int preferencesCacheSize = ref
-                              .watch(preferencesCacheSizeProvider)
-                              .whenOrNull(data: (int data) => data) ??
-                          0;
+                      final int otherCacheSize =
+                          ref.watch(otherCacheSizeProvider);
+                      final int responseDataCacheSize =
+                          ref.watch(responseDataCacheSizeProvider);
+                      final int preferencesCacheSize =
+                          ref.watch(preferencesCacheSizeProvider);
 
                       final int total = <int>[
                         if (checkOther) otherCacheSize,
@@ -272,8 +245,8 @@ class _BottomActionBar extends StatelessWidget {
                               );
 
                               if (result ?? false) {
-                                final List<AsyncCallback> task =
-                                    <AsyncCallback>[];
+                                final List<VoidCallback> task =
+                                    <VoidCallback>[];
 
                                 if (ref.read(cleanableOtherCachesProvider)) {
                                   task.addAll(
@@ -306,11 +279,13 @@ class _BottomActionBar extends StatelessWidget {
                                         .getClearTxn(),
                                   );
                                 }
-                                await ref.read(appDatabaseProvider).writeTxn(
-                                      () => Future.wait<void>(
-                                        task.map((AsyncCallback f) => f()),
-                                      ),
-                                    );
+                                await ref.read(appDatabaseProvider).writeAsync(
+                                  (Isar isar) {
+                                    for (final VoidCallback t in task) {
+                                      t();
+                                    }
+                                  },
+                                );
 
                                 ref
                                   ..invalidate(otherCacheSizeProvider)

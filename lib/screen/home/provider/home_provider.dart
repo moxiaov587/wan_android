@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui' as ui show Image;
 
+import 'package:collection/collection.dart';
 import 'package:flutter/rendering.dart' show decodeImageFromList;
 import 'package:flutter/services.dart';
 import 'package:palette_generator/palette_generator.dart';
@@ -26,23 +27,27 @@ class HomeBanner extends _$HomeBanner {
       NetworkAssetBundle(Uri.parse(kBaseUrl));
 
   @override
-  Future<List<HomeBannerCache>> build() async {
+  Future<List<BannerCache>> build() async {
     final CancelToken cancelToken = ref.cancelToken();
 
     _isar = ref.read(appDatabaseProvider);
 
-    final List<BannerModel> homeBanners = await ref
+    final List<BannerCache> homeBanners = await ref
         .watch(networkProvider)
         .fetchHomeBanners(cancelToken: cancelToken);
 
-    final List<HomeBannerCache> homeBannersFromCache =
-        _isar.homeBannerCaches.where().sortByOrderDesc().findAllSync();
+    final List<BannerCache> homeBannersFromCache =
+        _isar.bannerCaches.where().sortByOrderDesc().findAll();
 
-    if (_compareRequestAndCache(homeBanners, homeBannersFromCache)) {
-      final Iterable<Future<HomeBannerCache>> futures =
-          homeBanners.map((BannerModel banner) async {
+    if (!homeBanners.equals(homeBannersFromCache)) {
+      final Iterable<Future<BannerCache>> futures =
+          homeBanners.map((BannerCache banner) async {
+        if (banner.imagePath == null) {
+          return banner;
+        }
+
         final ByteData byteData =
-            await _networkAssetBundle.load(banner.imagePath);
+            await _networkAssetBundle.load(banner.imagePath!);
 
         final Uint8List uint8List = byteData.buffer.asUint8List();
 
@@ -54,27 +59,22 @@ class HomeBanner extends _$HomeBanner {
         final PaletteColor? paletteColor =
             paletteGenerator.vibrantColor ?? paletteGenerator.dominantColor;
 
-        return HomeBannerCache()
-          ..id = banner.id
-          ..isVisible = banner.isVisible
-          ..order = banner.order
-          ..type = banner.type
-          ..title = banner.title
-          ..desc = banner.desc
-          ..url = banner.url
-          ..imageUrl = banner.imagePath
-          ..primaryColorValue = paletteColor?.color.value
-          ..textColorValue = paletteColor?.bodyTextColor.value;
+        return banner.copyWith(
+          primaryColorValue: paletteColor?.color.value,
+          textColorValue: paletteColor?.bodyTextColor.value,
+        );
       });
 
       _networkAssetBundle.clear();
 
-      final List<HomeBannerCache> banners = await Future.wait(futures);
+      final List<BannerCache> banners = await Future.wait(futures);
 
       unawaited(
-        _isar.writeTxn(() async {
-          await _isar.homeBannerCaches.clear();
-          await _isar.homeBannerCaches.putAll(banners);
+        _isar.writeAsyncWith<void, List<BannerCache>>(banners,
+            (Isar isar, List<BannerCache> data) {
+          isar.bannerCaches
+            ..clear()
+            ..putAll(data);
         }),
       );
 
@@ -82,23 +82,6 @@ class HomeBanner extends _$HomeBanner {
     }
 
     return homeBannersFromCache;
-  }
-
-  bool _compareRequestAndCache(
-    List<BannerModel> data,
-    List<HomeBannerCache> cache,
-  ) {
-    if (data.length != cache.length) {
-      return true;
-    }
-
-    for (int i = 0; i < data.length; i++) {
-      if (data[i].id != cache[i].id) {
-        return true;
-      }
-    }
-
-    return false;
   }
 }
 
@@ -113,11 +96,11 @@ class CurrentHomeBannerBackgroundColorValue
 
   @override
   int? build() {
-    final AsyncValue<List<HomeBannerCache>> homeBanner =
+    final AsyncValue<List<BannerCache>> homeBanner =
         ref.watch(homeBannerProvider);
 
     _colors = homeBanner.valueOrNull
-        ?.map((HomeBannerCache banner) => banner.primaryColorValue);
+        ?.map((BannerCache banner) => banner.primaryColorValue);
 
     return _colors?.first;
   }
