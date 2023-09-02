@@ -7,7 +7,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../screen/drawer/home_drawer.dart';
 import '../contacts/instances.dart';
-import '../database/app_database.dart';
 import '../extensions/extensions.dart' show BuildContextExtension;
 import '../screen/authorized/provider/authorized_provider.dart';
 import '../screen/home/home_screen.dart';
@@ -17,7 +16,7 @@ part 'app_router.g.dart';
 part 'page/app_page.dart';
 
 @Riverpod(dependencies: <Object>[Authorized])
-Raw<GoRouter> appRouter(AppRouterRef ref) {
+GoRouter appRouter(AppRouterRef ref) {
   final GoRouter router = GoRouter(
     navigatorKey: Instances.rootNavigatorKey,
     initialLocation: const HomeRoute(path: HomePath.home).location,
@@ -28,7 +27,7 @@ Raw<GoRouter> appRouter(AppRouterRef ref) {
         const MyCollectionsRoute(type: CollectionType.article).location,
         const MyCollectionsRoute(type: CollectionType.website).location,
         const MyShareRoute().location,
-      ].contains(state.location)) {
+      ].contains(state.matchedLocation)) {
         return ref.read(authorizedProvider).valueOrNull != null
             ? null
             : const LoginRoute().location;

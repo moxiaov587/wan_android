@@ -43,7 +43,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (widget.fromLogin) {
       GoRouter.of(context).pop<bool>(result);
     } else {
-      GoRouter.of(context).pushReplacement(const LoginRoute().location);
+      unawaited(
+        GoRouter.of(context).pushReplacement(const LoginRoute().location),
+      );
     }
   }
 
