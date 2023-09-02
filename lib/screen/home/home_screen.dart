@@ -429,7 +429,7 @@ class _BannerCarousel extends StatelessWidget {
                       .watch(homeBannerProvider)
                       .when(
                         skipLoadingOnRefresh: false,
-                        data: (List<HomeBannerCache> list) => PageView.builder(
+                        data: (List<BannerCache> list) => PageView.builder(
                           onPageChanged: ref
                               .read(
                                 currentHomeBannerBackgroundColorValueProvider
@@ -439,7 +439,7 @@ class _BannerCarousel extends StatelessWidget {
                           itemBuilder: (BuildContext context, int index) =>
                               _BannerCarouselItem(
                             key: Key(
-                              'home_banner_${list[index].id}',
+                              'banner_${list[index].id}',
                             ),
                             homeBanner: list[index],
                           ),
@@ -527,14 +527,14 @@ class _BannerCarousel extends StatelessWidget {
 class _BannerCarouselItem extends StatelessWidget {
   const _BannerCarouselItem({required this.homeBanner, super.key});
 
-  final HomeBannerCache homeBanner;
+  final BannerCache homeBanner;
 
   @override
   Widget build(BuildContext context) => Stack(
         fit: StackFit.expand,
         children: <Widget>[
           Image.network(
-            homeBanner.imageUrl,
+            homeBanner.imagePath ?? '',
             fit: BoxFit.fill,
             loadingBuilder: (
               BuildContext context,
@@ -586,7 +586,7 @@ class _BannerCarouselItem extends StatelessWidget {
                       context.theme.colorScheme.background)
                   .withOpacity(0.2),
               child: Text(
-                homeBanner.title,
+                homeBanner.title ?? '',
                 style: context.theme.textTheme.titleMedium!.copyWith(
                   color: homeBanner.textColorValue.toColor,
                 ),

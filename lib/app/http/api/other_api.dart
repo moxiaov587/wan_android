@@ -1,7 +1,7 @@
 part of 'api.dart';
 
 extension OtherAPI on Http {
-  Future<List<BannerModel>> fetchHomeBanners({
+  Future<List<BannerCache>> fetchHomeBanners({
     CancelToken? cancelToken,
   }) async {
     final Response<List<dynamic>> response = await dio.get(
@@ -16,7 +16,7 @@ extension OtherAPI on Http {
     );
 
     return response.data!
-        .map((dynamic e) => BannerModel.fromJson(e as Map<String, dynamic>))
+        .map((dynamic e) => BannerCache.fromJson(e as Map<String, dynamic>))
         .toList();
   }
 
