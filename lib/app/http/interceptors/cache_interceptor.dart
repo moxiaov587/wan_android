@@ -10,8 +10,8 @@ class CacheInterceptor extends Interceptor {
 
   final Ref ref;
 
-  final LinkedHashMap<String, ResponseCache> _cache =
-      LinkedHashMap<String, ResponseCache>();
+  final LinkedHashMap<String, ResponseDataCache> _cache =
+      LinkedHashMap<String, ResponseDataCache>();
 
   @override
   void onRequest(
@@ -20,20 +20,21 @@ class CacheInterceptor extends Interceptor {
   ) {
     final String uriString = options.uri.toString();
 
+    final IsarQuery<ResponseDataCache> queryBuilder = ref
+        .read(appDatabaseProvider)
+        .responseDataCaches
+        .where()
+        .uriEqualTo(uriString)
+        .build();
+
     if (options.needRefresh) {
       if (options.isDiskCache) {
-        final Isar isar = ref.read(appDatabaseProvider);
-
         unawaited(
-          isar.writeTxn(() async {
-            final int? id = await isar.responseCaches
-                .filter()
-                .uriEqualTo(uriString)
-                .idProperty()
-                .findFirst();
+          ref.read(appDatabaseProvider).writeAsync((Isar isar) {
+            final int count = queryBuilder.count();
 
-            if (id != null) {
-              await isar.responseCaches.delete(id);
+            if (count > 0) {
+              isar.responseDataCaches.delete(uriString);
             }
           }),
         );
@@ -45,7 +46,7 @@ class CacheInterceptor extends Interceptor {
 
       return;
     } else if (options.needCache) {
-      final ResponseCache? responseCacheForMemory = _cache[uriString];
+      final ResponseDataCache? responseCacheForMemory = _cache[uriString];
 
       if (responseCacheForMemory != null) {
         if (DateTime.now().isBefore(responseCacheForMemory.expires)) {
@@ -63,14 +64,9 @@ class CacheInterceptor extends Interceptor {
         }
       }
 
-      final Isar isar = ref.read(appDatabaseProvider);
-
-      final Query<ResponseCache> queryBuilder =
-          isar.responseCaches.filter().uriEqualTo(uriString).build();
-
       if (options.isDiskCache) {
-        final ResponseCache? responseCacheForDisk =
-            queryBuilder.findFirstSync();
+        final ResponseDataCache? responseCacheForDisk =
+            queryBuilder.findFirst();
 
         if (responseCacheForDisk != null &&
             DateTime.now().isBefore(responseCacheForDisk.expires)) {
@@ -84,7 +80,11 @@ class CacheInterceptor extends Interceptor {
 
           return;
         } else {
-          unawaited(isar.writeTxn(queryBuilder.deleteFirst));
+          unawaited(
+            ref
+                .read(appDatabaseProvider)
+                .writeAsync((_) => queryBuilder.deleteFirst()),
+          );
         }
       }
     }
@@ -102,16 +102,17 @@ class CacheInterceptor extends Interceptor {
     if (options.needCache) {
       final String uriString = options.uri.toString();
 
-      final ResponseCache responseCache = ResponseCache()
-        ..uri = uriString
-        ..expires = DateTime.now().add(_kMaxAgeOfCache)
-        ..data = jsonEncode(response.data);
-
-      final Isar isar = ref.read(appDatabaseProvider);
+      final ResponseDataCache responseCache = ResponseDataCache(
+        uri: uriString,
+        expires: DateTime.now().add(_kMaxAgeOfCache),
+        data: jsonEncode(response.data),
+      );
 
       if (options.isDiskCache) {
         unawaited(
-          isar.writeTxn(() async => isar.responseCaches.put(responseCache)),
+          ref.read(appDatabaseProvider).writeAsync(
+                (Isar isar) => isar.responseDataCaches.put(responseCache),
+              ),
         );
       } else {
         if (_cache.length == _kMaxNumOfCacheForMemory) {

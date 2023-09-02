@@ -52,10 +52,12 @@ class ErrorInterceptor extends Interceptor {
             withStackTrace: false,
           );
 
-          final Isar isar = ref.read(appDatabaseProvider);
-
-          final AccountCache? lastLoginAccount =
-              isar.accountCaches.where().sortByUpdateTimeDesc().findFirstSync();
+          final AccountCache? lastLoginAccount = ref
+              .read(appDatabaseProvider)
+              .accountCaches
+              .where()
+              .sortByUpdateTimeDesc()
+              .findFirst();
 
           if (lastLoginAccount != null && lastLoginAccount.password != null) {
             final bool result =

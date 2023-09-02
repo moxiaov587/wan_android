@@ -41,32 +41,27 @@ class Authorized extends _$Authorized {
     return null;
   }
 
-  Future<List<int>> _handleCacheByLogin(
+  Future<void> _handleCacheByLogin(
     int userId, {
     required String username,
     required String password,
     required bool rememberPassword,
   }) {
-    final AccountCache accountCache = AccountCache()
-      ..userId = userId
-      ..username = username
-      ..updateTime = DateTime.now();
-
-    if (rememberPassword) {
-      accountCache.password = _encryptString(password);
-    }
-
-    final UserSettings userSettings = _isar.writeUniqueUserSettings(
-      rememberPassword: rememberPassword,
+    final AccountCache accountCache = AccountCache(
+      id: userId,
+      username: username,
+      updateTime: DateTime.now(),
+      password: rememberPassword ? _encryptString(password) : null,
     );
 
-    return _isar.writeTxn(
-      () async => Future.wait<int>(
-        <Future<int>>[
-          _isar.accountCaches.put(accountCache),
-          _isar.userSettingsCache.put(userSettings),
-        ],
-      ),
+    return _isar.writeAsync<void>(
+      (Isar isar) {
+        isar.accountCaches.put(accountCache);
+        isar.userSettingsCaches.update(
+          id: userId,
+          rememberPassword: rememberPassword,
+        );
+      },
     );
   }
 
@@ -197,12 +192,15 @@ class Authorized extends _$Authorized {
         repassword: repassword,
       );
 
-      final AccountCache accountCache = AccountCache()
-        ..userId = model.id
-        ..username = username
-        ..updateTime = DateTime.now();
+      final AccountCache accountCache = AccountCache(
+        id: model.id,
+        username: username,
+        updateTime: DateTime.now(),
+      );
 
-      await _isar.writeTxn(() => _isar.accountCaches.put(accountCache));
+      await _isar.writeAsync(
+        (Isar isar) => isar.accountCaches.put(accountCache),
+      );
 
       DialogUtils.success(S.current.registerSuccess);
 

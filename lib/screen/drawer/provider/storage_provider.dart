@@ -25,9 +25,9 @@ extension FileSizeExtension on int? {
   }
 }
 
-mixin CacheSizeProviderMixin on AutoDisposeAsyncNotifier<int> {
+mixin CacheSizeProviderMixin on AutoDisposeNotifier<int> {
   @protected
-  List<AsyncCallback> getClearTxn();
+  List<VoidCallback> getClearTxn();
 }
 
 // OtherCaches START
@@ -40,10 +40,7 @@ class CheckOtherCaches extends _$CheckOtherCaches
 
 @Riverpod(dependencies: <Object>[OtherCacheSize])
 bool disableCheckOtherCaches(DisableCheckOtherCachesRef ref) => ref.watch(
-      otherCacheSizeProvider.select(
-        (AsyncValue<int> value) =>
-            value.whenOrNull(data: (int data) => data <= 0) ?? true,
-      ),
+      otherCacheSizeProvider.select((int value) => value <= 0),
     );
 
 @Riverpod(dependencies: <Object>[disableCheckOtherCaches])
@@ -56,20 +53,19 @@ class OtherCacheSize extends _$OtherCacheSize with CacheSizeProviderMixin {
   late Isar _isar;
 
   @override
-  List<AsyncCallback> getClearTxn() => <AsyncCallback>[
-        _isar.homeBannerCaches.clear,
+  List<VoidCallback> getClearTxn() => <VoidCallback>[
+        _isar.bannerCaches.clear,
         _isar.searchHistoryCaches.clear,
       ];
 
   @override
-  Future<int> build() async {
+  int build() {
     _isar = ref.read(appDatabaseProvider);
 
-    return (await Future.wait<int>(<Future<int>>[
-      _isar.homeBannerCaches.getSize(),
+    return <int>[
+      _isar.bannerCaches.getSize(),
       _isar.searchHistoryCaches.getSize(),
-    ]))
-        .reduce((int total, int size) => total += size);
+    ].reduce((int total, int size) => total += size);
   }
 }
 // OtherCaches END
@@ -84,12 +80,7 @@ class CheckResponseDataCaches extends _$CheckResponseDataCaches
 
 @Riverpod(dependencies: <Object>[ResponseDataCacheSize])
 bool disableCheckResponseDataCaches(DisableCheckResponseDataCachesRef ref) =>
-    ref.watch(
-      responseDataCacheSizeProvider.select(
-        (AsyncValue<int> value) =>
-            value.whenOrNull(data: (int data) => data <= 0) ?? true,
-      ),
-    );
+    ref.watch(responseDataCacheSizeProvider.select((int value) => value <= 0));
 
 @Riverpod(dependencies: <Object>[disableCheckResponseDataCaches])
 bool cleanableResponseDataCaches(CleanableResponseDataCachesRef ref) =>
@@ -102,15 +93,15 @@ class ResponseDataCacheSize extends _$ResponseDataCacheSize
   late Isar _isar;
 
   @override
-  List<AsyncCallback> getClearTxn() => <AsyncCallback>[
-        _isar.responseCaches.clear,
+  List<VoidCallback> getClearTxn() => <VoidCallback>[
+        _isar.responseDataCaches.clear,
       ];
 
   @override
-  Future<int> build() {
+  int build() {
     _isar = ref.read(appDatabaseProvider);
 
-    return _isar.responseCaches.getSize();
+    return _isar.responseDataCaches.getSize();
   }
 }
 // ResponseDataCaches END
@@ -125,12 +116,7 @@ class CheckPreferencesCaches extends _$CheckPreferencesCaches
 
 @Riverpod(dependencies: <Object>[PreferencesCacheSize])
 bool disableCheckPreferencesCaches(DisableCheckPreferencesCachesRef ref) =>
-    ref.watch(
-      preferencesCacheSizeProvider.select(
-        (AsyncValue<int> value) =>
-            value.whenOrNull(data: (int data) => data <= 0) ?? true,
-      ),
-    );
+    ref.watch(preferencesCacheSizeProvider.select((int value) => value <= 0));
 
 @Riverpod(dependencies: <Object>[disableCheckPreferencesCaches])
 bool cleanablePreferencesCaches(CleanablePreferencesCachesRef ref) =>
@@ -143,15 +129,15 @@ class PreferencesCacheSize extends _$PreferencesCacheSize
   late Isar _isar;
 
   @override
-  List<AsyncCallback> getClearTxn() => <AsyncCallback>[
-        _isar.userSettingsCache.clear,
+  List<VoidCallback> getClearTxn() => <VoidCallback>[
+        _isar.userSettingsCaches.clear,
       ];
 
   @override
-  Future<int> build() {
+  int build() {
     _isar = ref.read(appDatabaseProvider);
 
-    return _isar.userSettingsCache.getSize();
+    return _isar.userSettingsCaches.getSize();
   }
 }
 // PreferencesCaches END
