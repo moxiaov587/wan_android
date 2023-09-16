@@ -231,7 +231,14 @@ class _BottomActionBar extends StatelessWidget {
                   const Gap.hn(),
                   Consumer(
                     builder: (_, WidgetRef ref, __) => ElevatedButton(
-                      onPressed: ref.watch(cleanableProvider)
+                      onPressed: ref.watch(
+                        cleanableProvider.select(
+                          (CleanableState state) =>
+                              state.other ||
+                              state.responseData ||
+                              state.preferences,
+                        ),
+                      )
                           ? () async {
                               final bool? result =
                                   await DialogUtils.confirm<bool>(
@@ -244,52 +251,7 @@ class _BottomActionBar extends StatelessWidget {
                               );
 
                               if (result ?? false) {
-                                final List<VoidCallback> task =
-                                    <VoidCallback>[];
-
-                                if (ref.read(cleanableOtherCachesProvider)) {
-                                  task.addAll(
-                                    ref
-                                        .read(otherCacheSizeProvider.notifier)
-                                        .getClearTxn(),
-                                  );
-                                }
-
-                                if (ref.read(
-                                  cleanableResponseDataCachesProvider,
-                                )) {
-                                  task.addAll(
-                                    ref
-                                        .read(
-                                          responseDataCacheSizeProvider
-                                              .notifier,
-                                        )
-                                        .getClearTxn(),
-                                  );
-                                }
-                                if (ref.read(
-                                  cleanablePreferencesCachesProvider,
-                                )) {
-                                  task.addAll(
-                                    ref
-                                        .read(
-                                          preferencesCacheSizeProvider.notifier,
-                                        )
-                                        .getClearTxn(),
-                                  );
-                                }
-                                await ref.read(appDatabaseProvider).writeAsync(
-                                  (Isar isar) {
-                                    for (final VoidCallback t in task) {
-                                      t();
-                                    }
-                                  },
-                                );
-
-                                ref
-                                  ..invalidate(otherCacheSizeProvider)
-                                  ..invalidate(responseDataCacheSizeProvider)
-                                  ..invalidate(preferencesCacheSizeProvider);
+                                ref.read(cleanableProvider.notifier).clear();
                               }
                             }
                           : null,

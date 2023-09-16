@@ -27,7 +27,7 @@ extension FileSizeExtension on int? {
 
 mixin CacheSizeProviderMixin on AutoDisposeNotifier<int> {
   @protected
-  List<VoidCallback> getClearTxn();
+  void clearTxn(Isar isar);
 }
 
 // OtherCaches START
@@ -53,10 +53,10 @@ class OtherCacheSize extends _$OtherCacheSize with CacheSizeProviderMixin {
   late Isar _isar;
 
   @override
-  List<VoidCallback> getClearTxn() => <VoidCallback>[
-        _isar.bannerCaches.clear,
-        _isar.searchHistoryCaches.clear,
-      ];
+  void clearTxn(Isar isar) {
+    isar.bannerCaches.clear();
+    isar.searchHistoryCaches.clear();
+  }
 
   @override
   int build() {
@@ -93,9 +93,9 @@ class ResponseDataCacheSize extends _$ResponseDataCacheSize
   late Isar _isar;
 
   @override
-  List<VoidCallback> getClearTxn() => <VoidCallback>[
-        _isar.responseDataCaches.clear,
-      ];
+  void clearTxn(Isar isar) {
+    isar.responseDataCaches.clear();
+  }
 
   @override
   int build() {
@@ -129,9 +129,9 @@ class PreferencesCacheSize extends _$PreferencesCacheSize
   late Isar _isar;
 
   @override
-  List<VoidCallback> getClearTxn() => <VoidCallback>[
-        _isar.userSettingsCaches.clear,
-      ];
+  void clearTxn(Isar isar) {
+    isar.userSettingsCaches.clear();
+  }
 
   @override
   int build() {
@@ -148,14 +148,51 @@ bool checkAllCaches(CheckAllCachesRef ref) =>
     ref.watch(checkResponseDataCachesProvider) &&
     ref.watch(checkPreferencesCachesProvider);
 
+typedef CleanableState = ({bool other, bool responseData, bool preferences});
+
 @Riverpod(
   dependencies: <Object>[
+    appDatabase,
     cleanableOtherCaches,
     cleanableResponseDataCaches,
     cleanablePreferencesCaches,
+    OtherCacheSize,
+    ResponseDataCacheSize,
+    PreferencesCacheSize,
   ],
 )
-bool cleanable(CleanableRef ref) =>
-    ref.watch(cleanableOtherCachesProvider) ||
-    ref.watch(cleanableResponseDataCachesProvider) ||
-    ref.watch(cleanablePreferencesCachesProvider);
+class Cleanable extends _$Cleanable {
+  @override
+  CleanableState build() => (
+        other: ref.watch(cleanableOtherCachesProvider),
+        responseData: ref.watch(cleanableResponseDataCachesProvider),
+        preferences: ref.watch(cleanablePreferencesCachesProvider),
+      );
+
+  void clear() {
+    final bool cacheForPreferences = state.preferences;
+
+    ref.read(appDatabaseProvider).write(
+      (Isar isar) {
+        if (state.other) {
+          ref.read(otherCacheSizeProvider.notifier).clearTxn(isar);
+        }
+        if (state.responseData) {
+          ref.read(responseDataCacheSizeProvider.notifier).clearTxn(isar);
+        }
+        if (state.preferences) {
+          ref.read(preferencesCacheSizeProvider.notifier).clearTxn(isar);
+        }
+      },
+    );
+
+    ref
+      ..invalidate(otherCacheSizeProvider)
+      ..invalidate(responseDataCacheSizeProvider)
+      ..invalidate(preferencesCacheSizeProvider);
+
+    if (cacheForPreferences) {
+      ref.invalidate(userSettingsProvider);
+    }
+  }
+}

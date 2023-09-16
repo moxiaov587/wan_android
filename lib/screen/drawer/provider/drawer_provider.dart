@@ -12,6 +12,7 @@ import '../../../app/provider/mixin/refresh_list_view_state_mixin.dart';
 import '../../../database/app_database.dart';
 import '../../../model/models.dart';
 import '../../../utils/dialog_utils.dart';
+import '../../provider/common_provider.dart';
 import '../my_collections/my_collections_screen.dart' show CollectionType;
 
 part 'drawer_provider.g.dart';

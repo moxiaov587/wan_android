@@ -11,7 +11,6 @@ import '../../app/l10n/generated/l10n.dart';
 import '../../app/provider/mixin/refresh_list_view_state_mixin.dart';
 import '../../app/theme/app_theme.dart';
 import '../../contacts/icon_font_icons.dart';
-import '../../database/app_database.dart';
 import '../../extensions/extensions.dart';
 import '../../model/models.dart';
 import '../../router/data/app_routes.dart';
