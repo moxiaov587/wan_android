@@ -28,18 +28,50 @@ class HomeBanner extends _$HomeBanner {
 
   @override
   Future<List<BannerCache>> build() async {
-    final CancelToken cancelToken = ref.cancelToken();
-
     _isar = ref.read(appDatabaseProvider);
+
+    final List<BannerCache> homeBannersFromCache =
+        _isar.bannerCaches.where().sortByOrderDesc().findAll();
+
+    if (homeBannersFromCache.isNotEmpty) {
+      unawaited(
+        Future<void>.delayed(
+          Duration.zero,
+          () async {
+            state = AsyncData<List<BannerCache>>(
+              await _fetchDataWithCache(homeBannersFromCache),
+            );
+          },
+        ),
+      );
+
+      return homeBannersFromCache;
+    }
+
+    return _fetchDataWithCache(homeBannersFromCache);
+  }
+
+  Future<List<BannerCache>> _fetchDataWithCache(
+    List<BannerCache> homeBannersFromCache,
+  ) async {
+    final CancelToken cancelToken = ref.cancelToken();
 
     final List<BannerCache> homeBanners = await ref
         .watch(networkProvider)
         .fetchHomeBanners(cancelToken: cancelToken);
 
-    final List<BannerCache> homeBannersFromCache =
-        _isar.bannerCaches.where().sortByOrderDesc().findAll();
+    final bool isEquals = homeBannersFromCache.isNotEmpty &&
+        homeBannersFromCache
+            .map(
+              (BannerCache e) => e.copyWith(
+                primaryColorValue: null,
+                textColorValue: null,
+              ),
+            )
+            .toList()
+            .equals(homeBanners);
 
-    if (!homeBanners.equals(homeBannersFromCache)) {
+    if (!isEquals) {
       final Iterable<Future<BannerCache>> futures =
           homeBanners.map((BannerCache banner) async {
         if (banner.imagePath == null) {
@@ -69,14 +101,11 @@ class HomeBanner extends _$HomeBanner {
 
       final List<BannerCache> banners = await Future.wait(futures);
 
-      unawaited(
-        _isar.writeAsyncWith<void, List<BannerCache>>(banners,
-            (Isar isar, List<BannerCache> data) {
-          isar.bannerCaches
-            ..clear()
-            ..putAll(data);
-        }),
-      );
+      _isar.write((Isar isar) {
+        isar.bannerCaches
+          ..clear()
+          ..putAll(banners);
+      });
 
       return banners;
     }
@@ -102,7 +131,7 @@ class CurrentHomeBannerBackgroundColorValue
     _colors = homeBanner.valueOrNull
         ?.map((BannerCache banner) => banner.primaryColorValue);
 
-    return _colors?.first;
+    return _colors?.firstOrNull;
   }
 
   void onPageChanged(int index) {
