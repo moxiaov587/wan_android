@@ -3,8 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 
-import '../../utils/screen_utils.dart';
-
 part 'app_colors.dart';
 part 'app_text_theme.dart';
 part 'gradient_colors.dart';
@@ -73,9 +71,7 @@ class AppTheme {
     centerTitle: true,
   );
 
-  static final DividerThemeData dividerTheme = DividerThemeData(
-    space: double.parse((1 / ScreenUtils.scale).toStringAsFixed(2)),
-    thickness: double.parse((1 / ScreenUtils.scale).toStringAsFixed(2)),
+  static const DividerThemeData dividerTheme = DividerThemeData(
     indent: kStyleUint4,
     endIndent: kStyleUint4,
   );
@@ -142,11 +138,10 @@ class AppTheme {
     ),
   );
 
-  static final ThemeData light = ThemeData.light().copyWith(
+  static final ThemeData light = ThemeData.light(useMaterial3: true).copyWith(
     extensions: <ThemeExtension<dynamic>>[
       GradientColors.light(),
     ],
-    useMaterial3: true,
     cupertinoOverrideTheme: const CupertinoThemeData(
       brightness: Brightness.light,
       primaryColor: AppColors.primary,
@@ -211,7 +206,6 @@ class AppTheme {
         color: AppColors.text2,
         width: 0.7,
       ),
-      fillColor: stateColorLight,
       checkColor: MaterialStateProperty.all(AppColors.white),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -241,31 +235,19 @@ class AppTheme {
       hintStyle: AppTextTheme.light.bodyLarge,
       enabledBorder: OutlineInputBorder(
         borderRadius: adornmentBorderRadius,
-        borderSide: BorderSide(
-          color: AppColors.gray.shade4,
-          width: dividerTheme.thickness!,
-        ),
+        borderSide: BorderSide(color: AppColors.gray.shade4),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: adornmentBorderRadius,
-        borderSide: BorderSide(
-          color: AppColors.primary,
-          width: dividerTheme.thickness!,
-        ),
+        borderSide: const BorderSide(color: AppColors.primary),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: adornmentBorderRadius,
-        borderSide: BorderSide(
-          color: AppColors.error,
-          width: dividerTheme.thickness!,
-        ),
+        borderSide: const BorderSide(color: AppColors.error),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: adornmentBorderRadius,
-        borderSide: BorderSide(
-          color: AppColors.error,
-          width: dividerTheme.thickness!,
-        ),
+        borderSide: const BorderSide(color: AppColors.error),
       ),
     ),
     colorScheme: ColorScheme.fromSeed(
@@ -294,11 +276,10 @@ class AppTheme {
     ),
   );
 
-  static final ThemeData dark = ThemeData.dark().copyWith(
+  static final ThemeData dark = ThemeData.dark(useMaterial3: true).copyWith(
     extensions: <ThemeExtension<dynamic>>[
       GradientColors.dark(),
     ],
-    useMaterial3: true,
     cupertinoOverrideTheme: const CupertinoThemeData(
       brightness: Brightness.dark,
       primaryColor: AppColors.primaryDark,
@@ -363,7 +344,6 @@ class AppTheme {
         color: AppColors.text2Dark,
         width: 0.7,
       ),
-      fillColor: stateColorDark,
       checkColor: MaterialStateProperty.all(AppColors.whiteDark),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -393,31 +373,19 @@ class AppTheme {
       hintStyle: AppTextTheme.dark.bodyLarge,
       enabledBorder: OutlineInputBorder(
         borderRadius: adornmentBorderRadius,
-        borderSide: BorderSide(
-          color: AppColors.grayDark.shade5,
-          width: dividerTheme.thickness!,
-        ),
+        borderSide: BorderSide(color: AppColors.grayDark.shade5),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: adornmentBorderRadius,
-        borderSide: BorderSide(
-          color: AppColors.primaryDark,
-          width: dividerTheme.thickness!,
-        ),
+        borderSide: const BorderSide(color: AppColors.primaryDark),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: adornmentBorderRadius,
-        borderSide: BorderSide(
-          color: AppColors.errorDark,
-          width: dividerTheme.thickness!,
-        ),
+        borderSide: const BorderSide(color: AppColors.errorDark),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: adornmentBorderRadius,
-        borderSide: BorderSide(
-          color: AppColors.errorDark,
-          width: dividerTheme.thickness!,
-        ),
+        borderSide: const BorderSide(color: AppColors.errorDark),
       ),
     ),
     colorScheme: ColorScheme.fromSeed(

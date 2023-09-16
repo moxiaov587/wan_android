@@ -111,8 +111,7 @@ class _MyPointsScreenState extends ConsumerState<MyPointsScreen>
                       ),
                 ),
                 SliverPadding(
-                  padding:
-                      EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
+                  padding: EdgeInsets.only(bottom: context.mqPadding.bottom),
                   sliver: loadMoreIndicator,
                 ),
               ],

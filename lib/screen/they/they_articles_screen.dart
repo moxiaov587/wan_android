@@ -67,7 +67,7 @@ class _TheyArticlesScreenState extends ConsumerState<TheyArticlesScreen>
                     ),
               ),
               SliverPadding(
-                padding: EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
+                padding: EdgeInsets.only(bottom: context.mqPadding.bottom),
                 sliver: loadMoreIndicator,
               ),
             ],

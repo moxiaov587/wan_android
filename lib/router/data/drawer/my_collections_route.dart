@@ -33,12 +33,12 @@ class AddCollectedArticleOrWebsiteRoute extends GoRouteData {
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) =>
       AppModalBottomSheetPage<void>(
-        builder: (_) => HandleCollectedBottomSheet(
+        builder: (BuildContext context) => HandleCollectedBottomSheet(
           type: type,
           collectId: null,
         ),
         constraints: BoxConstraints.tightFor(
-          height: (ScreenUtils.height * 0.85).ceilToDouble(),
+          height: (context.mqSize.height * 0.85).ceilToDouble(),
         ),
         isScrollControlled: true,
       );
@@ -57,12 +57,12 @@ class EditCollectedArticleOrWebsiteRoute extends GoRouteData {
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) =>
       AppModalBottomSheetPage<void>(
-        builder: (_) => HandleCollectedBottomSheet(
+        builder: (BuildContext context) => HandleCollectedBottomSheet(
           type: type,
           collectId: id,
         ),
         constraints: BoxConstraints.tightFor(
-          height: (ScreenUtils.height * 0.85).ceilToDouble(),
+          height: (context.mqSize.height * 0.85).ceilToDouble(),
         ),
         isScrollControlled: true,
       );

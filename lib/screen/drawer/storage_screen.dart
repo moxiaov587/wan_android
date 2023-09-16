@@ -150,8 +150,7 @@ class _BottomActionBar extends StatelessWidget {
         color: context.theme.cardColor,
         child: Padding(
           padding: AppTheme.contentPadding.copyWith(
-            bottom:
-                AppTheme.contentPadding.bottom + ScreenUtils.bottomSafeHeight,
+            bottom: AppTheme.contentPadding.bottom + context.mqPadding.bottom,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

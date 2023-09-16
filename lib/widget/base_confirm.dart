@@ -56,7 +56,7 @@ class BaseConfirm extends StatelessWidget {
             ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: _kDialogContentMinHeight,
-                maxHeight: ScreenUtils.height / 2,
+                maxHeight: context.mqSize.height / 2,
               ),
               child: SingleChildScrollView(
                 padding: AppTheme.confirmDialogContextPadding,

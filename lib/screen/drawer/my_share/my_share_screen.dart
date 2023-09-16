@@ -11,7 +11,6 @@ import '../../../contacts/icon_font_icons.dart';
 import '../../../extensions/extensions.dart';
 import '../../../model/models.dart';
 import '../../../router/data/app_routes.dart';
-import '../../../utils/screen_utils.dart';
 import '../../../widget/custom_text_form_field.dart';
 import '../../../widget/gap.dart';
 import '../../../widget/slidable_tile.dart';
@@ -120,7 +119,7 @@ class _MyShareScreenState extends ConsumerState<MyShareScreen>
                     ),
               ),
               SliverPadding(
-                padding: EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
+                padding: EdgeInsets.only(bottom: context.mqPadding.bottom),
                 sliver: loadMoreIndicator,
               ),
             ],

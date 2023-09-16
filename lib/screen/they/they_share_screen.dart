@@ -118,7 +118,7 @@ class _TheyShareScreenState extends ConsumerState<TheyShareScreen>
                                   AppException.create(e, s);
 
                               return Ink(
-                                width: ScreenUtils.width,
+                                width: context.mqSize.width,
                                 child: InkWell(
                                   onTap: () {
                                     ref.invalidate(pointsProvider);
@@ -240,7 +240,7 @@ class _TheyShareScreenState extends ConsumerState<TheyShareScreen>
                     ),
               ),
               SliverPadding(
-                padding: EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
+                padding: EdgeInsets.only(bottom: context.mqPadding.bottom),
                 sliver: loadMoreIndicator,
               ),
             ],

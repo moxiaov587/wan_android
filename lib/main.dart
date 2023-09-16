@@ -83,12 +83,11 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
       final Brightness? brightness = ref.read(appThemeModeProvider).brightness;
 
       if (brightness != null &&
-          brightness !=
-              View.of(context).platformDispatcher.platformBrightness) {
+          brightness != MediaQuery.platformBrightnessOf(context)) {
         return Future<void>.delayed(const Duration(seconds: 1), () async {
           final bool? data = await DialogUtils.confirm<bool>(
             builder: (BuildContext context) => RichText(
-              textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              textScaler: context.mqTextScaler,
               textAlign: TextAlign.center,
               text: TextSpan(
                 style: context.theme.textTheme.titleSmall,

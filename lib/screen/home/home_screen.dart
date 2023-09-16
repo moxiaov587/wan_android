@@ -18,7 +18,7 @@ import '../../model/models.dart';
 import '../../router/data/app_routes.dart';
 import '../../utils/dialog_utils.dart';
 import '../../utils/html_parse_utils.dart';
-import '../../utils/screen_utils.dart';
+
 import '../../widget/article.dart';
 import '../../widget/capsule_ink.dart';
 import '../../widget/custom_search_delegate.dart';
@@ -218,7 +218,7 @@ class __HomeAppBarState extends State<_HomeAppBar>
         pinned: true,
         delegate: _HomeAppBarDelegate(
           this,
-          minHeight: kToolbarHeight,
+          minHeight: kToolbarHeight + context.mqPadding.top,
           maxHeight: kToolbarHeight + 200.0,
         ),
       );
@@ -272,7 +272,7 @@ class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
               ),
             ),
             child: Padding(
-              padding: EdgeInsets.only(top: ScreenUtils.topSafeHeight),
+              padding: EdgeInsets.only(top: context.mqPadding.top),
               child: Consumer(
                 builder: (_, WidgetRef ref, __) {
                   final UserInfoModel? userInfo = ref.watch(
@@ -313,7 +313,7 @@ class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
                 return AnimatedContainer(
                   duration: const Duration(milliseconds: 500),
                   padding: AppTheme.contentPaddingOnlyHorizontal.copyWith(
-                    top: ScreenUtils.topSafeHeight,
+                    top: context.mqPadding.top,
                     bottom: kStyleUint4,
                   ),
                   decoration: BoxDecoration(
@@ -339,7 +339,7 @@ class _HomeAppBarDelegate extends SliverPersistentHeaderDelegate {
   double get maxExtent => maxHeight;
 
   @override
-  double get minExtent => minHeight + ScreenUtils.topSafeHeight;
+  double get minExtent => minHeight;
 
   @override
   bool shouldRebuild(covariant _HomeAppBarDelegate oldDelegate) =>
@@ -395,7 +395,7 @@ class _HomeAppBarUserInfo extends StatelessWidget {
               children: <Widget>[
                 Text(
                   name ?? '',
-                  style: context.theme.textTheme.titleSmall,
+                  style: context.theme.textTheme.bodyLarge,
                 ),
                 LevelTag(
                   level: userInfo.userPoints.level,
@@ -451,7 +451,7 @@ class _BannerCarousel extends StatelessWidget {
 
                           return Material(
                             child: Ink(
-                              width: ScreenUtils.width,
+                              width: context.mqSize.width,
                               child: InkWell(
                                 onTap: () {
                                   ref.invalidate(homeBannerProvider);
@@ -580,7 +580,7 @@ class _BannerCarouselItem extends StatelessWidget {
                 right: AppTheme.contentPadding.right,
               ),
               alignment: Alignment.centerRight,
-              width: ScreenUtils.width,
+              width: context.mqSize.width,
               height: 50.0,
               color: (homeBanner.primaryColorValue.toColor ??
                       context.theme.colorScheme.background)

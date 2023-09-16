@@ -9,7 +9,7 @@ import '../../app/theme/app_theme.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../extensions/extensions.dart';
 import '../../model/models.dart';
-import '../../utils/screen_utils.dart';
+
 import '../../widget/article.dart';
 import '../../widget/gap.dart';
 import '../../widget/view_state_widget.dart';

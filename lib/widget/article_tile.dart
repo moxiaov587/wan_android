@@ -40,7 +40,7 @@ class ArticleTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 RichText(
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  textScaler: context.mqTextScaler,
                   text: TextSpan(
                     style: context.theme.textTheme.bodyMedium,
                     children: <TextSpan>[

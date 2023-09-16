@@ -9,7 +9,6 @@ import '../contacts/instances.dart';
 import '../extensions/extensions.dart'
     show BuildContextExtension, TextStyleExtension;
 import '../widget/rotate_loading.dart';
-import 'screen_utils.dart';
 
 part '../widget/base_toast.dart';
 part '../widget/base_confirm.dart';

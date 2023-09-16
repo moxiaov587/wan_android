@@ -1,7 +1,7 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nil/nil.dart' show nil;
@@ -18,7 +18,6 @@ import '../../router/data/app_routes.dart';
 import '../../screen/authorized/provider/authorized_provider.dart';
 import '../../screen/provider/common_provider.dart';
 import '../../utils/dialog_utils.dart';
-import '../../utils/screen_utils.dart';
 import '../../widget/animated_counter.dart';
 import '../../widget/gap.dart';
 import '../../widget/indent_divider.dart';
@@ -165,7 +164,7 @@ class HomeDrawer extends StatelessWidget {
             child: Align(
               alignment: Alignment.bottomLeft,
               child: Padding(
-                padding: EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
+                padding: EdgeInsets.only(bottom: context.mqPadding.bottom),
                 child: Row(
                   children: <Widget>[
                     Consumer(

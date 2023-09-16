@@ -28,8 +28,7 @@ class LevelTag extends StatelessWidget {
           _kCharacterSize + integers.length * _kCharacterSize / 2,
           _kCharacterSize,
         ) *
-        scaleFactor *
-        MediaQuery.of(context).textScaleFactor;
+        context.mqTextScaler.scale(scaleFactor);
 
     final double width = size.width * 0.9;
     final double height = size.height - size.width * 0.1;
@@ -240,9 +239,7 @@ class LevelPainter extends CustomPainter {
       Paint()
         ..style = PaintingStyle.fill
         ..color = color
-        ..shader = linearGradient != null
-            ? linearGradient!.createShader(path.getBounds())
-            : null,
+        ..shader = linearGradient?.createShader(path.getBounds()),
     );
   }
 

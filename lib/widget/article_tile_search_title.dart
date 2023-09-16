@@ -26,7 +26,7 @@ class ArticleTileSearchTitle extends StatelessWidget {
             .withOpacity(0.2);
 
     return RichText(
-      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+      textScaler: context.mqTextScaler,
       text: TextSpan(
         style: textStyle,
         children: prefixesChildren
