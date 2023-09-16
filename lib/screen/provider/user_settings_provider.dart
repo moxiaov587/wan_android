@@ -14,16 +14,15 @@ class UserSettings extends _$UserSettings {
       ),
     );
 
-    return ref
-        .read(appDatabaseProvider)
-        .userSettingsCaches
-        .where()
-        .userIdEqualTo(userId)
-        .findFirst()
-        ?.copyWith(userId: userId);
+    final QueryBuilder<UserSettingsCache, UserSettingsCache, QStart>
+        queryBuilder = _isar.userSettingsCaches.where();
+
+    return queryBuilder.userIdEqualTo(userId).findFirst() ??
+        // Use the default settings (if exists) when a new user login.
+        queryBuilder.userIdEqualTo(null).findFirst()?.copyWith(userId: userId);
   }
 
-  Future<void> update({
+  void update({
     bool? rememberPassword,
     ThemeMode? themeMode,
     Language? language,
@@ -49,11 +48,8 @@ class UserSettings extends _$UserSettings {
 
     state = update;
 
-    return _isar.writeAsyncWith<void, UserSettingsCache>(
-      update,
-      (Isar isar, UserSettingsCache obj) {
-        isar.userSettingsCaches.put(obj);
-      },
-    );
+    _isar.write<void>((Isar isar) {
+      isar.userSettingsCaches.put(update);
+    });
   }
 }

@@ -41,7 +41,7 @@ class Authorized extends _$Authorized {
     return null;
   }
 
-  Future<void> _handleCacheByLogin(
+  void _handleCacheByLogin(
     int userId, {
     required String username,
     required String password,
@@ -54,15 +54,18 @@ class Authorized extends _$Authorized {
       password: rememberPassword ? _encryptString(password) : null,
     );
 
-    return _isar.writeAsync<void>(
-      (Isar isar) {
-        isar.accountCaches.put(accountCache);
-        isar.userSettingsCaches.update(
-          id: userId,
-          rememberPassword: rememberPassword,
-        );
-      },
-    );
+    final UserSettingsCache settings =
+        (_isar.userSettingsCaches.where().userIdEqualTo(null).findFirst() ??
+                UserSettingsCache(
+                  id: _isar.userSettingsCaches.autoIncrement(),
+                  updateTime: DateTime.now(),
+                ))
+            .copyWith(rememberPassword: rememberPassword);
+
+    _isar.write((Isar isar) {
+      isar.accountCaches.put(accountCache);
+      isar.userSettingsCaches.put(settings);
+    });
   }
 
   /// by https://github.com/fluttercandies/flutter_juejin/blob/main/lib/extensions/string_extension.dart
@@ -104,18 +107,14 @@ class Authorized extends _$Authorized {
         password: password,
       );
 
-      final UserInfoModel userInfo = await _http.fetchUserInfo();
-
-      unawaited(
-        _handleCacheByLogin(
-          user.id,
-          username: username,
-          password: password,
-          rememberPassword: rememberPassword,
-        ),
+      _handleCacheByLogin(
+        user.id,
+        username: username,
+        password: password,
+        rememberPassword: rememberPassword,
       );
 
-      return userInfo;
+      return _http.fetchUserInfo();
     });
 
     if (state.hasError) {
@@ -141,18 +140,15 @@ class Authorized extends _$Authorized {
         password: password,
       );
 
-      final UserInfoModel userInfo = await _http.silentFetchUserInfo();
-
-      unawaited(
-        _handleCacheByLogin(
-          user.id,
-          username: username,
-          password: password,
-          rememberPassword: true,
-        ),
+      _handleCacheByLogin(
+        user.id,
+        username: username,
+        password: password,
+        // Can call silentLogin because the password is remembered.
+        rememberPassword: true,
       );
 
-      return userInfo;
+      return _http.fetchUserInfo();
     });
 
     return state.hasValue;
@@ -198,9 +194,7 @@ class Authorized extends _$Authorized {
         updateTime: DateTime.now(),
       );
 
-      await _isar.writeAsync(
-        (Isar isar) => isar.accountCaches.put(accountCache),
-      );
+      _isar.write((Isar isar) => isar.accountCaches.put(accountCache));
 
       DialogUtils.success(S.current.registerSuccess);
 
