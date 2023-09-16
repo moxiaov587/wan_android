@@ -100,16 +100,14 @@ class __ResultsState extends ConsumerState<_Results>
       updateTime: DateTime.now(),
     );
 
-    unawaited(
-      _isar.writeAsync<void>(
-        (Isar isar) async {
-          if (id != null) {
-            isar.searchHistoryCaches.delete(id);
-          }
+    _isar.write<void>(
+      (Isar isar) {
+        if (id != null) {
+          isar.searchHistoryCaches.delete(id);
+        }
 
-          isar.searchHistoryCaches.put(searchHistory);
-        },
-      ),
+        isar.searchHistoryCaches.put(searchHistory);
+      },
     );
   }
 
@@ -151,7 +149,7 @@ class __ResultsState extends ConsumerState<_Results>
                   ),
             ),
             SliverPadding(
-              padding: EdgeInsets.only(bottom: ScreenUtils.bottomSafeHeight),
+              padding: EdgeInsets.only(bottom: context.mqPadding.bottom),
               sliver: loadMoreIndicator,
             ),
           ],

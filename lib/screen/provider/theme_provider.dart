@@ -11,11 +11,7 @@ class AppThemeMode extends _$AppThemeMode {
       return;
     }
 
-    // state = themeMode;
-
-    unawaited(
-      ref.read(userSettingsProvider.notifier).update(themeMode: themeMode),
-    );
+    ref.read(userSettingsProvider.notifier).update(themeMode: themeMode);
   }
 }
 

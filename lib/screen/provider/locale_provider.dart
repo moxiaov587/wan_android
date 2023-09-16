@@ -7,11 +7,7 @@ class AppLanguage extends _$AppLanguage {
       ref.watch(userSettingsProvider)?.language ?? Language.system;
 
   void switchLocale(Language language) {
-    // state = language;
-
-    unawaited(
-      ref.read(userSettingsProvider.notifier).update(language: language),
-    );
+    ref.read(userSettingsProvider.notifier).update(language: language);
   }
 }
 

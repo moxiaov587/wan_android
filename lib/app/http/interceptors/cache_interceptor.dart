@@ -29,15 +29,11 @@ class CacheInterceptor extends Interceptor {
 
     if (options.needRefresh) {
       if (options.isDiskCache) {
-        unawaited(
-          ref.read(appDatabaseProvider).writeAsync((Isar isar) {
-            final int count = queryBuilder.count();
-
-            if (count > 0) {
-              isar.responseDataCaches.delete(uriString);
-            }
-          }),
-        );
+        ref.read(appDatabaseProvider).write<void>((Isar isar) {
+          if (queryBuilder.count() > 0) {
+            isar.responseDataCaches.delete(uriString);
+          }
+        });
       } else {
         _cache.remove(uriString);
       }
@@ -80,11 +76,12 @@ class CacheInterceptor extends Interceptor {
 
           return;
         } else {
-          unawaited(
-            ref
-                .read(appDatabaseProvider)
-                .writeAsync((_) => queryBuilder.deleteFirst()),
-          );
+          ref.read(appDatabaseProvider).write(
+                (Isar isar) => isar.responseDataCaches
+                    .where()
+                    .uriEqualTo(uriString)
+                    .deleteFirst(),
+              );
         }
       }
     }
@@ -109,11 +106,9 @@ class CacheInterceptor extends Interceptor {
       );
 
       if (options.isDiskCache) {
-        unawaited(
-          ref.read(appDatabaseProvider).writeAsync(
-                (Isar isar) => isar.responseDataCaches.put(responseCache),
-              ),
-        );
+        ref.read(appDatabaseProvider).write(
+              (Isar isar) => isar.responseDataCaches.put(responseCache),
+            );
       } else {
         if (_cache.length == _kMaxNumOfCacheForMemory) {
           _cache.remove(_cache.keys.first);
