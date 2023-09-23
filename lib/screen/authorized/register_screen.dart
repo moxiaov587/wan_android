@@ -11,29 +11,22 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  final FocusScopeNode _globalFocusNode = FocusScopeNode();
+
   final TextEditingController _usernameTextEditingController =
       TextEditingController();
-  final FocusNode _usernameFocusNode = FocusNode();
   final TextEditingController _passwordTextEditingController =
       TextEditingController();
-  final FocusNode _passwordFocusNode = FocusNode();
-
   final TextEditingController _repasswordTextEditingController =
       TextEditingController();
-  final FocusNode _repasswordFocusNode = FocusNode();
 
   @override
   void dispose() {
     _usernameTextEditingController.dispose();
-    _usernameFocusNode
-      ..unfocus()
-      ..dispose();
     _passwordTextEditingController.dispose();
-    _passwordFocusNode
-      ..unfocus()
-      ..dispose();
     _repasswordTextEditingController.dispose();
-    _repasswordFocusNode
+    _globalFocusNode
       ..unfocus()
       ..dispose();
     super.dispose();
@@ -70,18 +63,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
         appBar: AppBar(
           title: Text(S.of(context).register),
         ),
-        body: CustomScrollView(
-          slivers: <Widget>[
-            Form(
-              key: _formKey,
-              child: SliverPadding(
-                padding: _kBodyPadding,
-                sliver: SliverList(
-                  delegate: SliverChildListDelegate(
-                    <Widget>[
+        body: SizedBox.expand(
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Padding(
+              padding: _kBodyPadding,
+              child: Form(
+                key: _formKey,
+                child: FocusScope(
+                  node: _globalFocusNode,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
                       CustomTextFormField(
                         controller: _usernameTextEditingController,
-                        focusNode: _usernameFocusNode,
                         textInputAction: TextInputAction.next,
                         validator: (String? value) {
                           if (value == null || value.isEmpty) {
@@ -95,12 +90,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               const Icon(IconFontIcons.accountCircleLine),
                           hintText: S.of(context).username,
                         ),
-                        onEditingComplete: _passwordFocusNode.requestFocus,
+                        onEditingComplete: _globalFocusNode.nextFocus,
                       ),
                       Gap.v(value: _kBodyPadding.top),
                       CustomTextFormField(
                         controller: _passwordTextEditingController,
-                        focusNode: _passwordFocusNode,
                         obscureText: true,
                         textInputAction: TextInputAction.next,
                         validator: (String? value) {
@@ -114,13 +108,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           prefixIcon: const Icon(IconFontIcons.lockLine),
                           hintText: S.of(context).password,
                         ),
-                        onEditingComplete: _repasswordFocusNode.requestFocus,
+                        onEditingComplete: _globalFocusNode.nextFocus,
                       ),
                       Gap.v(value: _kBodyPadding.top),
                       Consumer(
                         builder: (_, WidgetRef ref, __) => CustomTextFormField(
                           controller: _repasswordTextEditingController,
-                          focusNode: _repasswordFocusNode,
                           obscureText: true,
                           textInputAction: TextInputAction.done,
                           validator: (String? value) {
@@ -139,7 +132,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             prefixIcon: const Icon(IconFontIcons.lockLine),
                             hintText: S.of(context).repassword,
                           ),
-                          onEditingComplete: _repasswordFocusNode.unfocus,
+                          onEditingComplete: _globalFocusNode.nextFocus,
                         ),
                       ),
                       Gap.v(value: _kBodyPadding.top),
@@ -166,7 +159,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
             ),
-          ],
+          ),
         ),
       );
 }

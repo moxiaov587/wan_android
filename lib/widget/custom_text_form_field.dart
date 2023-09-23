@@ -116,6 +116,8 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
   late final ValueNotifier<bool> _showCleanButtonNotifier =
       ValueNotifier<bool>(widget.controller.text.isNotEmpty);
 
+  final FocusNode _cleanButtonFocusNode = FocusNode(skipTraversal: true);
+
   @override
   void initState() {
     super.initState();
@@ -127,6 +129,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
   void dispose() {
     widget.controller.removeListener(_onInputChanged);
     _showCleanButtonNotifier.dispose();
+    _cleanButtonFocusNode.dispose();
     super.dispose();
   }
 
@@ -155,6 +158,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
             valueListenable: _showCleanButtonNotifier,
             builder: (_, bool value, __) => value
                 ? IconButton(
+                    focusNode: _cleanButtonFocusNode,
                     icon: const Icon(
                       IconFontIcons.closeCircleLine,
                       size: _kClearIconSize,

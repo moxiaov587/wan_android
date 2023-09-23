@@ -30,13 +30,12 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  final FocusScopeNode _globalFocusNode = FocusScopeNode();
+
   final TextEditingController _usernameTextEditingController =
       TextEditingController();
-  final FocusNode _usernameFocusNode = FocusNode();
-
   final TextEditingController _passwordTextEditingController =
       TextEditingController();
-  final FocusNode _passwordFocusNode = FocusNode();
 
   AccountCache? _lastLoginAccountCache;
 
@@ -58,14 +57,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   void dispose() {
     _usernameTextEditingController.dispose();
-    _usernameFocusNode
-      ..unfocus()
-      ..dispose();
     _passwordTextEditingController.dispose();
-    _passwordFocusNode
+    _rememberPasswordNotifier.dispose();
+    _globalFocusNode
       ..unfocus()
       ..dispose();
-    _rememberPasswordNotifier.dispose();
 
     super.dispose();
   }
@@ -110,18 +106,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         appBar: AppBar(
           title: Text(S.of(context).login),
         ),
-        body: CustomScrollView(
-          slivers: <Widget>[
-            SliverPadding(
+        body: SizedBox.expand(
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Padding(
               padding: _kBodyPadding,
-              sliver: Form(
+              child: Form(
                 key: _formKey,
-                child: SliverList(
-                  delegate: SliverChildListDelegate(
-                    <Widget>[
+                child: FocusScope(
+                  node: _globalFocusNode,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
                       RawAutocomplete<AccountCache>(
+                        // TODO(moxiaov587): Waiting for issue reply..
+                        // https://github.com/flutter/flutter/issues/134890
                         textEditingController: _usernameTextEditingController,
-                        focusNode: _usernameFocusNode,
                         displayStringForOption: (AccountCache option) =>
                             option.username,
                         onSelected: (AccountCache option) {
@@ -171,14 +171,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 const Icon(IconFontIcons.accountCircleLine),
                             hintText: S.of(context).username,
                           ),
-                          onEditingComplete: _passwordFocusNode.requestFocus,
+                          onEditingComplete: _globalFocusNode.nextFocus,
                         ),
                       ),
                       Gap.v(value: _kBodyPadding.top),
                       Consumer(
                         builder: (_, WidgetRef ref, __) => CustomTextFormField(
                           controller: _passwordTextEditingController,
-                          focusNode: _passwordFocusNode,
                           obscureText: true,
                           textInputAction: TextInputAction.done,
                           validator: (String? value) {
@@ -192,7 +191,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             prefixIcon: const Icon(IconFontIcons.lockLine),
                             hintText: S.of(context).password,
                           ),
-                          onEditingComplete: _passwordFocusNode.unfocus,
+                          onEditingComplete: _globalFocusNode.nextFocus,
                         ),
                       ),
                       Gap.v(value: _kBodyPadding.top / 4),
@@ -249,7 +248,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
               ),
             ),
-          ],
+          ),
         ),
       );
 }

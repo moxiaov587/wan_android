@@ -21,19 +21,13 @@ class _HandleCollectedBottomSheetState
     extends ConsumerState<HandleCollectedBottomSheet> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  final FocusScopeNode _globalFocusNode = FocusScopeNode();
+
   final TextEditingController _titleTextEditingController =
       TextEditingController();
-
-  final FocusNode _titleFocusNode = FocusNode();
-
   final TextEditingController _linkTextEditingController =
       TextEditingController();
-
-  final FocusNode _linkFocusNode = FocusNode();
-
   late final TextEditingController _authorTextEditingController;
-
-  late final FocusNode _authorFocusNode;
 
   late final HandleCollectedProvider provider = handleCollectedProvider(
     type: widget.type,
@@ -46,7 +40,6 @@ class _HandleCollectedBottomSheetState
 
     if (widget.isArticles) {
       _authorTextEditingController = TextEditingController();
-      _authorFocusNode = FocusNode();
     }
 
     final CollectedCommonModel? collect = ref.read(provider);
@@ -58,26 +51,18 @@ class _HandleCollectedBottomSheetState
         _authorTextEditingController.text = collect.author ?? '';
       }
     }
-
-    _titleFocusNode.requestFocus();
   }
 
   @override
   void dispose() {
     _titleTextEditingController.dispose();
-    _titleFocusNode
-      ..unfocus()
-      ..dispose();
     _linkTextEditingController.dispose();
-    _linkFocusNode
-      ..unfocus()
-      ..dispose();
     if (widget.isArticles) {
       _authorTextEditingController.dispose();
-      _authorFocusNode
-        ..unfocus()
-        ..dispose();
     }
+    _globalFocusNode
+      ..unfocus()
+      ..dispose();
     super.dispose();
   }
 
@@ -126,59 +111,57 @@ class _HandleCollectedBottomSheetState
   @override
   Widget build(BuildContext context) => Material(
         color: context.theme.listTileTheme.tileColor,
-        child: Form(
-          key: _formKey,
-          child: CustomScrollView(
-            slivers: <Widget>[
-              SliverPadding(
-                padding: AppTheme.contentPadding.copyWith(bottom: 0),
-                sliver: SliverToBoxAdapter(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      TextButton(
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: AppTheme.contentPadding.copyWith(bottom: 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  TextButton(
+                    style: ButtonStyle(
+                      textStyle: MaterialStateProperty.all(
+                        context.theme.textTheme.titleMedium,
+                      ),
+                    ),
+                    onPressed: Navigator.of(context).maybePop,
+                    child: Text(S.of(context).cancel),
+                  ),
+                  Consumer(
+                    builder: (_, WidgetRef ref, __) {
+                      final CollectedCommonModel? collect = ref.read(provider);
+
+                      return TextButton(
                         style: ButtonStyle(
                           textStyle: MaterialStateProperty.all(
-                            context.theme.textTheme.titleMedium,
+                            context.theme.textTheme.titleMedium!.semiBold,
                           ),
                         ),
-                        onPressed: Navigator.of(context).maybePop,
-                        child: Text(S.of(context).cancel),
-                      ),
-                      Consumer(
-                        builder: (_, WidgetRef ref, __) {
-                          final CollectedCommonModel? collect =
-                              ref.read(provider);
-
-                          return TextButton(
-                            style: ButtonStyle(
-                              textStyle: MaterialStateProperty.all(
-                                context.theme.textTheme.titleMedium!.semiBold,
-                              ),
-                            ),
-                            onPressed: () async {
-                              await onSubmitted(
-                                isEdit: collect != null,
-                                collectId: collect?.id,
-                              );
-                            },
-                            child: Text(
-                              collect != null
-                                  ? S.of(context).save
-                                  : S.of(context).add,
-                            ),
+                        onPressed: () async {
+                          await onSubmitted(
+                            isEdit: collect != null,
+                            collectId: collect?.id,
                           );
                         },
-                      ),
-                    ],
+                        child: Text(
+                          collect != null
+                              ? S.of(context).save
+                              : S.of(context).add,
+                        ),
+                      );
+                    },
                   ),
-                ),
+                ],
               ),
-              SliverPadding(
-                padding: AppTheme.bodyPadding,
-                sliver: SliverList(
-                  delegate: SliverChildListDelegate(
-                    <Widget>[
+            ),
+            Padding(
+              padding: AppTheme.bodyPadding,
+              child: Form(
+                key: _formKey,
+                child: FocusScope(
+                  node: _globalFocusNode,
+                  child: Column(
+                    children: <Widget>[
                       Consumer(
                         builder: (_, WidgetRef ref, __) => Text(
                           ref.read(provider) != null
@@ -199,7 +182,7 @@ class _HandleCollectedBottomSheetState
                       const Gap.v(value: kStyleUint3 * 2),
                       CustomTextFormField(
                         controller: _titleTextEditingController,
-                        focusNode: _titleFocusNode,
+                        autofocus: true,
                         textInputAction: TextInputAction.next,
                         decoration:
                             InputDecoration(labelText: S.of(context).title),
@@ -210,36 +193,30 @@ class _HandleCollectedBottomSheetState
 
                           return null;
                         },
-                        onEditingComplete: () {
-                          if (widget.isArticles) {
-                            _authorFocusNode.requestFocus();
-                          } else {
-                            _linkFocusNode.requestFocus();
-                          }
-                        },
+                        onEditingComplete: _globalFocusNode.nextFocus,
                       ),
                       const Gap.vb(),
-                      if (widget.isArticles) ...<Widget>[
-                        CustomTextFormField(
-                          controller: _authorTextEditingController,
-                          focusNode: _authorFocusNode,
-                          textInputAction: TextInputAction.next,
-                          decoration:
-                              InputDecoration(labelText: S.of(context).author),
-                          validator: (String? value) {
-                            if (value == null || value.isEmpty) {
-                              return S.of(context).authorEmptyTips;
-                            }
+                      if (widget.isArticles)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 20.0),
+                          child: CustomTextFormField(
+                            controller: _authorTextEditingController,
+                            textInputAction: TextInputAction.next,
+                            decoration: InputDecoration(
+                              labelText: S.of(context).author,
+                            ),
+                            validator: (String? value) {
+                              if (value == null || value.isEmpty) {
+                                return S.of(context).authorEmptyTips;
+                              }
 
-                            return null;
-                          },
-                          onEditingComplete: _linkFocusNode.requestFocus,
+                              return null;
+                            },
+                            onEditingComplete: _globalFocusNode.nextFocus,
+                          ),
                         ),
-                        const Gap.vb(),
-                      ],
                       CustomTextFormField(
                         controller: _linkTextEditingController,
-                        focusNode: _linkFocusNode,
                         textInputAction: TextInputAction.done,
                         decoration: InputDecoration(
                           labelText: S.of(context).link,
@@ -255,14 +232,14 @@ class _HandleCollectedBottomSheetState
                               ? null
                               : S.of(context).linkFormatTips;
                         },
-                        onEditingComplete: _linkFocusNode.unfocus,
+                        onEditingComplete: _globalFocusNode.nextFocus,
                       ),
                     ],
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       );
 }
