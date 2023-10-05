@@ -160,7 +160,7 @@ class MyCollectedArticle extends _$MyCollectedArticle
                 ..setAll(
                   index,
                   <CollectedArticleModel>[
-                    data.datas[index].copyWith(collect: changedValue)
+                    data.datas[index].copyWith(collect: changedValue),
                   ],
                 ),
             ),
@@ -313,7 +313,7 @@ class MyCollectedWebsite extends _$MyCollectedWebsite {
             ..setAll(
               index,
               <CollectedWebsiteModel>[
-                list[index].copyWith(collect: changedValue)
+                list[index].copyWith(collect: changedValue),
               ],
             ),
         );

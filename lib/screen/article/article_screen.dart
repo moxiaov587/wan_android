@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nil/nil.dart' show nil;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
+import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 import '../../app/http/http.dart';
 import '../../app/http/interceptors/interceptors.dart';
@@ -18,7 +20,6 @@ import '../../screen/authorized/provider/authorized_provider.dart';
 import '../../utils/debounce_throttle.dart';
 import '../../utils/dialog_utils.dart';
 import '../../utils/html_parse_utils.dart';
-import '../../utils/screen_utils.dart';
 import '../../widget/popup_menu.dart';
 import '../../widget/view_state_widget.dart';
 import 'provider/article_provider.dart';
@@ -44,7 +45,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
 
   Timer? _hideProgressTimer;
 
-  late InAppWebViewController _inAppWebViewController;
+  late WebViewController _webViewController;
 
   final ValueNotifier<bool> _showKeyboardNotifier = ValueNotifier<bool>(false);
 
@@ -99,28 +100,26 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
     await Future<void>.delayed(const Duration(milliseconds: 500));
 
     if (mounted) {
-      return _inAppWebViewController.getTitle();
+      return _webViewController.getTitle();
     }
 
     return null;
   }
 
   @override
-  Widget build(BuildContext context) => WillPopScope(
-        onWillPop: () async {
-          if (_canGoBackNotifier.value) {
-            await _inAppWebViewController.goBack();
-            return false;
-          } else {
-            return true;
-          }
-        },
+  Widget build(BuildContext context) => ValueListenableBuilder<bool>(
+        valueListenable: _canGoBackNotifier,
+        builder: (BuildContext context, bool canGoBack, Widget? child) =>
+            PopScope(
+          canPop: !canGoBack,
+          child: child!,
+        ),
         child: Scaffold(
           appBar: AppBar(
             leading: BackButton(
               onPressed: () async {
                 if (_canGoBackNotifier.value) {
-                  await _inAppWebViewController.goBack();
+                  await _webViewController.goBack();
                 } else {
                   await Navigator.of(context).maybePop();
                 }
@@ -173,12 +172,12 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                                 onTap: () async {
                                   final S l10n = S.of(context);
 
-                                  final Uri? uri =
-                                      await _inAppWebViewController.getUrl();
+                                  final String? url =
+                                      await _webViewController.currentUrl();
 
                                   await Clipboard.setData(
                                     ClipboardData(
-                                      text: uri?.toString() ?? article.link,
+                                      text: url ?? article.link,
                                     ),
                                   );
 
@@ -225,124 +224,53 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                           Expanded(
                             child: Stack(
                               children: <Widget>[
-                                ValueListenableBuilder<bool>(
-                                  valueListenable: _useDesktopModeNotifier,
-                                  builder: (_, bool isDesktop, __) =>
-                                      InAppWebView(
-                                    key: Key(
-                                      '${isDesktop ? 'desktop' : 'recommended'}'
-                                      '_${article.link}',
-                                    ),
-                                    initialUrlRequest: URLRequest(
-                                      url: Uri.parse(article.link),
-                                    ),
-                                    initialOptions: InAppWebViewGroupOptions(
-                                      crossPlatform: InAppWebViewOptions(
-                                        cacheEnabled: article.withCookie,
-                                        clearCache: !article.withCookie,
-                                        horizontalScrollBarEnabled: false,
-                                        verticalScrollBarEnabled: false,
-                                        javaScriptCanOpenWindowsAutomatically:
-                                            true,
-                                        transparentBackground: true,
-                                        useShouldOverrideUrlLoading: true,
-                                        preferredContentMode: isDesktop
-                                            ? UserPreferredContentMode.DESKTOP
-                                            : UserPreferredContentMode
-                                                .RECOMMENDED,
-                                      ),
-                                      android: AndroidInAppWebViewOptions(
-                                        useHybridComposition: true,
-                                        forceDark: context.isDarkTheme
-                                            ? AndroidForceDark.FORCE_DARK_ON
-                                            : AndroidForceDark.FORCE_DARK_OFF,
-                                        mixedContentMode:
-                                            AndroidMixedContentMode
-                                                .MIXED_CONTENT_ALWAYS_ALLOW,
-                                        safeBrowsingEnabled: false,
-                                      ),
-                                      ios: IOSInAppWebViewOptions(
-                                        isFraudulentWebsiteWarningEnabled:
-                                            false,
-                                      ),
-                                    ),
-                                    onWebViewCreated:
-                                        (InAppWebViewController controller) {
-                                      _inAppWebViewController = controller;
-                                    },
-                                    onCreateWindow: (
-                                      InAppWebViewController controller,
-                                      CreateWindowAction createWindowAction,
-                                    ) async {
-                                      if (createWindowAction.request.url !=
-                                          null) {
-                                        await controller.loadUrl(
-                                          urlRequest:
-                                              createWindowAction.request,
-                                        );
+                                WebView(
+                                  url: Uri.parse(article.link),
+                                  withCookies: article.withCookie,
+                                  onWebViewInit:
+                                      (WebViewController controller) {
+                                    _webViewController = controller;
+                                  },
+                                  onPageStarted:
+                                      (WebViewController controller) {},
+                                  onProgress: (
+                                    WebViewController controller,
+                                    double progress,
+                                  ) {
+                                    _progress.add(progress / 100);
+                                  },
+                                  onPageFinished: (
+                                    WebViewController controller,
+                                  ) {
+                                    _loadPagesCountNotifier.value++;
+                                  },
+                                  onUrlChange: (
+                                    WebViewController controller,
+                                    UrlChange change,
+                                  ) {
+                                    hideProgress();
 
-                                        return true;
-                                      }
+                                    Future<void>.delayed(
+                                      const Duration(milliseconds: 500),
+                                      () async {
+                                        if (mounted) {
+                                          final (bool, bool) result = await (
+                                            controller.canGoBack(),
+                                            controller.canGoForward()
+                                          ).wait;
 
-                                      return false;
-                                    },
-                                    onProgressChanged: (_, int progress) {
-                                      _progress.add(progress / 100);
-                                    },
-                                    onLoadStart: (_, Uri? uri) async {
-                                      if (article.withCookie) {
-                                        await ref
-                                            .read(networkProvider)
-                                            .syncCookies(uri);
-                                      }
-                                    },
-                                    onLoadStop: (_, __) {
-                                      hideProgress();
-                                      _loadPagesCountNotifier.value++;
-                                    },
-                                    shouldOverrideUrlLoading: (
-                                      _,
-                                      NavigationAction navigationAction,
-                                    ) async {
-                                      if (!<String>[
-                                        'http',
-                                        'https',
-                                        'file',
-                                        'chrome',
-                                        'data',
-                                        'javascript',
-                                        'about',
-                                      ].contains(
-                                        navigationAction.request.url?.scheme,
-                                      )) {
-                                        return NavigationActionPolicy.CANCEL;
-                                      }
-
-                                      return NavigationActionPolicy.ALLOW;
-                                    },
-                                    onUpdateVisitedHistory:
-                                        (_, Uri? uri, bool? androidIsReload) {
-                                      hideProgress();
-
-                                      Future<void>.delayed(
-                                        const Duration(milliseconds: 500),
-                                        () async {
-                                          if (mounted) {
-                                            _canGoBackNotifier.value =
-                                                await _inAppWebViewController
-                                                    .canGoBack();
-                                            _canGoForwardModeNotifier.value =
-                                                await _inAppWebViewController
-                                                    .canGoForward();
-                                          }
-                                        },
-                                      );
-                                    },
-                                  ),
+                                          _canGoBackNotifier.value = result.$1;
+                                          _canGoForwardModeNotifier.value =
+                                              result.$2;
+                                        }
+                                      },
+                                    );
+                                  },
                                 ),
                                 Positioned(
                                   child: PreferredSize(
-                                    preferredSize: Size(ScreenUtils.width, 5.0),
+                                    preferredSize:
+                                        Size(context.mqSize.width, 5.0),
                                     child: StreamBuilder<double>(
                                       stream: _progress.stream,
                                       initialData: 0.0,
@@ -395,9 +323,8 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                           ],
                         ),
                         child: Padding(
-                          padding: EdgeInsets.only(
-                            bottom: ScreenUtils.bottomSafeHeight,
-                          ),
+                          padding:
+                              EdgeInsets.only(bottom: context.mqPadding.bottom),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: <Widget>[
@@ -409,8 +336,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                                       .withOpacity(0.5),
                                   onPressed: canGoBack
                                       ? () async {
-                                          await _inAppWebViewController
-                                              .goBack();
+                                          await _webViewController.goBack();
                                         }
                                       : null,
                                   icon: const Icon(Icons.arrow_back_ios_new),
@@ -425,8 +351,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                                       .withOpacity(0.5),
                                   onPressed: canGoForward
                                       ? () async {
-                                          await _inAppWebViewController
-                                              .goForward();
+                                          await _webViewController.goForward();
                                         }
                                       : null,
                                   icon: const Icon(Icons.arrow_forward_ios),
@@ -477,31 +402,9 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                               IconButton(
                                 tooltip: S.of(context).refresh,
                                 onPressed: () async {
-                                  await _inAppWebViewController.reload();
+                                  await _webViewController.reload();
                                 },
                                 icon: const Icon(IconFontIcons.refreshLine),
-                              ),
-                              ValueListenableBuilder<bool>(
-                                valueListenable: _useDesktopModeNotifier,
-                                builder: (_, bool useDesktop, __) => IconButton(
-                                  tooltip: useDesktop
-                                      ? S.of(context).desktop
-                                      : S.of(context).recommend,
-                                  onPressed: debounce(
-                                    () {
-                                      _useDesktopModeNotifier.value =
-                                          !useDesktop;
-                                    },
-                                  ),
-                                  color: useDesktop
-                                      ? context.theme.primaryColor
-                                      : null,
-                                  icon: Icon(
-                                    useDesktop
-                                        ? Icons.desktop_mac
-                                        : Icons.devices,
-                                  ),
-                                ),
                               ),
                             ],
                           ),
@@ -512,4 +415,185 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
           ),
         ),
       );
+}
+
+typedef OnWebViewInit = void Function(WebViewController controller);
+typedef OnNavigationRequestCallback = FutureOr<NavigationDecision> Function(
+  WebViewController controller,
+  NavigationRequest navigationRequest,
+);
+typedef OnPageStartedCallback = void Function(WebViewController controller);
+typedef OnPageFinishedCallback = void Function(WebViewController controller);
+typedef OnProgressCallback = void Function(
+  WebViewController controller,
+  double progress,
+);
+typedef OnWebResourceErrorCallback = void Function(
+  WebViewController controller,
+  WebResourceError resourceError,
+);
+typedef OnUrlChangeCallback = void Function(
+  WebViewController controller,
+  UrlChange change,
+);
+
+class WebView extends ConsumerStatefulWidget {
+  const WebView({
+    required this.url,
+    this.withCookies = false,
+    this.onWebViewInit,
+    this.onNavigationRequest,
+    this.onPageStarted,
+    this.onPageFinished,
+    this.onProgress,
+    this.onWebResourceError,
+    this.onUrlChange,
+    super.key,
+  });
+
+  final Uri url;
+  final bool withCookies;
+  final OnWebViewInit? onWebViewInit;
+  final OnNavigationRequestCallback? onNavigationRequest;
+  final OnPageStartedCallback? onPageStarted;
+  final OnPageFinishedCallback? onPageFinished;
+  final OnProgressCallback? onProgress;
+  final OnWebResourceErrorCallback? onWebResourceError;
+  final OnUrlChangeCallback? onUrlChange;
+
+  @override
+  ConsumerState<WebView> createState() => __WebViewState();
+}
+
+class __WebViewState extends ConsumerState<WebView> {
+  late final WebViewController _controller;
+
+  late final WebViewCookieManager _cookieManager;
+
+  @override
+  void initState() {
+    super.initState();
+
+    PlatformWebViewControllerCreationParams controllerParams =
+        const PlatformWebViewControllerCreationParams();
+
+    PlatformWebViewCookieManagerCreationParams cookieManagerParams =
+        const PlatformWebViewCookieManagerCreationParams();
+
+    if (WebViewPlatform.instance is WebKitWebViewPlatform) {
+      controllerParams = WebKitWebViewControllerCreationParams
+          .fromPlatformWebViewControllerCreationParams(
+        controllerParams,
+      );
+
+      cookieManagerParams = WebKitWebViewCookieManagerCreationParams
+          .fromPlatformWebViewCookieManagerCreationParams(
+        cookieManagerParams,
+      );
+    } else if (WebViewPlatform.instance is AndroidWebViewPlatform) {
+      controllerParams = AndroidWebViewControllerCreationParams
+          .fromPlatformWebViewControllerCreationParams(
+        controllerParams,
+      );
+
+      cookieManagerParams = AndroidWebViewCookieManagerCreationParams
+          .fromPlatformWebViewCookieManagerCreationParams(
+        cookieManagerParams,
+      );
+    }
+
+    final WebViewController controller =
+        WebViewController.fromPlatformCreationParams(controllerParams);
+
+    _cookieManager =
+        WebViewCookieManager.fromPlatformCreationParams(cookieManagerParams);
+
+    Future<void>.microtask(() async {
+      await controller.setJavaScriptMode(JavaScriptMode.unrestricted);
+      await controller.setNavigationDelegate(
+        NavigationDelegate(
+          onNavigationRequest: (NavigationRequest request) async =>
+              await widget.onNavigationRequest?.call(_controller, request) ??
+              NavigationDecision.navigate,
+          onPageStarted: (String url) {
+            debugPrint('Page started loading: $url');
+            widget.onPageStarted?.call(_controller);
+          },
+          onPageFinished: (String url) {
+            debugPrint('Page finished loading: $url');
+            widget.onPageFinished?.call(_controller);
+          },
+          onProgress: (int progress) {
+            debugPrint('WebView is loading (progress : $progress%)');
+            widget.onProgress?.call(_controller, progress / 100);
+          },
+          onWebResourceError: (WebResourceError error) {
+            debugPrint('''
+                Page resource error:
+                  code: ${error.errorCode}
+                  description: ${error.description}
+                  errorType: ${error.errorType}
+                  isForMainFrame: ${error.isForMainFrame}
+              ''');
+
+            widget.onWebResourceError?.call(_controller, error);
+          },
+          onUrlChange: (UrlChange change) {
+            debugPrint('url change to ${change.url}');
+
+            widget.onUrlChange?.call(_controller, change);
+          },
+        ),
+      );
+
+      if (widget.withCookies) {
+        await ref.read(networkProvider).syncCookies(_cookieManager, widget.url);
+      } else {
+        await _cookieManager.clearCookies();
+      }
+
+      await controller.loadRequest(widget.url);
+    });
+
+    _controller = controller;
+
+    widget.onWebViewInit?.call(controller);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    unawaited(
+      _controller.setBackgroundColor(context.theme.colorScheme.background),
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant WebView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.url != widget.url) {
+      unawaited(_controller.loadRequest(widget.url));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (WebViewPlatform.instance is WebKitWebViewPlatform) {
+      return WebViewWidget.fromPlatformCreationParams(
+        params: WebKitWebViewWidgetCreationParams(
+          controller: _controller.platform,
+        ),
+      );
+    } else if (WebViewPlatform.instance is AndroidWebViewPlatform) {
+      return WebViewWidget.fromPlatformCreationParams(
+        params: AndroidWebViewWidgetCreationParams(
+          controller: _controller.platform,
+          displayWithHybridComposition: true,
+        ),
+      );
+    }
+    return WebViewWidget(controller: _controller);
+  }
 }

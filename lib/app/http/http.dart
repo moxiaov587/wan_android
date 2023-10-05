@@ -5,10 +5,10 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart' as web_view
-    show CookieManager, HTTPCookieSameSitePolicy;
 import 'package:flutter_riverpod/flutter_riverpod.dart' show Ref;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:webview_flutter/webview_flutter.dart'
+    show WebViewCookie, WebViewCookieManager;
 
 import '../../utils/log_utils.dart';
 import 'interceptors/interceptors.dart';
@@ -28,9 +28,6 @@ class Http {
 
   late final PersistCookieJar cookieJar;
   late final CookieManager cookieManager;
-
-  final web_view.CookieManager webViewCookieManager =
-      web_view.CookieManager.instance();
 
   void initConfig({required Ref ref}) {
     if (!kIsWeb) {
@@ -57,25 +54,26 @@ class Http {
     }
   }
 
-  Future<void> _setCookie(Cookie cookie) => webViewCookieManager.setCookie(
-        url: Uri.parse(kBaseUrl),
-        name: cookie.name,
-        value: cookie.value,
-        domain: cookie.domain ?? kDomain,
-        path: cookie.path ?? '/',
-        expiresDate: cookie.expires?.millisecondsSinceEpoch,
-        isSecure: cookie.secure,
-        maxAge: cookie.maxAge,
-        sameSite: web_view.HTTPCookieSameSitePolicy.LAX,
-      );
-
   /// Sync local cookies to webview under the same domain name
-  Future<void> syncCookies(Uri? uri) async {
+  Future<void> syncCookies(
+    WebViewCookieManager webViewCookieManager,
+    Uri? uri,
+  ) async {
     try {
       final List<Cookie> cookies =
           await cookieJar.loadForRequest(uri ?? Uri.parse(kBaseUrl));
 
-      await Future.forEach<Cookie>(cookies, _setCookie);
+      await Future.forEach<Cookie>(
+        cookies,
+        (Cookie cookie) => webViewCookieManager.setCookie(
+          WebViewCookie(
+            name: cookie.name,
+            value: cookie.value,
+            domain: cookie.domain ?? kDomain,
+            path: cookie.path ?? '/',
+          ),
+        ),
+      );
     } on Exception catch (e) {
       LogUtils.e("Error when sync WebView's cookies: $e");
     }
