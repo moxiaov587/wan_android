@@ -25,9 +25,6 @@ class _RankScreenState extends ConsumerState<RankScreen>
 
   @override
   Widget build(BuildContext context) {
-    final double paddingBottom =
-        _kCurrentUserRankTileHeight + ScreenUtils.bottomSafeHeight;
-
     final UserPointsModel? currentUserPoints =
         ref.read(authorizedProvider).valueOrNull?.userPoints;
 
@@ -79,9 +76,10 @@ class _RankScreenState extends ConsumerState<RankScreen>
                 ),
                 SliverPadding(
                   padding: EdgeInsets.only(
-                    bottom: currentUserPoints != null
-                        ? paddingBottom
-                        : ScreenUtils.bottomSafeHeight,
+                    bottom: context.mqPadding.bottom +
+                        (currentUserPoints != null
+                            ? _kCurrentUserRankTileHeight
+                            : 0),
                   ),
                   sliver: loadMoreIndicator,
                 ),
@@ -93,7 +91,7 @@ class _RankScreenState extends ConsumerState<RankScreen>
               left: 0.0,
               bottom: 0.0,
               child: Consumer(
-                builder: (_, WidgetRef ref, __) {
+                builder: (BuildContext context, WidgetRef ref, __) {
                   final bool showUserRank = ref.watch(
                     provider.select(
                       (AsyncValue<PaginationData<UserPointsModel>> vm) =>
@@ -109,7 +107,10 @@ class _RankScreenState extends ConsumerState<RankScreen>
 
                   return showUserRank
                       ? SizedBox.fromSize(
-                          size: Size(ScreenUtils.width, paddingBottom),
+                          size: Size(
+                            context.mqSize.width,
+                            context.mqPadding.bottom + kToolbarHeight,
+                          ),
                           child: _RankTile(
                             key: Key('rank_tile_${currentUserPoints.userId}'),
                             rank: currentUserPoints.rank,
@@ -155,59 +156,68 @@ class _RankTile extends StatelessWidget {
   final bool isSelf;
 
   @override
-  Widget build(BuildContext context) => DecoratedBox(
-        decoration: BoxDecoration(
-          color: isSelf ? null : context.theme.colorScheme.background,
-          border: Border(
-            top: isSelf ? Divider.createBorderSide(context) : BorderSide.none,
-            bottom:
-                isSelf ? BorderSide.none : Divider.createBorderSide(context),
+  Widget build(BuildContext context) {
+    Widget child = Padding(
+      padding: const EdgeInsets.all(kStyleUint4).copyWith(
+        bottom: isSelf ? kStyleUint4 + context.mqPadding.bottom : null,
+      ),
+      child: Row(
+        children: <Widget>[
+          Text(
+            rank ?? '',
+            style: context.theme.textTheme.titleLarge,
           ),
-          boxShadow: isSelf
-              ? <BoxShadow>[
-                  BoxShadow(
-                    color: context.theme.colorScheme.background,
-                    blurRadius: _kCurrentUserRankTileHeight / 2,
-                    blurStyle: BlurStyle.inner,
+          const Gap.hn(),
+          Expanded(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Flexible(
+                  child: Text(
+                    nickname.strictValue ?? '',
+                    style: context.theme.textTheme.titleMedium,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ]
-              : null,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(kStyleUint4).copyWith(
-            bottom: isSelf ? kStyleUint4 + ScreenUtils.bottomSafeHeight : null,
-          ),
-          child: Row(
-            children: <Widget>[
-              Text(
-                rank ?? '',
-                style: context.theme.textTheme.titleLarge,
-              ),
-              const Gap.hn(),
-              Expanded(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Flexible(
-                      child: Text(
-                        nickname.strictValue ?? '',
-                        style: context.theme.textTheme.titleMedium,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const Gap.hn(),
-                    LevelTag(level: level),
-                  ],
                 ),
-              ),
-              const Gap.hn(),
-              Text(
-                totalPoints.toString(),
-                style: context.theme.textTheme.titleMedium,
-              ),
-            ],
+                const Gap.hn(),
+                LevelTag(level: level),
+              ],
+            ),
           ),
+          const Gap.hn(),
+          Text(
+            totalPoints.toString(),
+            style: context.theme.textTheme.titleMedium,
+          ),
+        ],
+      ),
+    );
+
+    if (isSelf) {
+      child = DecoratedBox(
+        decoration: BoxDecoration(
+          color: context.theme.colorScheme.background.withOpacity(0.9),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: context.theme.dividerColor,
+              blurRadius: 6.0,
+              blurStyle: BlurStyle.outer,
+            ),
+          ],
         ),
+        child: child,
       );
+    } else {
+      child = DecoratedBox(
+        decoration: BoxDecoration(
+          color: context.theme.colorScheme.background,
+          border: Border(bottom: Divider.createBorderSide(context)),
+        ),
+        child: child,
+      );
+    }
+
+    return child;
+  }
 }

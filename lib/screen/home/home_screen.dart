@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nil/nil.dart' show nil;
+import 'package:slider_view/slider_view.dart';
 
 import '../../../widget/view_state_widget.dart';
 import '../../app/http/interceptors/interceptors.dart';
@@ -429,21 +430,29 @@ class _BannerCarousel extends StatelessWidget {
                       .watch(homeBannerProvider)
                       .when(
                         skipLoadingOnRefresh: false,
-                        data: (List<BannerCache> list) => PageView.builder(
-                          onPageChanged: ref
-                              .read(
-                                currentHomeBannerBackgroundColorValueProvider
-                                    .notifier,
-                              )
-                              .onPageChanged,
-                          itemBuilder: (BuildContext context, int index) =>
-                              _BannerCarouselItem(
-                            key: Key(
-                              'banner_${list[index].id}',
+                        data: (List<BannerCache> list) =>
+                            SliderView<BannerCache>(
+                          config: SliderViewConfig<BannerCache>(
+                            width: double.infinity,
+                            height: double.infinity,
+                            indicatorColor: context.theme.cardColor,
+                            unselectedIndicatorColor:
+                                context.theme.cardColor.withOpacity(0.48),
+                            models: list,
+                            itemBuilder: (BannerCache banner) =>
+                                _BannerCarouselItem(
+                              key: Key(
+                                'banner_${banner.id}',
+                              ),
+                              homeBanner: banner,
                             ),
-                            homeBanner: list[index],
+                            onPageIndexChanged: ref
+                                .read(
+                                  currentHomeBannerBackgroundColorValueProvider
+                                      .notifier,
+                                )
+                                .onPageChanged,
                           ),
-                          itemCount: list.length,
                         ),
                         loading: () => const LoadingWidget.listView(),
                         error: (Object e, StackTrace s) {
