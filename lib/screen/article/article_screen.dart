@@ -15,7 +15,7 @@ import '../../app/l10n/generated/l10n.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../extensions/extensions.dart' show BuildContextExtension;
 import '../../model/models.dart' show WebViewModel;
-import '../../router/data/app_routes.dart';
+import '../../router/data/app_route_datas.dart';
 import '../../screen/authorized/provider/authorized_provider.dart';
 import '../../utils/debounce_throttle.dart';
 import '../../utils/dialog_utils.dart';
@@ -387,7 +387,7 @@ class _ArticleScreenState extends ConsumerState<ArticleScreen>
                                             .collect(value: !collect);
                                       } else {
                                         unawaited(
-                                          const LoginRoute().push(context),
+                                          const LoginRouteData().push(context),
                                         );
                                       }
                                     }),

@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nil/nil.dart' show nil;
 import 'package:slider_view/slider_view.dart';
 
@@ -16,7 +18,7 @@ import '../../contacts/icon_font_icons.dart';
 import '../../database/app_database.dart';
 import '../../extensions/extensions.dart';
 import '../../model/models.dart';
-import '../../router/data/app_routes.dart';
+import '../../router/data/app_route_datas.dart';
 import '../../utils/dialog_utils.dart';
 import '../../utils/html_parse_utils.dart';
 
@@ -36,109 +38,68 @@ part 'project_type_bottom_sheet.dart';
 part 'qa.dart';
 part 'square.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({required this.initialPath, super.key});
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({required this.navigationShell, super.key});
 
-  final HomePath initialPath;
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  final List<Widget> _pages = const <Widget>[
-    _Home(),
-    _Square(),
-    _QA(),
-    _Project(),
-  ];
-
-  late final ValueNotifier<int> _currentIndexNotifier =
-      ValueNotifier<int>(widget.initialPath.index);
-
-  late final PageController _pageController = PageController(
-    initialPage: _currentIndexNotifier.value,
-  );
-
-  @override
-  void dispose() {
-    _currentIndexNotifier.dispose();
-    _pageController.dispose();
-    super.dispose();
-  }
+  final StatefulNavigationShell navigationShell;
 
   @override
   Widget build(BuildContext context) => Scaffold(
         drawer: const HomeDrawer(),
         drawerScrimColor: context.theme.colorScheme.scrim,
-        body: PageView.builder(
-          controller: _pageController,
-          itemCount: _pages.length,
-          itemBuilder: (_, int index) => Material(
-            color: context.theme.scaffoldBackgroundColor,
-            child: _pages[index],
-          ),
-          onPageChanged: (int index) {
-            _currentIndexNotifier.value = index;
+        body: navigationShell,
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          currentIndex: navigationShell.currentIndex,
+          onTap: (int index) {
+            navigationShell.goBranch(
+              index,
+              initialLocation: index == navigationShell.currentIndex,
+            );
           },
-        ),
-        bottomNavigationBar: ValueListenableBuilder<int>(
-          valueListenable: _currentIndexNotifier,
-          builder: (BuildContext context, int index, _) => BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            showSelectedLabels: false,
-            showUnselectedLabels: false,
-            currentIndex: index,
-            onTap: _pageController.jumpToPage,
-            items: <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                label: S.of(context).home,
-                icon: const Icon(IconFontIcons.homeLine),
-                activeIcon: const Icon(IconFontIcons.homeFill),
-                tooltip: S.of(context).home,
-              ),
-              BottomNavigationBarItem(
-                label: S.of(context).square,
-                icon: const Icon(IconFontIcons.seedlingLine),
-                activeIcon: const Icon(IconFontIcons.seedlingFill),
-                tooltip: S.of(context).square,
-              ),
-              BottomNavigationBarItem(
-                label: S.of(context).question,
-                icon: const Icon(IconFontIcons.questionnaireLine),
-                activeIcon: const Icon(IconFontIcons.questionnaireFill),
-                tooltip: S.of(context).question,
-              ),
-              BottomNavigationBarItem(
-                label: S.of(context).project,
-                icon: const Icon(IconFontIcons.androidLine),
-                activeIcon: const Icon(IconFontIcons.androidFill),
-                tooltip: S.of(context).project,
-              ),
-            ],
-          ),
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              label: S.of(context).home,
+              icon: const Icon(IconFontIcons.homeLine),
+              activeIcon: const Icon(IconFontIcons.homeFill),
+              tooltip: S.of(context).home,
+            ),
+            BottomNavigationBarItem(
+              label: S.of(context).square,
+              icon: const Icon(IconFontIcons.seedlingLine),
+              activeIcon: const Icon(IconFontIcons.seedlingFill),
+              tooltip: S.of(context).square,
+            ),
+            BottomNavigationBarItem(
+              label: S.of(context).question,
+              icon: const Icon(IconFontIcons.questionnaireLine),
+              activeIcon: const Icon(IconFontIcons.questionnaireFill),
+              tooltip: S.of(context).question,
+            ),
+            BottomNavigationBarItem(
+              label: S.of(context).project,
+              icon: const Icon(IconFontIcons.androidLine),
+              activeIcon: const Icon(IconFontIcons.androidFill),
+              tooltip: S.of(context).project,
+            ),
+          ],
         ),
       );
 }
 
-enum HomePath {
-  home,
-  square,
-  qa,
-  project,
-}
-
-class _Home extends ConsumerStatefulWidget {
-  const _Home();
+class Home extends ConsumerStatefulWidget {
+  const Home({super.key});
 
   @override
-  ConsumerState<_Home> createState() => _HomeState();
+  ConsumerState<Home> createState() => _HomeState();
 }
 
-class _HomeState extends ConsumerState<_Home>
+class _HomeState extends ConsumerState<Home>
     with
         AutomaticKeepAliveClientMixin,
-        RefreshListViewStateMixin<HomeArticleProvider, ArticleModel, _Home> {
+        RefreshListViewStateMixin<HomeArticleProvider, ArticleModel, Home> {
   @override
   bool get wantKeepAlive => true;
 
@@ -433,6 +394,7 @@ class _BannerCarousel extends StatelessWidget {
                         data: (List<BannerCache> list) =>
                             SliderView<BannerCache>(
                           config: SliderViewConfig<BannerCache>(
+                            autoScroll: !kDebugMode,
                             width: double.infinity,
                             height: double.infinity,
                             indicatorColor: context.theme.cardColor,
@@ -524,7 +486,7 @@ class _BannerCarousel extends StatelessWidget {
                   ],
                 ),
                 onTap: () {
-                  unawaited(const SearchRoute().push(context));
+                  unawaited(const SearchRouteData().push(context));
                 },
               ),
             ),

@@ -10,7 +10,7 @@ import '../../app/theme/app_theme.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../database/app_database.dart';
 import '../../extensions/extensions.dart' show BuildContextExtension;
-import '../../router/data/app_routes.dart';
+import '../../router/data/app_route_datas.dart';
 import '../../screen/authorized/provider/authorized_provider.dart';
 import '../../widget/custom_text_form_field.dart';
 import '../../widget/gap.dart';
@@ -233,7 +233,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         child: TextButton(
                           onPressed: () async {
                             final bool? result =
-                                await const RegisterRoute(fromLogin: true)
+                                await const RegisterRouteData(fromLogin: true)
                                     .push<bool>(context);
 
                             if (result ?? false) {

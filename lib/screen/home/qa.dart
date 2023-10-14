@@ -1,16 +1,16 @@
 part of 'home_screen.dart';
 
-class _QA extends ConsumerStatefulWidget {
-  const _QA();
+class QA extends ConsumerStatefulWidget {
+  const QA({super.key});
 
   @override
-  ConsumerState<_QA> createState() => _QAState();
+  ConsumerState<QA> createState() => _QAState();
 }
 
-class _QAState extends ConsumerState<_QA>
+class _QAState extends ConsumerState<QA>
     with
         AutomaticKeepAliveClientMixin,
-        RefreshListViewStateMixin<QuestionArticleProvider, ArticleModel, _QA> {
+        RefreshListViewStateMixin<QuestionArticleProvider, ArticleModel, QA> {
   @override
   bool get wantKeepAlive => true;
 

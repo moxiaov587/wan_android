@@ -5,9 +5,8 @@ import '../app/l10n/generated/l10n.dart';
 import '../app/theme/app_theme.dart';
 import '../contacts/assets.dart';
 import '../extensions/extensions.dart';
-import '../router/data/app_routes.dart';
+import '../router/data/app_route_datas.dart';
 import '../widget/gap.dart';
-import 'home/home_screen.dart';
 
 class UnknownScreen extends StatefulWidget {
   const UnknownScreen({required this.state, super.key});
@@ -92,7 +91,7 @@ class _UnknownScreenState extends State<UnknownScreen> {
                       const Gap.vb(),
                       ElevatedButton(
                         onPressed: () {
-                          const HomeRoute(path: HomePath.home).go(context);
+                          const HomeRouteData().go(context);
                         },
                         child: Text(S.of(context).backHome),
                       ),

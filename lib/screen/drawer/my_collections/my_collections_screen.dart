@@ -11,7 +11,7 @@ import '../../../app/theme/app_theme.dart';
 import '../../../contacts/icon_font_icons.dart';
 import '../../../extensions/extensions.dart';
 import '../../../model/models.dart';
-import '../../../router/data/app_routes.dart';
+import '../../../router/data/app_route_datas.dart';
 import '../../../widget/custom_text_form_field.dart';
 import '../../../widget/gap.dart';
 import '../../../widget/slidable_tile.dart';
@@ -57,7 +57,7 @@ class _MyCollectionsScreenState extends State<MyCollectionsScreen>
               builder: (_, WidgetRef ref, __) => IconButton(
                 onPressed: () {
                   unawaited(
-                    AddCollectedArticleOrWebsiteRoute(
+                    AddCollectedArticleOrWebsiteRouteData(
                       type: CollectionType.values[_tabController.index],
                     ).push(context),
                   );

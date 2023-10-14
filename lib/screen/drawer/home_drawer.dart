@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +12,7 @@ import '../../app/theme/app_theme.dart';
 import '../../contacts/icon_font_icons.dart';
 import '../../extensions/extensions.dart';
 import '../../model/models.dart';
-import '../../router/data/app_routes.dart';
+import '../../router/data/app_route_datas.dart';
 import '../../screen/authorized/provider/authorized_provider.dart';
 import '../../screen/provider/common_provider.dart';
 import '../../utils/dialog_utils.dart';
@@ -112,7 +111,7 @@ class HomeDrawer extends StatelessWidget {
                   alignment: Alignment.topRight,
                   child: IconButton(
                     onPressed: () {
-                      unawaited(const RankRoute().push(context));
+                      unawaited(const RankRouteData().push(context));
                     },
                     icon: const Icon(IconFontIcons.honourLine),
                   ),
@@ -127,7 +126,7 @@ class HomeDrawer extends StatelessWidget {
                   leading: const Icon(IconFontIcons.coinLine),
                   title: Text(S.of(context).myPoints),
                   onTap: () {
-                    unawaited(const MyPointsRoute().push(context));
+                    unawaited(const MyPointsRouteData().push(context));
                   },
                 ),
                 ListTile(
@@ -135,7 +134,7 @@ class HomeDrawer extends StatelessWidget {
                   title: Text(S.of(context).myCollections),
                   onTap: () {
                     unawaited(
-                      const MyCollectionsRoute(
+                      const MyCollectionsRouteData(
                         type: CollectionType.article,
                       ).push(context),
                     );
@@ -145,14 +144,14 @@ class HomeDrawer extends StatelessWidget {
                   leading: const Icon(IconFontIcons.shareCircleLine),
                   title: Text(S.of(context).myShare),
                   onTap: () {
-                    unawaited(const MyShareRoute().push(context));
+                    unawaited(const MyShareRouteData().push(context));
                   },
                 ),
                 ListTile(
                   leading: const Icon(IconFontIcons.informationLine),
                   title: Text(S.of(context).about),
                   onTap: () {
-                    unawaited(const AboutRoute().push(context));
+                    unawaited(const AboutRouteData().push(context));
                   },
                 ),
               ],
@@ -194,7 +193,7 @@ class HomeDrawer extends StatelessWidget {
                     ),
                     IconButton(
                       onPressed: () {
-                        unawaited(const SettingsRoute().push(context));
+                        unawaited(const SettingsRouteData().push(context));
                       },
                       tooltip: S.of(context).settings,
                       icon: const Icon(IconFontIcons.settingsLine),

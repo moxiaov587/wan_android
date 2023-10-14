@@ -9,8 +9,7 @@ import '../../screen/drawer/home_drawer.dart';
 import '../contacts/instances.dart';
 import '../extensions/extensions.dart' show BuildContextExtension;
 import '../screen/authorized/provider/authorized_provider.dart';
-import '../screen/home/home_screen.dart';
-import 'data/app_routes.dart';
+import 'data/app_route_datas.dart';
 
 part 'app_router.g.dart';
 part 'page/app_page.dart';
@@ -19,23 +18,23 @@ part 'page/app_page.dart';
 GoRouter appRouter(AppRouterRef ref) {
   final GoRouter router = GoRouter(
     navigatorKey: Instances.rootNavigatorKey,
-    initialLocation: const HomeRoute(path: HomePath.home).location,
+    initialLocation: const HomeRouteData().location,
     debugLogDiagnostics: kDebugMode,
     redirect: (BuildContext context, GoRouterState state) {
       if (<String>[
-        const MyPointsRoute().location,
-        const MyCollectionsRoute(type: CollectionType.article).location,
-        const MyCollectionsRoute(type: CollectionType.website).location,
-        const MyShareRoute().location,
+        const MyPointsRouteData().location,
+        const MyCollectionsRouteData(type: CollectionType.article).location,
+        const MyCollectionsRouteData(type: CollectionType.website).location,
+        const MyShareRouteData().location,
       ].contains(state.matchedLocation)) {
         return ref.read(authorizedProvider).valueOrNull != null
             ? null
-            : const LoginRoute().location;
+            : const LoginRouteData().location;
       }
 
       return null;
     },
-    errorBuilder: const UnknownRoute().build,
+    errorBuilder: const UnknownRouteData().build,
     observers: <NavigatorObserver>[
       FlutterSmartDialog.observer,
       Instances.routeObserver,

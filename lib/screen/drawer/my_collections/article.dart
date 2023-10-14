@@ -77,7 +77,7 @@ class __ArticleState extends ConsumerState<_Article>
                                 return result;
                               },
                               onTap: () async {
-                                await ArticleRoute(id: article.id)
+                                await ArticleRouteData(id: article.id)
                                     .push<void>(context);
 
                                 ref
@@ -86,7 +86,7 @@ class __ArticleState extends ConsumerState<_Article>
                               },
                               onEditTap: () {
                                 unawaited(
-                                  EditCollectedArticleOrWebsiteRoute(
+                                  EditCollectedArticleOrWebsiteRouteData(
                                     type: CollectionType.article,
                                     id: article.id,
                                   ).push(context),

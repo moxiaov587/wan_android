@@ -1,17 +1,17 @@
 part of 'home_screen.dart';
 
-class _Project extends ConsumerStatefulWidget {
-  const _Project();
+class Project extends ConsumerStatefulWidget {
+  const Project({super.key});
 
   @override
-  ConsumerState<_Project> createState() => _ProjectState();
+  ConsumerState<Project> createState() => _ProjectState();
 }
 
-class _ProjectState extends ConsumerState<_Project>
+class _ProjectState extends ConsumerState<Project>
     with
         AutomaticKeepAliveClientMixin,
         RefreshListViewStateMixin<ProjectArticleProvider, ArticleModel,
-            _Project> {
+            Project> {
   @override
   bool get wantKeepAlive => true;
 
@@ -102,30 +102,31 @@ class _ProjectTypeSwitch extends StatelessWidget {
           child: Align(
             alignment: Alignment.centerLeft,
             child: Consumer(
-              builder: (_, WidgetRef ref, __) =>
-                  ref.watch(currentProjectTypeProvider).when(
-                        data: (ProjectTypeModel value) => CapsuleInk(
-                          onTap: () {
-                            unawaited(const ProjectTypeRoute().push(context));
-                          },
-                          child: Text(value.name),
-                        ),
-                        error: (_, __) => CapsuleInk(
-                          onTap: () {
-                            ref.invalidate(projectTypeProvider);
-                          },
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              const Icon(IconFontIcons.refreshLine, size: 14.0),
-                              const Gap.hs(),
-                              Text(S.of(context).retry),
-                            ],
-                          ),
-                        ),
-                        loading: () =>
-                            const CapsuleInk(child: LoadingWidget.capsuleInk()),
+              builder: (_, WidgetRef ref, __) => ref
+                  .watch(currentProjectTypeProvider)
+                  .when(
+                    data: (ProjectTypeModel value) => CapsuleInk(
+                      onTap: () {
+                        unawaited(const ProjectTypeRouteData().push(context));
+                      },
+                      child: Text(value.name),
+                    ),
+                    error: (_, __) => CapsuleInk(
+                      onTap: () {
+                        ref.invalidate(projectTypeProvider);
+                      },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          const Icon(IconFontIcons.refreshLine, size: 14.0),
+                          const Gap.hs(),
+                          Text(S.of(context).retry),
+                        ],
                       ),
+                    ),
+                    loading: () =>
+                        const CapsuleInk(child: LoadingWidget.capsuleInk()),
+                  ),
             ),
           ),
         ),

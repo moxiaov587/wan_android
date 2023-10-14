@@ -1,17 +1,16 @@
 part of 'home_screen.dart';
 
-class _Square extends ConsumerStatefulWidget {
-  const _Square();
+class Square extends ConsumerStatefulWidget {
+  const Square({super.key});
 
   @override
-  ConsumerState<_Square> createState() => _SquareState();
+  ConsumerState<Square> createState() => _SquareState();
 }
 
-class _SquareState extends ConsumerState<_Square>
+class _SquareState extends ConsumerState<Square>
     with
         AutomaticKeepAliveClientMixin,
-        RefreshListViewStateMixin<SquareArticleProvider, ArticleModel,
-            _Square> {
+        RefreshListViewStateMixin<SquareArticleProvider, ArticleModel, Square> {
   @override
   bool get wantKeepAlive => true;
 

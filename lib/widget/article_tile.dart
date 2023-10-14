@@ -32,7 +32,7 @@ class ArticleTile extends StatelessWidget {
         ),
         child: InkWell(
           onTap: () {
-            unawaited(ArticleRoute(id: article.id).push(context));
+            unawaited(ArticleRouteData(id: article.id).push(context));
           },
           child: Padding(
             padding: AppTheme.bodyPadding,
@@ -54,8 +54,9 @@ class ArticleTile extends StatelessWidget {
                               ? (TapGestureRecognizer()
                                 ..onTap = () {
                                   unawaited(
-                                    TheyArticlesRoute(author: article.author!)
-                                        .push(context),
+                                    TheyArticlesRouteData(
+                                      author: article.author!,
+                                    ).push(context),
                                   );
                                 })
                               : null,
@@ -70,7 +71,7 @@ class ArticleTile extends StatelessWidget {
                               ? (TapGestureRecognizer()
                                 ..onTap = () {
                                   unawaited(
-                                    TheyShareRoute(id: article.userId!)
+                                    TheyShareRouteData(id: article.userId!)
                                         .push(context),
                                   );
                                 })

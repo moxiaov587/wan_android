@@ -8,7 +8,7 @@ import '../app/theme/app_theme.dart';
 import '../contacts/unicode.dart';
 import '../extensions/extensions.dart';
 import '../model/models.dart';
-import '../router/data/app_routes.dart';
+import '../router/data/app_route_datas.dart';
 import '../utils/html_parse_utils.dart';
 import '../widget/gap.dart';
 
